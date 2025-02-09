@@ -10,7 +10,7 @@
             ];
 
             // create game core, turn manager and processor manager
-            var game = new GameCore(gameState, players);
+            var game = new GameCore(gameState, players, shufflePlayers: false);
             var turnManager = new TurnManager(game.NumPlayers);
             var processorManager = new ProcessorManager(game.GameState, game.PlayerStates, turnManager);
 
@@ -18,7 +18,7 @@
             while (true) {
                 // get next turn, if game ended, break
                 TurnInfo turnInfo = turnManager.NextTurn();
-                if (turnInfo.GamePhase == GamePhase.Ended) {
+                if (turnInfo.GamePhase == GamePhase.Finished) {
                     break;
                 }
 

@@ -28,7 +28,7 @@ namespace Kostra {
         public override PlayerType Type => PlayerType.AI;
 
         // AI players might have some state that needs to be initialized -> deserialize from file...
-        public abstract void Init(string filePath);
+        public abstract void Init(string? filePath);
         public abstract IAction GetAction(GameState gameState, PlayerState myState, List<PlayerState> enemyStates, TurnInfo turnInfo);
         public override async Task<IAction> GetActionAsync(GameState gameState, PlayerState[] playerStates, TurnInfo turnInfo) {
             PlayerState? myState = null;

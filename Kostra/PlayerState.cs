@@ -15,7 +15,7 @@ namespace Kostra {
             { TetrominoShape.T, 0 },
         };
 
-        public const int MaxPuzzles = 4;
+        public static int MaxPuzzles = 4;
         private readonly Puzzle?[] _puzzles = [null, null, null, null];
 
         public void PlaceNewPuzzle(Puzzle puzzle) {

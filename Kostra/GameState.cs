@@ -1,6 +1,9 @@
+using System.Net.Http.Headers;
+
 namespace Kostra {
 
     class GameStateBuilder {
+        // TODO: sem nahazet vsechny puzzle - asi precist ze souboru
         private readonly List<Puzzle> _whitePuzzlesDeck = new();
         private readonly List<Puzzle> _blackPuzzlesDeck = new();
 
@@ -20,8 +23,8 @@ namespace Kostra {
     }
 
     interface IPuzzleProvider {
-        public Puzzle? GetTopWhitePuzzle();
-        public Puzzle? GetTopBlackPuzzle();
+        public Puzzle? TakeTopWhitePuzzle();
+        public Puzzle? TakeTopBlackPuzzle();
         public Puzzle? GetPuzzleWithId(uint id);
     }
 
@@ -31,23 +34,33 @@ namespace Kostra {
     }
 
     class GameState : IPuzzleProvider {
-        private const int _numBackPuzzlesInRow = 4;
-        private const int _numWhitePuzzlesInRow = 4;
+        private const int _numPuzzlesInRow = 4;
 
-        private Puzzle?[] _whitePuzzlesRow;
-        private Puzzle?[] _blackPuzzlesRow;
+        private Puzzle?[] _whitePuzzlesRow = new Puzzle?[_numPuzzlesInRow];
+        private Puzzle?[] _blackPuzzlesRow = new Puzzle?[_numPuzzlesInRow];
 
-        private readonly List<Puzzle> _whitePuzzlesDeck;
-        private readonly List<Puzzle> _blackPuzzlesDeck;
+        private readonly Queue<Puzzle> _whitePuzzlesDeck;
+        private readonly Queue<Puzzle> _blackPuzzlesDeck;
 
         public GameState(List<Puzzle> whitePuzzlesDeck, List<Puzzle> blackPuzzlesDeck) {
-            if (whitePuzzlesDeck.Count < _numWhitePuzzlesInRow || blackPuzzlesDeck.Count < _numBackPuzzlesInRow) {
+            if (whitePuzzlesDeck.Count < _numPuzzlesInRow|| blackPuzzlesDeck.Count < _numPuzzlesInRow) {
                 throw new ArgumentException("Not enough puzzles");
             }
-            _whitePuzzlesDeck = whitePuzzlesDeck;
-            _blackPuzzlesDeck = blackPuzzlesDeck;
-            _whitePuzzlesRow = _whitePuzzlesDeck.Take(_numWhitePuzzlesInRow).ToArray();
-            _blackPuzzlesRow = _blackPuzzlesDeck.Take(_numBackPuzzlesInRow).ToArray();
+
+            // shuffle decks
+            whitePuzzlesDeck.Shuffle();
+            blackPuzzlesDeck.Shuffle();
+
+            // create queues
+            _whitePuzzlesDeck = new Queue<Puzzle>(whitePuzzlesDeck);
+            _blackPuzzlesDeck = new Queue<Puzzle>(blackPuzzlesDeck);
+
+            // reveal the top 4 puzzles
+            for (int i = 0; i < _numPuzzlesInRow; i++)
+            {
+                _whitePuzzlesRow[i] = _whitePuzzlesDeck.Dequeue();
+                _blackPuzzlesRow[i] = _blackPuzzlesDeck.Dequeue();
+            }
         }
 
         public int NumWhitePuzzlesLeft => _whitePuzzlesDeck.Count;
@@ -71,18 +84,19 @@ namespace Kostra {
             }
             return result;
         }
-        public Puzzle? GetTopWhitePuzzle() {
+        public Puzzle? TakeTopWhitePuzzle() {
             if (_whitePuzzlesDeck.Count == 0) {
                 return null;
             }
-            return _whitePuzzlesDeck[_whitePuzzlesDeck.Count - 1];
+            return _whitePuzzlesDeck.Dequeue();
         }
-        public Puzzle? GetTopBlackPuzzle() {
+        public Puzzle? TakeTopBlackPuzzle() {
             if (_blackPuzzlesDeck.Count == 0) {
                 return null;
             }
-            return _blackPuzzlesDeck[_blackPuzzlesDeck.Count - 1];
+            return _blackPuzzlesDeck.Dequeue();
         }
+
         public Puzzle? GetPuzzleWithId(uint id) {
             for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
                 if (_whitePuzzlesRow[i] is not null && _whitePuzzlesRow[i]!.Id == id) {
@@ -95,18 +109,6 @@ namespace Kostra {
                 }
             }
             return null;
-        }
-        public void RemoveTopWhitePuzzle() {
-            if (_whitePuzzlesDeck.Count == 0) {
-                throw new InvalidOperationException("No white puzzles left");
-            }
-            _whitePuzzlesDeck.RemoveAt(_whitePuzzlesDeck.Count - 1);
-        }
-        public void RemoveTopBlackPuzzle() {
-            if (_blackPuzzlesDeck.Count == 0) {
-                throw new InvalidOperationException("No black puzzles left");
-            }
-            _blackPuzzlesDeck.RemoveAt(_blackPuzzlesDeck.Count - 1);
         }
         public void RemovePuzzleWithId(uint id) {
             for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
@@ -125,46 +127,26 @@ namespace Kostra {
         public void RefillWhitePuzzles() {
             for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
                 if (_whitePuzzlesRow[i] is null && _whitePuzzlesDeck.Count > 0) {
-                    _whitePuzzlesRow[i] = GetTopWhitePuzzle();
-                    RemoveTopWhitePuzzle();
+                    _whitePuzzlesRow[i] = TakeTopWhitePuzzle();
                 }
             }
         }
         public void RefillBlackPuzzles() {
             for (int i = 0; i < _blackPuzzlesRow.Length; i++) {
                 if (_blackPuzzlesRow[i] is null && _blackPuzzlesDeck.Count > 0) {
-                    _blackPuzzlesRow[i] = GetTopBlackPuzzle();
-                    RemoveTopBlackPuzzle();
+                    _blackPuzzlesRow[i] = TakeTopBlackPuzzle();
                 }
             }
         }
-        public void RecycleWhitePuzzles() {
-            // Remove all white puzzles and put them at the bottom of the deck in random order
-            var recycledPuzzles = new List<Puzzle>();
-            for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
-                if (_whitePuzzlesRow[i] is not null) {
-                    recycledPuzzles.Add(_whitePuzzlesRow[i]!);
-                    _whitePuzzlesRow[i] = null;
-                }
+
+        public void EnqueuePuzzle(Puzzle puzzle) {
+            if (puzzle.IsBlack)
+            {
+                _blackPuzzlesDeck.Enqueue(puzzle);
             }
-            recycledPuzzles.Shuffle();
-            _whitePuzzlesDeck.InsertRange(0, recycledPuzzles);
-            // Refill the white puzzles
-            RefillWhitePuzzles();
-        }
-        public void RecycleBlackPuzzles() {
-            // Remove all black puzzles and put them at the bottom of the deck in random order
-            var recycledPuzzles = new List<Puzzle>();
-            for (int i = 0; i < _blackPuzzlesRow.Length; i++) {
-                if (_blackPuzzlesRow[i] is not null) {
-                    recycledPuzzles.Add(_blackPuzzlesRow[i]!);
-                    _blackPuzzlesRow[i] = null;
-                }
+            else { 
+                _whitePuzzlesDeck.Enqueue(puzzle);
             }
-            recycledPuzzles.Shuffle();
-            _blackPuzzlesDeck.InsertRange(0, recycledPuzzles);
-            // Refill the black puzzles
-            RefillBlackPuzzles();
         }
 
 

@@ -76,10 +76,8 @@
         public void ProcessTakePuzzleAction(TakePuzzleAction action) {
             switch (action.Option) {
                 case TakePuzzleAction.Options.TopWhite:
-                    _gameState.RemoveTopWhitePuzzle();
                     break;
                 case TakePuzzleAction.Options.TopBlack:
-                    _gameState.RemoveTopBlackPuzzle();
                     if (_gameState.NumBlackPuzzlesLeft == 0) {
                         _gameEventSignaller.NoCardsLeftInBlackDeck();
                     }
@@ -121,7 +119,7 @@
             action.Tetromino.PlaceIn(puzzle, action.Position);
 
             if (puzzle.IsFinished) {
-                _playerState.Score += puzzle.Score;
+                _playerState.Score += puzzle.RewardScore;
                 _playerState.AddTetromino(puzzle.RewardTetromino);
                 _playerState.RemovePuzzleWithId(puzzle.Id);
             }
@@ -135,10 +133,10 @@
             Puzzle? puzzle = null;
             switch (action.Option) {
                 case TakePuzzleAction.Options.TopWhite:
-                    puzzle = _puzzleProvider.GetTopWhitePuzzle();
+                    puzzle = _puzzleProvider.TakeTopWhitePuzzle();
                     break;
                 case TakePuzzleAction.Options.TopBlack:
-                    puzzle = _puzzleProvider.GetTopBlackPuzzle();
+                    puzzle = _puzzleProvider.TakeTopBlackPuzzle();
                     break;
                 case TakePuzzleAction.Options.Normal:
                     puzzle = _puzzleProvider.GetPuzzleWithId(action.PuzzleId!.Value);

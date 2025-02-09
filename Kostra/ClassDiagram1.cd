@@ -21,7 +21,7 @@
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>CAAAAAAAAAAAAAAAAAAAAAGgAAIAAgAAAAAAgAAEAAg=</HashCode>
+      <HashCode>CAQAAAAAAAAAAAAAAAAAAACgAAIAAgAAAAAAgAAEAAg=</HashCode>
       <FileName>GameLogic.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -33,7 +33,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Kostra.GameState">
-    <Position X="2.25" Y="1.75" Width="1.5" />
+    <Position X="2.25" Y="2.5" Width="2" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Nested Types" Collapsed="false" />
@@ -47,13 +47,13 @@
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAAABQAEAAEAAAigBAAAAEEUAACAAAAAABEQDAAAAAI=</HashCode>
+      <HashCode>AAAABAAEgAAAAAAABAAAIEEUAAAAAAAAABEQCgAAAgI=</HashCode>
       <FileName>GameState.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Kostra.PlayerState">
-    <Position X="4" Y="3" Width="1.5" />
+    <Position X="4.5" Y="3.25" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Nested Types" Collapsed="false" />
@@ -183,7 +183,7 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>gAACCQAAAAAAAAkAAAAAAAAAAAAAAAAABAAAIAAQEFA=</HashCode>
+      <HashCode>gAACCQAAAAAAAAEAAAAAAAAAAAAgAAAABAAA4AAQEFA=</HashCode>
       <FileName>PuzzleAndTetromino.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -195,9 +195,9 @@
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="GameStateActionProcessor" />
+      <Property Name="GameStateGraphicsProcessor" />
       <Property Name="PlayerStateActionProcessors" />
       <Property Name="PlayerStateGraphicsProcessors" />
-      <Property Name="GameStateGraphicsProcessor" />
     </ShowAsAssociation>
   </Class>
   <Class Name="Kostra.GameCore">
@@ -217,17 +217,6 @@
       <Property Name="PlayerStates" />
     </ShowAsCollectionAssociation>
   </Class>
-  <Class Name="Kostra.TetrominoBase" BaseTypeListCollapsed="true">
-    <Position X="18.75" Y="2.5" Width="1.5" />
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-    </Compartments>
-    <TypeIdentifier>
-      <HashCode>AAAEAABAAAgAAIAAAAIAAAEAAAAAAAgAAQIAgAAYIAA=</HashCode>
-      <FileName>PuzzleAndTetromino.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
   <Class Name="Kostra.TetrominoLevelManager">
     <Position X="18.75" Y="0.5" Width="1.5" />
     <Compartments>
@@ -246,10 +235,10 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Interface Name="Kostra.IPuzzleProvider" Collapsed="true">
-    <Position X="2.25" Y="0.75" Width="1.5" />
+  <Interface Name="Kostra.IPuzzleProvider">
+    <Position X="2.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAACgAAAAAAAAAAAAAAAAAAAQAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAA=</HashCode>
       <FileName>GameState.cs</FileName>
     </TypeIdentifier>
   </Interface>
@@ -274,17 +263,17 @@
       <FileName>Actions.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="Kostra.ITetromino">
+  <Interface Name="Kostra.ITetrominoInfo">
     <Position X="16.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAEAABAAAgAAIAAAAAAAAEAAAAAAAgAAQIAgAAYIAA=</HashCode>
+      <HashCode>AAAEAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAQAA=</HashCode>
       <FileName>PuzzleAndTetromino.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Enum Name="Kostra.GamePhase">
     <Position X="11" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AQAAAAAAAAAAAAEAAAAAAAAAAAAIAAAAAAAAAAAAIAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAQAAAAAAAAIAAAAAAAAAAAAIIA=</HashCode>
       <FileName>GameLogic.cs</FileName>
     </TypeIdentifier>
   </Enum>
@@ -295,31 +284,10 @@
       <FileName>Player.cs</FileName>
     </TypeIdentifier>
   </Enum>
-  <Enum Name="Kostra.Color" Collapsed="true">
-    <Position X="15" Y="5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAACAABAAACBAgAAAAIABAAAAAAACAQAAAAAADAAAAA=</HashCode>
-      <FileName>PuzzleAndTetromino.cs</FileName>
-    </TypeIdentifier>
-  </Enum>
   <Enum Name="Kostra.TetrominoShape">
     <Position X="15" Y="5.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AACABAAAAAAAAAAAAAAAABoAAAAAAAQAAAAAgAAEAAE=</HashCode>
-      <FileName>PuzzleAndTetromino.cs</FileName>
-    </TypeIdentifier>
-  </Enum>
-  <Enum Name="Kostra.Rotation" Collapsed="true">
-    <Position X="16.75" Y="5.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAACAAAAAAAAAAAAAAAAAAAAAAAAACACAAAAAAAI=</HashCode>
-      <FileName>PuzzleAndTetromino.cs</FileName>
-    </TypeIdentifier>
-  </Enum>
-  <Enum Name="Kostra.TetrominoType">
-    <Position X="16.75" Y="6.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAEAAgAAABAAA=</HashCode>
       <FileName>PuzzleAndTetromino.cs</FileName>
     </TypeIdentifier>
   </Enum>
