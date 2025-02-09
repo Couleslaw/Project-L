@@ -4,17 +4,21 @@ namespace Kostra {
     // TODO kdyz je konec hry tak muze vzit jen jedno cerne puzzle
     record struct TurnInfo(int ActionsLeft, GamePhase GamePhase, bool UsedMasterAction, bool TookBlackPuzzle);
 
-    class TurnManager(int numPlayers) {
-        private readonly int _numPlayers = numPlayers;
+    class TurnManager(uint[] playerIds) {
+        private readonly int _numPlayers = playerIds.Length;
+        private readonly uint[] _playersIds = playerIds;
 
         public const int NumActionsInTurn = 3;
-        public int CurrentPlayer { get; private set; } = 0;
-        private bool IsEndOfRound => CurrentPlayer == _numPlayers - 1;
+        private int _currentPlayerOrder = 0;
+        public uint CurrentPlayerId => _playersIds[_currentPlayerOrder];
+        private bool IsEndOfRound => _currentPlayerOrder == _numPlayers - 1;
 
         private TurnInfo _turnInfo = new(ActionsLeft: NumActionsInTurn, GamePhase.Normal, UsedMasterAction: false, TookBlackPuzzle: false);
 
+
+
         private void SetNextPlayer() {
-            CurrentPlayer = (CurrentPlayer + 1) % _numPlayers;
+            _currentPlayerOrder = (_currentPlayerOrder + 1) % _numPlayers;
             _turnInfo.ActionsLeft = NumActionsInTurn;
             _turnInfo.UsedMasterAction = false;
             _turnInfo.TookBlackPuzzle = false;
@@ -72,35 +76,15 @@ namespace Kostra {
             }
             public void PlayerEndedFinishingTouches() {
                 _turnManager.SetNextPlayer();
-                if (_turnManager.CurrentPlayer == 0) {
+                if (_turnManager._currentPlayerOrder == 0) {
                     _turnManager._turnInfo.GamePhase = GamePhase.Finished;
                 }
             }
         }
     }
 
-    class ProcessorManager {
-        public GameStateActionProcessor GameStateActionProcessor { get; }
-        public GameStateGraphicsProcessor GameStateGraphicsProcessor { get; }
-        public PlayerStateActionProcessor[] PlayerStateActionProcessors { get; }
-        public PlayerStateGraphicsProcessor[] PlayerStateGraphicsProcessors { get; }
-
-        public ProcessorManager(GameState gameState, PlayerState[] playerStates, TurnManager turnManager) {
-            var gameEventSignaller = new TurnManager.Signals(turnManager);
-
-            GameStateActionProcessor = new GameStateActionProcessor(gameState, gameEventSignaller);
-            GameStateGraphicsProcessor = new GameStateGraphicsProcessor(gameState);
-
-            PlayerStateActionProcessors = new PlayerStateActionProcessor[playerStates.Length];
-            PlayerStateGraphicsProcessors = new PlayerStateGraphicsProcessor[playerStates.Length];
-            for (int i = 0; i < playerStates.Length; i++) {
-                PlayerStateActionProcessors[i] = new PlayerStateActionProcessor(playerStates[i], gameState, gameEventSignaller);
-                PlayerStateGraphicsProcessors[i] = new PlayerStateGraphicsProcessor(playerStates[i]);
-            }
-        }
-    }
-
-    class GameCore {
+    class GameCore
+    {
         public const int MaxPlayers = 4;
         public int NumPlayers => Players.Length;
 
@@ -108,8 +92,10 @@ namespace Kostra {
         public Player[] Players { get; }
         public PlayerState[] PlayerStates { get; }
 
-        public GameCore(GameState gameState, IList<Player> players, bool shufflePlayers) {
-            if (players.Count > MaxPlayers) {
+        public GameCore(GameState gameState, IList<Player> players, bool shufflePlayers)
+        {
+            if (players.Count > MaxPlayers)
+            {
                 throw new ArgumentException("Too many players");
             }
             GameState = gameState;
@@ -122,9 +108,76 @@ namespace Kostra {
             }
 
             PlayerStates = new PlayerState[NumPlayers];
-            for (int i = 0; i < NumPlayers; i++) {
+            for (int i = 0; i < NumPlayers; i++)
+            {
                 PlayerStates[i] = new PlayerState(playerId: Players[i].Id);
             }
+        }
+
+        public uint[] GetPlayerOrder()
+        {
+            uint[] order = new uint[NumPlayers];
+            for (int i = 0; i < NumPlayers; i++)
+            {
+                order[i] = Players[i].Id;
+            }
+            return order;
+        }
+
+        public Player GetPlayerWithId(uint id)
+        {
+            foreach (var player in Players)
+            {
+                if (player.Id == id)
+                {
+                    return player;
+                }
+            }
+            throw new InvalidOperationException("Player not found");
+        }
+
+        public PlayerState GetPlayerStateWithId(uint id)
+        {
+            foreach (var playerState in PlayerStates)
+            {
+                if (playerState.PlayerId == id)
+                {
+                    return playerState;
+                }
+            }
+            throw new InvalidOperationException("Player state not found");
+        }
+
+        public Dictionary<PlayerState, int> GameEnded()
+        {
+            // remove points for unfinished puzzles
+            foreach (var playerState in PlayerStates)
+            {
+                foreach (var puzzle in playerState.GetUnfinishedPuzzles())
+                {
+                    playerState.Score -= puzzle.RewardScore;
+                }
+            }
+
+            // determine the order of players by score
+            Array.Sort(PlayerStates);
+            // (PlayerState, order)
+            // if two PlayerState1 == PlayerState2, then order1 == order2
+            var result = new Dictionary<PlayerState, int>();
+            result[PlayerStates[0]] = 1;
+            for (int i = 1; i < NumPlayers; i++)
+            {
+                if (PlayerStates[i] == PlayerStates[i - 1])
+                {
+                    result[PlayerStates[i]] = result[PlayerStates[i - 1]];
+                }
+                else
+                {
+                    result[PlayerStates[i]] = i + 1;
+                }
+            }
+
+            return result;
         }
     }
 }

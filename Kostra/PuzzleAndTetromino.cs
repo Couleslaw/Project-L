@@ -204,7 +204,6 @@ namespace Kostra
         }
     }
 
-
     public enum TetrominoShape { O1, O2, I2, I3, I4, L2, L3, Z, T }
 
     public interface IPuzzleInfo
@@ -249,35 +248,43 @@ namespace Kostra
         }
 
 
-        // dictionary could be used here, but it as a big overhead and the number of elements is small
-        private List<TetrominoShape> _usedTetrominos = new();
+        // infex by shape to get number of used tetrominos of that shape
+        private int[] _usedTetrominos = new int[TetrominoManager.NumShapes];
+
         public void AddTetromino(TetrominoShape tetromino, BinaryImage tetrominoImage)
         {
-            _usedTetrominos.Add(tetromino);
+            _usedTetrominos[(int)tetromino]++;
             NumEmptyCells -= TetrominoManager.GetLevelOf(tetromino);
             Image |= tetrominoImage;
         }
 
-        // public get --> copy as protection against modification by AI players
-        public List<TetrominoShape> GetUsedTetrominos() => new(_usedTetrominos);
+        public int NumUsedTetrominosOfType(TetrominoShape shape) => _usedTetrominos[(int)shape];
 
         public bool DoesTetrominoFit(BinaryImage tetromino)
         {
             return (Image & tetromino) == BinaryImage.Empty;
         }
+    
+        public Puzzle Clone()
+        {
+            Puzzle clone = new(Image, RewardScore, RewardTetromino, IsBlack);
+            clone.NumEmptyCells = NumEmptyCells;
+            clone._usedTetrominos = _usedTetrominos.ToArray(); // copy array
+            return clone;
+        }
     }
 
     public static class TetrominoManager
     {
+        public static int NumShapes = Enum.GetValues(typeof(TetrominoShape)).Length;
+
         public const int MinLevel = 1;
         public const int MaxLevel = 4;
 
-        private static int _numShapes = Enum.GetValues(typeof(TetrominoShape)).Length;
-
-        private static int[] _levels = new int[_numShapes];
+        private static int[] _levels = new int[NumShapes];
         private static List<TetrominoShape>[] _shapesByLevel = new List<TetrominoShape>[MaxLevel - MinLevel + 1];
-        private static BinaryImage[] _binaryImages = new BinaryImage[_numShapes];
-        private static List<BinaryImage>[] _baseConfigurations = new List<BinaryImage>[_numShapes];
+        private static BinaryImage[] _binaryImages = new BinaryImage[NumShapes];
+        private static List<BinaryImage>[] _baseConfigurations = new List<BinaryImage>[NumShapes];
 
         static TetrominoManager()
         {  // class ctor
@@ -294,13 +301,13 @@ namespace Kostra
             _binaryImages[(int)TetrominoShape.T] = new(0b1000111);
 
             // level of tetromino = number of 1s in its binary image
-            for (int i = 0; i < _numShapes; i++)
+            for (int i = 0; i < NumShapes; i++)
             {
                 _levels[i] += _binaryImages[i].CountOnes();
             }
 
             // create list of shapes for each level
-            for (int i = 0; i < _numShapes; i++)
+            for (int i = 0; i < NumShapes; i++)
             {
                 int index = _levels[i] - MinLevel;
                 if (_shapesByLevel[index] is null)
@@ -311,7 +318,7 @@ namespace Kostra
             }
 
             // generate all base configurations for each shape
-            for (int i = 0; i < _numShapes; i++)
+            for (int i = 0; i < NumShapes; i++)
             {
                 _baseConfigurations[i] = GetBaseConfigurationsOf((TetrominoShape)i);
             }
@@ -339,14 +346,14 @@ namespace Kostra
 
         public static int GetLevelOf(TetrominoShape shape) => _levels[(int)shape];
         public static BinaryImage GetImageOf(TetrominoShape shape) => _binaryImages[(int)shape];
-        public static List<TetrominoShape> GetShapesWithLevel(int level) => _shapesByLevel[level - MinLevel];
+        public static List<TetrominoShape> GetShapesOfLevel(int level) => _shapesByLevel[level - MinLevel];
         public static bool CompareShapeToImage(TetrominoShape shape, BinaryImage image)
         {
             BinaryImage baseConf = image.MoveImageToTopLeftCorner();
             return _baseConfigurations[(int)shape].Contains(baseConf);
         }
 
-        private static List<BinaryImage>[] _allConfigurationsCache = new List<BinaryImage>[_numShapes];
+        private static List<BinaryImage>[] _allConfigurationsCache = new List<BinaryImage>[NumShapes];
         public static List<BinaryImage> GetAllUniqueConfigurationsOf(TetrominoShape shape)
         {
             // check cache first

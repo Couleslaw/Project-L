@@ -42,6 +42,7 @@ Design hry jsem udelal ve Figme, puvodne jsem planoval pouze pro tri hrace, prot
     - take a new piece - level_new <= level_old + 1
     - if there are no pieces from the higher level left, you can go one level higher
     - _graphic_ nejak highlight co clovek muze vzit
+  - place a piece into puzzle
   - master move
     - once per turn
     - place up to 1 piece into each unfinished puzzle

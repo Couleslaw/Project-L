@@ -11,8 +11,15 @@
 
             // create game core, turn manager and processor manager
             var game = new GameCore(gameState, players, shufflePlayers: false);
-            var turnManager = new TurnManager(game.NumPlayers);
-            var processorManager = new ProcessorManager(game.GameState, game.PlayerStates, turnManager);
+            var turnManager = new TurnManager(game.GetPlayerOrder());
+
+            var signaller = new TurnManager.Signals(turnManager);
+            Dictionary<uint, GameActionProcessor> actionProcessors = new();
+            for (int i = 0; i < players.Length; i++)
+            {
+                uint playerId = game.Players[i].Id;
+                actionProcessors[playerId] = new GameActionProcessor(game, playerId, signaller);
+            }
 
             // game loop
             while (true) {
@@ -23,16 +30,18 @@
                 }
 
                 // get action from current player and process it
-                int index = turnManager.CurrentPlayer;
+                // TODO: THIS SHOULD RETURN PLAYER ID
+                uint playerId = turnManager.CurrentPlayerId;
 
-                IAction action = game.Players[index].GetActionAsync(game.GameState, game.PlayerStates, turnInfo).Result;
-                action.Accept(processorManager.GameStateActionProcessor);
-                action.Accept(processorManager.PlayerStateActionProcessors[index]);
+                var GameInfo = new GameState.GameInfo(game.GameState);
+                var PlayerInfos = game.PlayerStates.Select(playerState => new PlayerState.PlayerInfo(playerState)).ToArray();
 
-                // if in Unity, draw the game state and player states
-                action.Accept(processorManager.GameStateGraphicsProcessor);
-                action.Accept(processorManager.PlayerStateGraphicsProcessors[index]);
+                IAction action = game.GetPlayerWithId(playerId).GetActionAsync(GameInfo, PlayerInfos, turnInfo).Result;
+                action.Accept(actionProcessors[playerId]);
             }
+
+            // game ended
+            var results = game.GameEnded();
         }
     }
 }

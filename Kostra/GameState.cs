@@ -3,10 +3,10 @@ using System.Net.Http.Headers;
 namespace Kostra {
 
     class GameStateBuilder {
-        // TODO: sem nahazet vsechny puzzle - asi precist ze souboru
         private readonly List<Puzzle> _whitePuzzlesDeck = new();
         private readonly List<Puzzle> _blackPuzzlesDeck = new();
 
+        // TODO: sem nahazet vsechny puzzle - asi precist ze souboru
         public GameStateBuilder AddWhitePuzzle(Puzzle puzzle) {
             _whitePuzzlesDeck.Add(puzzle);
             return this;
@@ -22,18 +22,9 @@ namespace Kostra {
         }
     }
 
-    interface IPuzzleProvider {
-        public Puzzle? TakeTopWhitePuzzle();
-        public Puzzle? TakeTopBlackPuzzle();
-        public Puzzle? GetPuzzleWithId(uint id);
-    }
-
-    // TODO: mozna radsi GameStateWithGraphics : GameState
-    interface IGraphicsComponent {
-        public void Draw();
-    }
-
-    class GameState : IPuzzleProvider {
+    class GameState
+    {
+        // puzzles in decks and on the game board
         private const int _numPuzzlesInRow = 4;
 
         private Puzzle?[] _whitePuzzlesRow = new Puzzle?[_numPuzzlesInRow];
@@ -42,15 +33,16 @@ namespace Kostra {
         private readonly Queue<Puzzle> _whitePuzzlesDeck;
         private readonly Queue<Puzzle> _blackPuzzlesDeck;
 
-        public GameState(List<Puzzle> whitePuzzlesDeck, List<Puzzle> blackPuzzlesDeck) {
-            if (whitePuzzlesDeck.Count < _numPuzzlesInRow|| blackPuzzlesDeck.Count < _numPuzzlesInRow) {
+        // tetrominos in the bank
+        private const int _numInitialTetrominos = 15;
+        public int[] NumTetronimosByShape { get; init; } = new int[TetrominoManager.NumShapes];
+
+        public GameState(List<Puzzle> whitePuzzlesDeck, List<Puzzle> blackPuzzlesDeck)
+        {
+            if (whitePuzzlesDeck.Count < _numPuzzlesInRow || blackPuzzlesDeck.Count < _numPuzzlesInRow)
+            {
                 throw new ArgumentException("Not enough puzzles");
-            }
-
-            // shuffle decks
-            whitePuzzlesDeck.Shuffle();
-            blackPuzzlesDeck.Shuffle();
-
+            };
             // create queues
             _whitePuzzlesDeck = new Queue<Puzzle>(whitePuzzlesDeck);
             _blackPuzzlesDeck = new Queue<Puzzle>(blackPuzzlesDeck);
@@ -61,101 +53,161 @@ namespace Kostra {
                 _whitePuzzlesRow[i] = _whitePuzzlesDeck.Dequeue();
                 _blackPuzzlesRow[i] = _blackPuzzlesDeck.Dequeue();
             }
+
+            // initialize tetrominos
+            for (int i = 0; i < NumTetronimosByShape.Length; i++)
+            {
+                NumTetronimosByShape[i] = _numInitialTetrominos;
+            }
         }
+
+
+        // PUZZLES
 
         public int NumWhitePuzzlesLeft => _whitePuzzlesDeck.Count;
         public int NumBlackPuzzlesLeft => _blackPuzzlesDeck.Count;
 
-        public List<Puzzle> GetAvailableWhitePuzzles() {
+        public List<Puzzle> GetAvailableWhitePuzzles()
+        {
             var result = new List<Puzzle>();
-            for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
-                if (_whitePuzzlesRow[i] is not null) {
+            for (int i = 0; i < _whitePuzzlesRow.Length; i++)
+            {
+                if (_whitePuzzlesRow[i] is not null)
+                {
                     result.Add(_whitePuzzlesRow[i]!);
                 }
             }
             return result;
         }
-        public List<Puzzle> GetAvailableBlackPuzzles() {
+        public List<Puzzle> GetAvailableBlackPuzzles()
+        {
             var result = new List<Puzzle>();
-            for (int i = 0; i < _blackPuzzlesRow.Length; i++) {
-                if (_blackPuzzlesRow[i] is not null) {
+            for (int i = 0; i < _blackPuzzlesRow.Length; i++)
+            {
+                if (_blackPuzzlesRow[i] is not null)
+                {
                     result.Add(_blackPuzzlesRow[i]!);
                 }
             }
             return result;
         }
-        public Puzzle? TakeTopWhitePuzzle() {
-            if (_whitePuzzlesDeck.Count == 0) {
+        public Puzzle? TakeTopWhitePuzzle()
+        {
+            if (_whitePuzzlesDeck.Count == 0)
+            {
                 return null;
             }
             return _whitePuzzlesDeck.Dequeue();
         }
-        public Puzzle? TakeTopBlackPuzzle() {
-            if (_blackPuzzlesDeck.Count == 0) {
+        public Puzzle? TakeTopBlackPuzzle()
+        {
+            if (_blackPuzzlesDeck.Count == 0)
+            {
                 return null;
             }
             return _blackPuzzlesDeck.Dequeue();
         }
 
-        public Puzzle? GetPuzzleWithId(uint id) {
-            for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
-                if (_whitePuzzlesRow[i] is not null && _whitePuzzlesRow[i]!.Id == id) {
+        public Puzzle? GetPuzzleWithId(uint id)
+        {
+            for (int i = 0; i < _whitePuzzlesRow.Length; i++)
+            {
+                if (_whitePuzzlesRow[i] is not null && _whitePuzzlesRow[i]!.Id == id)
+                {
                     return _whitePuzzlesRow[i];
                 }
             }
-            for (int i = 0; i < _blackPuzzlesRow.Length; i++) {
-                if (_blackPuzzlesRow[i] is not null && _blackPuzzlesRow[i]!.Id == id) {
+            for (int i = 0; i < _blackPuzzlesRow.Length; i++)
+            {
+                if (_blackPuzzlesRow[i] is not null && _blackPuzzlesRow[i]!.Id == id)
+                {
                     return _blackPuzzlesRow[i];
                 }
             }
             return null;
         }
-        public void RemovePuzzleWithId(uint id) {
-            for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
-                if (_whitePuzzlesRow[i] is not null && _whitePuzzlesRow[i]!.Id == id) {
+        public void RemovePuzzleWithId(uint id)
+        {
+            for (int i = 0; i < _whitePuzzlesRow.Length; i++)
+            {
+                if (_whitePuzzlesRow[i] is not null && _whitePuzzlesRow[i]!.Id == id)
+                {
                     _whitePuzzlesRow[i] = null;
                     return;
                 }
             }
-            for (int i = 0; i < _blackPuzzlesRow.Length; i++) {
-                if (_blackPuzzlesRow[i] is not null && _blackPuzzlesRow[i]!.Id == id) {
+            for (int i = 0; i < _blackPuzzlesRow.Length; i++)
+            {
+                if (_blackPuzzlesRow[i] is not null && _blackPuzzlesRow[i]!.Id == id)
+                {
                     _blackPuzzlesRow[i] = null;
                     return;
                 }
             }
         }
-        public void RefillWhitePuzzles() {
-            for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
-                if (_whitePuzzlesRow[i] is null && _whitePuzzlesDeck.Count > 0) {
+        public void RefillPuzzles()
+        {
+            for (int i = 0; i < _whitePuzzlesRow.Length; i++)
+            {
+                if (_whitePuzzlesRow[i] is null && _whitePuzzlesDeck.Count > 0)
+                {
                     _whitePuzzlesRow[i] = TakeTopWhitePuzzle();
                 }
             }
-        }
-        public void RefillBlackPuzzles() {
-            for (int i = 0; i < _blackPuzzlesRow.Length; i++) {
-                if (_blackPuzzlesRow[i] is null && _blackPuzzlesDeck.Count > 0) {
+            for (int i = 0; i < _blackPuzzlesRow.Length; i++)
+            {
+                if (_blackPuzzlesRow[i] is null && _blackPuzzlesDeck.Count > 0)
+                {
                     _blackPuzzlesRow[i] = TakeTopBlackPuzzle();
                 }
             }
         }
-
-        public void EnqueuePuzzle(Puzzle puzzle) {
+        public void PutPuzzleToTheBottomOfDeck(Puzzle puzzle)
+        {
             if (puzzle.IsBlack)
             {
                 _blackPuzzlesDeck.Enqueue(puzzle);
             }
-            else { 
+            else
+            {
                 _whitePuzzlesDeck.Enqueue(puzzle);
             }
         }
 
+        // TETROMINOS
 
-        public class Graphics(GameState gameState) : IGraphicsComponent {
-            private readonly GameState _gameState = gameState;
+        public int GetNumTetrominosOfType(TetrominoShape shape)
+        {
+            return NumTetronimosByShape[(int)shape];
+        }
 
-            public void Draw() {
-                // draw gameState._whitePuzzlesRow and gameState._blackPuzzlesRow
+        public void RemoveTetromino(TetrominoShape shape)
+        {
+            if (NumTetronimosByShape[(int)shape] == 0)
+            {
+                throw new InvalidOperationException($"No tetrominos of type {shape} left");
             }
+            NumTetronimosByShape[(int)shape]--;
+        }
+        public void AddTetromino(TetrominoShape shape)
+        {
+            if (NumTetronimosByShape[(int)shape] >= _numInitialTetrominos)
+            {
+                throw new InvalidOperationException($"Too many tetrominos of type {shape}");
+            }
+            NumTetronimosByShape[(int)shape]++;
+        }
+
+
+        public class GameInfo(GameState gameState)
+        {
+            // copy the state of the game
+            // the AI player can modify this as he wants and its safe
+            public int NumWhitePuzzlesLeft = gameState.NumWhitePuzzlesLeft;
+            public int NumBlackPuzzlesLeft = gameState.NumBlackPuzzlesLeft;
+            public Puzzle[] AvailableWhitePuzzles = gameState.GetAvailableWhitePuzzles().Select(p => p.Clone()).ToArray();
+            public Puzzle[] AvailableBlackPuzzles = gameState.GetAvailableBlackPuzzles().Select(p => p.Clone()).ToArray();
+            public int[] NumTetrominosLeft = gameState.NumTetronimosByShape.ToArray();
         }
     }
 }
