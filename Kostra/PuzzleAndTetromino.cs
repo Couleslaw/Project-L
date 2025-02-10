@@ -224,7 +224,6 @@ namespace Kostra
         // id
         private static uint _idCounter = 0;
         public uint Id { get; } = _idCounter++;
-        public static void ResetIdCounter() => _idCounter = 0;
 
         // puzzle parameters
         public bool IsBlack { get; }
@@ -260,7 +259,7 @@ namespace Kostra
 
         public int NumUsedTetrominosOfType(TetrominoShape shape) => _usedTetrominos[(int)shape];
 
-        public bool DoesTetrominoFit(BinaryImage tetromino)
+        public bool CanPlaceTetromino(BinaryImage tetromino)
         {
             return (Image & tetromino) == BinaryImage.Empty;
         }
@@ -349,6 +348,7 @@ namespace Kostra
         public static List<TetrominoShape> GetShapesOfLevel(int level) => _shapesByLevel[level - MinLevel];
         public static bool CompareShapeToImage(TetrominoShape shape, BinaryImage image)
         {
+            // checks if the images is a valid configuration of the shape
             BinaryImage baseConf = image.MoveImageToTopLeftCorner();
             return _baseConfigurations[(int)shape].Contains(baseConf);
         }

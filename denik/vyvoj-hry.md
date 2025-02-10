@@ -18,6 +18,26 @@ Design hry jsem udelal ve Figme, puvodne jsem planoval pouze pro tri hrace, prot
   - indikaci vhodne pozice dilku nad skladackou chci udelat pomoci snapping, Holan navrhl jeste highlight
 - ve finalnim dokumentu by mel byt Swim lines diagram jak spolu jednotlive objekty komunikuji
 
+### Overovani legality akci
+
+- je potreba mit nejaky ActionVerifier ktery rozhodne zda lze akci provest
+- dve moznosti
+  - bud budu po AI hraci vyzadovat aby vzdy odevzdal validni akci
+  - nebo mu pouze dam k dispozici Verifikator ale nebudu vyzadovat aby odevzdal overenou akci
+  - lepsi druhy pristup, protoze pokud by AI hrac mel v sobe chybu a nebyl schopny vygenerovat validni akci, tak by se hra zasekla
+  - radeji kdyz zjistim ze mi dal nevalidni akci, tak ji zahodim a pomoci zakladniho AI hrace vygeneruju validni akci
+- teoreticky fix by mohl byt kdyby hra vygenerovala vsechny validni akce a poskytla je hraci
+  - ale to by bylo narocne na cas i pamet
+  - navic AI hrac si z dostupnych informaci muze ty akce vygenerovat sam
+  - ale ne kazdy AI hrac by to chtel delat --> zbytecne plytvani zdroji
+- reseni pomoci verifikatoru
+  - akce nebude mozne modifikovat po jejich vytvoreni
+  - defaultne budou mit vsechny akce stav `UNVERIFIED`
+  - po tom co zavolam `akce.verify(verifikator)`, tak se stav nastavi na `VERIFIED` nebo `INVALID`
+  - `akce.verify` take vraci `VerificationMessage` kde se volajici dozvi co je s akci spatne
+    - ucel verifikatoru je primarne overit ze je akce legalni, takze vraci pouze prvni chybu na kterou narazi
+  - verifikator ma pristup k aktualnimu stavu hry
+
 ### Pravidla
 
 - bile skladacky se pouziji vsechny, cernych jen 12/14/16 z 20 podle poctu hracu.

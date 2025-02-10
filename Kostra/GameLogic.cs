@@ -1,7 +1,6 @@
 namespace Kostra {
     enum GamePhase { Normal, EndOfTheGame, FinishingTouches, Finished }
 
-    // TODO kdyz je konec hry tak muze vzit jen jedno cerne puzzle
     record struct TurnInfo(int ActionsLeft, GamePhase GamePhase, bool UsedMasterAction, bool TookBlackPuzzle);
 
     class TurnManager(uint[] playerIds) {

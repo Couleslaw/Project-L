@@ -35,7 +35,7 @@ namespace Kostra {
 
         // tetrominos in the bank
         private const int _numInitialTetrominos = 15;
-        public int[] NumTetronimosByShape { get; init; } = new int[TetrominoManager.NumShapes];
+        public int[] NumTetrominosLeft { get; init; } = new int[TetrominoManager.NumShapes];
 
         public GameState(List<Puzzle> whitePuzzlesDeck, List<Puzzle> blackPuzzlesDeck)
         {
@@ -55,9 +55,9 @@ namespace Kostra {
             }
 
             // initialize tetrominos
-            for (int i = 0; i < NumTetronimosByShape.Length; i++)
+            for (int i = 0; i < NumTetrominosLeft.Length; i++)
             {
-                NumTetronimosByShape[i] = _numInitialTetrominos;
+                NumTetrominosLeft[i] = _numInitialTetrominos;
             }
         }
 
@@ -178,36 +178,40 @@ namespace Kostra {
 
         public int GetNumTetrominosOfType(TetrominoShape shape)
         {
-            return NumTetronimosByShape[(int)shape];
+            return NumTetrominosLeft[(int)shape];
         }
 
         public void RemoveTetromino(TetrominoShape shape)
         {
-            if (NumTetronimosByShape[(int)shape] == 0)
+            if (NumTetrominosLeft[(int)shape] == 0)
             {
                 throw new InvalidOperationException($"No tetrominos of type {shape} left");
             }
-            NumTetronimosByShape[(int)shape]--;
+            NumTetrominosLeft[(int)shape]--;
         }
         public void AddTetromino(TetrominoShape shape)
         {
-            if (NumTetronimosByShape[(int)shape] >= _numInitialTetrominos)
+            if (NumTetrominosLeft[(int)shape] >= _numInitialTetrominos)
             {
                 throw new InvalidOperationException($"Too many tetrominos of type {shape}");
             }
-            NumTetronimosByShape[(int)shape]++;
+            NumTetrominosLeft[(int)shape]++;
         }
 
 
+        public GameInfo GetGameInfo()
+        {
+            return new GameInfo(this);
+        }
+
         public class GameInfo(GameState gameState)
         {
-            // copy the state of the game
-            // the AI player can modify this as he wants and its safe
+            // wrapper around GameState to prevent modification
             public int NumWhitePuzzlesLeft = gameState.NumWhitePuzzlesLeft;
             public int NumBlackPuzzlesLeft = gameState.NumBlackPuzzlesLeft;
             public Puzzle[] AvailableWhitePuzzles = gameState.GetAvailableWhitePuzzles().Select(p => p.Clone()).ToArray();
             public Puzzle[] AvailableBlackPuzzles = gameState.GetAvailableBlackPuzzles().Select(p => p.Clone()).ToArray();
-            public int[] NumTetrominosLeft = gameState.NumTetronimosByShape.ToArray();
+            public IReadOnlyList<int> NumTetrominosLeft = gameState.NumTetrominosLeft.AsReadOnly();
         }
     }
 }

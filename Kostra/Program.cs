@@ -30,18 +30,36 @@
                 }
 
                 // get action from current player and process it
-                // TODO: THIS SHOULD RETURN PLAYER ID
                 uint playerId = turnManager.CurrentPlayerId;
 
-                var GameInfo = new GameState.GameInfo(game.GameState);
-                var PlayerInfos = game.PlayerStates.Select(playerState => new PlayerState.PlayerInfo(playerState)).ToArray();
+                var gameInfo = gameState.GetGameInfo();
+                var playerInfos = game.PlayerStates.Select(playerState => playerState.GetPlayerInfo()).ToArray();
+                var verifier = GetActionVerifier(game, turnInfo, playerId);
 
-                IAction action = game.GetPlayerWithId(playerId).GetActionAsync(GameInfo, PlayerInfos, turnInfo).Result;
+                VerifiableAction action = game.GetPlayerWithId(playerId).GetActionAsync(gameInfo, playerInfos, turnInfo, verifier).Result;
+
+                if (action.Status == ActionStatus.Unverified)
+                {
+                    verifier.Verify(action);
+                }
+
+                if (action.Status == ActionStatus.Unverified)
+                {
+                    //action = BasicAIPlager.GetAction(gameInfo, playerInfos, turnInfo, verifier);
+                }
+
                 action.Accept(actionProcessors[playerId]);
             }
 
             // game ended
             var results = game.GameEnded();
+        }
+
+        private static ActionVerifier GetActionVerifier(GameCore game, TurnInfo turnInfo, uint playerId)
+        {
+            var gameInfo = game.GameState.GetGameInfo();
+            var playerInfo = game.PlayerStates.First(playerState => playerState.PlayerId == playerId).GetPlayerInfo();
+            return new ActionVerifier(gameInfo, playerInfo, turnInfo);
         }
     }
 }

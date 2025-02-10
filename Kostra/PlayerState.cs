@@ -3,7 +3,7 @@ namespace Kostra {
         public uint PlayerId { get; init; } = playerId;
         public int Score { get; set; } = 0;
 
-        private int[] _tetrominosOwned = new int[TetrominoManager.NumShapes];
+        private int[] _numTetrominosOwned = new int[TetrominoManager.NumShapes];
 
         public static int MaxPuzzles = 4;
         private readonly Puzzle?[] _puzzles = [null, null, null, null];
@@ -27,7 +27,7 @@ namespace Kostra {
             if (res != 0) return res;
 
             // more leftover tetrominos wins
-            return _tetrominosOwned.Sum().CompareTo(other._tetrominosOwned.Sum());
+            return _numTetrominosOwned.Sum().CompareTo(other._numTetrominosOwned.Sum());
         }
 
         // Define the is greater than operator.
@@ -121,21 +121,24 @@ namespace Kostra {
             return result;
         }
         public void AddTetromino(TetrominoShape shape) {
-            _tetrominosOwned[(int)shape]++;
+            _numTetrominosOwned[(int)shape]++;
         }
         public void RemoveTetromino(TetrominoShape shape) {
-            _tetrominosOwned[(int)shape]++;
+            _numTetrominosOwned[(int)shape]++;
         }
 
+        public PlayerInfo GetPlayerInfo()
+        {
+            return new PlayerInfo(this);
+        }
         public class PlayerInfo(PlayerState playerState)
         {
-            // copy the state of the player
-            // the AI player can modify this as he wants and its safe
+            // wrapper around PlayerState to prevent modification
             public uint PlayerId = playerState.PlayerId;
             public int Score = playerState.Score;
-            public int[] TetrominosOwned = playerState._tetrominosOwned.ToArray();
+            public IReadOnlyList<int> NumTetrominosOwned = playerState._numTetrominosOwned.AsReadOnly();
             public Puzzle[] UnfinishedPuzzles = playerState.GetUnfinishedPuzzles().Select(p => p.Clone()).ToArray();
-            public uint[] FinishedPuzzlesIds = playerState._finishedPuzzleIds.ToArray();
+            public IReadOnlyList<uint> FinishedPuzzlesIds = playerState._finishedPuzzleIds.AsReadOnly();
         }
     }
 }

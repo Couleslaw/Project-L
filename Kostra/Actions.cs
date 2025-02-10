@@ -1,63 +1,92 @@
 ﻿namespace Kostra {
+    enum ActionStatus {Verified, Unverified, Invalid };
     interface IAction {
         public void Accept(IActionProcessor visitor);
     }
 
-    class EndFinishingTouchesAction : IAction
+    abstract class VerifiableAction : IAction
     {
-        public void Accept(IActionProcessor visitor)
+        public abstract void Accept(IActionProcessor visitor);
+        public ActionStatus Status { get; private set; } = ActionStatus.Unverified;
+        public VerificationStatus Verify(ActionVerifier verifier)
+        {
+            var result = verifier.Verify(this);
+            Status = result is VerificationSuccess ? ActionStatus.Verified : ActionStatus.Invalid;
+            return result;
+        }
+
+    }
+
+    class EndFinishingTouchesAction : VerifiableAction
+    {
+        public override void Accept(IActionProcessor visitor)
         {
             visitor.ProcessEndFinishingTouchesAction(this);
         }
+  
     }
-    class TakeBasicTetrominoAction : IAction
+    class TakeBasicTetrominoAction : VerifiableAction
     {
-        public void Accept(IActionProcessor visitor)
+        public override void Accept(IActionProcessor visitor)
         {
             visitor.ProcessTakeBasicTetrominoAction(this);
         }
+
     }
-    class ChangeTetrominoAction : IAction {
-        public TetrominoShape ReturnedTetromino { get; init; }
-        public TetrominoShape TakenTetromino { get; init; }
-        public void Accept(IActionProcessor visitor) {
+    class ChangeTetrominoAction(TetrominoShape oldTetrimono, TetrominoShape newTetromino) : VerifiableAction 
+    {
+        public TetrominoShape OldTetromino => oldTetrimono;
+        public TetrominoShape NewTetromino => newTetromino;
+        public override void Accept(IActionProcessor visitor) {
             visitor.ProcessChangeTetrominoAction(this);
+
         }
+       
     }
-    class PlaceTetrominoAction : IAction {
-        public uint PuzzleId { get; init; }
-        public TetrominoShape Tetromino { get; init; }
-        public BinaryImage Position { get; init; }
-        public bool FinishingTouches { get; init; } = false;
-        public void Accept(IActionProcessor visitor) {
+    class PlaceTetrominoAction(uint puzzleId, TetrominoShape tetromino, BinaryImage position) : VerifiableAction
+    {
+        public uint PuzzleId => puzzleId;
+        public TetrominoShape Tetromino => tetromino;
+        public BinaryImage Position => position;
+        // verifier will set finishing touches to true if the action is valid and the GamePhase is FinishingTouches
+        public bool FinishingTouches { get; set; } = false;
+        public override void Accept(IActionProcessor visitor)
+        {
             visitor.ProcessPlaceTetrominoAction(this);
         }
+
     }
-
-    // TODO vyresit jak vybrat odmenu za puzzle
-
-    class TakePuzzleAction : IAction {
+    class TakePuzzleAction(TakePuzzleAction.Options option, uint? puzzleId) : VerifiableAction {
         public enum Options { TopWhite, TopBlack, Normal }
-        public Options Option { get; init; }
-        public uint? PuzzleId { get; init; } = null;
-        public void Accept(IActionProcessor visitor) {
+        public Options Option => option;
+        public uint? PuzzleId => puzzleId;
+        public override void Accept(IActionProcessor visitor) {
             visitor.ProcessTakePuzzleAction(this);
         }
+
     }
-    class RecycleAction : IAction {
+    class RecycleAction(List<uint> order, RecycleAction.Options option) : VerifiableAction {
         public enum Options { White, Black }
-        public Options Option { get; init; }
-        public Queue<uint> Order { get; init; } = new();  // queue for puzzle ids
-        public void Accept(IActionProcessor visitor) {
+        public Options Option => option;
+
+        // lower index ==> put to the bottom of the deck earlier
+        private List<uint> _order = order;  
+        public IReadOnlyList<uint> Order => _order.AsReadOnly();
+        public override void Accept(IActionProcessor visitor) {
             visitor.ProcessRecycleAction(this);
         }
     }
-    class MasterAction : IAction {
-        public List<PlaceTetrominoAction> TetrominoPlacements { get; init; } = new();
-        public void Accept(IActionProcessor visitor) {
+    class MasterAction(List<PlaceTetrominoAction> tetrominoPlacements) : VerifiableAction {
+
+        private List<PlaceTetrominoAction> _tetrominoPlacements = tetrominoPlacements;
+        // copy the list to prevent action modification after creation
+        public IReadOnlyList<PlaceTetrominoAction> TetrominoPlacements => _tetrominoPlacements.AsReadOnly();
+        public override void Accept(IActionProcessor visitor) {
             visitor.ProcessMasterAction(this);
         }
     }
+
+
 
     interface IActionProcessor {
         public void ProcessTakeBasicTetrominoAction(TakeBasicTetrominoAction action);
@@ -82,8 +111,12 @@
             _playerState.AddTetromino(TetrominoShape.O1);
         }
         public void ProcessChangeTetrominoAction(ChangeTetrominoAction action) {
-            _playerState.RemoveTetromino(action.ReturnedTetromino);
-            _playerState.AddTetromino(action.TakenTetromino);
+            // remove old tetromino
+            _playerState.RemoveTetromino(action.OldTetromino);
+            _gameState.AddTetromino(action.OldTetromino);
+            // add new tetromino
+            _playerState.AddTetromino(action.NewTetromino);
+            _gameState.RemoveTetromino(action.NewTetromino);
         }
         public void ProcessPlaceTetrominoAction(PlaceTetrominoAction action) {
             Puzzle? puzzle = _gameState.GetPuzzleWithId(action.PuzzleId);
@@ -105,7 +138,7 @@
             if (puzzle.IsFinished) {
                 _playerState.Score += puzzle.RewardScore;
 
-                var rewardOptions = RewardManager.GetRewardOptions(_gameState.NumTetronimosByShape, puzzle.RewardTetromino);
+                var rewardOptions = RewardManager.GetRewardOptions(_gameState.NumTetrominosLeft, puzzle.RewardTetromino);
                 TetrominoShape reward;
 
                 if (rewardOptions.Count == 0)
@@ -119,6 +152,11 @@
                 else
                 {
                     reward = _player.GetRewardAsync(rewardOptions).Result;
+                    // if the chosen reward isnt valid, pick the first one
+                    if (!rewardOptions.Contains(reward))
+                    {
+                        reward = rewardOptions[0];
+                    }
                 }
 
                 _playerState.AddTetromino(reward);
@@ -156,9 +194,8 @@
             _playerState.PlaceNewPuzzle(puzzle!);
         }
         public void ProcessRecycleAction(RecycleAction action) { 
-            while (action.Order.Count > 0)
+            foreach (var id in action.Order)
             {
-                uint id = action.Order.Dequeue();
                 Puzzle? puzzle = _gameState.GetPuzzleWithId(id);
                 if (puzzle is null)
                 {
