@@ -191,6 +191,11 @@ namespace Kostra
         }
         private VerificationStatus VerifyMasterAction(MasterAction action)
         {
+            // check if master action was already used
+            if (_turnInfo.UsedMasterAction)
+            {
+                return new MasterActionAlreadyUsedFail();
+            }
             // each placement must be to a different puzzle
             List<uint> puzzleIds = new();
             foreach (PlaceTetrominoAction placement in action.TetrominoPlacements)
@@ -302,6 +307,10 @@ namespace Kostra
         public uint PuzzleId => puzzleId;
         public BinaryImage Position => position;
         public override string Message => $"Cannot place tetromino on puzzle {puzzleId} at given position";
+    }
+    class MasterActionAlreadyUsedFail : VerificationFailure
+    {
+        public override string Message => "Master action already used in this turn";
     }
     class MasterActionUniquePlacementFail : VerificationFailure
     {

@@ -37,14 +37,22 @@
                 var playerInfos = game.PlayerStates.Select(playerState => playerState.GetPlayerInfo()).ToArray();
                 var verifier = GetActionVerifier(game, turnInfo, playerId);
 
-                VerifiableAction action = game.GetPlayerWithId(playerId).GetActionAsync(gameInfo, playerInfos, turnInfo, verifier).Result;
+                VerifiableAction action;
+                try
+                {
+                    action = game.GetPlayerWithId(playerId).GetActionAsync(gameInfo, playerInfos, turnInfo, verifier).Result;
+                }
+                catch (Exception)
+                {
+                    action = simpleAIPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier).Result;
+                }
 
                 if (action.Status == ActionStatus.Unverified)
                 {
-                    verifier.Verify(action);
+                    action.GetVerifiedBy(verifier);
                 }
 
-                if (action.Status == ActionStatus.Invalid)
+                if (action.Status == ActionStatus.FailedVerification)
                 {
                     action = simpleAIPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier).Result;
                 }

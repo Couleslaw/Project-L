@@ -44,7 +44,7 @@ namespace Kostra
 
                     // if next action is valid --> submit it
                     var nextAction = _currentStrategy.Dequeue();
-                    if (verifier.Verify(nextAction) is VerificationSuccess)
+                    if (nextAction.GetVerifiedBy(verifier) is VerificationSuccess)
                     {
                         return nextAction;
                     }

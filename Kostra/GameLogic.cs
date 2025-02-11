@@ -1,20 +1,68 @@
 namespace Kostra {
-    enum GamePhase { Normal, EndOfTheGame, FinishingTouches, Finished }
 
-    record struct TurnInfo(int ActionsLeft, GamePhase GamePhase, bool UsedMasterAction, bool TookBlackPuzzle, bool LastRound);
+    /// <summary>
+    /// Represents the current phase of the game
+    /// </summary>
+    enum GamePhase {
+        /// <summary>
+        /// Standard phase of the game in which players take actions.
+        /// </summary>
+        Normal,
+        /// <summary> 
+        /// The EndOfTheGame phase is triggered when there are no more black puzzles in the black deck.
+        /// </summary>
+        EndOfTheGame,
+        /// <summary>
+        /// The FinishingTouches phase is triggered after the last round of the game.
+        /// </summary>
+        FinishingTouches,
+        /// <summary>
+        /// The game is finishing after all players take the EndFinishingTouchesAction.
+        /// </summary>
+        Finished
+    }
 
+    /// <summary>
+    /// Represents the information about the current turn.
+    /// </summary>
+    record struct TurnInfo(
+        int ActionsLeft,         
+        GamePhase GamePhase, 
+        bool UsedMasterAction, 
+        bool TookBlackPuzzle, 
+        bool LastRound
+        );
+
+    /// <summary>
+    /// Takes care of the order of players, the game phase and the current turn.
+    /// </summary>
     class TurnManager(uint[] playerIds) {
         private readonly int _numPlayers = playerIds.Length;
         private readonly uint[] _playersIds = playerIds;
 
+        /// <summary>
+        /// The number of actions a player has each turn.
+        /// </summary>
         public const int NumActionsInTurn = 3;
         private int _currentPlayerOrder = 0;
+
+        /// <summary>
+        /// Gets the current player's identifier.
+        /// </summary>
+        /// <value>
+        /// The current player's identifier.
+        /// </value>
         public uint CurrentPlayerId => _playersIds[_currentPlayerOrder];
         private bool IsEndOfRound => _currentPlayerOrder == _numPlayers - 1;
 
+        /// <summary>
+        /// Internal representation if the current turn.
+        /// </summary>
         private TurnInfo _turnInfo = new(ActionsLeft: NumActionsInTurn, GamePhase.Normal, UsedMasterAction: false, TookBlackPuzzle: false, LastRound: false);
 
-
+        /// <summary>
+        /// Resets the internal turn state for the next player.
+        /// </summary>
         private void SetNextPlayer() {
             _currentPlayerOrder = (_currentPlayerOrder + 1) % _numPlayers;
             _turnInfo.ActionsLeft = NumActionsInTurn;
@@ -22,6 +70,11 @@ namespace Kostra {
             _turnInfo.TookBlackPuzzle = false;
         }
 
+        /// <summary>
+        /// Changes the game phase from EndOfTheGame to FinishingTouches if the conditions are met.
+        /// After EndOfTheGame is triggered, the players finish their current round and then play one last round.
+        /// FinishingTouches start after that.
+        /// </summary>
         private void ChangeGamePhaseIfNeeded()
         {
             if (_turnInfo.GamePhase == GamePhase.EndOfTheGame)
@@ -37,6 +90,10 @@ namespace Kostra {
             }
         }
 
+        /// <summary>
+        /// Adjusts the internal turn state to represent the next turn and returns it.
+        /// </summary>
+        /// <returns>Information about the next turn.</returns>
         public TurnInfo NextTurn() {
             if (_turnInfo.GamePhase == GamePhase.FinishingTouches) {
                 return _turnInfo;
@@ -58,17 +115,40 @@ namespace Kostra {
             return _turnInfo;
         }
 
+
+        /// <summary>
+        /// Used to signal the TurnManager about the events that happened during the turn.
+        /// </summary>
         public class Signals(TurnManager turnManager) {
+            /// <summary>
+            /// Signals that the current player took a black puzzle.
+            /// Players can take only up to 1 black puzzle per turn once EndOfTheGame is triggered.
+            /// </summary>
             public void PlayerTookBlackPuzzle()
             {
                 turnManager._turnInfo.TookBlackPuzzle = true;
             }
-            public void NoCardsLeftInBlackDeck() {
-                turnManager._turnInfo.GamePhase = GamePhase.EndOfTheGame;
+            /// <summary>
+            /// Signals that the black deck is empty.
+            /// This triggers the EndOfTheGame phase, if it is not already triggered.
+            /// </summary>
+            public void BlackDeckIsEmpty() {
+                if (turnManager._turnInfo.GamePhase == GamePhase.Normal)
+                {
+                    turnManager._turnInfo.GamePhase = GamePhase.EndOfTheGame;
+                }
             }
+            /// <summary>
+            /// Signals that the current player used the Master action.
+            /// Players can use the Master action only once per turn.
+            /// </summary>
             public void PlayerUsedMasterAction() {
                 turnManager._turnInfo.UsedMasterAction = true;
             }
+            /// <summary>
+            /// Signals that the current player ended his finishing touches turn.
+            /// The game ends once all players do this.
+            /// </summary>
             public void PlayerEndedFinishingTouches() {
                 turnManager.SetNextPlayer();
                 if (turnManager._currentPlayerOrder == 0) {
