@@ -6,25 +6,64 @@ using System.Threading.Tasks;
 
 namespace Kostra
 {
+    /// <summary>
+    /// Represents a node of a graph.
+    /// </summary>
     public interface INode<TSelf> where TSelf : INode<TSelf>
     {
+        /// <summary>
+        /// The ID of the node.
+        /// </summary>
         public int Id { get; }
+        /// <summary>
+        /// Gets the edges incident with this node. The entire graph doesn't need to be stored in memory but it can be dynamically generated instead.
+        /// </summary>
+        /// <returns>A collection of the incident edges.</returns>
         public IEnumerable<IEdge<TSelf>> GetEdges();
+        /// <summary>Heuristic function to estimate distances between nodes. For IDA* to work properly, it needs to be admissible (optimistic), meaning <c>heuristic(a,b) &lt;= distance(a,b)</c></summary>
+        /// <returns>The estimated distance between the nodes.</returns>
         public static abstract int Heuristic(TSelf a, TSelf b);
     }
 
+    /// <summary>
+    /// Represents an edge in a graph.
+    /// </summary>
+    /// <typeparam name="T">Type of the nodes of the graph</typeparam>
     public interface IEdge<T> where T : INode<T>
     {
+        /// <summary>
+        /// The start node of th edge.
+        /// </summary>
         public T From { get; }
+
+        /// <summary>
+        /// The end node of the edge.
+        /// </summary>
         public T To { get; }
+
+        /// <summary>
+        /// The cost (length) of the edge. For IDA* to work properly, it needs to be non-negative.
+        /// </summary>
         public int Cost { get; }
     }
 
+    /// <summary>
+    /// Implementation of the Iteratives the deepening A* algorithm.
+    /// </summary>
     public class IDAStar
     {
-        // returns the path from start to goal or null if no path found
-        // also returns the cost of the path (or the bound if no path found)
-        // maxDepth <= 0 means no limit
+        /// <summary>Iteratives the deepening A*.</summary>
+        /// <typeparam name="T">The type of the nodes of the graph</typeparam>
+        /// <param name="start">The starting node.</param>
+        /// <param name="goal">The goal node.</param>
+        /// <param name="maxDepth">The maximum depth the algorithm should go to. Negative values indicate infinite depth.</param>
+        /// <returns>
+        ///   <list type="bullet">
+        ///     <item><c>(shortest path, length)</c> if the path was found</item>
+        ///     <item><c>(null, bound)</c> where bound is the estimated length of shortest path, if the goal wasn't reached within the given <c>maxDepth</c>.</item>
+        ///     <item><c>(null, -1)</c> if there doesn't exist a path between <c>>start</c> and <c>goal</c>.</item>
+        ///   </list>
+        /// </returns>
         public static Tuple<List<IEdge<T>>?, int> IterativeDeepeningAStar<T>(T start, T goal, int maxDepth = -1) where T : INode<T>
         {
             int bound = T.Heuristic(start, goal);
@@ -36,9 +75,11 @@ namespace Kostra
                 {
                     return new(path, path.Count);
                 }
+
+                // if the bound hasn't increased, the entire graph has been searched --> no path exists
                 if (result == bound)
                 {
-                    return new(null, bound); // No path found
+                    return new(null, -1);
                 }
 
                 bound = result;
@@ -49,6 +90,7 @@ namespace Kostra
             }
             return new(null, bound); // No path found within maxDepth
         }
+
         private static int Search<T>(T node, T goal, int g, int bound, List<IEdge<T>> path, int maxDepth) where T : INode<T>
         {
             int f = g + T.Heuristic(node, goal);

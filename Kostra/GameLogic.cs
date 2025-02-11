@@ -8,16 +8,19 @@ namespace Kostra {
         /// Standard phase of the game in which players take actions.
         /// </summary>
         Normal,
+
         /// <summary> 
         /// The EndOfTheGame phase is triggered when there are no more black puzzles in the black deck.
         /// </summary>
         EndOfTheGame,
+        
         /// <summary>
         /// The FinishingTouches phase is triggered after the last round of the game.
         /// </summary>
         FinishingTouches,
+        
         /// <summary>
-        /// The game is finishing after all players take the EndFinishingTouchesAction.
+        /// The game is finishing after all players use the <see cref="EndFinishingTouchesAction"/>.
         /// </summary>
         Finished
     }
@@ -47,12 +50,13 @@ namespace Kostra {
         private int _currentPlayerOrder = 0;
 
         /// <summary>
-        /// Gets the current player's identifier.
+        /// Gets the current player's ID
         /// </summary>
-        /// <value>
-        /// The current player's identifier.
-        /// </value>
         public uint CurrentPlayerId => _playersIds[_currentPlayerOrder];
+
+        /// <summary>
+        /// True if this is the turn of the last player. 
+        /// </summary>
         private bool IsEndOfRound => _currentPlayerOrder == _numPlayers - 1;
 
         /// <summary>
@@ -71,9 +75,9 @@ namespace Kostra {
         }
 
         /// <summary>
-        /// Changes the game phase from EndOfTheGame to FinishingTouches if the conditions are met.
-        /// After EndOfTheGame is triggered, the players finish their current round and then play one last round.
-        /// FinishingTouches start after that.
+        /// Changes the game phase from <see cref="GamePhase.EndOfTheGame"/> to <see cref="GamePhase.FinishingTouches"/> if the conditions are met.
+        /// After <see cref="GamePhase.EndOfTheGame"/> is triggered, the players finish their current round and then play one last round. 
+        /// <see cref="GamePhase.FinishingTouches"/> start after that.
         /// </summary>
         private void ChangeGamePhaseIfNeeded()
         {
@@ -91,7 +95,7 @@ namespace Kostra {
         }
 
         /// <summary>
-        /// Adjusts the internal turn state to represent the next turn and returns it.
+        /// Adjusts the internal turn state to represent the next turn.
         /// </summary>
         /// <returns>Information about the next turn.</returns>
         public TurnInfo NextTurn() {
@@ -117,20 +121,21 @@ namespace Kostra {
 
 
         /// <summary>
-        /// Used to signal the TurnManager about the events that happened during the turn.
+        /// Used to signal the given <see cref="TurnManager"/> about the events that happened during the turn.
         /// </summary>
         public class Signals(TurnManager turnManager) {
             /// <summary>
             /// Signals that the current player took a black puzzle.
-            /// Players can take only up to 1 black puzzle per turn once EndOfTheGame is triggered.
+            /// Players can take only up to 1 black puzzle per turn once <see cref="GamePhase.EndOfTheGame"/> is triggered.
             /// </summary>
             public void PlayerTookBlackPuzzle()
             {
                 turnManager._turnInfo.TookBlackPuzzle = true;
             }
+
             /// <summary>
             /// Signals that the black deck is empty.
-            /// This triggers the EndOfTheGame phase, if it is not already triggered.
+            /// This triggers the <see cref="GamePhase.EndOfTheGame"/> phase, if it is not already triggered.
             /// </summary>
             public void BlackDeckIsEmpty() {
                 if (turnManager._turnInfo.GamePhase == GamePhase.Normal)
@@ -138,15 +143,17 @@ namespace Kostra {
                     turnManager._turnInfo.GamePhase = GamePhase.EndOfTheGame;
                 }
             }
+
             /// <summary>
-            /// Signals that the current player used the Master action.
-            /// Players can use the Master action only once per turn.
+            /// Signals that the current player used <see cref="MasterAction"/>
+            /// Players can use <see cref="MasterAction"/> only once per turn.
             /// </summary>
             public void PlayerUsedMasterAction() {
                 turnManager._turnInfo.UsedMasterAction = true;
             }
+
             /// <summary>
-            /// Signals that the current player ended his finishing touches turn.
+            /// Signals that the current player use <see cref="EndFinishingTouchesAction"/>.
             /// The game ends once all players do this.
             /// </summary>
             public void PlayerEndedFinishingTouches() {
@@ -162,6 +169,7 @@ namespace Kostra {
     {
         public const int MaxPlayers = 4;
         public int NumPlayers => Players.Length;
+        public GamePhase CurrentGamePhase { get; set; } = GamePhase.Normal;
 
         public GameState GameState { get; }
         public Player[] Players { get; }

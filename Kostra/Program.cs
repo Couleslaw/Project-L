@@ -30,6 +30,8 @@
                     break;
                 }
 
+                game.CurrentGamePhase = turnInfo.GamePhase;
+
                 // get action from current player and process it
                 uint playerId = turnManager.CurrentPlayerId;
 

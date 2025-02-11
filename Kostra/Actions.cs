@@ -21,6 +21,7 @@
     /// <summary>
     /// Interface for the visitor pattern.
     /// </summary>
+    /// <seealso cref="IActionProcessor"/>
     interface IAction 
     {
         /// <summary>
@@ -33,6 +34,7 @@
     /// An interface for processing actions using the visitor pattern.
     /// Each action should be verified before being processed.
     /// </summary>
+    /// <seealso cref="IAction"/>
     interface IActionProcessor
     {
         public void ProcessEndFinishingTouchesAction(EndFinishingTouchesAction action);
@@ -46,7 +48,7 @@
 
     /// <summary>
     /// Represents an action which can be verified.
-    /// All subclasses which inherit from this class should be <strong>immutable</strong>. This ensures that the action can not be changed after it has been created and therefore its verification status can be trusted.
+    /// All subclasses which inherit from this class should be <strong>immutable</strong>. This ensures that the action can not be changed after it has been created and therefore it's <see cref="VerifiableAction.Status"/> can be trusted.
     /// </summary>
     /// <seealso cref="Kostra.IAction" />
     abstract class VerifiableAction : IAction
@@ -71,7 +73,7 @@
     }
 
     /// <summary>
-    /// Last resort action for AI players, they should never actually need to use it. It will always be accepted unless its the FinishingTouches game phase.
+    /// Last resort action for AI players, they should never actually need to use it. It will always be accepted unless the game phase is <see cref="GamePhase.FinishingTouches"/>.
     /// </summary>
     /// <seealso cref="Kostra.VerifiableAction" />
     class DoNothingAction : VerifiableAction
@@ -80,7 +82,7 @@
     }
 
     /// <summary>
-    /// Represents the action of ending the FinishingTouches turn.
+    /// Represents the action of ending a player's turn during <see cref="GamePhase.FinishingTouches"/>
     /// </summary>
     /// <seealso cref="Kostra.VerifiableAction" />
     class EndFinishingTouchesAction : VerifiableAction
@@ -103,8 +105,8 @@
         /// </summary>
         public Options Option => option;
         /// <summary>
-        /// The ID of the specific puzzle to take, if the TakePuzzleAction.Option is Normal.
-        /// Should be null if the option is TopWhite or TopBlack.
+        /// The ID of the specific puzzle to take, if <see cref="TakePuzzleAction.Option"/> is <see cref="TakePuzzleAction.Options.Normal"/>
+        /// Should be null otherwise.
         /// </summary>
         public uint? PuzzleId => puzzleId;
         public override void Accept(IActionProcessor visitor) {
@@ -138,7 +140,7 @@
     }
 
     /// <summary>
-    /// Represents the action of taking a 1x1 tetromino from the shared reserve.
+    /// Represents the action of taking a <see cref="TetrominoShape.O1"/> tetromino from the shared reserve.
     /// </summary>
     /// <seealso cref="Kostra.VerifiableAction" />
     class TakeBasicTetrominoAction : VerifiableAction
@@ -153,12 +155,12 @@
     /// Represents the action of changing a tetromino for a different one.
     /// </summary>
     /// <seealso cref="Kostra.VerifiableAction" />
-    class ChangeTetrominoAction(TetrominoShape oldTetrimino, TetrominoShape newTetromino) : VerifiableAction 
+    class ChangeTetrominoAction(TetrominoShape oldTetromino, TetrominoShape newTetromino) : VerifiableAction 
     {
         /// <summary>
         /// The tetromino the player is returning to the shared reserve.
         /// </summary>
-        public TetrominoShape OldTetromino => oldTetrimino;
+        public TetrominoShape OldTetromino => oldTetromino;
         /// <summary>
         /// The tetromino the player is taking from the shared reserve.
         /// </summary>
@@ -187,10 +189,6 @@
         /// The position on the puzzle where the player wants to place the tetromino.
         /// </summary>
         public BinaryImage Position => position;
-        /// <summary>When .GetVerifiedBy(verifier) is called, the verifier will set this to true if the action is valid and the GamePhase is FinishingTouches</summary>
-        /// <value>
-        ///   <c>true</c> if [GamePhase==FinishingTouches AND Status==Verified]; otherwise, <c>false</c>.</value>
-        public bool FinishingTouches { get; set; } = false;
         public override void Accept(IActionProcessor visitor)
         {
             visitor.ProcessPlaceTetrominoAction(this);
@@ -237,8 +235,8 @@
         /// </para>
         ///   <list type="number">
         ///     <item>
-        /// Removes the puzzle from the game state (throws an exception if the puzzle is not found)</item>
-        ///     <item>Adds the puzzle to the player state
+        /// Removes the puzzle from the <see cref="GameState"/> (throws an exception if the puzzle is not found)</item>
+        ///     <item>Adds the puzzle to the <see cref="PlayerState"/>
         /// </item>
         ///   </list>
         ///   <para>
@@ -326,7 +324,7 @@
 
         /// <summary>
         /// Processes the place tetromino action. Adds the tetromino to the puzzle. If the puzzle is finished, the player gets a reward and the used tetrominos back.
-        /// When in the FinishingTouches game phase, the player doesn't get any rewards and this action costs 1 score.
+        /// During <see cref="GamePhase.FinishingTouches"/>, the player doesn't get any rewards and this action costs 1 score.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <exception cref="System.InvalidOperationException">Puzzle not found</exception>
@@ -338,7 +336,7 @@
             puzzle.AddTetromino(action.Shape, action.Position);
 
             // handle FinishingTouches separately
-            if (action.FinishingTouches)
+            if (game.CurrentGamePhase == GamePhase.FinishingTouches)
             {
                 _playerState.Score -= 1;
                 if (puzzle.IsFinished)
