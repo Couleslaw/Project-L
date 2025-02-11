@@ -14,7 +14,13 @@
             Status = result is VerificationSuccess ? ActionStatus.Verified : ActionStatus.Invalid;
             return result;
         }
+    }
 
+    class DoNothingAction : VerifiableAction
+    {
+        // for AI players as a last resort, they should never actually need to use it
+        // it will always be accepted unless its the FinishingTouches stage
+        public override void Accept(IActionProcessor visitor) { /*do nothing*/ }
     }
 
     class EndFinishingTouchesAction : VerifiableAction
@@ -43,10 +49,10 @@
         }
        
     }
-    class PlaceTetrominoAction(uint puzzleId, TetrominoShape tetromino, BinaryImage position) : VerifiableAction
+    class PlaceTetrominoAction(uint puzzleId, TetrominoShape shape, BinaryImage position) : VerifiableAction
     {
         public uint PuzzleId => puzzleId;
-        public TetrominoShape Tetromino => tetromino;
+        public TetrominoShape Shape => shape;
         public BinaryImage Position => position;
         // verifier will set finishing touches to true if the action is valid and the GamePhase is FinishingTouches
         public bool FinishingTouches { get; set; } = false;
@@ -56,7 +62,7 @@
         }
 
     }
-    class TakePuzzleAction(TakePuzzleAction.Options option, uint? puzzleId) : VerifiableAction {
+    class TakePuzzleAction(TakePuzzleAction.Options option, uint? puzzleId=null) : VerifiableAction {
         public enum Options { TopWhite, TopBlack, Normal }
         public Options Option => option;
         public uint? PuzzleId => puzzleId;
@@ -123,7 +129,7 @@
             if (puzzle is null) {
                 throw new InvalidOperationException("Puzzle not found");
             }
-            puzzle.AddTetromino(action.Tetromino, action.Position);
+            puzzle.AddTetromino(action.Shape, action.Position);
 
             if (action.FinishingTouches)
             {

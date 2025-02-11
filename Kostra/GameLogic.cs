@@ -1,7 +1,7 @@
 namespace Kostra {
     enum GamePhase { Normal, EndOfTheGame, FinishingTouches, Finished }
 
-    record struct TurnInfo(int ActionsLeft, GamePhase GamePhase, bool UsedMasterAction, bool TookBlackPuzzle);
+    record struct TurnInfo(int ActionsLeft, GamePhase GamePhase, bool UsedMasterAction, bool TookBlackPuzzle, bool LastRound);
 
     class TurnManager(uint[] playerIds) {
         private readonly int _numPlayers = playerIds.Length;
@@ -12,7 +12,7 @@ namespace Kostra {
         public uint CurrentPlayerId => _playersIds[_currentPlayerOrder];
         private bool IsEndOfRound => _currentPlayerOrder == _numPlayers - 1;
 
-        private TurnInfo _turnInfo = new(ActionsLeft: NumActionsInTurn, GamePhase.Normal, UsedMasterAction: false, TookBlackPuzzle: false);
+        private TurnInfo _turnInfo = new(ActionsLeft: NumActionsInTurn, GamePhase.Normal, UsedMasterAction: false, TookBlackPuzzle: false, LastRound: false);
 
 
 
@@ -23,14 +23,13 @@ namespace Kostra {
             _turnInfo.TookBlackPuzzle = false;
         }
 
-        private bool _lastRound = false;
         private void ChangeGamePhaseIfNeeded()
         {
             if (_turnInfo.GamePhase == GamePhase.EndOfTheGame)
             {
-                if (_lastRound == false)
+                if (_turnInfo.LastRound == false)
                 {
-                    _lastRound = true;
+                    _turnInfo.LastRound = true;
                 }
                 else
                 {

@@ -8,6 +8,7 @@
                 new HumanPlayer(),
                 new HumanPlayer()
             ];
+            SimpleAIPlayer simpleAIPlayer = new SimpleAIPlayer();
 
             // create game core, turn manager and processor manager
             var game = new GameCore(gameState, players, shufflePlayers: false);
@@ -43,9 +44,9 @@
                     verifier.Verify(action);
                 }
 
-                if (action.Status == ActionStatus.Unverified)
+                if (action.Status == ActionStatus.Invalid)
                 {
-                    //action = BasicAIPlager.GetAction(gameInfo, playerInfos, turnInfo, verifier);
+                    action = simpleAIPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier).Result;
                 }
 
                 action.Accept(actionProcessors[playerId]);

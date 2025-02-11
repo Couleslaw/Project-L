@@ -54,7 +54,7 @@ namespace Kostra {
 
             return await Task.Run(() => GetAction(gameInfo, myState, enemyStates, turnInfo, verifier));
         }
-        public abstract TetrominoShape GetReward(List<TetrominoShape> rewardOptions);
+        public abstract TetrominoShape GetReward(List<TetrominoShape> rewardOptions );
         public override async Task<TetrominoShape> GetRewardAsync(List<TetrominoShape> rewardOptions)
         {
             return await Task.Run(() => GetReward(rewardOptions));

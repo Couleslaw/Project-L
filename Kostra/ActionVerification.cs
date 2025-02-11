@@ -30,6 +30,10 @@ namespace Kostra
                 {
                     return new InvalidEndFinishingTouchesActionUseFail(_turnInfo.GamePhase);
                 }
+                if (action is DoNothingAction)
+                {
+                    return new VerificationSuccess();
+                }
             }
 
             return action switch
@@ -45,7 +49,7 @@ namespace Kostra
             };
         }
 
-        public VerificationStatus VerifyTakeBasicTetrominoAction(TakeBasicTetrominoAction action)
+        private VerificationStatus VerifyTakeBasicTetrominoAction(TakeBasicTetrominoAction action)
         {
             if (_gameInfo.NumTetrominosLeft[(int)TetrominoShape.O1] == 0)
             {
@@ -53,7 +57,7 @@ namespace Kostra
             }
             return new VerificationSuccess();
         }
-        public VerificationStatus VerifyChangeTetrominoAction(ChangeTetrominoAction action)
+        private VerificationStatus VerifyChangeTetrominoAction(ChangeTetrominoAction action)
         {
             // check if the player has the old tetromino
             if (_playerInfo.NumTetrominosOwned[(int)action.OldTetromino] == 0)
@@ -70,17 +74,21 @@ namespace Kostra
             return new VerificationSuccess();
         }
 
-        public VerificationStatus VerifyEndFinishingTouchesAction(EndFinishingTouchesAction action)
+        private VerificationStatus VerifyEndFinishingTouchesAction(EndFinishingTouchesAction action)
         {
             return new VerificationSuccess();
         }
 
 
-        public VerificationStatus VerifyRecycleAction(RecycleAction action)
+        private VerificationStatus VerifyRecycleAction(RecycleAction action)
         {
             // if recycle white puzzles --> check white puzzle count
             if (action.Option == RecycleAction.Options.White)
             {
+                if (_gameInfo.AvailableWhitePuzzles.Length == 0)
+                {
+                    return new EmptyRowFail(RecycleAction.Options.White);
+                }
                 if (_gameInfo.AvailableWhitePuzzles.Length != action.Order.Count)
                 {
                     return new NumberOfRecycledPuzzlesMismatchFail(_gameInfo.AvailableWhitePuzzles.Length, action.Order.Count, RecycleAction.Options.White);
@@ -90,6 +98,10 @@ namespace Kostra
             // if recycle black puzzles --> check black puzzle count
             if (action.Option == RecycleAction.Options.Black)
             {
+                if (_gameInfo.AvailableBlackPuzzles.Length == 0)
+                {
+                    return new EmptyRowFail(RecycleAction.Options.Black);
+                }
                 if (_gameInfo.AvailableBlackPuzzles.Length != action.Order.Count)
                 {
                     return new NumberOfRecycledPuzzlesMismatchFail(_gameInfo.AvailableBlackPuzzles.Length, action.Order.Count, RecycleAction.Options.Black);
@@ -110,7 +122,7 @@ namespace Kostra
         }
 
 
-        public VerificationStatus VerifyTakePuzzleAction(TakePuzzleAction action)
+        private VerificationStatus VerifyTakePuzzleAction(TakePuzzleAction action)
         {
             switch (action.Option)
             {
@@ -144,17 +156,17 @@ namespace Kostra
                     throw new InvalidOperationException("Unknown take puzzle option");
             }
         }
-        public VerificationStatus VerifyPlaceTetrominoAction(PlaceTetrominoAction action)
+        private VerificationStatus VerifyPlaceTetrominoAction(PlaceTetrominoAction action)
         {
             // check if player has the tetromino
-            if (_playerInfo.NumTetrominosOwned[(int)action.Tetromino] == 0)
+            if (_playerInfo.NumTetrominosOwned[(int)action.Shape] == 0)
             {
-                return new TetrimonoNotInPersonalSupplyFail(action.Tetromino);
+                return new TetrimonoNotInPersonalSupplyFail(action.Shape);
             }
             // check if the submitted configuration is valid for the shape
-            if (!TetrominoManager.CompareShapeToImage(action.Tetromino, action.Position))
+            if (!TetrominoManager.CompareShapeToImage(action.Shape, action.Position))
             {
-                return new InvalidTetrominoConfigurationFail(action.Tetromino, action.Position);
+                return new InvalidTetrominoConfigurationFail(action.Shape, action.Position);
             }
             // check if the player has the puzzle
             Puzzle? puzzle = null;
@@ -182,7 +194,7 @@ namespace Kostra
 
             return new VerificationSuccess();
         }
-        public VerificationStatus VerifyMasterAction(MasterAction action)
+        private VerificationStatus VerifyMasterAction(MasterAction action)
         {
             // each placement must be to a different puzzle
             List<uint> puzzleIds = new();
@@ -198,7 +210,7 @@ namespace Kostra
             int[] usedTetrominos = new int[TetrominoManager.NumShapes];
             foreach (PlaceTetrominoAction placement in action.TetrominoPlacements)
             {
-                usedTetrominos[(int)placement.Tetromino]++;
+                usedTetrominos[(int)placement.Shape]++;
             }
             for (int i = 0; i < TetrominoManager.NumShapes; i++)
             {
@@ -254,7 +266,12 @@ namespace Kostra
         public RecycleAction.Options RecyclingColor => color;
         public override string Message => $"There are {expected} puzzles of color '{color}', got {actual}";
     }
-    class PuzzleNotInRowFail(uint id, RecycleAction.Options color) : VerificationFailure
+    class EmptyRowFail(RecycleAction.Options color) : VerificationFailure
+    {
+        public RecycleAction.Options Color => color;
+        public override string Message => $"{color} row is empty";
+    }
+        class PuzzleNotInRowFail(uint id, RecycleAction.Options color) : VerificationFailure
     {
         public uint Id => id;
         public RecycleAction.Options Color => color;

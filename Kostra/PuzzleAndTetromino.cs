@@ -14,8 +14,8 @@ namespace Kostra
         // #...#                10001     0b10011_10001_10011_11011_11111
         // ##..#                11001
 
-        public static BinaryImage Empty => new(0);
-        public static BinaryImage Full => new((1 << 26) - 1);
+        public static BinaryImage EmptyImage => new(0);
+        public static BinaryImage FullImage => new((1 << 26) - 1);
 
         private readonly int _image;
         public BinaryImage(int image)
@@ -261,7 +261,7 @@ namespace Kostra
 
         public bool CanPlaceTetromino(BinaryImage tetromino)
         {
-            return (Image & tetromino) == BinaryImage.Empty;
+            return (Image & tetromino) == BinaryImage.EmptyImage;
         }
     
         public Puzzle Clone()
