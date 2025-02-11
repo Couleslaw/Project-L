@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Sources;
@@ -160,17 +161,13 @@ namespace Kostra
             return new(solution);
         }
 
-        private int IDAStarHeuristic(PuzzleNode node, PuzzleNode goal)
-        {
-            return 0;
-        }
+        
 
         private Tuple<List<VerifiableAction>?, int> SolvePuzzleWithIDAStar(Puzzle puzzle, IReadOnlyList<int> numTetrominosLeft, IReadOnlyList<int> numTetrominosOwned, int maxDepth=-1, bool finishingTouches = false)
         {
             var solution = IDAStar.IterativeDeepeningAStar(
                 new PuzzleNode(puzzle.Image, puzzle.Id, numTetrominosLeft, numTetrominosOwned, finishingTouches),
                 PuzzleNode.FinishedPuzzle,
-                IDAStarHeuristic,
                 maxDepth
             );
 
@@ -257,12 +254,80 @@ namespace Kostra
 
     class PuzzleNode(BinaryImage puzzle, uint puzzleId, IReadOnlyList<int> numTetrominosLeft, IReadOnlyList<int> numTetrominosOwned, bool finishingTouches) : INode<PuzzleNode>
     {
+        private readonly BinaryImage _puzzle = puzzle;
+        private readonly IReadOnlyList<int> _numTetrominosOwned = numTetrominosOwned;
         public uint PuzzleId => puzzleId;
         public static PuzzleNode FinishedPuzzle => new(BinaryImage.FullImage, 0, null, null, false);
 
         public int Id => puzzle.GetHashCode();
 
+
+        public static int Heuristic(PuzzleNode node, PuzzleNode goal)
+        {
+            // how many tetrominos we need to place to finish the puzzle
+            // we also might need to take some tetrominos from the bank
+            // simplyfi the problem --> we just need to fill in X cells and tetromino of level L can fill in L cells
+
+            int sum = goal._puzzle.CountFilledCells() - node._puzzle.CountFilledCells();
+            int[] numShapesOfLevelOwned = new int[TetrominoManager.MaxLevel + 1];
+            for (int i = 0; i < TetrominoManager.NumShapes; i++)
+            {
+                numShapesOfLevelOwned[TetrominoManager.GetLevelOf((TetrominoShape)i)] += node._numTetrominosOwned[i];
+            }
+            int[] numShapesOfLevelUsed = new int[TetrominoManager.MaxLevel + 1];
+            // put in the largest shapes we can
+            for (int level = TetrominoManager.MaxLevel; level >= TetrominoManager.MinLevel; level--)
+            {
+                int numUsed = Math.Min(numShapesOfLevelOwned[level], sum / level);
+                sum -= level * numUsed;
+                numShapesOfLevelUsed[level] = numUsed;
+                numShapesOfLevelOwned[level] -= numUsed;
+            }
+
+            return numShapesOfLevelUsed.Sum() + GetStepsToFixDiff(sum);
+
+            // fix the difference
+            int GetStepsToFixDiff(int diff)
+            {
+                if (diff == 0) return 0;
+                // if we have used everything --> assume we could have upgraded the tetrominos used to make up the difference
+                if (numShapesOfLevelOwned.Sum() == 0) return diff;
+
+                // we have not used everything --> the difference can be 1, 2 or 3
+
+                // if diff == 1, we can upgrade a used tetromino (+1) or perhaps there could a change we could do 
+                // e.g. use 2 instead of 3 and than use 2 again --> still result +1
+                if (diff == 1) return 1;
+
+                // if diff == 2, we dont have any level 1 or 2 tetrominos
+                // if we have used a level 4 and still have two level 3, we can do: (4, diff=2, price=n+2) -> (3,3, diff=0, price=n+1)
+                if (diff == 2)
+                {
+                    if (numShapesOfLevelUsed[4] > 0 && numShapesOfLevelOwned[3] >= 2) return 1;
+                    return 2;
+                }
+
+                if (diff != 3)
+                {
+                    throw new InvalidOperationException("Invalid diff - should never happen");
+                }
+
+                // if diff == 3, one of the following must be true
+                // 1. I have used everything (already taken care of)
+                // 2. I had only level 4 tetrominos
+                //    a) original sum == 3 and I had no tetrominos at all --> need to upgrade to a level 3 from nothing
+
+                if (numShapesOfLevelUsed[4] == 0 && numShapesOfLevelOwned[4] == 0) return 4;
+
+                //    b) original sum == 3 and I had a level 4 tetromino --> downgrade to level 3 and use it
+                //    c) original sum == 4*k + 3 and I still have a level 4 tetromino --> downgrade to level 3 and use it
+
+                return 2;
+            }
+        }
+
         private List<ActionEdge<PuzzleNode>>? _getEdgesCache = null;
+
         public IEnumerable<IEdge<PuzzleNode>> GetEdges()
         {
             _getEdgesCache ??= GetEdgesEnumerable().ToList();
@@ -359,7 +424,7 @@ namespace Kostra
             // use IDA* to find the path
             var start = new ShapeNode(closestShape!.Value, numTetrominosLeft);
             var goal = new ShapeNode(shape, null);
-            var path = IDAStar.IterativeDeepeningAStar(start, goal, null).Item1;
+            var path = IDAStar.IterativeDeepeningAStar(start, goal).Item1;
 
             // if there is no path --> return null
             if (path is null) return null;
@@ -372,6 +437,10 @@ namespace Kostra
     class ShapeNode(TetrominoShape shape, IReadOnlyList<int> numTetrominosLeft) : INode<ShapeNode>
     {
         public int Id => (int)shape;
+        public static int Heuristic(ShapeNode node, ShapeNode goal)
+        {
+            return node.Id == goal.Id ? 0 : 1;
+        }
         public IEnumerable<IEdge<ShapeNode>> GetEdges()
         {
             foreach (TetrominoShape newShape in RewardManager.GetUpgradeOptions(numTetrominosLeft, shape))

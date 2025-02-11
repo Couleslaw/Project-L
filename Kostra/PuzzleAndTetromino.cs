@@ -86,7 +86,7 @@ namespace Kostra
             return sb.ToString();
         }
 
-        public int CountOnes()
+        public int CountFilledCells()
         {
             int count = 0;
             for (int i = 0; i < 25; i++)
@@ -95,9 +95,9 @@ namespace Kostra
             }
             return count;
         }
-        public int CountZeros()
+        public int CountEmptyCells()
         {
-            return 25 - CountOnes();
+            return 25 - CountFilledCells();
         }
         public BinaryImage MoveUp()
         {
@@ -243,7 +243,7 @@ namespace Kostra
             RewardTetromino = reward;
             IsBlack = isBlack;
 
-            NumEmptyCells = Image.CountZeros();
+            NumEmptyCells = Image.CountEmptyCells();
         }
 
 
@@ -302,7 +302,7 @@ namespace Kostra
             // level of tetromino = number of 1s in its binary image
             for (int i = 0; i < NumShapes; i++)
             {
-                _levels[i] += _binaryImages[i].CountOnes();
+                _levels[i] = _binaryImages[i].CountFilledCells();
             }
 
             // create list of shapes for each level
