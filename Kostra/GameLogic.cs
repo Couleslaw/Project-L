@@ -15,7 +15,6 @@ namespace Kostra {
         private TurnInfo _turnInfo = new(ActionsLeft: NumActionsInTurn, GamePhase.Normal, UsedMasterAction: false, TookBlackPuzzle: false, LastRound: false);
 
 
-
         private void SetNextPlayer() {
             _currentPlayerOrder = (_currentPlayerOrder + 1) % _numPlayers;
             _turnInfo.ActionsLeft = NumActionsInTurn;
@@ -60,22 +59,20 @@ namespace Kostra {
         }
 
         public class Signals(TurnManager turnManager) {
-            private TurnManager _turnManager = turnManager;
-
             public void PlayerTookBlackPuzzle()
             {
-                _turnManager._turnInfo.TookBlackPuzzle = true;
+                turnManager._turnInfo.TookBlackPuzzle = true;
             }
             public void NoCardsLeftInBlackDeck() {
-                _turnManager._turnInfo.GamePhase = GamePhase.EndOfTheGame;
+                turnManager._turnInfo.GamePhase = GamePhase.EndOfTheGame;
             }
             public void PlayerUsedMasterAction() {
-                _turnManager._turnInfo.UsedMasterAction = true;
+                turnManager._turnInfo.UsedMasterAction = true;
             }
             public void PlayerEndedFinishingTouches() {
-                _turnManager.SetNextPlayer();
-                if (_turnManager._currentPlayerOrder == 0) {
-                    _turnManager._turnInfo.GamePhase = GamePhase.Finished;
+                turnManager.SetNextPlayer();
+                if (turnManager._currentPlayerOrder == 0) {
+                    turnManager._turnInfo.GamePhase = GamePhase.Finished;
                 }
             }
         }

@@ -26,7 +26,7 @@ namespace Kostra
             var result = new List<TetrominoShape>();
             for (int level = TetrominoManager.GetLevelOf(shape); level <= TetrominoManager.MaxLevel; level++)
             {
-                foreach (var s in TetrominoManager.GetShapesOfLevel(level))
+                foreach (var s in TetrominoManager.GetShapesWithLevel(level))
                 {
                     if (numTetrominosLeft[(int)s] > 0) result.Add(s);
                 }
@@ -51,7 +51,7 @@ namespace Kostra
             // first try to find shapes with level(oldshape)+1
             for (int level = oldLevel+1; level <= TetrominoManager.MaxLevel; level++)
             {
-                foreach (var s in TetrominoManager.GetShapesOfLevel(level))
+                foreach (var s in TetrominoManager.GetShapesWithLevel(level))
                 {
                     if (numTetrominosLeft[(int)s] > 0) result.Add(s);
                 }
@@ -60,7 +60,7 @@ namespace Kostra
             // now add all shapes of level <= oldLevel
             for (int level = TetrominoManager.MinLevel; level <= oldLevel; level++)
             {
-                foreach (var s in TetrominoManager.GetShapesOfLevel(level))
+                foreach (var s in TetrominoManager.GetShapesWithLevel(level))
                 {
                     if (numTetrominosLeft[(int)s] > 0) result.Add(s);
                 }

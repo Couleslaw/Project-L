@@ -27,8 +27,8 @@ namespace Kostra {
         // puzzles in decks and on the game board
         private const int _numPuzzlesInRow = 4;
 
-        private Puzzle?[] _whitePuzzlesRow = new Puzzle?[_numPuzzlesInRow];
-        private Puzzle?[] _blackPuzzlesRow = new Puzzle?[_numPuzzlesInRow];
+        private readonly Puzzle?[] _whitePuzzlesRow = new Puzzle?[_numPuzzlesInRow];
+        private readonly Puzzle?[] _blackPuzzlesRow = new Puzzle?[_numPuzzlesInRow];
 
         private readonly Queue<Puzzle> _whitePuzzlesDeck;
         private readonly Queue<Puzzle> _blackPuzzlesDeck;
@@ -198,15 +198,12 @@ namespace Kostra {
             NumTetrominosLeft[(int)shape]++;
         }
 
+        // GAME INFO = wrapper around GameState to prevent modification
 
-        public GameInfo GetGameInfo()
-        {
-            return new GameInfo(this);
-        }
+        public GameInfo GetGameInfo() => new GameInfo(this);
 
         public class GameInfo(GameState gameState)
         {
-            // wrapper around GameState to prevent modification
             public int NumWhitePuzzlesLeft = gameState.NumWhitePuzzlesLeft;
             public int NumBlackPuzzlesLeft = gameState.NumBlackPuzzlesLeft;
             public Puzzle[] AvailableWhitePuzzles = gameState.GetAvailableWhitePuzzles().Select(p => p.Clone()).ToArray();

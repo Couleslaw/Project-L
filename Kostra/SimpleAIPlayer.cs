@@ -9,6 +9,9 @@ using System.Threading.Tasks.Sources;
 
 namespace Kostra
 {
+    /// <summary>
+    ///    A Simple AI player that chooses the best puzzle to solve and then solves it using IDA*.
+    /// </summary>
     internal class SimpleAIPlayer : AIPlayerBase
     {
         private static readonly Random _rnd = new();
@@ -252,15 +255,23 @@ namespace Kostra
         }
     }
 
+    class ActionEdge<T>(T from, T to, IReadOnlyList<VerifiableAction> actions) : IEdge<T> where T : INode<T>
+    {
+        public T From => from;
+        public T To => to;
+        public int Cost => actions.Count;
+        public IReadOnlyList<VerifiableAction> Action => actions;
+    }
+
     class PuzzleNode(BinaryImage puzzle, uint puzzleId, IReadOnlyList<int> numTetrominosLeft, IReadOnlyList<int> numTetrominosOwned, bool finishingTouches) : INode<PuzzleNode>
     {
-        private readonly BinaryImage _puzzle = puzzle;
-        private readonly IReadOnlyList<int> _numTetrominosOwned = numTetrominosOwned;
+        public int Id => _puzzle.GetHashCode();
         public uint PuzzleId => puzzleId;
         public static PuzzleNode FinishedPuzzle => new(BinaryImage.FullImage, 0, null, null, false);
 
-        public int Id => puzzle.GetHashCode();
-
+        // capture puzzle and numTetrominosOwned for heuristic (its static)
+        private readonly BinaryImage _puzzle = puzzle; 
+        private readonly IReadOnlyList<int> _numTetrominosOwned = numTetrominosOwned; 
 
         public static int Heuristic(PuzzleNode node, PuzzleNode goal)
         {
@@ -326,8 +337,8 @@ namespace Kostra
             }
         }
 
+        // cache the edges to avoid recalculating them
         private List<ActionEdge<PuzzleNode>>? _getEdgesCache = null;
-
         public IEnumerable<IEdge<PuzzleNode>> GetEdges()
         {
             _getEdgesCache ??= GetEdgesEnumerable().ToList();
@@ -452,13 +463,5 @@ namespace Kostra
                 yield return new ActionEdge<ShapeNode>(this, newShapeNode, [new ChangeTetrominoAction(shape, newShape)]);
             }
         }
-    }
-
-    class ActionEdge<T>(T from, T to, IReadOnlyList<VerifiableAction> actions) : IEdge<T> where T : INode<T>
-    {
-        public T From => from;
-        public T To => to;
-        public int Cost => actions.Count;
-        public IReadOnlyList<VerifiableAction> Action => actions;
     }
 }

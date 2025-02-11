@@ -1,5 +1,5 @@
 ﻿namespace Kostra {
-    enum ActionStatus {Verified, Unverified, Invalid };
+    enum ActionStatus { Verified, Unverified, Invalid };
     interface IAction {
         public void Accept(IActionProcessor visitor);
     }
@@ -22,7 +22,6 @@
         // it will always be accepted unless its the FinishingTouches stage
         public override void Accept(IActionProcessor visitor) { /*do nothing*/ }
     }
-
     class EndFinishingTouchesAction : VerifiableAction
     {
         public override void Accept(IActionProcessor visitor)
@@ -30,6 +29,28 @@
             visitor.ProcessEndFinishingTouchesAction(this);
         }
   
+    }
+    class TakePuzzleAction(TakePuzzleAction.Options option, uint? puzzleId=null) : VerifiableAction {
+        public enum Options { TopWhite, TopBlack, Normal }
+        public Options Option => option;
+        public uint? PuzzleId => puzzleId;
+        public override void Accept(IActionProcessor visitor) {
+            visitor.ProcessTakePuzzleAction(this);
+        }
+
+    }
+    class RecycleAction(List<uint> order, RecycleAction.Options option) : VerifiableAction
+    {
+        public enum Options { White, Black }
+        public Options Option => option;
+
+        // lower index ==> put to the bottom of the deck earlier
+        private List<uint> _order = order;
+        public IReadOnlyList<uint> Order => _order.AsReadOnly();
+        public override void Accept(IActionProcessor visitor)
+        {
+            visitor.ProcessRecycleAction(this);
+        }
     }
     class TakeBasicTetrominoAction : VerifiableAction
     {
@@ -62,26 +83,6 @@
         }
 
     }
-    class TakePuzzleAction(TakePuzzleAction.Options option, uint? puzzleId=null) : VerifiableAction {
-        public enum Options { TopWhite, TopBlack, Normal }
-        public Options Option => option;
-        public uint? PuzzleId => puzzleId;
-        public override void Accept(IActionProcessor visitor) {
-            visitor.ProcessTakePuzzleAction(this);
-        }
-
-    }
-    class RecycleAction(List<uint> order, RecycleAction.Options option) : VerifiableAction {
-        public enum Options { White, Black }
-        public Options Option => option;
-
-        // lower index ==> put to the bottom of the deck earlier
-        private List<uint> _order = order;  
-        public IReadOnlyList<uint> Order => _order.AsReadOnly();
-        public override void Accept(IActionProcessor visitor) {
-            visitor.ProcessRecycleAction(this);
-        }
-    }
     class MasterAction(List<PlaceTetrominoAction> tetrominoPlacements) : VerifiableAction {
 
         private List<PlaceTetrominoAction> _tetrominoPlacements = tetrominoPlacements;
@@ -95,13 +96,13 @@
 
 
     interface IActionProcessor {
+        public void ProcessEndFinishingTouchesAction(EndFinishingTouchesAction action);
+        public void ProcessTakePuzzleAction(TakePuzzleAction action);
+        public void ProcessRecycleAction(RecycleAction action);
         public void ProcessTakeBasicTetrominoAction(TakeBasicTetrominoAction action);
         public void ProcessChangeTetrominoAction(ChangeTetrominoAction action);
         public void ProcessPlaceTetrominoAction(PlaceTetrominoAction action);
-        public void ProcessTakePuzzleAction(TakePuzzleAction action);
-        public void ProcessRecycleAction(RecycleAction action);
         public void ProcessMasterAction(MasterAction action);
-        public void ProcessEndFinishingTouchesAction(EndFinishingTouchesAction action);
     }
 
     // one of these should be created for each player
@@ -112,6 +113,48 @@
         private readonly PlayerState _playerState = game.GetPlayerStateWithId(playerId);
         private readonly TurnManager.Signals _gameEventSignaller = signaller;
 
+        public void ProcessEndFinishingTouchesAction(EndFinishingTouchesAction action)
+        {
+            _gameEventSignaller.PlayerEndedFinishingTouches();
+        }
+        public void ProcessTakePuzzleAction(TakePuzzleAction action)
+        {
+            Puzzle? puzzle = null;
+            switch (action.Option)
+            {
+                case TakePuzzleAction.Options.TopWhite:
+                    puzzle = _gameState.TakeTopWhitePuzzle();
+                    break;
+                case TakePuzzleAction.Options.TopBlack:
+                    puzzle = _gameState.TakeTopBlackPuzzle();
+                    break;
+                case TakePuzzleAction.Options.Normal:
+                    puzzle = _gameState.GetPuzzleWithId(action.PuzzleId!.Value);
+                    if (puzzle is null) break;
+
+                    _gameState.RemovePuzzleWithId(action.PuzzleId!.Value);
+                    _gameState.RefillPuzzles();
+                    break;
+            }
+            if (puzzle is null)
+            {
+                throw new InvalidOperationException("Puzzle not found");
+            }
+
+            _playerState.PlaceNewPuzzle(puzzle!);
+        }
+        public void ProcessRecycleAction(RecycleAction action) { 
+            foreach (var id in action.Order)
+            {
+                Puzzle? puzzle = _gameState.GetPuzzleWithId(id);
+                if (puzzle is null)
+                {
+                    throw new InvalidOperationException("Puzzle not found");
+                }
+                _gameState.RemovePuzzleWithId(id);
+                _gameState.PutPuzzleToTheBottomOfDeck(puzzle);
+            }
+        }
         public void ProcessTakeBasicTetrominoAction(TakeBasicTetrominoAction action) {
             _gameState.RemoveTetromino(TetrominoShape.O1);
             _playerState.AddTetromino(TetrominoShape.O1);
@@ -165,8 +208,15 @@
                     }
                 }
 
+                // give player his reward
                 _playerState.AddTetromino(reward);
                 _gameState.RemoveTetromino(reward);
+
+                // return him the used pieces
+                foreach (var tetromino in puzzle.GetUsedTetrominos())
+                {
+                    _playerState.AddTetromino(tetromino);
+                }
 
                 _playerState.FinishPuzzleWithId(puzzle.Id);
             }
@@ -175,46 +225,6 @@
             foreach (var placement in action.TetrominoPlacements) {
                 ProcessPlaceTetrominoAction(placement);
             }
-        }
-        public void ProcessTakePuzzleAction(TakePuzzleAction action) {
-            Puzzle? puzzle = null;
-            switch (action.Option) {
-                case TakePuzzleAction.Options.TopWhite:
-                    puzzle = _gameState.TakeTopWhitePuzzle();
-                    break;
-                case TakePuzzleAction.Options.TopBlack:
-                    puzzle = _gameState.TakeTopBlackPuzzle();
-                    break;
-                case TakePuzzleAction.Options.Normal:
-                    puzzle = _gameState.GetPuzzleWithId(action.PuzzleId!.Value);
-                    if (puzzle is null) break;
-
-                    _gameState.RemovePuzzleWithId(action.PuzzleId!.Value);
-                    _gameState.RefillPuzzles();
-                    break;
-            }
-            if (puzzle is null) {
-                throw new InvalidOperationException("Puzzle not found");
-            }
-
-            _playerState.PlaceNewPuzzle(puzzle!);
-        }
-        public void ProcessRecycleAction(RecycleAction action) { 
-            foreach (var id in action.Order)
-            {
-                Puzzle? puzzle = _gameState.GetPuzzleWithId(id);
-                if (puzzle is null)
-                {
-                    throw new InvalidOperationException("Puzzle not found");
-                }
-                _gameState.RemovePuzzleWithId(id);
-                _gameState.PutPuzzleToTheBottomOfDeck(puzzle);
-            }
-        }
-
-        public void ProcessEndFinishingTouchesAction(EndFinishingTouchesAction action)
-        {
-            _gameEventSignaller.PlayerEndedFinishingTouches();
         }
     }
 }

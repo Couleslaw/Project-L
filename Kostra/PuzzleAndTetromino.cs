@@ -3,21 +3,26 @@ using System.Text;
 
 namespace Kostra
 {
+    /// <summary>
+    /// Reprezents a 5x5 binary image. The image is stored as an integer, where each bit represents a cell in the image.
+    /// The top left corner is viewed the least significant bit. We go down row by row from left to right.
+    /// 
+    /// <example><code>
+    /// 
+    /// #####         11111
+    /// ##.##         11011  
+    /// ##..#  ---->  11001  ---->  0b10011_10001_10011_11011_11111
+    /// #...#         10001    
+    /// ##..#         11001
+    /// 
+    /// </code></example>
+    /// </summary>
     public readonly struct BinaryImage : IEquatable<BinaryImage>
     {
-        // class for working with 5x5 binary images
-        // it could be generalized, but this game uses only 5x5 images 
-        // so we know which binary masks to use beforehand, so the compiler will view them as constants --> faster
-        // #####                11111
-        // ##.##                11011  top left corner is the least significant bit
-        // ##..# is encoded as  11001  we go down row by row from left to right
-        // #...#                10001     0b10011_10001_10011_11011_11111
-        // ##..#                11001
-
+        private readonly int _image;
         public static BinaryImage EmptyImage => new(0);
         public static BinaryImage FullImage => new((1 << 26) - 1);
 
-        private readonly int _image;
         public BinaryImage(int image)
         {
             if (image < 0 || image >= 1 << 25)
@@ -26,52 +31,6 @@ namespace Kostra
             }
             _image = image;
         }
-
-        // implement IEquatable
-
-        public bool Equals(BinaryImage other)
-        {
-            return _image == other._image;
-        }
-
-        public override bool Equals([NotNullWhen(true)] object? obj)
-        {
-            if (obj is BinaryImage bi)
-            {
-                return Equals(bi);
-            }
-            return false;
-        }
-
-        public override int GetHashCode()
-        {
-            return _image.GetHashCode();
-        }
-
-        public static bool operator ==(BinaryImage left, BinaryImage right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(BinaryImage left, BinaryImage right)
-        {
-            return !left.Equals(right);
-        }
-
-        // useful bitwise operators
-        public static BinaryImage operator &(BinaryImage left, BinaryImage right)
-        {
-            return new(left._image & right._image);
-        }
-        public static BinaryImage operator |(BinaryImage left, BinaryImage right)
-        {
-            return new(left._image | right._image);
-        }
-        public static BinaryImage operator ~(BinaryImage image)
-        {
-            return new(~image._image);
-        }
-
         public override string ToString()
         {
             StringBuilder sb = new();
@@ -84,6 +43,46 @@ namespace Kostra
                 sb.AppendLine();
             }
             return sb.ToString();
+        }
+
+
+        // Implement IEquatable
+
+        public bool Equals(BinaryImage other)
+        {
+            return _image == other._image;
+        }
+        public override bool Equals([NotNullWhen(true)] object? obj)
+        {
+            if (obj is BinaryImage bi)
+            {
+                return Equals(bi);
+            }
+            return false;
+        }
+        public override int GetHashCode() => _image.GetHashCode();
+        public static bool operator ==(BinaryImage left, BinaryImage right)
+        {
+            return left.Equals(right);
+        }
+        public static bool operator !=(BinaryImage left, BinaryImage right)
+        {
+            return !left.Equals(right);
+        }
+
+        // Useful bitwise operators
+
+        public static BinaryImage operator &(BinaryImage left, BinaryImage right)
+        {
+            return new(left._image & right._image);
+        }
+        public static BinaryImage operator |(BinaryImage left, BinaryImage right)
+        {
+            return new(left._image | right._image);
+        }
+        public static BinaryImage operator ~(BinaryImage image)
+        {
+            return new(~image._image);
         }
 
         public int CountFilledCells()
@@ -99,6 +98,8 @@ namespace Kostra
         {
             return 25 - CountFilledCells();
         }
+
+        // Image transformations
         public BinaryImage MoveUp()
         {
             int newImage = _image;
@@ -206,19 +207,6 @@ namespace Kostra
 
     public enum TetrominoShape { O1, O2, I2, I3, I4, L2, L3, Z, T }
 
-    public interface IPuzzleInfo
-    {
-        public uint Id { get; }
-        public bool IsBlack { get; }
-        public int RewardScore { get; }
-        public TetrominoShape RewardTetromino { get; }
-        public bool IsFinished { get; }
-        public int NumEmptyCells { get; }
-        public BinaryImage Image { get; }
-        public List<TetrominoShape> GetUsedTetrominos();
-        public bool DoesTetrominoFit(TetrominoShape tetromino);
-    }
-    
     public class Puzzle
     {
         // id
@@ -247,21 +235,25 @@ namespace Kostra
         }
 
 
-        // infex by shape to get number of used tetrominos of that shape
+        // index by shape to get number of used tetrominos of that shape
         private int[] _usedTetrominos = new int[TetrominoManager.NumShapes];
 
+        public bool CanPlaceTetromino(BinaryImage tetromino) => (Image & tetromino) == BinaryImage.EmptyImage;
         public void AddTetromino(TetrominoShape tetromino, BinaryImage tetrominoImage)
         {
             _usedTetrominos[(int)tetromino]++;
             NumEmptyCells -= TetrominoManager.GetLevelOf(tetromino);
             Image |= tetrominoImage;
         }
-
-        public int NumUsedTetrominosOfType(TetrominoShape shape) => _usedTetrominos[(int)shape];
-
-        public bool CanPlaceTetromino(BinaryImage tetromino)
+        public IEnumerable<TetrominoShape> GetUsedTetrominos()
         {
-            return (Image & tetromino) == BinaryImage.EmptyImage;
+            for (int shape = 0; shape < TetrominoManager.NumShapes; shape++)
+            {
+                for (int j = 0; j < _usedTetrominos[shape]; j++)
+                {
+                    yield return (TetrominoShape)shape;
+                }
+            }
         }
     
         public Puzzle Clone()
@@ -280,10 +272,10 @@ namespace Kostra
         public const int MinLevel = 1;
         public const int MaxLevel = 4;
 
-        private static int[] _levels = new int[NumShapes];
-        private static List<TetrominoShape>[] _shapesByLevel = new List<TetrominoShape>[MaxLevel - MinLevel + 1];
-        private static BinaryImage[] _binaryImages = new BinaryImage[NumShapes];
-        private static List<BinaryImage>[] _baseConfigurations = new List<BinaryImage>[NumShapes];
+        private static readonly int[] _levels = new int[NumShapes];
+        private static readonly List<TetrominoShape>[] _shapesByLevel = new List<TetrominoShape>[MaxLevel - MinLevel + 1];
+        private static readonly BinaryImage[] _binaryImages = new BinaryImage[NumShapes];
+        private static readonly List<BinaryImage>[] _baseConfigurations = new List<BinaryImage>[NumShapes];
 
         static TetrominoManager()
         {  // class ctor
@@ -323,6 +315,16 @@ namespace Kostra
             }
         }
 
+        public static BinaryImage GetImageOf(TetrominoShape shape) => _binaryImages[(int)shape];
+        public static int GetLevelOf(TetrominoShape shape) => _levels[(int)shape];
+        public static List<TetrominoShape> GetShapesWithLevel(int level) => _shapesByLevel[level - MinLevel];
+        public static bool CompareShapeToImage(TetrominoShape shape, BinaryImage image)
+        {
+            // checks if the images is a valid configuration of the shape
+            BinaryImage baseConf = image.MoveImageToTopLeftCorner();
+            return _baseConfigurations[(int)shape].Contains(baseConf);
+        }
+
         private static List<BinaryImage> GetBaseConfigurationsOf(TetrominoShape shape)
         {
             List<BinaryImage> conf = new();
@@ -341,16 +343,6 @@ namespace Kostra
             }
 
             return conf.Distinct().ToList();
-        }
-
-        public static int GetLevelOf(TetrominoShape shape) => _levels[(int)shape];
-        public static BinaryImage GetImageOf(TetrominoShape shape) => _binaryImages[(int)shape];
-        public static List<TetrominoShape> GetShapesOfLevel(int level) => _shapesByLevel[level - MinLevel];
-        public static bool CompareShapeToImage(TetrominoShape shape, BinaryImage image)
-        {
-            // checks if the images is a valid configuration of the shape
-            BinaryImage baseConf = image.MoveImageToTopLeftCorner();
-            return _baseConfigurations[(int)shape].Contains(baseConf);
         }
 
         private static List<BinaryImage>[] _allConfigurationsCache = new List<BinaryImage>[NumShapes];

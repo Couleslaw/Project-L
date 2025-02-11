@@ -38,48 +38,55 @@ namespace Kostra
 
             return action switch
             {
+                EndFinishingTouchesAction a => VerifyEndFinishingTouchesAction(a),
+                TakePuzzleAction a => VerifyTakePuzzleAction(a),
+                RecycleAction a => VerifyRecycleAction(a),
                 TakeBasicTetrominoAction a => VerifyTakeBasicTetrominoAction(a),
                 ChangeTetrominoAction a => VerifyChangeTetrominoAction(a),
-                EndFinishingTouchesAction a => VerifyEndFinishingTouchesAction(a),
-                RecycleAction a => VerifyRecycleAction(a),
-                TakePuzzleAction a => VerifyTakePuzzleAction(a),
                 PlaceTetrominoAction a => VerifyPlaceTetrominoAction(a),
                 MasterAction a => VerifyMasterAction(a),
                 _ => throw new InvalidOperationException("Unknown action type")
             };
         }
 
-        private VerificationStatus VerifyTakeBasicTetrominoAction(TakeBasicTetrominoAction action)
-        {
-            if (_gameInfo.NumTetrominosLeft[(int)TetrominoShape.O1] == 0)
-            {
-                return new TetrominoNotInSharedReserveFail(TetrominoShape.O1);
-            }
-            return new VerificationSuccess();
-        }
-        private VerificationStatus VerifyChangeTetrominoAction(ChangeTetrominoAction action)
-        {
-            // check if the player has the old tetromino
-            if (_playerInfo.NumTetrominosOwned[(int)action.OldTetromino] == 0)
-            {
-                return new TetrimonoNotInPersonalSupplyFail(action.OldTetromino);
-            }
-            // check if the player can trade the old tetromino for the new one
-            var validChanges = RewardManager.GetUpgradeOptions(_gameInfo.NumTetrominosLeft, action.OldTetromino);
-            if (!validChanges.Contains(action.NewTetromino))
-            {
-                return new InvalidTetrimonoChangeFail(action.OldTetromino, action.NewTetromino);
-            }
-
-            return new VerificationSuccess();
-        }
-
         private VerificationStatus VerifyEndFinishingTouchesAction(EndFinishingTouchesAction action)
         {
             return new VerificationSuccess();
         }
+        private VerificationStatus VerifyTakePuzzleAction(TakePuzzleAction action)
+        {
+            switch (action.Option)
+            {
+                case TakePuzzleAction.Options.TopWhite:
+                    return _gameInfo.NumWhitePuzzlesLeft == 0
+                        ? new PuzzleDeckIsEmptyFail(TakePuzzleAction.Options.TopWhite)
+                        : new VerificationSuccess();
+                case TakePuzzleAction.Options.TopBlack:
+                    return _gameInfo.NumBlackPuzzlesLeft == 0
+                        ? new PuzzleDeckIsEmptyFail(TakePuzzleAction.Options.TopBlack)
+                        : new VerificationSuccess();
+                case TakePuzzleAction.Options.Normal:
+                    if (action.PuzzleId is null) return new PuzzleIdIsNullFail();
 
-
+                    // find the puzzle
+                    foreach (Puzzle puzzle in _gameInfo.AvailableWhitePuzzles.Concat(_gameInfo.AvailableBlackPuzzles))
+                    {
+                        if (puzzle.Id == action.PuzzleId)
+                        {
+                            // if EndOfTheGame is triggered a player can take only 1 black puzzle per round
+                            if (_turnInfo.GamePhase == GamePhase.EndOfTheGame && _turnInfo.TookBlackPuzzle && puzzle.IsBlack)
+                            {
+                                return new PlayerAlreadyTookBlackPuzzleInEndOfTheGameFail();
+                            }
+                            return new VerificationSuccess();
+                        }
+                    }
+                    // no puzzle matching ID found
+                    return new PuzzleNotAvailableFail(action.PuzzleId.Value);
+                default:
+                    throw new InvalidOperationException("Unknown take puzzle option");
+            }
+        }
         private VerificationStatus VerifyRecycleAction(RecycleAction action)
         {
             // if recycle white puzzles --> check white puzzle count
@@ -120,41 +127,29 @@ namespace Kostra
 
             return new VerificationSuccess();
         }
-
-
-        private VerificationStatus VerifyTakePuzzleAction(TakePuzzleAction action)
+        private VerificationStatus VerifyTakeBasicTetrominoAction(TakeBasicTetrominoAction action)
         {
-            switch (action.Option)
+            if (_gameInfo.NumTetrominosLeft[(int)TetrominoShape.O1] == 0)
             {
-                case TakePuzzleAction.Options.TopWhite:
-                    return _gameInfo.NumWhitePuzzlesLeft == 0
-                        ? new PuzzleDeckIsEmptyFail(TakePuzzleAction.Options.TopWhite)
-                        : new VerificationSuccess();
-                case TakePuzzleAction.Options.TopBlack:
-                    return _gameInfo.NumBlackPuzzlesLeft == 0
-                        ? new PuzzleDeckIsEmptyFail(TakePuzzleAction.Options.TopBlack)
-                        : new VerificationSuccess();
-                case TakePuzzleAction.Options.Normal:
-                    if (action.PuzzleId is null) return new PuzzleIdIsNullFail();
-
-                    // find the puzzle
-                    foreach (Puzzle puzzle in _gameInfo.AvailableWhitePuzzles.Concat(_gameInfo.AvailableBlackPuzzles))
-                    {
-                        if (puzzle.Id == action.PuzzleId)
-                        {
-                            // if EndOfTheGame is triggered a player can take only 1 black puzzle per round
-                            if (_turnInfo.GamePhase == GamePhase.EndOfTheGame && _turnInfo.TookBlackPuzzle && puzzle.IsBlack)
-                            {
-                                return new PlayerAlreadyTookBlackPuzzleInEndOfTheGameFail();
-                            }
-                            return new VerificationSuccess();
-                        }
-                    }
-                    // no puzzle matching ID found
-                    return new PuzzleNotAvailableFail(action.PuzzleId.Value);
-                default:
-                    throw new InvalidOperationException("Unknown take puzzle option");
+                return new TetrominoNotInSharedReserveFail(TetrominoShape.O1);
             }
+            return new VerificationSuccess();
+        }
+        private VerificationStatus VerifyChangeTetrominoAction(ChangeTetrominoAction action)
+        {
+            // check if the player has the old tetromino
+            if (_playerInfo.NumTetrominosOwned[(int)action.OldTetromino] == 0)
+            {
+                return new TetrimonoNotInPersonalSupplyFail(action.OldTetromino);
+            }
+            // check if the player can trade the old tetromino for the new one
+            var validChanges = RewardManager.GetUpgradeOptions(_gameInfo.NumTetrominosLeft, action.OldTetromino);
+            if (!validChanges.Contains(action.NewTetromino))
+            {
+                return new InvalidTetrimonoChangeFail(action.OldTetromino, action.NewTetromino);
+            }
+
+            return new VerificationSuccess();
         }
         private VerificationStatus VerifyPlaceTetrominoAction(PlaceTetrominoAction action)
         {
@@ -271,7 +266,7 @@ namespace Kostra
         public RecycleAction.Options Color => color;
         public override string Message => $"{color} row is empty";
     }
-        class PuzzleNotInRowFail(uint id, RecycleAction.Options color) : VerificationFailure
+    class PuzzleNotInRowFail(uint id, RecycleAction.Options color) : VerificationFailure
     {
         public uint Id => id;
         public RecycleAction.Options Color => color;
