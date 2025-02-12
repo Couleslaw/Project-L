@@ -228,7 +228,6 @@ namespace Kostra
             return new VerificationSuccess();
         }
 
-
         /// <summary>Verifies the place tetromino action.</summary>
         /// <param name="action">The action</param>
         /// <returns>
@@ -352,7 +351,7 @@ namespace Kostra
         }
     }
 
-    // verification status messages
+    /* ---------- VERIFICATION STATUS MESSAGES ---------- */
 
     /// <summary>
     /// Represents the result of the verification.

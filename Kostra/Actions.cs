@@ -139,11 +139,18 @@
         }
     }
 
+
+    /// <summary>
+    /// The base class for <see cref="TakeBasicTetrominoAction"/> and <see cref="ChangeTetrominoAction"/> because they are technically the same action, just with different parameters.
+    /// </summary>
+    /// <seealso cref="Kostra.VerifiableAction" />
+    abstract class TetrominoAction : VerifiableAction { }
+
     /// <summary>
     /// Represents the action of taking a <see cref="TetrominoShape.O1"/> tetromino from the shared reserve.
     /// </summary>
     /// <seealso cref="Kostra.VerifiableAction" />
-    class TakeBasicTetrominoAction : VerifiableAction
+    class TakeBasicTetrominoAction : TetrominoAction
     {
         public override void Accept(IActionProcessor visitor)
         {
@@ -155,7 +162,7 @@
     /// Represents the action of changing a tetromino for a different one.
     /// </summary>
     /// <seealso cref="Kostra.VerifiableAction" />
-    class ChangeTetrominoAction(TetrominoShape oldTetromino, TetrominoShape newTetromino) : VerifiableAction 
+    class ChangeTetrominoAction(TetrominoShape oldTetromino, TetrominoShape newTetromino) : TetrominoAction
     {
         /// <summary>
         /// The tetromino the player is returning to the shared reserve.

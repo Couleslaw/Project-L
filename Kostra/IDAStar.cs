@@ -32,7 +32,7 @@ namespace Kostra
     public interface IEdge<T> where T : INode<T>
     {
         /// <summary>
-        /// The start node of th edge.
+        /// The start node of the edge.
         /// </summary>
         public T From { get; }
 
