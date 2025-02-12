@@ -242,7 +242,8 @@ namespace Kostra {
                 }
             }
 
-            // determine the order of players by score
+            // determine the order of players by score, completed puzzles and leftover tetrominos
+            // lover index means better position
             Array.Sort(PlayerStates);
             // (PlayerState, order)
             // if two PlayerState1 == PlayerState2, then order1 == order2

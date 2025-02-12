@@ -2,19 +2,36 @@ using System.Net.Http.Headers;
 
 namespace Kostra {
 
-    class GameStateBuilder {
+    /// <summary>
+    /// Builder for the <see cref="GameState"/> class.
+    /// </summary>
+    class GameStateBuilder 
+    {
         private readonly List<Puzzle> _whitePuzzlesDeck = new();
         private readonly List<Puzzle> _blackPuzzlesDeck = new();
 
-        // TODO: sem nahazet vsechny puzzle - asi precist ze souboru
+        /// <summary>
+        /// Adds the given puzzle to the white deck.
+        /// </summary>
+        /// <param name="puzzle">The puzzle.</param>
         public GameStateBuilder AddWhitePuzzle(Puzzle puzzle) {
             _whitePuzzlesDeck.Add(puzzle);
             return this;
         }
+
+        /// <summary>
+        /// Adds the given puzzle to the black deck.
+        /// </summary>
+        /// <param name="puzzle">The puzzle.</param>
         public GameStateBuilder AddBlackPuzzle(Puzzle puzzle) {
             _blackPuzzlesDeck.Add(puzzle);
             return this;
         }
+
+        /// <summary>
+        /// Builds a new instance of the <see cref="GameState"/> class containing shuffled decks of the added puzzles.
+        /// </summary>
+        /// <returns></returns>
         public GameState Build() {
             _whitePuzzlesDeck.Shuffle();
             _blackPuzzlesDeck.Shuffle();
@@ -22,6 +39,17 @@ namespace Kostra {
         }
     }
 
+    /// <summary>
+    ///   <para>
+    /// Represents the current state of the shared resources in the game.
+    /// </para>
+    ///   <list type="bullet">
+    ///     <item>The row of available white puzzles. </item>
+    ///     <item>The row of available black puzzles. </item>
+    ///     <item>The tetrominos left in the shared reserve. </item>
+    ///     <item>The decks of white and black puzzles. </item>
+    ///   </list>
+    /// </summary>
     class GameState
     {
         // puzzles in decks and on the game board
@@ -33,17 +61,26 @@ namespace Kostra {
         private readonly Queue<Puzzle> _whitePuzzlesDeck;
         private readonly Queue<Puzzle> _blackPuzzlesDeck;
 
-        // tetrominos in the bank
+        /// <summary> The amount of tetrominos of each shape in the shared reserve at the beginning of the game.  </summary>
         private const int _numInitialTetrominos = 15;
+
+        /// <summary> Contains the number of tetrominos left in the shared reserve for each shape.  </summary>
         public int[] NumTetrominosLeft { get; init; } = new int[TetrominoManager.NumShapes];
 
-        public GameState(List<Puzzle> whitePuzzlesDeck, List<Puzzle> blackPuzzlesDeck)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GameState"/> class.
+        /// </summary>
+        /// <param name="whitePuzzlesDeck">A collection of the white puzzles.</param>
+        /// <param name="blackPuzzlesDeck">A collection of the black puzzles.</param>
+        /// <exception cref="System.ArgumentException">Not enough puzzles to fill the rows.</exception>
+        public GameState(ICollection<Puzzle> whitePuzzlesDeck, ICollection<Puzzle> blackPuzzlesDeck)
         {
             if (whitePuzzlesDeck.Count < _numPuzzlesInRow || blackPuzzlesDeck.Count < _numPuzzlesInRow)
             {
-                throw new ArgumentException("Not enough puzzles");
+                throw new ArgumentException("Not enough puzzles to fill the rows.");
             };
-            // create queues
+
+            // create queues representing the decks
             _whitePuzzlesDeck = new Queue<Puzzle>(whitePuzzlesDeck);
             _blackPuzzlesDeck = new Queue<Puzzle>(blackPuzzlesDeck);
 
@@ -62,11 +99,15 @@ namespace Kostra {
         }
 
 
-        // PUZZLES
+        /*--------------- PUZZLES ---------------*/
 
+        /// <summary> The number of puzzles left in the white deck. </summary>
         public int NumWhitePuzzlesLeft => _whitePuzzlesDeck.Count;
+
+        /// <summary> The number of puzzles left in the black deck. </summary>
         public int NumBlackPuzzlesLeft => _blackPuzzlesDeck.Count;
 
+        /// <summary> Returns a list containing the puzzles in the white row. </summary>
         public List<Puzzle> GetAvailableWhitePuzzles()
         {
             var result = new List<Puzzle>();
@@ -79,6 +120,8 @@ namespace Kostra {
             }
             return result;
         }
+
+        /// <summary> Returns a list containing the puzzles in the black row. </summary>
         public List<Puzzle> GetAvailableBlackPuzzles()
         {
             var result = new List<Puzzle>();
@@ -91,6 +134,11 @@ namespace Kostra {
             }
             return result;
         }
+
+        /// <summary>
+        /// Removes 1 puzzle from the top of the white deck and returns it.
+        /// </summary>
+        /// <returns>The puzzle if the deck is nonempty; <c>null</c> otherwise.</returns>
         public Puzzle? TakeTopWhitePuzzle()
         {
             if (_whitePuzzlesDeck.Count == 0)
@@ -99,6 +147,11 @@ namespace Kostra {
             }
             return _whitePuzzlesDeck.Dequeue();
         }
+
+        /// <summary>
+        /// Removes 1 puzzle from the top of the black deck and returns it.
+        /// </summary>
+        /// <returns>The puzzle if the deck is nonempty; <c>null</c> otherwise.</returns>
         public Puzzle? TakeTopBlackPuzzle()
         {
             if (_blackPuzzlesDeck.Count == 0)
@@ -108,6 +161,11 @@ namespace Kostra {
             return _blackPuzzlesDeck.Dequeue();
         }
 
+        /// <summary>
+        /// Finds the puzzle matching the given identifier in one of the rows.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>The puzzle if it is present; <c>null</c> otherwise.</returns>
         public Puzzle? GetPuzzleWithId(uint id)
         {
             for (int i = 0; i < _whitePuzzlesRow.Length; i++)
@@ -126,6 +184,11 @@ namespace Kostra {
             }
             return null;
         }
+
+        /// <summary>
+        /// Removes the puzzle matching the given identifier from one of the rows, if it is present.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
         public void RemovePuzzleWithId(uint id)
         {
             for (int i = 0; i < _whitePuzzlesRow.Length; i++)
@@ -145,6 +208,10 @@ namespace Kostra {
                 }
             }
         }
+
+        /// <summary>
+        /// Refills the blank spots in the puzzle rows with puzzles from the decks.
+        /// </summary>
         public void RefillPuzzles()
         {
             for (int i = 0; i < _whitePuzzlesRow.Length; i++)
@@ -162,6 +229,11 @@ namespace Kostra {
                 }
             }
         }
+
+        /// <summary>
+        /// Puts the puzzle to the bottom of the deck it belongs to.
+        /// </summary>
+        /// <param name="puzzle">The puzzle.</param>
         public void PutPuzzleToTheBottomOfDeck(Puzzle puzzle)
         {
             if (puzzle.IsBlack)
@@ -174,13 +246,22 @@ namespace Kostra {
             }
         }
 
-        // TETROMINOS
+        /*-------------- TETROMINOS --------------*/
 
+        /// <summary>
+        /// Returns the number of tetrominos of the given shape left in the shared reserve.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
         public int GetNumTetrominosOfType(TetrominoShape shape)
         {
             return NumTetrominosLeft[(int)shape];
         }
 
+        /// <summary>
+        /// Removes the tetromino of the given shape from the shared reserve.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
+        /// <exception cref="System.InvalidOperationException">No tetrominos of type {shape} left</exception>
         public void RemoveTetromino(TetrominoShape shape)
         {
             if (NumTetrominosLeft[(int)shape] == 0)
@@ -189,6 +270,12 @@ namespace Kostra {
             }
             NumTetrominosLeft[(int)shape]--;
         }
+
+        /// <summary>
+        /// Adds the tetromino of the given shape to the shared reserve.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
+        /// <exception cref="System.InvalidOperationException">Too many tetrominos of type {shape}</exception>
         public void AddTetromino(TetrominoShape shape)
         {
             if (NumTetrominosLeft[(int)shape] >= _numInitialTetrominos)
@@ -198,16 +285,32 @@ namespace Kostra {
             NumTetrominosLeft[(int)shape]++;
         }
 
-        // GAME INFO = wrapper around GameState to prevent modification
+        /*-------------- GAME INFO WRAPPER --------------*/
 
+        /// <summary>
+        /// Returns a copy of information about the game wrapped in a <see cref="GameInfo" /> object.
+        /// </summary>
         public GameInfo GetGameInfo() => new GameInfo(this);
 
+
+        /// <summary>
+        /// Provides information about about the game while preventing modification of the original data.
+        /// </summary>
         public class GameInfo(GameState gameState)
         {
+            /// <summary>  The number of puzzles left in the white deck.  </summary>
             public int NumWhitePuzzlesLeft = gameState.NumWhitePuzzlesLeft;
+
+            /// <summary>  The number of puzzles left in the black deck.  </summary>
             public int NumBlackPuzzlesLeft = gameState.NumBlackPuzzlesLeft;
+
+            /// <summary> The puzzles in the white row. </summary>
             public Puzzle[] AvailableWhitePuzzles = gameState.GetAvailableWhitePuzzles().Select(p => p.Clone()).ToArray();
+
+            /// <summary> The puzzles in the black row. </summary>
             public Puzzle[] AvailableBlackPuzzles = gameState.GetAvailableBlackPuzzles().Select(p => p.Clone()).ToArray();
+
+            /// <summary>  The number of tetrominos of each shape left in the shared reserve. </summary>
             public IReadOnlyList<int> NumTetrominosLeft = gameState.NumTetrominosLeft.AsReadOnly();
         }
     }

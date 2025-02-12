@@ -4,7 +4,7 @@ using System.Text;
 namespace Kostra
 {
     /// <summary>
-    /// Reprezents a 5x5 binary image. The image is stored as an integer, where each bit represents a cell in the image.
+    /// Represents a 5x5 binary image. The image is stored as an integer, where each bit represents a cell in the image.
     /// The top left corner is viewed the least significant bit. We go down row by row from left to right.
     /// 
     /// <example><code>
@@ -19,10 +19,20 @@ namespace Kostra
     /// </summary>
     public readonly struct BinaryImage : IEquatable<BinaryImage>
     {
+        /// <summary> The internal representation of the image. </summary>
         private readonly int _image;
+
+        /// <summary> The image which has all cells empty. </summary>
         public static BinaryImage EmptyImage => new(0);
+
+        /// <summary> The image which has all cells filled in. </summary>
         public static BinaryImage FullImage => new((1 << 26) - 1);
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BinaryImage"/> struct.
+        /// </summary>
+        /// <param name="image">The encoding of the image.</param>
+        /// <exception cref="System.ArgumentException">Binary image must be 5x5</exception>
         public BinaryImage(int image)
         {
             if (image < 0 || image >= 1 << 25)
@@ -31,6 +41,13 @@ namespace Kostra
             }
             _image = image;
         }
+
+        /// <summary>
+        /// Converts to string. '#' represents filled cell, '.' represents empty cell.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             StringBuilder sb = new();
@@ -46,7 +63,7 @@ namespace Kostra
         }
 
 
-        // Implement IEquatable
+        /*------------ Implement IEquatable ------------*/
 
         public bool Equals(BinaryImage other)
         {
@@ -70,21 +87,45 @@ namespace Kostra
             return !left.Equals(right);
         }
 
-        // Useful bitwise operators
+        /*------------- Useful bitwise operators ------------*/
 
+        /// <summary>
+        /// Implements the operator &amp;.
+        /// </summary>
+        /// <returns>
+        /// The intersection of the two images.
+        /// </returns>
         public static BinaryImage operator &(BinaryImage left, BinaryImage right)
         {
             return new(left._image & right._image);
         }
+
+        /// <summary>
+        /// Implements the operator |.
+        /// </summary>
+        /// <returns>
+        /// The union of the two images.
+        /// </returns>
         public static BinaryImage operator |(BinaryImage left, BinaryImage right)
         {
             return new(left._image | right._image);
         }
+
+        /// <summary>
+        /// Implements the operator ~.
+        /// </summary>
+        /// <returns>
+        /// The complement of the image.
+        /// </returns>
         public static BinaryImage operator ~(BinaryImage image)
         {
             return new(~image._image);
         }
 
+        /// <summary>
+        /// Counts the filled cells.
+        /// </summary>
+        /// <returns>The number of filled in cells of the image.</returns>
         public int CountFilledCells()
         {
             int count = 0;
@@ -94,12 +135,22 @@ namespace Kostra
             }
             return count;
         }
+
+        /// <summary>
+        /// Counts the empty cells.
+        /// </summary>
+        /// <returns>The number of empty cells of the image.</returns>
         public int CountEmptyCells()
         {
             return 25 - CountFilledCells();
         }
 
-        // Image transformations
+        /*----------------- Image transformations -----------------*/
+
+        /// <summary>
+        /// Attempts to move the cells of the image up by one cell. If there is a filled cell in the top row, no transformation is done.
+        /// </summary>
+        /// <returns>The transformed image.</returns>
         public BinaryImage MoveUp()
         {
             int newImage = _image;
@@ -109,6 +160,11 @@ namespace Kostra
             }
             return new(newImage);
         }
+
+        /// <summary>
+        /// Attempts to move the cells of the image down by one cell. If there is a filled cell in the bottom row, no transformation is done.
+        /// </summary>
+        /// <returns>The transformed image.</returns>
         public BinaryImage MoveDown()
         {
             int newImage = _image;
@@ -118,6 +174,11 @@ namespace Kostra
             }
             return new(newImage);
         }
+
+        /// <summary>
+        /// Attempts to move the cells of the image right by one cell. If there is a filled cell in the right column, no transformation is done.
+        /// </summary>
+        /// <returns>The transformed image.</returns>
         public BinaryImage MoveRight()
         {
             int newImage = _image;
@@ -127,6 +188,11 @@ namespace Kostra
             }
             return new(newImage);
         }
+
+        /// <summary>
+        /// Attempts to move the cells of the image left by one cell. If there is a filled cell in the left column, no transformation is done.
+        /// </summary>
+        /// <returns>The transformed image.</returns>
         public BinaryImage MoveLeft()
         {
             int newImage = _image;
@@ -136,6 +202,11 @@ namespace Kostra
             }
             return new(newImage);
         }
+
+        /// <summary>
+        /// Rotates the image 90 degrees to the right.
+        /// </summary>
+        /// <returns>The transformed image.</returns>
         public BinaryImage RotateRight()
         {
             int newImage = 0;
@@ -149,6 +220,11 @@ namespace Kostra
             }
             return new(newImage);
         }
+
+        /// <summary>
+        /// Rotates the image 90 degrees to the left.
+        /// </summary>
+        /// <returns>The transformed image.</returns>
         public BinaryImage RotateLeft()
         {
             int newImage = 0;
@@ -162,6 +238,11 @@ namespace Kostra
             }
             return new(newImage);
         }
+
+        /// <summary>
+        /// Flips the image horizontally.
+        /// </summary>
+        /// <returns>The transformed image.</returns>
         public BinaryImage FlipHorizontally()
         {
             int newImage = 0;
@@ -175,6 +256,11 @@ namespace Kostra
             }
             return new(newImage);
         }
+
+        /// <summary>
+        /// Flips the image vertically.
+        /// </summary>
+        /// <returns>The transformed image.</returns>
         public BinaryImage FlipVertically()
         {
             int newImage = 0;
@@ -188,6 +274,11 @@ namespace Kostra
             }
             return new(newImage);
         }
+
+        /// <summary>
+        /// Moves the filled in cells to the top left corner of the image.
+        /// </summary>
+        /// <returns>The transformed image.</returns>
         public BinaryImage MoveImageToTopLeftCorner()
         {
             int newImage = _image;
@@ -205,25 +296,117 @@ namespace Kostra
         }
     }
 
-    public enum TetrominoShape { O1, O2, I2, I3, I4, L2, L3, Z, T }
+    /// <summary>
+    /// Represents a specific tetromino shape.
+    /// </summary>
+    public enum TetrominoShape {
+        /// <summary>
+        /// The 1x1 square tetromino.
+        /// </summary>
+        O1,
 
+        /// <summary>
+        /// The 2x2 square tetromino.
+        /// </summary>
+        O2,
+
+        /// <summary>
+        /// The 1x2 line tetromino.
+        /// </summary>
+        I2,
+
+        /// <summary>
+        /// The 1x3 line tetromino.
+        /// </summary>
+        I3,
+
+        /// <summary>
+        /// The 1x4 line tetromino.
+        /// </summary>
+        I4,
+
+        /// <summary>
+        /// The L shaped tetromino of length 2. Looks like <see cref="I2"/> with <see cref="O1"/> attached to the right.
+        /// </summary>
+        L2,
+
+        /// <summary>
+        /// The L shaped tetromino of length 3. Looks like <see cref="I3"/> with <see cref="O1"/> attached to the right.
+        /// </summary>
+        L3,
+
+        /// <summary>
+        /// The Z shaped tetromino. Looks like two <see cref="I2"/> tetrominos attached to each other, the bottom one shifted by one cell to the right.
+        /// </summary>
+        Z,
+
+        /// <summary>
+        /// The T shaped tetromino. Likes like <see cref="I3"/> with <see cref="O1"/> attacked to the middle cell.
+        /// </summary>
+        T
+    }
+
+    /// <summary>
+    /// Represents a puzzle in the game.
+    /// </summary>
     public class Puzzle
     {
         // id
+
         private static uint _idCounter = 0;
+
+        /// <summary>
+        /// The unique identifier of the puzzle.
+        /// </summary>
         public uint Id { get; } = _idCounter++;
 
         // puzzle parameters
+
+        /// <summary>
+        /// Specifies whether the puzzle is black or white.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is black; <c>false</c> if it is white.
+        /// </value>
         public bool IsBlack { get; }
+
+        /// <summary>
+        /// Specifies the score the player gets for completing the puzzle.
+        /// </summary>
         public int RewardScore { get; }
+
+        /// <summary>
+        /// Specifies the tetromino the player gets for completing the puzzle.
+        /// </summary>
         public TetrominoShape RewardTetromino { get; }
 
         // binary representation of the puzzle image
+        // 
+        /// <summary>
+        /// Specifies which cells of the puzzle need to be filled in.
+        /// </summary>
         public BinaryImage Image { get; private set; }
+
+        /// <summary>
+        /// The number of cells which need to be filled in.
+        /// </summary>
         public int NumEmptyCells { get; private set; }
+
+        /// <summary>
+        /// Indicates whether this puzzle has been completed.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this puzzle has been completed; otherwise, <c>false</c>.
+        /// </value>
         public bool IsFinished => NumEmptyCells == 0;
 
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Puzzle"/> class.
+        /// </summary>
+        /// <param name="binaryImage">The binary image representing the puzzle.</param>
+        /// <param name="score">The score the player will receive for completing the puzzle.</param>
+        /// <param name="reward">The tetromino the player will receive for completing the puzzle.</param>
+        /// <param name="isBlack">Indicates whether the puzzle is black or white</param>
         public Puzzle(BinaryImage binaryImage, int score, TetrominoShape reward, bool isBlack)
         {
             Image = binaryImage;
@@ -235,16 +418,35 @@ namespace Kostra
         }
 
 
-        // index by shape to get number of used tetrominos of that shape
+        /// <summary>
+        /// Contains information about the number of tetrominos of each shape used on the puzzle.
+        /// </summary>
         private int[] _usedTetrominos = new int[TetrominoManager.NumShapes];
 
+        /// <summary>
+        /// Determines whether the given tetromino can be placed on the puzzle.
+        /// </summary>
+        /// <param name="tetromino">The position of the tetromino.</param>
+        /// <returns>
+        ///   <c>true</c> if the tetromino can be placed; <c>false</c> otherwise.
+        /// </returns>
         public bool CanPlaceTetromino(BinaryImage tetromino) => (Image & tetromino) == BinaryImage.EmptyImage;
-        public void AddTetromino(TetrominoShape tetromino, BinaryImage tetrominoImage)
+
+        /// <summary>
+        /// Places the given tetromino on the puzzle.
+        /// </summary>
+        /// <param name="tetromino">The shape of the tetromino.</param>
+        /// <param name="position">The position of the tetromino.</param>
+        public void AddTetromino(TetrominoShape tetromino, BinaryImage position)
         {
             _usedTetrominos[(int)tetromino]++;
             NumEmptyCells -= TetrominoManager.GetLevelOf(tetromino);
-            Image |= tetrominoImage;
+            Image |= position;
         }
+
+        /// <summary>
+        /// Enumerates all tetrominos placed on the puzzle.
+        /// </summary>
         public IEnumerable<TetrominoShape> GetUsedTetrominos()
         {
             for (int shape = 0; shape < TetrominoManager.NumShapes; shape++)
@@ -255,7 +457,11 @@ namespace Kostra
                 }
             }
         }
-    
+
+        /// <summary>
+        /// Clones this instance.
+        /// </summary>
+        /// <returns>A deep copy of this instance.</returns>
         public Puzzle Clone()
         {
             Puzzle clone = new(Image, RewardScore, RewardTetromino, IsBlack);
@@ -265,16 +471,33 @@ namespace Kostra
         }
     }
 
+    /// <summary>
+    /// Provides information about the different tetromino shapes and their configurations.
+    /// </summary>
     public static class TetrominoManager
     {
-        public static int NumShapes = Enum.GetValues(typeof(TetrominoShape)).Length;
+        /// <summary> The number tetromino shape in the game. </summary>
+        public static int NumShapes => Enum.GetValues(typeof(TetrominoShape)).Length;
 
+        /// <summary> The minimum level a tetromino can have.  </summary>
         public const int MinLevel = 1;
+
+        /// <summary>  The maximum level a tetromino can have. </summary>
         public const int MaxLevel = 4;
 
+        /// <summary> Contains the level of each tetromino shape.  </summary>
         private static readonly int[] _levels = new int[NumShapes];
+
+        /// <summary>  For each possible level, contains a list of tetromino shapes with that level.  </summary>
         private static readonly List<TetrominoShape>[] _shapesByLevel = new List<TetrominoShape>[MaxLevel - MinLevel + 1];
+
+        /// <summary> Contains the <see cref="BinaryImage"/> representation for each tetromino shape. </summary>
         private static readonly BinaryImage[] _binaryImages = new BinaryImage[NumShapes];
+
+        /// <summary> 
+        /// Contains a list of all base configurations for each tetromino shape.
+        /// A base configuration is a position in the top left corner of the image, which can be achieved by transforming the image found in <see cref="_binaryImages"/>.
+        /// </summary>
         private static readonly List<BinaryImage>[] _baseConfigurations = new List<BinaryImage>[NumShapes];
 
         static TetrominoManager()
@@ -315,9 +538,31 @@ namespace Kostra
             }
         }
 
+        /// <summary>
+        /// Returns the <see cref="BinaryImage"/> representation of the given tetromino shape.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
         public static BinaryImage GetImageOf(TetrominoShape shape) => _binaryImages[(int)shape];
+
+        /// <summary>
+        /// Returns the level of the given tetromino shape.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
         public static int GetLevelOf(TetrominoShape shape) => _levels[(int)shape];
+
+        /// <summary>
+        /// Finds all tetromino shapes with the given level.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <returns>A list containing the shapes.</returns>
         public static List<TetrominoShape> GetShapesWithLevel(int level) => _shapesByLevel[level - MinLevel];
+
+        /// <summary>
+        /// Checks is the given image is a valid configuration of the given shape.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
+        /// <param name="image">The image.</param>
+        /// <returns><c>true</c> if the given configuration is valid; otherwise <c>false</c>.</returns>
         public static bool CompareShapeToImage(TetrominoShape shape, BinaryImage image)
         {
             // checks if the images is a valid configuration of the shape
@@ -325,6 +570,11 @@ namespace Kostra
             return _baseConfigurations[(int)shape].Contains(baseConf);
         }
 
+        /// <summary>
+        /// Generates all base configurations of the given shape.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
+        /// <returns>A list containing the configurations.</returns>
         private static List<BinaryImage> GetBaseConfigurationsOf(TetrominoShape shape)
         {
             List<BinaryImage> conf = new();
@@ -345,7 +595,14 @@ namespace Kostra
             return conf.Distinct().ToList();
         }
 
+        
         private static List<BinaryImage>[] _allConfigurationsCache = new List<BinaryImage>[NumShapes];
+
+        /// <summary>
+        /// Generates all the possible unique configurations of the given shape.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
+        /// <returns>A list containing the configurations.</returns>
         public static List<BinaryImage> GetAllUniqueConfigurationsOf(TetrominoShape shape)
         {
             // check cache first

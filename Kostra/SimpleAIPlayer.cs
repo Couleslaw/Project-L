@@ -370,7 +370,7 @@ namespace Kostra
             // we also might need to take some tetrominos from the bank
             // simplify the problem --> we just need to fill in X cells and tetromino of level L can fill in L cells
 
-            int sum = goal._puzzle.CountFilledCells() - node._puzzle.CountFilledCells();
+            int numCellsToFillIn = goal._puzzle.CountFilledCells() - node._puzzle.CountFilledCells();
             int[] numShapesOfLevelOwned = new int[TetrominoManager.MaxLevel + 1];
             for (int i = 0; i < TetrominoManager.NumShapes; i++)
             {
@@ -380,13 +380,13 @@ namespace Kostra
             // put in the largest shapes we can
             for (int level = TetrominoManager.MaxLevel; level >= TetrominoManager.MinLevel; level--)
             {
-                int numUsed = Math.Min(numShapesOfLevelOwned[level], sum / level);
-                sum -= level * numUsed;
+                int numUsed = Math.Min(numShapesOfLevelOwned[level], numCellsToFillIn / level);
+                numCellsToFillIn -= level * numUsed;
                 numShapesOfLevelUsed[level] = numUsed;
                 numShapesOfLevelOwned[level] -= numUsed;
             }
 
-            return numShapesOfLevelUsed.Sum() + GetStepsToFixDiff(sum);
+            return numShapesOfLevelUsed.Sum() + GetStepsToFixDiff(numCellsToFillIn);
 
             // fix the difference
             int GetStepsToFixDiff(int diff)
