@@ -10,30 +10,29 @@
             ];
             SimpleAIPlayer simpleAIPlayer = new SimpleAIPlayer();
 
-            // create game core, turn manager and processor manager
+            // create game core and action processors
             var game = new GameCore(gameState, players, shufflePlayers: false);
-            var turnManager = new TurnManager(game.GetPlayerOrder());
+            var signaler = game.TurnManager.GetSignaler();
 
-            var signaller = new TurnManager.Signals(turnManager);
             Dictionary<uint, GameActionProcessor> actionProcessors = new();
             for (int i = 0; i < players.Length; i++)
             {
                 uint playerId = game.Players[i].Id;
-                actionProcessors[playerId] = new GameActionProcessor(game, playerId, signaller);
+                actionProcessors[playerId] = new GameActionProcessor(game, playerId, signaler);
             }
 
             // game loop
             while (true) {
                 // get next turn, if game ended, break
-                TurnInfo turnInfo = turnManager.NextTurn();
-                if (turnInfo.GamePhase == GamePhase.Finished) {
+                TurnInfo turnInfo = game.GetNextTurnInfo();
+
+                if (game.CurrentGamePhase == GamePhase.Finished) {
+                    game.GameEnded();
                     break;
                 }
 
-                game.CurrentGamePhase = turnInfo.GamePhase;
-
                 // get action from current player and process it
-                uint playerId = turnManager.CurrentPlayerId;
+                uint playerId = game.CurrentPlayerId;
 
                 var gameInfo = gameState.GetGameInfo();
                 var playerInfos = game.PlayerStates.Select(playerState => playerState.GetPlayerInfo()).ToArray();
@@ -62,8 +61,8 @@
                 action.Accept(actionProcessors[playerId]);
             }
 
-            // game ended
-            var results = game.GameEnded();
+            // final results
+            var results = game.GetFinalResults();
         }
 
         private static ActionVerifier GetActionVerifier(GameCore game, TurnInfo turnInfo, uint playerId)
