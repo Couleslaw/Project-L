@@ -22,7 +22,7 @@
     /// </code></example>
     /// </summary>
     /// <param name="path">The path to the puzzle configuration file.</param>
-    internal class PuzzleParser(string path) : IDisposable
+    public class PuzzleParser(string path) : IDisposable
     {
         #region Constants
 

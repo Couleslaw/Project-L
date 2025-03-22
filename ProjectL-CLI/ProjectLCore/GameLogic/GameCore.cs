@@ -6,7 +6,7 @@ namespace ProjectLCore.GameLogic
     /// <summary>
     /// Contains all the information about a game of <b>Project L</b>.
     /// </summary>
-    internal class GameCore
+    public class GameCore
     {
         #region Constants
 

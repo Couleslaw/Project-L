@@ -7,7 +7,7 @@ namespace ProjectLCore.GameLogic
     /// Builder for the <see cref="GameState"/> class.
     /// </summary>
     /// <param name="numInitialTetrominos">The amount of tetrominos of each shape in the shared reserve at the beginning of the game.</param>
-    internal class GameStateBuilder(int numInitialTetrominos)
+    public class GameStateBuilder(int numInitialTetrominos)
     {
         #region Fields
 
@@ -56,7 +56,7 @@ namespace ProjectLCore.GameLogic
     ///     <item>The decks of white and black puzzles. </item>
     ///   </list>
     /// </summary>
-    internal class GameState
+    public class GameState
     {
         #region Constants
 

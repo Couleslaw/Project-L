@@ -7,7 +7,7 @@ namespace ProjectLCore.Players
     /// <summary>
     /// Represents the type of the player.
     /// </summary>
-    enum PlayerType
+    public enum PlayerType
     {
         /// <summary>
         /// Human players pick their action using the UI.
@@ -22,7 +22,7 @@ namespace ProjectLCore.Players
     /// <summary>
     /// Represents a player in the game.
     /// </summary>
-    internal abstract class Player
+    public abstract class Player
     {
         #region Fields
 

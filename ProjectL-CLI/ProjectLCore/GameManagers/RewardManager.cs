@@ -8,7 +8,7 @@
     /// <summary>
     /// Utility class for managing rewards and upgrades for players.
     /// </summary>
-    internal static class RewardManager
+    public static class RewardManager
     {
         #region Methods
 

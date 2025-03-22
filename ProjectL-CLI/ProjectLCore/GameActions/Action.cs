@@ -1,12 +1,11 @@
 ﻿namespace ProjectLCore.GameActions
 {
-    using ProjectLCore.GameManagers;
     using ProjectLCore.GamePieces;
 
     /// <summary>
     /// Represents the verification status of an action.
     /// </summary>
-    enum ActionStatus
+    public enum ActionStatus
     {
         /// <summary>
         /// The action has been verified and is valid.
@@ -26,7 +25,7 @@
     /// Interface for the visitor pattern.
     /// </summary>
     /// <seealso cref="IActionProcessor"/>
-    interface IAction
+    public interface IAction
     {
         #region Methods
 
@@ -43,7 +42,7 @@
     /// All subclasses which inherit from this class should be <strong>immutable</strong>. This ensures that the action can not be changed after it has been created and therefore it's <see cref="Status"/> can be trusted.
     /// </summary>
     /// <seealso cref="IAction" />
-    internal abstract class VerifiableAction : IAction
+    public abstract class VerifiableAction : IAction
     {
         #region Properties
 
@@ -77,7 +76,7 @@
     /// Last resort action for AI players, they should never actually need to use it. It will always be accepted unless the game phase is <see cref="GamePhase.FinishingTouches"/>.
     /// </summary>
     /// <seealso cref="VerifiableAction" />
-    internal class DoNothingAction : VerifiableAction
+    public class DoNothingAction : VerifiableAction
     {
         #region Methods
 
@@ -92,7 +91,7 @@
     /// Represents the action of ending a player's turn during <see cref="GamePhase.FinishingTouches"/>
     /// </summary>
     /// <seealso cref="VerifiableAction" />
-    internal class EndFinishingTouchesAction : VerifiableAction
+    public class EndFinishingTouchesAction : VerifiableAction
     {
         #region Methods
 
@@ -109,7 +108,7 @@
     /// Players can take puzzles from the top of the white deck, top of the black deck or a specific puzzle in one of the rows.
     /// </summary>
     /// <seealso cref="VerifiableAction" />
-    internal class TakePuzzleAction(TakePuzzleAction.Options option, uint? puzzleId = null) : VerifiableAction
+    public class TakePuzzleAction(TakePuzzleAction.Options option, uint? puzzleId = null) : VerifiableAction
     {
         /// <summary>
         /// Possible options for taking a puzzle.
@@ -146,7 +145,7 @@
     /// The player chooses a row to recycle. The puzzles from the row will be put to the bottom of the deck in the order specified by the player. The puzzle row is then refilled.
     /// </summary>
     /// <seealso cref="VerifiableAction" />
-    internal class RecycleAction(List<uint> order, RecycleAction.Options option) : VerifiableAction
+    public class RecycleAction(List<uint> order, RecycleAction.Options option) : VerifiableAction
     {
         #region Fields
 
@@ -185,7 +184,7 @@
     /// The base class for <see cref="TakeBasicTetrominoAction"/> and <see cref="ChangeTetrominoAction"/> because they are technically the same action, just with different parameters.
     /// </summary>
     /// <seealso cref="VerifiableAction" />
-    internal abstract class TetrominoAction : VerifiableAction
+    public abstract class TetrominoAction : VerifiableAction
     {
     }
 
@@ -193,7 +192,7 @@
     /// Represents the action of taking a <see cref="TetrominoShape.O1"/> tetromino from the shared reserve.
     /// </summary>
     /// <seealso cref="VerifiableAction" />
-    internal class TakeBasicTetrominoAction : TetrominoAction
+    public class TakeBasicTetrominoAction : TetrominoAction
     {
         #region Methods
 
@@ -209,7 +208,7 @@
     /// Represents the action of changing a tetromino for a different one.
     /// </summary>
     /// <seealso cref="VerifiableAction" />
-    internal class ChangeTetrominoAction(TetrominoShape oldTetromino, TetrominoShape newTetromino) : TetrominoAction
+    public class ChangeTetrominoAction(TetrominoShape oldTetromino, TetrominoShape newTetromino) : TetrominoAction
     {
         #region Properties
 
@@ -239,7 +238,7 @@
     /// Represents the action of placing a tetromino on a puzzle.
     /// </summary>
     /// <seealso cref="VerifiableAction" />
-    internal class PlaceTetrominoAction(uint puzzleId, TetrominoShape shape, BinaryImage position) : VerifiableAction
+    public class PlaceTetrominoAction(uint puzzleId, TetrominoShape shape, BinaryImage position) : VerifiableAction
     {
         #region Properties
 
@@ -274,7 +273,7 @@
     /// Represents the use of the Master Action.
     /// </summary>
     /// <seealso cref="VerifiableAction" />
-    internal class MasterAction(List<PlaceTetrominoAction> tetrominoPlacements) : VerifiableAction
+    public class MasterAction(List<PlaceTetrominoAction> tetrominoPlacements) : VerifiableAction
     {
         #region Fields
 

@@ -13,7 +13,7 @@ namespace ProjectLCore.GameLogic
     ///   </list>
     /// </summary>
     /// <param name="playerId">The unique identifier of the player.</param>
-    internal class PlayerState(uint playerId) : IComparable<PlayerState>, IEquatable<PlayerState>
+    public class PlayerState(uint playerId) : IComparable<PlayerState>, IEquatable<PlayerState>
     {
         #region Constants
 

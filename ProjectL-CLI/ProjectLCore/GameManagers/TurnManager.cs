@@ -7,7 +7,7 @@
     /// Takes care of the order of players, the game phase and the current turn.
     /// </summary>
     /// <param name="playerIds">The IDs of the players in the game.</param>
-    internal class TurnManager(uint[] playerIds)
+    public class TurnManager(uint[] playerIds)
     {
         #region Constants
 

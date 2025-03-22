@@ -7,4 +7,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="ProjectLCore">
+      <HintPath>..\ProjectLCore\bin\Release\net8.0\ProjectLCore.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

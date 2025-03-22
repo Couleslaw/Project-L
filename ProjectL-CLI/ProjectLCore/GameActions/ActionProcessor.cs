@@ -11,7 +11,7 @@
     /// Each action should be verified before being processed.
     /// </summary>
     /// <seealso cref="IAction"/>
-    interface IActionProcessor
+    public interface IActionProcessor
     {
         #region Methods
 
@@ -41,7 +41,7 @@
     /// <param name="game">The current game.</param>
     /// <param name="playerId">The ID of the player the processor is for.</param>
     /// <param name="signaler">A <see cref="TurnManager.Signaler"/> to send signals when processing actions.</param>
-    internal class GameActionProcessor(GameCore game, uint playerId, TurnManager.Signaler signaler) : IActionProcessor
+    public class GameActionProcessor(GameCore game, uint playerId, TurnManager.Signaler signaler) : IActionProcessor
     {
         #region Fields
 

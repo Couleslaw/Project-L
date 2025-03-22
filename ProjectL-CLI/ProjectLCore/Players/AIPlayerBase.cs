@@ -11,7 +11,7 @@
     /// Represents an AI player in the game.
     /// </summary>
     /// <seealso cref="Player" />
-    internal abstract class AIPlayerBase : Player
+    public abstract class AIPlayerBase : Player
     {
         #region Properties
 

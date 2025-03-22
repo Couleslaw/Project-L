@@ -10,7 +10,7 @@
     /// Represents a human player in the game.
     /// </summary>
     /// <seealso cref="Player" />
-    internal class HumanPlayer : Player
+    public class HumanPlayer : Player
     {
         #region Fields
 
