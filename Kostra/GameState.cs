@@ -5,7 +5,7 @@ namespace Kostra {
     /// <summary>
     /// Builder for the <see cref="GameState"/> class.
     /// </summary>
-    class GameStateBuilder 
+    class GameStateBuilder(int numInitalTetrominos)
     {
         private readonly List<Puzzle> _whitePuzzlesDeck = new();
         private readonly List<Puzzle> _blackPuzzlesDeck = new();
@@ -35,7 +35,7 @@ namespace Kostra {
         public GameState Build() {
             _whitePuzzlesDeck.Shuffle();
             _blackPuzzlesDeck.Shuffle();
-            return new GameState(_whitePuzzlesDeck, _blackPuzzlesDeck);
+            return new GameState(_whitePuzzlesDeck, _blackPuzzlesDeck, numInitalTetrominos);
         }
     }
 
@@ -62,7 +62,7 @@ namespace Kostra {
         private readonly Queue<Puzzle> _blackPuzzlesDeck;
 
         /// <summary> The amount of tetrominos of each shape in the shared reserve at the beginning of the game.  </summary>
-        private const int _numInitialTetrominos = 15;
+        private readonly int _numInitialTetrominos;
 
         /// <summary> Contains the number of tetrominos left in the shared reserve for each shape.  </summary>
         public int[] NumTetrominosLeft { get; init; } = new int[TetrominoManager.NumShapes];
@@ -72,9 +72,11 @@ namespace Kostra {
         /// </summary>
         /// <param name="whitePuzzlesDeck">A collection of the white puzzles.</param>
         /// <param name="blackPuzzlesDeck">A collection of the black puzzles.</param>
+        /// <param name="numInitalTetrominos">The amount of tetrominos of each shape in the shared reserve at the beginning of the game.</param>
         /// <exception cref="System.ArgumentException">Not enough puzzles to fill the rows.</exception>
-        public GameState(ICollection<Puzzle> whitePuzzlesDeck, ICollection<Puzzle> blackPuzzlesDeck)
+        public GameState(ICollection<Puzzle> whitePuzzlesDeck, ICollection<Puzzle> blackPuzzlesDeck, int numInitalTetrominos)
         {
+            // check if there are enough puzzles to fill the rows
             if (whitePuzzlesDeck.Count < _numPuzzlesInRow || blackPuzzlesDeck.Count < _numPuzzlesInRow)
             {
                 throw new ArgumentException("Not enough puzzles to fill the rows.");
@@ -92,6 +94,7 @@ namespace Kostra {
             }
 
             // initialize tetrominos
+            _numInitialTetrominos = numInitalTetrominos;
             for (int i = 0; i < NumTetrominosLeft.Length; i++)
             {
                 NumTetrominosLeft[i] = _numInitialTetrominos;

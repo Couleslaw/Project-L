@@ -2,7 +2,8 @@
     internal class Program {
         static void Main(string[] args) {
             // initialize a new game
-            GameState gameState = new GameStateBuilder().Build();
+            int numInitialTetrominos = 15;
+            GameState gameState = new GameStateBuilder(numInitialTetrominos).Build();
             Player[] players = [
                 new HumanPlayer(),
                 new HumanPlayer(),
