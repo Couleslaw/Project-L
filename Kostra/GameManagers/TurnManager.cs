@@ -1,64 +1,39 @@
-﻿using Kostra.GameActions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Kostra.GameManagers
+﻿namespace Kostra.GameManagers
 {
-    /// <summary>
-    /// Represents the current phase of the game
-    /// </summary>
-    enum GamePhase
-    {
-        /// <summary>
-        /// Standard phase of the game in which players take actions.
-        /// </summary>
-        Normal,
-
-        /// <summary> 
-        /// The EndOfTheGame phase is triggered when there are no more black puzzles in the black deck.
-        /// </summary>
-        EndOfTheGame,
-
-        /// <summary>
-        /// The FinishingTouches phase is triggered after the last round of the game.
-        /// </summary>
-        FinishingTouches,
-
-        /// <summary>
-        /// The game is finishing after all players use the <see cref="EndFinishingTouchesAction"/>.
-        /// </summary>
-        Finished
-    }
-
-
-    /// <summary>
-    /// Represents the information about the current turn.
-    /// </summary>
-    record struct TurnInfo(
-        int ActionsLeft,        // how many actions has the current player left in this turn
-        GamePhase GamePhase,    // what is the current game phase
-        bool UsedMasterAction,  // did the player use the Master action this turn?
-        bool TookBlackPuzzle,   // did the player take a black puzzle this turn?
-        bool LastRound          // is this the last round of the game?
-        );
-
+    using Kostra.GameActions;
+    using Kostra.GameLogic;
 
     /// <summary>
     /// Takes care of the order of players, the game phase and the current turn.
     /// </summary>
-    class TurnManager(uint[] playerIds)
+    /// <param name="playerIds">The IDs of the players in the game.</param>
+    internal class TurnManager(uint[] playerIds)
     {
-        private readonly int _numPlayers = playerIds.Length;
-        private readonly uint[] _playersIds = playerIds;
+        #region Constants
 
         /// <summary>
         /// The number of actions a player has each turn.
         /// </summary>
         public const int NumActionsInTurn = 3;
+
+        #endregion
+
+        #region Fields
+
+        private readonly int _numPlayers = playerIds.Length;
+
+        private readonly uint[] _playersIds = playerIds;
+
         private int _currentPlayerOrder = 0;
+
+        /// <summary>
+        /// Internal representation if the current turn.
+        /// </summary>
+        private TurnInfo _turnInfo = new(NumActionsLeft: NumActionsInTurn, GamePhase.Normal, UsedMasterAction: false, TookBlackPuzzle: false, LastRound: false);
+
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// Gets the current player's ID
@@ -70,10 +45,38 @@ namespace Kostra.GameManagers
         /// </summary>
         private bool IsEndOfRound => _currentPlayerOrder == _numPlayers - 1;
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// Internal representation if the current turn.
+        /// Adjusts the internal turn state to represent the next turn.
         /// </summary>
-        private TurnInfo _turnInfo = new(ActionsLeft: NumActionsInTurn, GamePhase.Normal, UsedMasterAction: false, TookBlackPuzzle: false, LastRound: false);
+        /// <returns>Information about the next turn.</returns>
+        public TurnInfo NextTurn()
+        {
+            if (_turnInfo.GamePhase == GamePhase.FinishingTouches || _turnInfo.GamePhase == GamePhase.Finished) {
+                return _turnInfo;
+            }
+
+            if (_turnInfo.NumActionsLeft > 0) {
+                _turnInfo.NumActionsLeft--;
+                return _turnInfo;
+            }
+
+            // turn of a new player
+            // after EndOfTheGame is triggered, finish current round and then play 1 last round
+
+            if (IsEndOfRound) {
+                ChangeGamePhaseIfNeeded();
+            }
+            SetNextPlayer();
+
+            return _turnInfo;
+        }
+
+        /// <summary> Creates a new signaler for this instance. </summary>
+        public Signaler GetSignaler() => new Signaler(this);
 
         /// <summary>
         /// Resets the internal turn state for the next player.
@@ -81,7 +84,7 @@ namespace Kostra.GameManagers
         private void SetNextPlayer()
         {
             _currentPlayerOrder = (_currentPlayerOrder + 1) % _numPlayers;
-            _turnInfo.ActionsLeft = NumActionsInTurn;
+            _turnInfo.NumActionsLeft = NumActionsInTurn;
             _turnInfo.UsedMasterAction = false;
             _turnInfo.TookBlackPuzzle = false;
         }
@@ -93,56 +96,25 @@ namespace Kostra.GameManagers
         /// </summary>
         private void ChangeGamePhaseIfNeeded()
         {
-            if (_turnInfo.GamePhase == GamePhase.EndOfTheGame)
-            {
-                if (_turnInfo.LastRound == false)
-                {
+            if (_turnInfo.GamePhase == GamePhase.EndOfTheGame) {
+                if (_turnInfo.LastRound == false) {
                     _turnInfo.LastRound = true;
                 }
-                else
-                {
+                else {
                     _turnInfo.GamePhase = GamePhase.FinishingTouches;
                 }
             }
         }
 
-        /// <summary>
-        /// Adjusts the internal turn state to represent the next turn.
-        /// </summary>
-        /// <returns>Information about the next turn.</returns>
-        public TurnInfo NextTurn()
-        {
-            if (_turnInfo.GamePhase == GamePhase.FinishingTouches || _turnInfo.GamePhase == GamePhase.Finished)
-            {
-                return _turnInfo;
-            }
-
-            if (_turnInfo.ActionsLeft > 0)
-            {
-                _turnInfo.ActionsLeft--;
-                return _turnInfo;
-            }
-
-            // turn of a new player
-            // after EndOfTheGame is triggered, finish current round and then play 1 last round
-
-            if (IsEndOfRound)
-            {
-                ChangeGamePhaseIfNeeded();
-            }
-            SetNextPlayer();
-
-            return _turnInfo;
-        }
-
-        /// <summary> Creates a new signaler for this instance. </summary>
-        public Signals GetSignaler() => new Signals(this);
+        #endregion
 
         /// <summary>
         /// Signal the given <see cref="TurnManager"/> about the events that happened during the turn.
         /// </summary>
-        public class Signals(TurnManager turnManager)
+        public class Signaler(TurnManager turnManager)
         {
+            #region Methods
+
             /// <summary>
             /// Signals that the current player took a black puzzle.
             /// Players can take only up to 1 black puzzle per turn once <see cref="GamePhase.EndOfTheGame"/> is triggered.
@@ -158,8 +130,7 @@ namespace Kostra.GameManagers
             /// </summary>
             public void BlackDeckIsEmpty()
             {
-                if (turnManager._turnInfo.GamePhase == GamePhase.Normal)
-                {
+                if (turnManager._turnInfo.GamePhase == GamePhase.Normal) {
                     turnManager._turnInfo.GamePhase = GamePhase.EndOfTheGame;
                 }
             }
@@ -180,11 +151,12 @@ namespace Kostra.GameManagers
             public void PlayerEndedFinishingTouches()
             {
                 turnManager.SetNextPlayer();
-                if (turnManager._currentPlayerOrder == 0)
-                {
+                if (turnManager._currentPlayerOrder == 0) {
                     turnManager._turnInfo.GamePhase = GamePhase.Finished;
                 }
             }
+
+            #endregion
         }
     }
 }

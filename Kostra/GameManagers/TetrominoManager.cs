@@ -1,25 +1,26 @@
-﻿using Kostra.GamePieces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Kostra.GameManagers
+﻿namespace Kostra.GameManagers
 {
+    using Kostra.GamePieces;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     /// <summary>
     /// Provides information about the different tetromino shapes and their configurations.
     /// </summary>
     public static class TetrominoManager
     {
-        /// <summary> The number tetromino shape in the game. </summary>
-        public static int NumShapes => Enum.GetValues(typeof(TetrominoShape)).Length;
+        #region Constants
 
         /// <summary> The minimum level a tetromino can have.  </summary>
         public const int MinLevel = 1;
 
         /// <summary>  The maximum level a tetromino can have. </summary>
         public const int MaxLevel = 4;
+
+        #endregion
+
+        #region Fields
 
         /// <summary> Contains the level of each tetromino shape.  </summary>
         private static readonly int[] _levels = new int[NumShapes];
@@ -36,9 +37,14 @@ namespace Kostra.GameManagers
         /// </summary>
         private static readonly List<BinaryImage>[] _baseConfigurations = new List<BinaryImage>[NumShapes];
 
-        static TetrominoManager()
-        {  // class ctor
+        private static readonly List<BinaryImage>[] _allConfigurationsCache = new List<BinaryImage>[NumShapes];
 
+        #endregion
+
+        #region Constructors
+
+        static TetrominoManager()
+        {
             // initialize tetromino images
             _binaryImages[(int)TetrominoShape.O1] = new(0b1);
             _binaryImages[(int)TetrominoShape.O2] = new(0b1100011);
@@ -51,28 +57,35 @@ namespace Kostra.GameManagers
             _binaryImages[(int)TetrominoShape.T] = new(0b1000111);
 
             // level of tetromino = number of 1s in its binary image
-            for (int i = 0; i < NumShapes; i++)
-            {
+            for (int i = 0; i < NumShapes; i++) {
                 _levels[i] = _binaryImages[i].CountFilledCells();
             }
 
             // create list of shapes for each level
-            for (int i = 0; i < NumShapes; i++)
-            {
+            for (int i = 0; i < NumShapes; i++) {
                 int index = _levels[i] - MinLevel;
-                if (_shapesByLevel[index] is null)
-                {
+                if (_shapesByLevel[index] is null) {
                     _shapesByLevel[index] = new();
                 }
                 _shapesByLevel[index].Add((TetrominoShape)i);
             }
 
             // generate all base configurations for each shape
-            for (int i = 0; i < NumShapes; i++)
-            {
+            for (int i = 0; i < NumShapes; i++) {
                 _baseConfigurations[i] = GetBaseConfigurationsOf((TetrominoShape)i);
             }
         }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary> The number tetromino shape in the game. </summary>
+        public static int NumShapes { get; } = Enum.GetValues(typeof(TetrominoShape)).Length;
+
+        #endregion
+
+        #region Methods
 
         /// <summary>
         /// Returns the <see cref="BinaryImage"/> representation of the given tetromino shape.
@@ -107,34 +120,6 @@ namespace Kostra.GameManagers
         }
 
         /// <summary>
-        /// Generates all base configurations of the given shape.
-        /// </summary>
-        /// <param name="shape">The shape.</param>
-        /// <returns>A list containing the configurations.</returns>
-        private static List<BinaryImage> GetBaseConfigurationsOf(TetrominoShape shape)
-        {
-            List<BinaryImage> conf = new();
-            BinaryImage image = _binaryImages[(int)shape];
-
-            for (int i = 0; i < 4; i++)
-            {
-                conf.Add(image.MoveImageToTopLeftCorner());
-                image = image.RotateRight();
-            }
-            image = image.FlipHorizontally();
-            for (int i = 0; i < 4; i++)
-            {
-                conf.Add(image.MoveImageToTopLeftCorner());
-                image = image.RotateRight();
-            }
-
-            return conf.Distinct().ToList();
-        }
-
-
-        private static List<BinaryImage>[] _allConfigurationsCache = new List<BinaryImage>[NumShapes];
-
-        /// <summary>
         /// Generates all the possible unique configurations of the given shape.
         /// </summary>
         /// <param name="shape">The shape.</param>
@@ -142,8 +127,7 @@ namespace Kostra.GameManagers
         public static List<BinaryImage> GetAllUniqueConfigurationsOf(TetrominoShape shape)
         {
             // check cache first
-            if (_allConfigurationsCache[(int)shape] is not null)
-            {
+            if (_allConfigurationsCache[(int)shape] is not null) {
                 return _allConfigurationsCache[(int)shape];
             }
 
@@ -151,23 +135,19 @@ namespace Kostra.GameManagers
 
             List<BinaryImage> result = new();
 
-            foreach (BinaryImage image in _baseConfigurations[(int)shape])
-            {
+            foreach (BinaryImage image in _baseConfigurations[(int)shape]) {
                 BinaryImage downImage = image;
                 // moving down
-                while (true)
-                {
+                while (true) {
                     BinaryImage rightImage = downImage;
                     // moving right
                     result.Add(rightImage);
-                    while (rightImage != rightImage.MoveRight())
-                    {
+                    while (rightImage != rightImage.MoveRight()) {
                         rightImage = rightImage.MoveRight();
                         result.Add(rightImage);
                     }
 
-                    if (downImage == downImage.MoveDown())
-                    {
+                    if (downImage == downImage.MoveDown()) {
                         break;
                     }
                     downImage = downImage.MoveDown();
@@ -177,5 +157,30 @@ namespace Kostra.GameManagers
             _allConfigurationsCache[(int)shape] = result;
             return result;
         }
+
+        /// <summary>
+        /// Generates all base configurations of the given shape.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
+        /// <returns>A list containing the configurations.</returns>
+        private static List<BinaryImage> GetBaseConfigurationsOf(TetrominoShape shape)
+        {
+            List<BinaryImage> conf = new();
+            BinaryImage image = _binaryImages[(int)shape];
+
+            for (int i = 0; i < 4; i++) {
+                conf.Add(image.MoveImageToTopLeftCorner());
+                image = image.RotateRight();
+            }
+            image = image.FlipHorizontally();
+            for (int i = 0; i < 4; i++) {
+                conf.Add(image.MoveImageToTopLeftCorner());
+                image = image.RotateRight();
+            }
+
+            return conf.Distinct().ToList();
+        }
+
+        #endregion
     }
 }

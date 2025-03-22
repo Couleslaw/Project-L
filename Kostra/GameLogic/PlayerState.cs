@@ -1,51 +1,64 @@
-using Kostra.GameManagers;
-using Kostra.GamePieces;
-
-namespace Kostra.GameLogic {
+namespace Kostra.GameLogic
+{
+    using Kostra.GameManagers;
+    using Kostra.GamePieces;
 
     /// <summary>
-    ///   <para>
     /// Represents the resources and progress of a single player.
-    /// </para>
     ///   <list type="bullet">
-    ///     <item>His current score. </item>
+    ///     <item>His current score.</item>
     ///     <item>Tetrominos he has.</item>
-    ///     <item> Puzzles he is working on.</item>
-    ///     <item> Puzzles he has completed. </item>
+    ///     <item>Puzzles he is working on.</item>
+    ///     <item>Puzzles he has completed.</item>
     ///   </list>
     /// </summary>
-    class PlayerState(uint playerId) : IComparable<PlayerState>, IEquatable<PlayerState> 
+    /// <param name="playerId">The unique identifier of the player.</param>
+    internal class PlayerState(uint playerId) : IComparable<PlayerState>, IEquatable<PlayerState>
     {
+        #region Constants
+
+        /// <summary>  The maximum number of puzzles a player can be working on at the same time. </summary>
+        public const int MaxPuzzles = 4;
+
+        #endregion
+
+        #region Fields
+
+        private readonly Puzzle?[] _puzzles = [null, null, null, null];
+
+        /// <summary> Contains the number of tetrominos owned by the player for each shape. </summary>
+        private int[] _numTetrominosOwned = new int[TetrominoManager.NumShapes];
+
+        /// <summary> Contains the ids of the puzzles that the player has already completed. </summary>
+        private List<uint> _finishedPuzzleIds = new();
+
+        #endregion
+
+        #region Properties
+
         /// <summary> Unique identifier of the player. </summary>
         public uint PlayerId { get; init; } = playerId;
 
         /// <summary> Current score of the player. </summary>
         public int Score { get; set; } = 0;
 
-        /// <summary> Contains the number of tetrominos owned by the player for each shape. </summary>
-        private int[] _numTetrominosOwned = new int[TetrominoManager.NumShapes];
+        #endregion
 
-        /// <summary>  The maximum number of puzzles a player can be working on at the same time. </summary>
-        public const int MaxPuzzles = 4;
-        private readonly Puzzle?[] _puzzles = [null, null, null, null];
+        #region Methods
 
-        /// <summary> Contains the ids of the puzzles that the player has already completed. </summary>
-        private List<uint> _finishedPuzzleIds = new();
-
-        /*---------- Implement IComparable ----------*/
+        #region Implement IComparable 
 
         /// <summary>
-        ///   <para>
+        /// <para>
         /// Compares THIS instance with another <see cref="PlayerState" /> and returns an integer that indicates whether THIS instance precedes, follows, or occurs in the same position in the final scoring order as the other player.
         /// This is used for determining the order of players in the leaderboard.
         /// Meaning that if <c>A&lt;B</c> then A is in a better position than B.
         /// </para>
-        ///   <para>The player with the highest score wins. </para>
+        /// <para>The player with the highest score wins.</para>
         ///   <list type="bullet">
         ///     <item>In case of a tie, the player who has completed the most puzzles wins.</item>
         ///     <item>In case of a tie, the player with the most leftover tetrominos wins.</item>
-        ///     <item>
-        /// If there is still a tie, the payers are placed at the same position. </item>
+        ///     <item>If there is still a tie, the payers are placed at the same position. </item>
         ///   </list>
         /// </summary>
         /// <param name="other">An object to compare with this instance.</param>
@@ -54,23 +67,25 @@ namespace Kostra.GameLogic {
         /// <list type="table"><listheader><term> Value</term><term> Meaning</term></listheader><item><description> Less than zero</description><description> This instance precedes <paramref name="other" /> in the sort order.</description></item><item><description> Zero</description><description> This instance occurs in the same position in the sort order as <paramref name="other" />.</description></item><item><description> Greater than zero</description><description> This instance follows <paramref name="other" /> in the sort order.</description></item></list></returns>
         public int CompareTo(PlayerState? other)
         {
-            if (other is null)
-            {
+            if (other is null) {
                 return 1;
             }
 
             // A < B  iif  A is in the scoring order before B   (A is better than B)
-            return - GetPointsResult();
+            return -GetPointsResult();
 
             // A < B  iff  A has less score/puzzles/tetrominos than B
-            int GetPointsResult() {
+            int GetPointsResult()
+            {
                 // compare by score
                 var res = Score.CompareTo(other.Score);
-                if (res != 0) return res;
+                if (res != 0)
+                    return res;
 
                 // more puzzles finished wins
                 res = _finishedPuzzleIds.Count.CompareTo(other._finishedPuzzleIds.Count);
-                if (res != 0) return res;
+                if (res != 0)
+                    return res;
 
                 // more leftover tetrominos wins
                 return _numTetrominosOwned.Sum().CompareTo(other._numTetrominosOwned.Sum());
@@ -101,24 +116,27 @@ namespace Kostra.GameLogic {
             return operand1.CompareTo(operand2) <= 0;
         }
 
-        /*---------- Implement IEquatable ----------*/
+        #endregion
 
+        #region Implement IEquatable
         public bool Equals(PlayerState? other)
         {
             return CompareTo(other) == 0;
         }
+
         public override bool Equals(object? obj)
         {
-            if (obj is PlayerState other)
-            {
+            if (obj is PlayerState other) {
                 return Equals(other);
             }
             return false;
         }
+
         public override int GetHashCode()
         {
             return PlayerId.GetHashCode();
         }
+
         // Define the is equal to operator.
         public static bool operator ==(PlayerState operand1, PlayerState operand2)
         {
@@ -131,14 +149,17 @@ namespace Kostra.GameLogic {
             return !operand1.Equals(operand2);
         }
 
-        /*-------------- PUZZLES --------------*/
+        #endregion
+
+        #region Puzzles
 
         /// <summary>
         /// Adds the puzzle to the player's unfinished puzzles.
         /// </summary>
         /// <param name="puzzle">The puzzle.</param>
         /// <exception cref="InvalidOperationException">No space for puzzle</exception>
-        public void PlaceNewPuzzle(Puzzle puzzle) {
+        public void PlaceNewPuzzle(Puzzle puzzle)
+        {
             for (int i = 0; i < MaxPuzzles; i++) {
                 if (_puzzles[i] is null) {
                     _puzzles[i] = puzzle;
@@ -153,7 +174,8 @@ namespace Kostra.GameLogic {
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <exception cref="InvalidOperationException">Puzzle not found</exception>
-        public void FinishPuzzleWithId(uint id) {
+        public void FinishPuzzleWithId(uint id)
+        {
             for (int i = 0; i < MaxPuzzles; i++) {
                 if (_puzzles[i] is not null && _puzzles[i]!.Id == id) {
                     _puzzles[i] = null;
@@ -168,7 +190,8 @@ namespace Kostra.GameLogic {
         /// Returns the puzzle matching the specified identifier.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        public Puzzle? GetPuzzleWithId(uint id) {
+        public Puzzle? GetPuzzleWithId(uint id)
+        {
             for (int i = 0; i < MaxPuzzles; i++) {
                 if (_puzzles[i] is not null && _puzzles[i]!.Id == id) {
                     return _puzzles[i];
@@ -180,7 +203,8 @@ namespace Kostra.GameLogic {
         /// <summary>
         /// Returns the puzzles that the player is currently working on.
         /// </summary>
-        public List<Puzzle> GetUnfinishedPuzzles() {
+        public List<Puzzle> GetUnfinishedPuzzles()
+        {
             List<Puzzle> result = new();
             for (int i = 0; i < _puzzles.Length; i++) {
                 if (_puzzles[i] is not null) {
@@ -190,13 +214,16 @@ namespace Kostra.GameLogic {
             return result;
         }
 
-        /*-------------- TETROMINOS --------------*/
+        #endregion
+
+        #region Tetrominos
 
         /// <summary>
         /// Adds the given tetromino to the player's personal collection.
         /// </summary>
         /// <param name="shape">The shape.</param>
-        public void AddTetromino(TetrominoShape shape) {
+        public void AddTetromino(TetrominoShape shape)
+        {
             _numTetrominosOwned[(int)shape]++;
         }
 
@@ -204,23 +231,27 @@ namespace Kostra.GameLogic {
         /// Removes the tetromino from the player's personal collection.
         /// </summary>
         /// <param name="shape">The shape.</param>
-        public void RemoveTetromino(TetrominoShape shape) {
+        public void RemoveTetromino(TetrominoShape shape)
+        {
             _numTetrominosOwned[(int)shape]++;
         }
 
-        /*-------------- PLAYER INFO WRAPPER --------------*/
+        #endregion
 
         /// <summary>
         /// Returns a copy of information about the player wrapped in a <see cref="PlayerInfo" /> object.
         /// </summary>
         public PlayerInfo GetPlayerInfo() => new PlayerInfo(this);
 
+        #endregion
 
         /// <summary>
         /// Provides information about about a player while preventing modification of the original data.
         /// </summary>
         public class PlayerInfo(PlayerState playerState)
         {
+            #region Fields
+
             /// <summary> The unique identifier of the player. </summary>
             public uint PlayerId = playerState.PlayerId;
 
@@ -235,6 +266,10 @@ namespace Kostra.GameLogic {
 
             /// <summary> The Ids of the puzzles that the player has already completed. </summary>
             public IReadOnlyList<uint> FinishedPuzzlesIds = playerState._finishedPuzzleIds.AsReadOnly();
+
+            #endregion
         }
+
+        
     }
 }

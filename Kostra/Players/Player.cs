@@ -1,19 +1,18 @@
-using Kostra.GameActions;
-using Kostra.GameLogic;
-using Kostra.GameManagers;
-using Kostra.GamePieces;
-using System.Text.Json.Serialization;
+namespace Kostra.Players
+{
+    using Kostra.GameActions;
+    using Kostra.GameLogic;
+    using Kostra.GamePieces;
 
-namespace Kostra.Players {
     /// <summary>
     /// Represents the type of the player.
     /// </summary>
-    enum PlayerType {
+    enum PlayerType
+    {
         /// <summary>
         /// Human players pick their action using the UI.
         /// </summary>
         Human,
-
         /// <summary>
         /// AI players pick their action using an algorithm.
         /// </summary>
@@ -23,8 +22,16 @@ namespace Kostra.Players {
     /// <summary>
     /// Represents a player in the game.
     /// </summary>
-    abstract class Player {
+    internal abstract class Player
+    {
+        #region Fields
+
         private static uint _idCounter = 0;
+
+        #endregion
+
+        #region Properties
+
         /// <summary>
         /// The unique ID of the player.
         /// </summary>
@@ -34,6 +41,10 @@ namespace Kostra.Players {
         /// The type of the player.
         /// </summary>
         public abstract PlayerType Type { get; }
+
+        #endregion
+
+        #region Methods
 
         /// <summary>
         /// Asynchronously gets the action the player wants to take based on the current game context.
@@ -54,6 +65,7 @@ namespace Kostra.Players {
         /// <param name="puzzle">The puzzle that was completed.</param>
         /// <returns>The shape the player wants to take.</returns>
         public abstract Task<TetrominoShape> GetRewardAsync(List<TetrominoShape> rewardOptions, Puzzle puzzle);
+
+        #endregion
     }
 }
-

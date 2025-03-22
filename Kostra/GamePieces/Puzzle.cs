@@ -1,27 +1,35 @@
-﻿using Kostra.GameManagers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Kostra.GamePieces
+﻿namespace Kostra.GamePieces
 {
+    using Kostra.GameManagers;
+    using System.Collections.Generic;
+    using System.Linq;
+
     /// <summary>
     /// Represents a puzzle in the game.
     /// </summary>
-    public class Puzzle
+    /// <param name="image">The binary image representing the puzzle.</param>
+    /// <param name="rewardScore">The score the player will receive for completing the puzzle.</param>
+    /// <param name="rewardTetromino">The tetromino the player will receive for completing the puzzle.</param>
+    /// <param name="isBlack">Indicates whether the puzzle is black or white</param>
+    public class Puzzle(BinaryImage image, int rewardScore, TetrominoShape rewardTetromino, bool isBlack)
     {
-        // id
+        #region Fields
 
         private static uint _idCounter = 0;
+
+        /// <summary>
+        /// Contains information about the number of tetrominos of each shape used on the puzzle.
+        /// </summary>
+        private int[] _usedTetrominos = new int[TetrominoManager.NumShapes];
+
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// The unique identifier of the puzzle.
         /// </summary>
         public uint Id { get; } = _idCounter++;
-
-        // puzzle parameters
 
         /// <summary>
         /// Specifies whether the puzzle is black or white.
@@ -29,29 +37,28 @@ namespace Kostra.GamePieces
         /// <value>
         ///   <c>true</c> if this instance is black; <c>false</c> if it is white.
         /// </value>
-        public bool IsBlack { get; }
+        public bool IsBlack { get; } = isBlack;
 
         /// <summary>
-        /// Specifies the score the player gets for completing the puzzle.
+        /// The score the player gets for completing the puzzle.
         /// </summary>
-        public int RewardScore { get; }
+        public int RewardScore { get; } = rewardScore;
 
         /// <summary>
-        /// Specifies the tetromino the player gets for completing the puzzle.
+        /// The tetromino the player gets for completing the puzzle.
         /// </summary>
-        public TetrominoShape RewardTetromino { get; }
+        public TetrominoShape RewardTetromino { get; } = rewardTetromino;
 
-        // binary representation of the puzzle image
-        // 
         /// <summary>
+        /// A binary image representing the puzzle.
         /// Specifies which cells of the puzzle need to be filled in.
         /// </summary>
-        public BinaryImage Image { get; private set; }
+        public BinaryImage Image { get; private set; } = image;
 
         /// <summary>
         /// The number of cells which need to be filled in.
         /// </summary>
-        public int NumEmptyCells { get; private set; }
+        public int NumEmptyCells => Image.CountEmptyCells();
 
         /// <summary>
         /// Indicates whether this puzzle has been completed.
@@ -61,28 +68,9 @@ namespace Kostra.GamePieces
         /// </value>
         public bool IsFinished => NumEmptyCells == 0;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Puzzle"/> class.
-        /// </summary>
-        /// <param name="binaryImage">The binary image representing the puzzle.</param>
-        /// <param name="score">The score the player will receive for completing the puzzle.</param>
-        /// <param name="reward">The tetromino the player will receive for completing the puzzle.</param>
-        /// <param name="isBlack">Indicates whether the puzzle is black or white</param>
-        public Puzzle(BinaryImage binaryImage, int score, TetrominoShape reward, bool isBlack)
-        {
-            Image = binaryImage;
-            RewardScore = score;
-            RewardTetromino = reward;
-            IsBlack = isBlack;
+        #endregion
 
-            NumEmptyCells = Image.CountEmptyCells();
-        }
-
-
-        /// <summary>
-        /// Contains information about the number of tetrominos of each shape used on the puzzle.
-        /// </summary>
-        private int[] _usedTetrominos = new int[TetrominoManager.NumShapes];
+        #region Methods
 
         /// <summary>
         /// Determines whether the given tetromino can be placed on the puzzle.
@@ -101,7 +89,6 @@ namespace Kostra.GamePieces
         public void AddTetromino(TetrominoShape tetromino, BinaryImage position)
         {
             _usedTetrominos[(int)tetromino]++;
-            NumEmptyCells -= TetrominoManager.GetLevelOf(tetromino);
             Image |= position;
         }
 
@@ -110,10 +97,8 @@ namespace Kostra.GamePieces
         /// </summary>
         public IEnumerable<TetrominoShape> GetUsedTetrominos()
         {
-            for (int shape = 0; shape < TetrominoManager.NumShapes; shape++)
-            {
-                for (int j = 0; j < _usedTetrominos[shape]; j++)
-                {
+            for (int shape = 0; shape < TetrominoManager.NumShapes; shape++) {
+                for (int j = 0; j < _usedTetrominos[shape]; j++) {
                     yield return (TetrominoShape)shape;
                 }
             }
@@ -126,9 +111,10 @@ namespace Kostra.GamePieces
         public Puzzle Clone()
         {
             Puzzle clone = new(Image, RewardScore, RewardTetromino, IsBlack);
-            clone.NumEmptyCells = NumEmptyCells;
             clone._usedTetrominos = _usedTetrominos.ToArray(); // copy array
             return clone;
         }
+
+        #endregion
     }
 }

@@ -1,15 +1,68 @@
-using Kostra.GameManagers;
-using Kostra.Players;
-
-namespace Kostra.GameLogic 
+namespace Kostra.GameLogic
 {
+    using Kostra.GameManagers;
+    using Kostra.Players;
+
     /// <summary>
     /// Contains all the information about a game of <b>Project L</b>.
     /// </summary>
-    class GameCore
+    internal class GameCore
     {
+        #region Constants
+
         /// <summary> The maximum number of players allowed. </summary>
         public const int MaxPlayers = 4;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GameCore"/> class.
+        /// </summary>
+        /// <param name="gameState">State of the game.</param>
+        /// <param name="players">The players.</param>
+        /// <param name="shufflePlayers">If set to <c>true</c> then the players are shuffled to randomize turn order.</param>
+        /// <exception cref="ArgumentException">Too many players. <c>players.Count &gt; <see cref="MaxPlayers"/></c></exception>
+        public GameCore(GameState gameState, ICollection<Player> players, bool shufflePlayers)
+        {
+            // check the number of players
+            if (players.Count > MaxPlayers) {
+                throw new ArgumentException("Too many players");
+            }
+
+            // capture game state
+            GameState = gameState;
+
+            // shuffle players if needed
+            Players = players.ToArray();
+            if (shufflePlayers) {
+                Players.Shuffle();
+            }
+
+            // create player states
+            PlayerStates = new PlayerState[NumPlayers];
+            for (int i = 0; i < NumPlayers; i++) {
+                PlayerStates[i] = new PlayerState(playerId: Players[i].Id);
+            }
+
+            // create turn manager
+            TurnManager = new(GetPlayerOrder());
+
+            // creates an array of player IDs order as how they are in the Player[] array
+            uint[] GetPlayerOrder()
+            {
+                uint[] order = new uint[NumPlayers];
+                for (int i = 0; i < NumPlayers; i++) {
+                    order[i] = Players[i].Id;
+                }
+                return order;
+            }
+        }
+
+        #endregion
+
+        #region Properties
 
         /// <summary> The number of players playing the game.  </summary>
         public int NumPlayers => Players.Length;
@@ -32,52 +85,9 @@ namespace Kostra.GameLogic
         /// <summary> Manages who's turn it currently is and what is the game phase. </summary>
         public TurnManager TurnManager { get; }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GameCore"/> class.
-        /// </summary>
-        /// <param name="gameState">State of the game.</param>
-        /// <param name="players">The players.</param>
-        /// <param name="shufflePlayers">If set to <c>true</c> then the players are shuffled to randomize turn order.</param>
-        /// <exception cref="ArgumentException">Too many players. <c>players.Count &gt; <see cref="MaxPlayers"/></c></exception>
-        public GameCore(GameState gameState, ICollection<Player> players, bool shufflePlayers)
-        {
-            // check the number of players
-            if (players.Count > MaxPlayers)
-            {
-                throw new ArgumentException("Too many players");
-            }
+        #endregion
 
-            // capture game state
-            GameState = gameState;
-
-            // shuffle players if needed
-            Players = players.ToArray();
-            if (shufflePlayers)
-            {
-                Players.Shuffle();
-            }
-
-            // create player states
-            PlayerStates = new PlayerState[NumPlayers];
-            for (int i = 0; i < NumPlayers; i++)
-            {
-                PlayerStates[i] = new PlayerState(playerId: Players[i].Id);
-            }
-
-            // create turn manager
-            TurnManager = new(GetPlayerOrder());
-
-            // creates an array of player IDs order as how they are in the Player[] array
-            uint[] GetPlayerOrder()
-            {
-                uint[] order = new uint[NumPlayers];
-                for (int i = 0; i < NumPlayers; i++)
-                {
-                    order[i] = Players[i].Id;
-                }
-                return order;
-            }
-        }
+        #region Methods
 
         /// <summary>
         /// Returns information about the next turn and updates <see cref="CurrentPlayerId"/> and <see cref="CurrentGamePhase"/>.
@@ -97,10 +107,8 @@ namespace Kostra.GameLogic
         /// <exception cref="ArgumentException">Player not found</exception>
         public Player GetPlayerWithId(uint id)
         {
-            foreach (var player in Players)
-            {
-                if (player.Id == id)
-                {
+            foreach (var player in Players) {
+                if (player.Id == id) {
                     return player;
                 }
             }
@@ -114,10 +122,8 @@ namespace Kostra.GameLogic
         /// <exception cref="ArgumentException">Player state not found</exception>
         public PlayerState GetPlayerStateWithId(uint id)
         {
-            foreach (var playerState in PlayerStates)
-            {
-                if (playerState.PlayerId == id)
-                {
+            foreach (var playerState in PlayerStates) {
+                if (playerState.PlayerId == id) {
                     return playerState;
                 }
             }
@@ -132,10 +138,8 @@ namespace Kostra.GameLogic
         public void GameEnded()
         {
             // remove points for unfinished puzzles
-            foreach (var playerState in PlayerStates)
-            {
-                foreach (var puzzle in playerState.GetUnfinishedPuzzles())
-                {
+            foreach (var playerState in PlayerStates) {
+                foreach (var puzzle in playerState.GetUnfinishedPuzzles()) {
                     playerState.Score -= puzzle.RewardScore;
                 }
             }
@@ -158,19 +162,18 @@ namespace Kostra.GameLogic
             // if PlayerState1 == PlayerState2, then order1 == order2
             var result = new Dictionary<PlayerState, int>();
             result[PlayerStates[0]] = 1;
-            for (int i = 1; i < NumPlayers; i++)
-            {
-                if (PlayerStates[i] == PlayerStates[i - 1])
-                {
+            for (int i = 1; i < NumPlayers; i++) {
+                if (PlayerStates[i] == PlayerStates[i - 1]) {
                     result[PlayerStates[i]] = result[PlayerStates[i - 1]];
                 }
-                else
-                {
+                else {
                     result[PlayerStates[i]] = i + 1;
                 }
             }
 
             return result;
         }
+
+        #endregion
     }
 }

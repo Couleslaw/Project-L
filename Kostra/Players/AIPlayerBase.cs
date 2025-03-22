@@ -1,23 +1,25 @@
-﻿using Kostra.GameActions;
-using Kostra.GameLogic;
-using Kostra.GameManagers;
-using Kostra.GamePieces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Kostra.Players
+﻿namespace Kostra.Players
 {
+    using Kostra.GameActions;
+    using Kostra.GameLogic;
+    using Kostra.GamePieces;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Represents an AI player in the game.
     /// </summary>
     /// <seealso cref="Player" />
-    abstract class AIPlayerBase : Player
+    internal abstract class AIPlayerBase : Player
     {
+        #region Properties
+
         public override PlayerType Type => PlayerType.AI;
+
+        #endregion
+
+        #region Methods
 
         /// <summary>
         /// Function for initializing the AI player. This function is called once at the beginning of the game.
@@ -43,19 +45,15 @@ namespace Kostra.Players
             // extract the state of THIS player and the OTHER players from playerInfos
             PlayerState.PlayerInfo? myState = null;
             List<PlayerState.PlayerInfo> enemyStates = new();
-            for (int i = 0; i < playerInfos.Length; i++)
-            {
-                if (playerInfos[i].PlayerId == Id)
-                {
+            for (int i = 0; i < playerInfos.Length; i++) {
+                if (playerInfos[i].PlayerId == Id) {
                     myState = playerInfos[i];
                 }
-                else
-                {
+                else {
                     enemyStates.Add(playerInfos[i]);
                 }
             }
-            if (myState == null)
-            {
+            if (myState == null) {
                 throw new ArgumentException($"PlayerState for player {Id} not found!");
             }
 
@@ -76,5 +74,7 @@ namespace Kostra.Players
             // call the method that implements the AI algorithm
             return await Task.Run(() => GetReward(rewardOptions, puzzle));
         }
+
+        #endregion
     }
 }

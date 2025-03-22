@@ -1,23 +1,30 @@
-using Kostra.GameManagers;
-using Kostra.GamePieces;
-using System.Net.Http.Headers;
-
-namespace Kostra.GameLogic {
+namespace Kostra.GameLogic
+{
+    using Kostra.GameManagers;
+    using Kostra.GamePieces;
 
     /// <summary>
     /// Builder for the <see cref="GameState"/> class.
     /// </summary>
     /// <param name="numInitialTetrominos">The amount of tetrominos of each shape in the shared reserve at the beginning of the game.</param>
-    class GameStateBuilder(int numInitialTetrominos)
+    internal class GameStateBuilder(int numInitialTetrominos)
     {
+        #region Fields
+
         private readonly List<Puzzle> _whitePuzzlesDeck = new();
+
         private readonly List<Puzzle> _blackPuzzlesDeck = new();
+
+        #endregion
+
+        #region Methods
 
         /// <summary>
         /// Adds the given puzzle to the white deck.
         /// </summary>
         /// <param name="puzzle">The puzzle.</param>
-        public GameStateBuilder AddWhitePuzzle(Puzzle puzzle) {
+        public GameStateBuilder AddWhitePuzzle(Puzzle puzzle)
+        {
             _whitePuzzlesDeck.Add(puzzle);
             return this;
         }
@@ -26,7 +33,8 @@ namespace Kostra.GameLogic {
         /// Adds the given puzzle to the black deck.
         /// </summary>
         /// <param name="puzzle">The puzzle.</param>
-        public GameStateBuilder AddBlackPuzzle(Puzzle puzzle) {
+        public GameStateBuilder AddBlackPuzzle(Puzzle puzzle)
+        {
             _blackPuzzlesDeck.Add(puzzle);
             return this;
         }
@@ -34,11 +42,14 @@ namespace Kostra.GameLogic {
         /// <summary>
         /// Builds a new instance of the <see cref="GameState"/> class containing shuffled decks of the added puzzles.
         /// </summary>
-        public GameState Build() {
+        public GameState Build()
+        {
             _whitePuzzlesDeck.Shuffle();
             _blackPuzzlesDeck.Shuffle();
             return new GameState(_whitePuzzlesDeck, _blackPuzzlesDeck, numInitialTetrominos);
         }
+
+        #endregion
     }
 
     /// <summary>
@@ -50,22 +61,31 @@ namespace Kostra.GameLogic {
     ///     <item>The decks of white and black puzzles. </item>
     ///   </list>
     /// </summary>
-    class GameState
+    internal class GameState
     {
+        #region Constants
+
         // puzzles in decks and on the game board
         private const int _numPuzzlesInRow = 4;
 
+        #endregion
+
+        #region Fields
+
         private readonly Puzzle?[] _whitePuzzlesRow = new Puzzle?[_numPuzzlesInRow];
+
         private readonly Puzzle?[] _blackPuzzlesRow = new Puzzle?[_numPuzzlesInRow];
 
         private readonly Queue<Puzzle> _whitePuzzlesDeck;
+
         private readonly Queue<Puzzle> _blackPuzzlesDeck;
 
         /// <summary> The amount of tetrominos of each shape in the shared reserve at the beginning of the game.  </summary>
         private readonly int _numInitialTetrominos;
 
-        /// <summary> Contains the number of tetrominos left in the shared reserve for each shape.  </summary>
-        public int[] NumTetrominosLeft { get; init; } = new int[TetrominoManager.NumShapes];
+        #endregion
+
+        #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameState"/> class.
@@ -77,32 +97,33 @@ namespace Kostra.GameLogic {
         public GameState(ICollection<Puzzle> whitePuzzlesDeck, ICollection<Puzzle> blackPuzzlesDeck, int numInitalTetrominos)
         {
             // check if there are enough puzzles to fill the rows
-            if (whitePuzzlesDeck.Count < _numPuzzlesInRow || blackPuzzlesDeck.Count < _numPuzzlesInRow)
-            {
+            if (whitePuzzlesDeck.Count < _numPuzzlesInRow || blackPuzzlesDeck.Count < _numPuzzlesInRow) {
                 throw new ArgumentException("Not enough puzzles to fill the rows.");
-            };
+            }
 
             // create queues representing the decks
             _whitePuzzlesDeck = new Queue<Puzzle>(whitePuzzlesDeck);
             _blackPuzzlesDeck = new Queue<Puzzle>(blackPuzzlesDeck);
 
             // reveal the top 4 puzzles
-            for (int i = 0; i < _numPuzzlesInRow; i++)
-            {
+            for (int i = 0; i < _numPuzzlesInRow; i++) {
                 _whitePuzzlesRow[i] = _whitePuzzlesDeck.Dequeue();
                 _blackPuzzlesRow[i] = _blackPuzzlesDeck.Dequeue();
             }
 
             // initialize tetrominos
             _numInitialTetrominos = numInitalTetrominos;
-            for (int i = 0; i < NumTetrominosLeft.Length; i++)
-            {
+            for (int i = 0; i < NumTetrominosLeft.Length; i++) {
                 NumTetrominosLeft[i] = _numInitialTetrominos;
             }
         }
 
+        #endregion
 
-        /*--------------- PUZZLES ---------------*/
+        #region Properties
+
+        /// <summary> Contains the number of tetrominos left in the shared reserve for each shape.  </summary>
+        public int[] NumTetrominosLeft { get; init; } = new int[TetrominoManager.NumShapes];
 
         /// <summary> The number of puzzles left in the white deck. </summary>
         public int NumWhitePuzzlesLeft => _whitePuzzlesDeck.Count;
@@ -110,14 +131,18 @@ namespace Kostra.GameLogic {
         /// <summary> The number of puzzles left in the black deck. </summary>
         public int NumBlackPuzzlesLeft => _blackPuzzlesDeck.Count;
 
+        #endregion
+
+        #region Methods
+
+        #region Puzzles
+
         /// <summary> Returns a list containing the puzzles in the white row. </summary>
         public List<Puzzle> GetAvailableWhitePuzzles()
         {
             var result = new List<Puzzle>();
-            for (int i = 0; i < _whitePuzzlesRow.Length; i++)
-            {
-                if (_whitePuzzlesRow[i] is not null)
-                {
+            for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
+                if (_whitePuzzlesRow[i] is not null) {
                     result.Add(_whitePuzzlesRow[i]!);
                 }
             }
@@ -128,10 +153,8 @@ namespace Kostra.GameLogic {
         public List<Puzzle> GetAvailableBlackPuzzles()
         {
             var result = new List<Puzzle>();
-            for (int i = 0; i < _blackPuzzlesRow.Length; i++)
-            {
-                if (_blackPuzzlesRow[i] is not null)
-                {
+            for (int i = 0; i < _blackPuzzlesRow.Length; i++) {
+                if (_blackPuzzlesRow[i] is not null) {
                     result.Add(_blackPuzzlesRow[i]!);
                 }
             }
@@ -144,8 +167,7 @@ namespace Kostra.GameLogic {
         /// <returns>The puzzle if the deck is nonempty; <c>null</c> otherwise.</returns>
         public Puzzle? TakeTopWhitePuzzle()
         {
-            if (_whitePuzzlesDeck.Count == 0)
-            {
+            if (_whitePuzzlesDeck.Count == 0) {
                 return null;
             }
             return _whitePuzzlesDeck.Dequeue();
@@ -157,8 +179,7 @@ namespace Kostra.GameLogic {
         /// <returns>The puzzle if the deck is nonempty; <c>null</c> otherwise.</returns>
         public Puzzle? TakeTopBlackPuzzle()
         {
-            if (_blackPuzzlesDeck.Count == 0)
-            {
+            if (_blackPuzzlesDeck.Count == 0) {
                 return null;
             }
             return _blackPuzzlesDeck.Dequeue();
@@ -171,17 +192,13 @@ namespace Kostra.GameLogic {
         /// <returns>The puzzle if it is present; <c>null</c> otherwise.</returns>
         public Puzzle? GetPuzzleWithId(uint id)
         {
-            for (int i = 0; i < _whitePuzzlesRow.Length; i++)
-            {
-                if (_whitePuzzlesRow[i] is not null && _whitePuzzlesRow[i]!.Id == id)
-                {
+            for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
+                if (_whitePuzzlesRow[i] is not null && _whitePuzzlesRow[i]!.Id == id) {
                     return _whitePuzzlesRow[i];
                 }
             }
-            for (int i = 0; i < _blackPuzzlesRow.Length; i++)
-            {
-                if (_blackPuzzlesRow[i] is not null && _blackPuzzlesRow[i]!.Id == id)
-                {
+            for (int i = 0; i < _blackPuzzlesRow.Length; i++) {
+                if (_blackPuzzlesRow[i] is not null && _blackPuzzlesRow[i]!.Id == id) {
                     return _blackPuzzlesRow[i];
                 }
             }
@@ -194,18 +211,14 @@ namespace Kostra.GameLogic {
         /// <param name="id">The identifier.</param>
         public void RemovePuzzleWithId(uint id)
         {
-            for (int i = 0; i < _whitePuzzlesRow.Length; i++)
-            {
-                if (_whitePuzzlesRow[i] is not null && _whitePuzzlesRow[i]!.Id == id)
-                {
+            for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
+                if (_whitePuzzlesRow[i] is not null && _whitePuzzlesRow[i]!.Id == id) {
                     _whitePuzzlesRow[i] = null;
                     return;
                 }
             }
-            for (int i = 0; i < _blackPuzzlesRow.Length; i++)
-            {
-                if (_blackPuzzlesRow[i] is not null && _blackPuzzlesRow[i]!.Id == id)
-                {
+            for (int i = 0; i < _blackPuzzlesRow.Length; i++) {
+                if (_blackPuzzlesRow[i] is not null && _blackPuzzlesRow[i]!.Id == id) {
                     _blackPuzzlesRow[i] = null;
                     return;
                 }
@@ -217,17 +230,13 @@ namespace Kostra.GameLogic {
         /// </summary>
         public void RefillPuzzles()
         {
-            for (int i = 0; i < _whitePuzzlesRow.Length; i++)
-            {
-                if (_whitePuzzlesRow[i] is null && _whitePuzzlesDeck.Count > 0)
-                {
+            for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
+                if (_whitePuzzlesRow[i] is null && _whitePuzzlesDeck.Count > 0) {
                     _whitePuzzlesRow[i] = TakeTopWhitePuzzle();
                 }
             }
-            for (int i = 0; i < _blackPuzzlesRow.Length; i++)
-            {
-                if (_blackPuzzlesRow[i] is null && _blackPuzzlesDeck.Count > 0)
-                {
+            for (int i = 0; i < _blackPuzzlesRow.Length; i++) {
+                if (_blackPuzzlesRow[i] is null && _blackPuzzlesDeck.Count > 0) {
                     _blackPuzzlesRow[i] = TakeTopBlackPuzzle();
                 }
             }
@@ -239,17 +248,17 @@ namespace Kostra.GameLogic {
         /// <param name="puzzle">The puzzle.</param>
         public void PutPuzzleToTheBottomOfDeck(Puzzle puzzle)
         {
-            if (puzzle.IsBlack)
-            {
+            if (puzzle.IsBlack) {
                 _blackPuzzlesDeck.Enqueue(puzzle);
             }
-            else
-            {
+            else {
                 _whitePuzzlesDeck.Enqueue(puzzle);
             }
         }
 
-        /*-------------- TETROMINOS --------------*/
+        #endregion
+
+        #region Tetrominos
 
         /// <summary>
         /// Returns the number of tetrominos of the given shape left in the shared reserve.
@@ -267,8 +276,7 @@ namespace Kostra.GameLogic {
         /// <exception cref="InvalidOperationException">No tetrominos of type {shape} left</exception>
         public void RemoveTetromino(TetrominoShape shape)
         {
-            if (NumTetrominosLeft[(int)shape] == 0)
-            {
+            if (NumTetrominosLeft[(int)shape] == 0) {
                 throw new InvalidOperationException($"No tetrominos of type {shape} left");
             }
             NumTetrominosLeft[(int)shape]--;
@@ -281,30 +289,32 @@ namespace Kostra.GameLogic {
         /// <exception cref="InvalidOperationException">Too many tetrominos of type {shape}</exception>
         public void AddTetromino(TetrominoShape shape)
         {
-            if (NumTetrominosLeft[(int)shape] >= _numInitialTetrominos)
-            {
+            if (NumTetrominosLeft[(int)shape] >= _numInitialTetrominos) {
                 throw new InvalidOperationException($"Too many tetrominos of type {shape}");
             }
             NumTetrominosLeft[(int)shape]++;
         }
 
-        /*-------------- GAME INFO WRAPPER --------------*/
+        #endregion
 
         /// <summary>
         /// Returns a copy of information about the game wrapped in a <see cref="GameInfo" /> object.
         /// </summary>
         public GameInfo GetGameInfo() => new GameInfo(this);
 
+        #endregion
 
         /// <summary>
         /// Provides information about about the game while preventing modification of the original data.
         /// </summary>
         public class GameInfo(GameState gameState)
         {
-            /// <summary>  The number of puzzles left in the white deck.  </summary>
+            #region Fields
+
+            /// <summary> The number of puzzles left in the white deck.  </summary>
             public int NumWhitePuzzlesLeft = gameState.NumWhitePuzzlesLeft;
 
-            /// <summary>  The number of puzzles left in the black deck.  </summary>
+            /// <summary> The number of puzzles left in the black deck.  </summary>
             public int NumBlackPuzzlesLeft = gameState.NumBlackPuzzlesLeft;
 
             /// <summary> The puzzles in the white row. </summary>
@@ -313,8 +323,10 @@ namespace Kostra.GameLogic {
             /// <summary> The puzzles in the black row. </summary>
             public Puzzle[] AvailableBlackPuzzles = gameState.GetAvailableBlackPuzzles().Select(p => p.Clone()).ToArray();
 
-            /// <summary>  The number of tetrominos of each shape left in the shared reserve. </summary>
+            /// <summary> The number of tetrominos of each shape left in the shared reserve. </summary>
             public IReadOnlyList<int> NumTetrominosLeft = gameState.NumTetrominosLeft.AsReadOnly();
+
+            #endregion
         }
     }
 }

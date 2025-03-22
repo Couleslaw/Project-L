@@ -1,14 +1,15 @@
-﻿using Kostra.GameActions;
-using Kostra.AIPlayerExample;
-using Kostra.GameManagers;
-using Kostra.GameLogic;
-using Kostra.Players;
-
-namespace Kostra
+﻿namespace Kostra
 {
+    using Kostra.AIPlayerExample;
+    using Kostra.GameActions;
+    using Kostra.GameLogic;
+    using Kostra.Players;
+
     internal class Program
     {
-        static void Main(string[] args)
+        #region Methods
+
+        internal static void Main(string[] args)
         {
             // initialize a new game
             int numInitialTetrominos = 15;
@@ -72,20 +73,33 @@ namespace Kostra
             var results = game.GetFinalResults();
         }
 
+        /// <summary>
+        /// Creates an action verifier for the given player
+        /// </summary>
+        /// <param name="game">Info about the game</param>
+        /// <param name="turnInfo">Info about current turn</param>
+        /// <param name="playerId">ID of the current player</param>
         private static ActionVerifier GetActionVerifier(GameCore game, TurnInfo turnInfo, uint playerId)
         {
             var gameInfo = game.GameState.GetGameInfo();
             var playerInfo = game.PlayerStates.First(playerState => playerState.PlayerId == playerId).GetPlayerInfo();
             return new ActionVerifier(gameInfo, playerInfo, turnInfo);
         }
+
+        #endregion
     }
 }
 
-
-
+/// <summary>
+/// Extension methods for <see cref="IList{T}"/>.
+/// </summary>
 public static class IListExtensions
 {
-    // Fisher–Yates shuffle
+    #region Methods
+
+    /// <summary>
+    /// Shuffles the given list in place using the Fisher-Yates algorithm.
+    /// </summary>
     public static void Shuffle<T>(this IList<T> list)
     {
         Random rng = new Random();
@@ -96,4 +110,6 @@ public static class IListExtensions
             (list[n], list[k]) = (list[k], list[n]);
         }
     }
+
+    #endregion
 }

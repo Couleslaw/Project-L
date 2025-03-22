@@ -1,26 +1,33 @@
-﻿using Kostra.GameActions;
-using Kostra.GameLogic;
-using Kostra.GameManagers;
-using Kostra.GamePieces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Kostra.Players
+﻿namespace Kostra.Players
 {
+    using Kostra.GameActions;
+    using Kostra.GameLogic;
+    using Kostra.GamePieces;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Represents a human player in the game.
     /// </summary>
     /// <seealso cref="Player" />
-    class HumanPlayer : Player
+    internal class HumanPlayer : Player
     {
-        public override PlayerType Type => PlayerType.Human;
+        #region Fields
 
         // completion sources for setting the result of the async methods
         private TaskCompletionSource<VerifiableAction> _getActionCompletionSource = new();
+
         private TaskCompletionSource<TetrominoShape> _getRewardCompletionSource = new();
+
+        #endregion
+
+        #region Properties
+
+        public override PlayerType Type => PlayerType.Human;
+
+        #endregion
+
+        #region Methods
 
         /// <summary>
         /// Sets the next action the player wants to take. This method should be called after the player has made a decision through the UI.
@@ -45,5 +52,7 @@ namespace Kostra.Players
             _getRewardCompletionSource = new();
             return await _getRewardCompletionSource.Task;
         }
+
+        #endregion
     }
 }

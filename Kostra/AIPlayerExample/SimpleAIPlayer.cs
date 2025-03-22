@@ -1,35 +1,23 @@
-﻿using Kostra.GameActions;
-using Kostra.GameLogic;
-using Kostra.GameManagers;
-using Kostra.GamePieces;
-using Kostra.Players;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading.Tasks.Sources;
-
-namespace Kostra.AIPlayerExample
+﻿namespace Kostra.AIPlayerExample
 {
+    using Kostra.GameActions;
+    using Kostra.GameLogic;
+    using Kostra.GameManagers;
+    using Kostra.GamePieces;
+    using Kostra.Players;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     /// <summary>
     /// A Simple AI player that chooses the best puzzle to solve and then solves it using IDA*.
     /// </summary>
     internal class SimpleAIPlayer : AIPlayerBase
     {
+        #region Fields
+
         /// <summary>A random number generator.</summary>
         private static readonly Random _rnd = new();
-
-        /// <summary>Returns a random element from the given list.</summary>
-        private static T RandomElementFrom<T>(List<T> list) => list[_rnd.Next(list.Count)];
-
-        public override void Init(int numPlayers, int numInitialTetrominos, string? filePath) { }
-        public override TetrominoShape GetReward(List<TetrominoShape> rewardOptions, Puzzle puzzle)
-        {
-            return RandomElementFrom(rewardOptions);
-        }
 
         /// <summary>The puzzle we are currently solving.</summary>
         private Puzzle? _currentPuzzle;
@@ -38,53 +26,66 @@ namespace Kostra.AIPlayerExample
         private Queue<VerifiableAction> _currentStrategy = new();
 
         /// <summary>The strategy for the <see cref="GamePhase.FinishingTouches"/> game phase.</summary>
-        private Queue<VerifiableAction> _finishingTouchesStrategy = null;
+        private Queue<VerifiableAction>? _finishingTouchesStrategy = null;
+
+        #endregion
+
+        #region Methods
+
+        public override void Init(int numPlayers, int numInitialTetrominos, string? filePath)
+        {
+        }
+
+        public override TetrominoShape GetReward(List<TetrominoShape> rewardOptions, Puzzle puzzle)
+        {
+            return RandomElementFrom(rewardOptions);
+        }
 
         public override VerifiableAction GetAction(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, List<PlayerState.PlayerInfo> enemyInfos, TurnInfo turnInfo, ActionVerifier verifier)
         {
             // get an unfinished puzzle if there is one
             _currentPuzzle = myInfo.UnfinishedPuzzles.Length == 0 ? null : myInfo.UnfinishedPuzzles[0];
 
-            switch (turnInfo.GamePhase)
-            {
-                case GamePhase.Normal:
+            switch (turnInfo.GamePhase) {
+                case GamePhase.Normal: {
                     // if no strategy --> create one
-                    if (_currentStrategy.Count == 0)
-                    {
+                    if (_currentStrategy.Count == 0) {
                         _currentStrategy = GetStrategy(gameInfo, myInfo);
                     }
 
                     // if next action is valid --> submit it
                     var nextAction = _currentStrategy.Dequeue();
-                    if (nextAction.GetVerifiedBy(verifier) is VerificationSuccess)
-                    {
+                    if (nextAction.GetVerifiedBy(verifier) is VerificationSuccess) {
                         return nextAction;
                     }
 
                     // if not --> create a new strategy
                     _currentStrategy = GetStrategy(gameInfo, myInfo);
                     return _currentStrategy.Dequeue();
+                }
 
-                case GamePhase.EndOfTheGame:
+                case GamePhase.EndOfTheGame: {
                     // if we have a puzzle --> continue solving it
-                    if (_currentPuzzle is not null)
-                    {
-                        goto case GamePhase.Normal; 
+                    if (_currentPuzzle is not null) {
+                        goto case GamePhase.Normal;
                     }
 
                     // if we don't have a puzzle --> don't take a new one (negative points)
                     // try to get more tetrominos (in case tie the player with more tetrominos leftover wins)
                     VerifiableAction? action = GetValidTetrominoAction(gameInfo, myInfo);
-                    if (action != null) return action;
+                    if (action != null)
+                        return action;
 
                     // try to recycle, any action is more interesting than DoNothingAction()
                     action = GetValidRecycleAction(gameInfo);
-                    if (action != null) return action;
+                    if (action != null)
+                        return action;
 
                     // last resort
                     return new DoNothingAction();
+                }
 
-                case GamePhase.FinishingTouches:
+                case GamePhase.FinishingTouches: {
                     // if no puzzle to complete --> end the game
                     if (_currentPuzzle is null) {
                         return new EndFinishingTouchesAction();
@@ -101,6 +102,7 @@ namespace Kostra.AIPlayerExample
 
                     // proceed with the strategy
                     return _finishingTouchesStrategy.Dequeue();
+                }
 
                 case GamePhase.Finished:
                     break;
@@ -110,6 +112,9 @@ namespace Kostra.AIPlayerExample
             throw new InvalidOperationException("Invalid game phase");
         }
 
+        /// <summary>Returns a random element from the given list.</summary>
+        private static T RandomElementFrom<T>(List<T> list) => list[_rnd.Next(list.Count)];
+
         /// <summary>
         /// Gets the valid action involving getting a tetromino.
         /// </summary>
@@ -118,17 +123,13 @@ namespace Kostra.AIPlayerExample
         /// <returns>A <see cref="TakeBasicTetrominoAction"/> if possible, else <see cref="ChangeTetrominoAction"/>. <c>null</c> if no such action is possible.</returns>
         private static TetrominoAction? GetValidTetrominoAction(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo)
         {
-            if (gameInfo.NumTetrominosLeft[(int)TetrominoShape.O1] > 0)
-            {
+            if (gameInfo.NumTetrominosLeft[(int)TetrominoShape.O1] > 0) {
                 return new TakeBasicTetrominoAction();
             }
-            for (int i = 0; i < TetrominoManager.NumShapes; i++)
-            {
-                if (myInfo.NumTetrominosOwned[i] > 0)
-                {
+            for (int i = 0; i < TetrominoManager.NumShapes; i++) {
+                if (myInfo.NumTetrominosOwned[i] > 0) {
                     var options = RewardManager.GetUpgradeOptions(gameInfo.NumTetrominosLeft, (TetrominoShape)i);
-                    if (options.Count > 0)
-                    {
+                    if (options.Count > 0) {
                         return new ChangeTetrominoAction((TetrominoShape)i, RandomElementFrom(options));
                     }
                 }
@@ -143,13 +144,11 @@ namespace Kostra.AIPlayerExample
         /// <returns>A <see cref="RecycleAction"/> or <c>null</c> if no such action is possible.</returns>
         private static RecycleAction? GetValidRecycleAction(GameState.GameInfo gameInfo)
         {
-            if (gameInfo.AvailableWhitePuzzles.Length > 0)
-            {
+            if (gameInfo.AvailableWhitePuzzles.Length > 0) {
                 List<uint> order = gameInfo.AvailableWhitePuzzles.Select(p => p.Id).ToList();
                 return new RecycleAction(order, RecycleAction.Options.White);
             }
-            if (gameInfo.AvailableBlackPuzzles.Length > 0)
-            {
+            if (gameInfo.AvailableBlackPuzzles.Length > 0) {
                 List<uint> order = gameInfo.AvailableBlackPuzzles.Select(p => p.Id).ToList();
                 return new RecycleAction(order, RecycleAction.Options.Black);
             }
@@ -171,7 +170,7 @@ namespace Kostra.AIPlayerExample
         ///     <item><c>(null, -1)</c> if the puzzle can't be solved using the available resources.</item>
         ///   </list>
         /// </returns>
-        private static Tuple<List<VerifiableAction>?, int> SolvePuzzleWithIDAStar(Puzzle puzzle, IReadOnlyList<int> numTetrominosLeft, IReadOnlyList<int> numTetrominosOwned, int maxDepth=-1, bool finishingTouches = false)
+        private static Tuple<List<VerifiableAction>?, int> SolvePuzzleWithIDAStar(Puzzle puzzle, IReadOnlyList<int> numTetrominosLeft, IReadOnlyList<int> numTetrominosOwned, int maxDepth = -1, bool finishingTouches = false)
         {
             var solution = IDAStar.IterativeDeepeningAStar(
                 new PuzzleNode(puzzle.Image, puzzle.Id, numTetrominosLeft, numTetrominosOwned, finishingTouches),
@@ -179,11 +178,12 @@ namespace Kostra.AIPlayerExample
                 maxDepth
             );
 
-            if (solution.Item1 is null) return new(null, solution.Item2);
+            if (solution.Item1 is null) {
+                return new(null, solution.Item2);
+            }
 
             var path = new List<VerifiableAction>();
-            foreach (ActionEdge<PuzzleNode> edge in solution.Item1.Cast<ActionEdge<PuzzleNode>>())
-            {
+            foreach (ActionEdge<PuzzleNode> edge in solution.Item1.Cast<ActionEdge<PuzzleNode>>()) {
                 path.AddRange(edge.Action);
             }
             return new(path, solution.Item2);
@@ -205,8 +205,7 @@ namespace Kostra.AIPlayerExample
             bool ShouldChooseWhitePuzzle(IReadOnlyList<int> numTetrominosOwned)
             {
                 int totalTetrominoLevel = 0;
-                for (int i = 0; i < TetrominoManager.NumShapes; i++)
-                {
+                for (int i = 0; i < TetrominoManager.NumShapes; i++) {
                     int level = TetrominoManager.GetLevelOf((TetrominoShape)i);
                     totalTetrominoLevel += level * numTetrominosOwned[i];
                 }
@@ -214,35 +213,29 @@ namespace Kostra.AIPlayerExample
                 return totalTetrominoLevel < levelSumToConsiderBlackPuzzles;
             }
 
-            if (ShouldChooseWhitePuzzle(myInfo.NumTetrominosOwned))
-            {
+            if (ShouldChooseWhitePuzzle(myInfo.NumTetrominosOwned)) {
                 possiblePuzzles.AddRange(gameInfo.AvailableWhitePuzzles);
             }
-            if (possiblePuzzles.Count == 0)
-            {
+            if (possiblePuzzles.Count == 0) {
                 possiblePuzzles.AddRange(gameInfo.AvailableBlackPuzzles);
             }
             // if there are no puzzles to choose from --> return null
-            if (possiblePuzzles.Count == 0)
-            {
+            if (possiblePuzzles.Count == 0) {
                 return null;
             }
 
             // choose the best puzzle
             List<PuzzleSolutionInfo> solutionInfos = new();
-            foreach (Puzzle puzzle in possiblePuzzles)
-            {
+            foreach (Puzzle puzzle in possiblePuzzles) {
                 var solution = SolvePuzzleWithIDAStar(puzzle, gameInfo.NumTetrominosLeft, myInfo.NumTetrominosOwned, maxDepth);
                 // if puzzle has a solution --> add it to the list
-                if (solution.Item1 is not null)
-                {
+                if (solution.Item1 is not null) {
                     solutionInfos.Add(new(puzzle, solution.Item1, solution.Item1.Count));
                 }
             }
 
             // if there are no puzzles with a solution --> return null
-            if (solutionInfos.Count == 0)
-            {
+            if (solutionInfos.Count == 0) {
                 return null;
             }
 
@@ -271,41 +264,33 @@ namespace Kostra.AIPlayerExample
         private Queue<VerifiableAction> GetStrategy(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, int maxDepth = -1)
         {
 
-            if (_currentPuzzle is null)
-            {
+            if (_currentPuzzle is null) {
                 // choose puzzle
                 var res = ChoosePuzzle(gameInfo, myInfo, maxDepth);
                 // if there are no puzzles left --> do nothing
-                if (res is null)
-                {
+                if (res is null) {
                     return new([new DoNothingAction()]);
                 }
                 // else: take the puzzle and solve it
                 var strategy = new Queue<VerifiableAction>();
                 TakePuzzleAction takePuzzleAction = new(TakePuzzleAction.Options.Normal, res.Item1.Id);
                 strategy.Enqueue(takePuzzleAction);
-                foreach (var action in res.Item2)
-                {
+                foreach (var action in res.Item2) {
                     strategy.Enqueue(action);
                 }
                 return strategy;
             }
-            
+
             // find a solution to current puzzle
             var solution = SolvePuzzleWithIDAStar(_currentPuzzle, gameInfo.NumTetrominosLeft, myInfo.NumTetrominosOwned, maxDepth).Item1;
-            if (solution is null)
-            {
+            if (solution is null) {
                 return new([new DoNothingAction()]);
             }
 
             return new(solution);
         }
 
-
-        /// <summary>
-        /// Represents the information about a puzzle needed to determine how advantageous would be to take and solve it.
-        /// </summary>
-        private record struct PuzzleSolutionInfo(Puzzle Puzzle, List<VerifiableAction> Solution, int NumSteps);
+        #endregion
 
         /// <summary>
         /// Defines a method for comparing <see cref="PuzzleSolutionInfo"/> objects.
@@ -314,6 +299,8 @@ namespace Kostra.AIPlayerExample
         /// <seealso cref="PuzzleSolutionInfo"/>
         private class PuzzleComparer : IComparer<PuzzleSolutionInfo>
         {
+            #region Methods
+
             public int Compare(PuzzleSolutionInfo x, PuzzleSolutionInfo y)
             {
                 int xLevel = TetrominoManager.GetLevelOf(x.Puzzle.RewardTetromino);
@@ -323,14 +310,23 @@ namespace Kostra.AIPlayerExample
 
                 return xScore.CompareTo(yScore);
             }
+
+            #endregion
         }
+
+        /// <summary>
+        /// Represents the information about a puzzle needed to determine how advantageous would be to take and solve it.
+        /// </summary>
+        private record struct PuzzleSolutionInfo(Puzzle Puzzle, List<VerifiableAction> Solution, int NumSteps);
     }
 
     /// <summary>
     /// Represents transition between two game states using an action.
     /// </summary>
-    class ActionEdge<T>(T from, T to, IReadOnlyList<VerifiableAction> actions) : IEdge<T> where T : INode<T>
+    internal class ActionEdge<T>(T from, T to, IReadOnlyList<VerifiableAction> actions) : IEdge<T> where T : INode<T>
     {
+        #region Properties
+
         /// <summary>
         /// The original game state.
         /// </summary>
@@ -350,24 +346,47 @@ namespace Kostra.AIPlayerExample
         /// The actions needed to get from <see cref="From"/> to <see cref="To"/>.
         /// </summary>
         public IReadOnlyList<VerifiableAction> Action => actions;
+
+        #endregion
     }
 
     /// <summary>
     /// Represents a puzzle being solved by a player.
     /// </summary>
-    class PuzzleNode(BinaryImage puzzle, uint puzzleId, IReadOnlyList<int> numTetrominosLeft, IReadOnlyList<int> numTetrominosOwned, bool finishingTouches) : INode<PuzzleNode>
+    internal class PuzzleNode(BinaryImage puzzle, uint puzzleId, IReadOnlyList<int> numTetrominosLeft, IReadOnlyList<int> numTetrominosOwned, bool finishingTouches) : INode<PuzzleNode>
     {
-        public int Id => _puzzle.GetHashCode();
-        public uint PuzzleId => puzzleId;
+        #region Fields
+
+        // capture puzzle and numTetrominosOwned for heuristic (its static)
+        private readonly BinaryImage _puzzle = puzzle;
+
+        private readonly IReadOnlyList<int> _numTetrominosOwned = numTetrominosOwned;
+
+        // cache the edges to avoid recalculating them
+        private List<ActionEdge<PuzzleNode>>? _getEdgesCache = null;
+
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// Represents a puzzle that has been completed.
         /// </summary>
         public static PuzzleNode FinishedPuzzle => new(BinaryImage.FullImage, 0, null, null, false);
 
-        // capture puzzle and numTetrominosOwned for heuristic (its static)
-        private readonly BinaryImage _puzzle = puzzle; 
-        private readonly IReadOnlyList<int> _numTetrominosOwned = numTetrominosOwned; 
+        /// <summary>
+        /// The ID of the node. Should be unique for each puzzle configuration.
+        /// </summary>
+        public int Id => _puzzle.GetHashCode();
+
+        /// <summary>
+        /// The ID of the puzzle represented by this node.
+        /// </summary>
+        public uint PuzzleId => puzzleId;
+
+        #endregion
+
+        #region Methods
 
         public static int Heuristic(PuzzleNode node, PuzzleNode goal)
         {
@@ -377,14 +396,13 @@ namespace Kostra.AIPlayerExample
 
             int numCellsToFillIn = goal._puzzle.CountFilledCells() - node._puzzle.CountFilledCells();
             int[] numShapesOfLevelOwned = new int[TetrominoManager.MaxLevel + 1];
-            for (int i = 0; i < TetrominoManager.NumShapes; i++)
-            {
+            for (int i = 0; i < TetrominoManager.NumShapes; i++) {
                 numShapesOfLevelOwned[TetrominoManager.GetLevelOf((TetrominoShape)i)] += node._numTetrominosOwned[i];
             }
-            int[] numShapesOfLevelUsed = new int[TetrominoManager.MaxLevel + 1];
+
             // put in the largest shapes we can
-            for (int level = TetrominoManager.MaxLevel; level >= TetrominoManager.MinLevel; level--)
-            {
+            int[] numShapesOfLevelUsed = new int[TetrominoManager.MaxLevel + 1];
+            for (int level = TetrominoManager.MaxLevel; level >= TetrominoManager.MinLevel; level--) {
                 int numUsed = Math.Min(numShapesOfLevelOwned[level], numCellsToFillIn / level);
                 numCellsToFillIn -= level * numUsed;
                 numShapesOfLevelUsed[level] = numUsed;
@@ -396,26 +414,31 @@ namespace Kostra.AIPlayerExample
             // fix the difference
             int GetStepsToFixDiff(int diff)
             {
-                if (diff == 0) return 0;
+                if (diff == 0) {
+                    return 0;
+                }
                 // if we have used everything --> assume we could have upgraded the tetrominos used to make up the difference
-                if (numShapesOfLevelOwned.Sum() == 0) return diff;
+                if (numShapesOfLevelOwned.Sum() == 0) {
+                    return diff;
+                }
 
                 // we have not used everything --> the difference can be 1, 2 or 3
 
                 // if diff == 1, we can upgrade a used tetromino (+1) or perhaps there could a change we could do 
                 // e.g. use 2 instead of 3 and than use 2 again --> still result +1
-                if (diff == 1) return 1;
+                if (diff == 1) {
+                    return 1;
+                }
 
                 // if diff == 2, we dont have any level 1 or 2 tetrominos
                 // if we have used a level 4 and still have two level 3, we can do: (4, diff=2, price=n+2) -> (3,3, diff=0, price=n+1)
-                if (diff == 2)
-                {
-                    if (numShapesOfLevelUsed[4] > 0 && numShapesOfLevelOwned[3] >= 2) return 1;
+                if (diff == 2) {
+                    if (numShapesOfLevelUsed[4] > 0 && numShapesOfLevelOwned[3] >= 2)
+                        return 1;
                     return 2;
                 }
 
-                if (diff != 3)
-                {
+                if (diff != 3) {
                     throw new InvalidOperationException("Invalid diff - should never happen");
                 }
 
@@ -424,7 +447,9 @@ namespace Kostra.AIPlayerExample
                 // 2. I had only level 4 tetrominos
                 //    a) original sum == 3 and I had no tetrominos at all --> need to upgrade to a level 3 from nothing
 
-                if (numShapesOfLevelUsed[4] == 0 && numShapesOfLevelOwned[4] == 0) return 4;
+                if (numShapesOfLevelUsed[4] == 0 && numShapesOfLevelOwned[4] == 0) {
+                    return 4;
+                }
 
                 //    b) original sum == 3 and I had a level 4 tetromino --> downgrade to level 3 and use it
                 //    c) original sum == 4*k + 3 and I still have a level 4 tetromino --> downgrade to level 3 and use it
@@ -432,9 +457,6 @@ namespace Kostra.AIPlayerExample
                 return 2;
             }
         }
-
-        // cache the edges to avoid recalculating them
-        private List<ActionEdge<PuzzleNode>>? _getEdgesCache = null;
 
         /// <summary>
         /// Returns the possible transitions from this node. To get to a neighbor, the use of a <see cref="PlaceTetrominoAction"/> is required. 
@@ -445,21 +467,19 @@ namespace Kostra.AIPlayerExample
             _getEdgesCache ??= GetEdgesEnumerable().ToList();
             return _getEdgesCache;
         }
+
         private IEnumerable<ActionEdge<PuzzleNode>> GetEdgesEnumerable()
         {
             // foreach tetromino shape
-            for (int i = 0; i < TetrominoManager.NumShapes; i++)
-            {
+            for (int i = 0; i < TetrominoManager.NumShapes; i++) {
                 var newNumTetrominosLeft = numTetrominosLeft.ToArray();
                 var newNumTetrominosOwned = numTetrominosOwned.ToArray();
 
                 // if we have the shape --> try placing it in all possible positions
-                if (numTetrominosOwned[i] > 0)
-                {
+                if (numTetrominosOwned[i] > 0) {
                     newNumTetrominosOwned[i]--;
 
-                    foreach (var placement in GetAllValidPlacements(puzzle, (TetrominoShape)i))
-                    {
+                    foreach (var placement in GetAllValidPlacements(puzzle, (TetrominoShape)i)) {
                         var newPuzzleNode = new PuzzleNode(puzzle | placement.Position, puzzleId, numTetrominosLeft, newNumTetrominosOwned, finishingTouches);
                         yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, [placement]);
                     }
@@ -467,44 +487,44 @@ namespace Kostra.AIPlayerExample
                 }
 
                 // if FinishingTouches --> can only used the shapes we own --> continue
-                if (finishingTouches) continue;
+                if (finishingTouches) {
+                    continue;
+                }
 
                 // if there are no tetrominos of this shape left --> continue
-                if (numTetrominosLeft[i] == 0) continue;
+                if (numTetrominosLeft[i] == 0) {
+                    continue;
+                }
 
                 // if we don't have the basic shape
-                if (i == (int)TetrominoShape.O1)
-                {
+                if (i == (int)TetrominoShape.O1) {
                     newNumTetrominosLeft[i]--;
 
-                    foreach (var placement in GetAllValidPlacements(puzzle, (TetrominoShape)i))
-                    {
+                    foreach (var placement in GetAllValidPlacements(puzzle, (TetrominoShape)i)) {
                         var newPuzzleNode = new PuzzleNode(puzzle | placement.Position, puzzleId, newNumTetrominosLeft, numTetrominosOwned, finishingTouches);
                         yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, [new TakeBasicTetrominoAction(), placement]);
                     }
-                    continue; 
+                    continue;
                 }
 
                 // if we don't have a more complex shape --> try to upgrade to it
                 var upgradePath = GetUpgradePathTo((TetrominoShape)i);
-                if (upgradePath is null) continue;
+                if (upgradePath is null)
+                    continue;
 
                 // adjust the game state
                 TetrominoAction firstAction = upgradePath[0];
-                if (firstAction is TakeBasicTetrominoAction)
-                {
+                if (firstAction is TakeBasicTetrominoAction) {
                     newNumTetrominosLeft[(int)TetrominoShape.O1]--;
                 }
-                else if (firstAction is ChangeTetrominoAction changeAction)
-                {
+                else if (firstAction is ChangeTetrominoAction changeAction) {
                     int firstShapeTraded = (int)changeAction.OldTetromino;
                     newNumTetrominosOwned[firstShapeTraded]--;
                     newNumTetrominosLeft[firstShapeTraded]++;
                     newNumTetrominosLeft[i]--;
                 }
 
-                foreach (var placement in GetAllValidPlacements(puzzle, (TetrominoShape)i))
-                {
+                foreach (var placement in GetAllValidPlacements(puzzle, (TetrominoShape)i)) {
                     var newPuzzleNode = new PuzzleNode(puzzle | placement.Position, puzzleId, newNumTetrominosLeft, numTetrominosOwned, finishingTouches);
                     yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, new List<VerifiableAction>(upgradePath) { placement });
                 }
@@ -536,16 +556,14 @@ namespace Kostra.AIPlayerExample
             int level = TetrominoManager.GetLevelOf(shape);
             TetrominoShape? closestShape = null;
 
-            for (int i = 0; i < TetrominoManager.NumShapes; i++)
-            {
-                if (numTetrominosOwned[i] == 0) continue;
-                if (closestShape is null)
-                {
+            for (int i = 0; i < TetrominoManager.NumShapes; i++) {
+                if (numTetrominosOwned[i] == 0)
+                    continue;
+                if (closestShape is null) {
                     closestShape = (TetrominoShape)i;
                     continue;
                 }
-                if (Math.Abs(TetrominoManager.GetLevelOf((TetrominoShape)i) - level) < Math.Abs(TetrominoManager.GetLevelOf(closestShape.Value) - level))
-                {
+                if (Math.Abs(TetrominoManager.GetLevelOf((TetrominoShape)i) - level) < Math.Abs(TetrominoManager.GetLevelOf(closestShape.Value) - level)) {
                     closestShape = (TetrominoShape)i;
                 }
             }
@@ -553,17 +571,16 @@ namespace Kostra.AIPlayerExample
             List<TetrominoAction> strategy;
 
             // if I have no tetrominos
-            if (closestShape == null)
-            {
+            if (closestShape == null) {
                 // if there are no level1 tetrominos left --> we cant do anything
-                if (numTetrominosLeft[(int)TetrominoShape.O1] == 0) return null;
+                if (numTetrominosLeft[(int)TetrominoShape.O1] == 0)
+                    return null;
 
                 // otherwise take a level1 tetromino and then upgrade it
                 closestShape = TetrominoShape.O1;
                 strategy = [new TakeBasicTetrominoAction()];
             }
-            else
-            {
+            else {
                 strategy = [];
             }
 
@@ -573,21 +590,31 @@ namespace Kostra.AIPlayerExample
             var path = IDAStar.IterativeDeepeningAStar(start, goal).Item1;
 
             // if there is no path --> return null
-            if (path is null) return null;
+            if (path is null) {
+                return null;
+            }
 
             // add the path to the strategy
             strategy.AddRange(path.Cast<ActionEdge<ShapeNode>>().Select(edge => (ChangeTetrominoAction)edge.Action[0]));
 
             return strategy;
         }
+
+        #endregion
     }
 
     /// <summary>
     /// Represents a tetromino in the shared reserve.
     /// </summary>
-    class ShapeNode(TetrominoShape shape, IReadOnlyList<int> numTetrominosLeft) : INode<ShapeNode>
+    internal class ShapeNode(TetrominoShape shape, IReadOnlyList<int> numTetrominosLeft) : INode<ShapeNode>
     {
+        #region Properties
+
         public int Id => (int)shape;
+
+        #endregion
+
+        #region Methods
 
         public static int Heuristic(ShapeNode node, ShapeNode goal) => node.Id == goal.Id ? 0 : 1;
 
@@ -596,8 +623,7 @@ namespace Kostra.AIPlayerExample
         /// </summary>
         public IEnumerable<IEdge<ShapeNode>> GetEdges()
         {
-            foreach (TetrominoShape newShape in RewardManager.GetUpgradeOptions(numTetrominosLeft, shape))
-            {
+            foreach (TetrominoShape newShape in RewardManager.GetUpgradeOptions(numTetrominosLeft, shape)) {
                 var newNumTetrominosLeft = numTetrominosLeft.ToArray();
                 newNumTetrominosLeft[(int)newShape]--;
                 newNumTetrominosLeft[(int)shape]++;
@@ -605,5 +631,7 @@ namespace Kostra.AIPlayerExample
                 yield return new ActionEdge<ShapeNode>(this, newShapeNode, [new ChangeTetrominoAction(shape, newShape)]);
             }
         }
+
+        #endregion
     }
 }
