@@ -1,4 +1,4 @@
-﻿namespace ProjectLCore.AIPlayerExample
+﻿namespace AIPlayerExample
 {
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;

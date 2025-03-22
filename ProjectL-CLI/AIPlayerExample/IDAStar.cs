@@ -1,4 +1,4 @@
-﻿namespace ProjectLCore.AIPlayerExample
+﻿namespace AIPlayerExample
 {
     using System;
     using System.Collections.Generic;
