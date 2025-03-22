@@ -1,4 +1,4 @@
-﻿namespace Kostra.GameLogic
+﻿namespace ProjectLCore.GameLogic
 {
     /// <summary>
     /// Represents the information about the current turn.

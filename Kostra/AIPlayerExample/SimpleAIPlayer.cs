@@ -1,10 +1,10 @@
-﻿namespace Kostra.AIPlayerExample
+﻿namespace ProjectLCore.AIPlayerExample
 {
-    using Kostra.GameActions;
-    using Kostra.GameLogic;
-    using Kostra.GameManagers;
-    using Kostra.GamePieces;
-    using Kostra.Players;
+    using ProjectLCore.GameActions;
+    using ProjectLCore.GameLogic;
+    using ProjectLCore.GameManagers;
+    using ProjectLCore.GamePieces;
+    using ProjectLCore.Players;
     using System;
     using System.Collections.Generic;
     using System.Linq;

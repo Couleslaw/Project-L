@@ -1,7 +1,7 @@
-namespace Kostra.GameLogic
+namespace ProjectLCore.GameLogic
 {
-    using Kostra.GameManagers;
-    using Kostra.Players;
+    using ProjectLCore.GameManagers;
+    using ProjectLCore.Players;
 
     /// <summary>
     /// Contains all the information about a game of <b>Project L</b>.

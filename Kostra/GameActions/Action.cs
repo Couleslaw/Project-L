@@ -1,7 +1,7 @@
-﻿namespace Kostra.GameActions
+﻿namespace ProjectLCore.GameActions
 {
-    using Kostra.GameManagers;
-    using Kostra.GamePieces;
+    using ProjectLCore.GameManagers;
+    using ProjectLCore.GamePieces;
 
     /// <summary>
     /// Represents the verification status of an action.

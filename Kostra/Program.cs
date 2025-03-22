@@ -1,9 +1,9 @@
-﻿namespace Kostra
+﻿namespace ProjectLCore
 {
-    using Kostra.AIPlayerExample;
-    using Kostra.GameActions;
-    using Kostra.GameLogic;
-    using Kostra.Players;
+    using ProjectLCore.AIPlayerExample;
+    using ProjectLCore.GameActions;
+    using ProjectLCore.GameLogic;
+    using ProjectLCore.Players;
 
     internal class Program
     {

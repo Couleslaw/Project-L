@@ -1,4 +1,4 @@
-﻿namespace Kostra.GamePieces
+﻿namespace ProjectLCore.GamePieces
 {
     /// <summary>
     /// Represents a specific tetromino shape.

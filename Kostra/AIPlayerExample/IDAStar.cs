@@ -1,4 +1,4 @@
-﻿namespace Kostra.AIPlayerExample
+﻿namespace ProjectLCore.AIPlayerExample
 {
     using System;
     using System.Collections.Generic;

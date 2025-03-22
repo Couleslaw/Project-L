@@ -1,7 +1,7 @@
-﻿namespace Kostra.GameManagers
+﻿namespace ProjectLCore.GameManagers
 {
-    using Kostra.GameActions;
-    using Kostra.GameLogic;
+    using ProjectLCore.GameActions;
+    using ProjectLCore.GameLogic;
 
     /// <summary>
     /// Takes care of the order of players, the game phase and the current turn.

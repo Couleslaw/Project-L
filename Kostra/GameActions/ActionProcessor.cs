@@ -1,9 +1,9 @@
-﻿namespace Kostra.GameActions
+﻿namespace ProjectLCore.GameActions
 {
-    using Kostra.GameLogic;
-    using Kostra.GameManagers;
-    using Kostra.GamePieces;
-    using Kostra.Players;
+    using ProjectLCore.GameLogic;
+    using ProjectLCore.GameManagers;
+    using ProjectLCore.GamePieces;
+    using ProjectLCore.Players;
     using System;
 
     /// <summary>

@@ -1,7 +1,7 @@
-﻿namespace Kostra.GameManagers
+﻿namespace ProjectLCore.GameManagers
 {
-    using Kostra.GameActions;
-    using Kostra.GamePieces;
+    using ProjectLCore.GameActions;
+    using ProjectLCore.GamePieces;
     using System;
     using System.Collections.Generic;
 

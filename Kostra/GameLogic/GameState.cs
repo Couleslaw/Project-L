@@ -1,7 +1,7 @@
-namespace Kostra.GameLogic
+namespace ProjectLCore.GameLogic
 {
-    using Kostra.GameManagers;
-    using Kostra.GamePieces;
+    using ProjectLCore.GameManagers;
+    using ProjectLCore.GamePieces;
 
     /// <summary>
     /// Builder for the <see cref="GameState"/> class.

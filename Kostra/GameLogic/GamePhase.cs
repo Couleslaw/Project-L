@@ -1,6 +1,6 @@
-﻿namespace Kostra.GameLogic
+﻿namespace ProjectLCore.GameLogic
 {
-    using Kostra.GameActions;
+    using ProjectLCore.GameActions;
 
     /// <summary>
     /// Represents the current phase of the game

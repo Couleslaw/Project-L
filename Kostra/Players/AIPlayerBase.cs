@@ -1,8 +1,8 @@
-﻿namespace Kostra.Players
+﻿namespace ProjectLCore.Players
 {
-    using Kostra.GameActions;
-    using Kostra.GameLogic;
-    using Kostra.GamePieces;
+    using ProjectLCore.GameActions;
+    using ProjectLCore.GameLogic;
+    using ProjectLCore.GamePieces;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;

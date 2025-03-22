@@ -1,4 +1,4 @@
-namespace Kostra.GamePieces
+namespace ProjectLCore.GamePieces
 {
     using System.Diagnostics.CodeAnalysis;
     using System.Text;
