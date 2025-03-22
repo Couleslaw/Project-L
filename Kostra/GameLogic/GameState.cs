@@ -20,22 +20,17 @@ namespace ProjectLCore.GameLogic
         #region Methods
 
         /// <summary>
-        /// Adds the given puzzle to the white deck.
+        /// Adds the given puzzle to the appropriate deck.
         /// </summary>
         /// <param name="puzzle">The puzzle.</param>
-        public GameStateBuilder AddWhitePuzzle(Puzzle puzzle)
+        public GameStateBuilder AddPuzzle(Puzzle puzzle)
         {
-            _whitePuzzlesDeck.Add(puzzle);
-            return this;
-        }
-
-        /// <summary>
-        /// Adds the given puzzle to the black deck.
-        /// </summary>
-        /// <param name="puzzle">The puzzle.</param>
-        public GameStateBuilder AddBlackPuzzle(Puzzle puzzle)
-        {
-            _blackPuzzlesDeck.Add(puzzle);
+            if (puzzle.IsBlack) {
+                _blackPuzzlesDeck.Add(puzzle);
+            }
+            else {
+                _whitePuzzlesDeck.Add(puzzle);
+            }
             return this;
         }
 
@@ -92,9 +87,9 @@ namespace ProjectLCore.GameLogic
         /// </summary>
         /// <param name="whitePuzzlesDeck">A collection of the white puzzles.</param>
         /// <param name="blackPuzzlesDeck">A collection of the black puzzles.</param>
-        /// <param name="numInitalTetrominos">The amount of tetrominos of each shape in the shared reserve at the beginning of the game.</param>
+        /// <param name="numInitialTetrominos">The amount of tetrominos of each shape in the shared reserve at the beginning of the game.</param>
         /// <exception cref="ArgumentException">Not enough puzzles to fill the rows.</exception>
-        public GameState(ICollection<Puzzle> whitePuzzlesDeck, ICollection<Puzzle> blackPuzzlesDeck, int numInitalTetrominos)
+        public GameState(ICollection<Puzzle> whitePuzzlesDeck, ICollection<Puzzle> blackPuzzlesDeck, int numInitialTetrominos)
         {
             // check if there are enough puzzles to fill the rows
             if (whitePuzzlesDeck.Count < _numPuzzlesInRow || blackPuzzlesDeck.Count < _numPuzzlesInRow) {
@@ -112,7 +107,7 @@ namespace ProjectLCore.GameLogic
             }
 
             // initialize tetrominos
-            _numInitialTetrominos = numInitalTetrominos;
+            _numInitialTetrominos = numInitialTetrominos;
             for (int i = 0; i < NumTetrominosLeft.Length; i++) {
                 NumTetrominosLeft[i] = _numInitialTetrominos;
             }
@@ -135,7 +130,26 @@ namespace ProjectLCore.GameLogic
 
         #region Methods
 
-        #region Puzzles
+        public static GameState CreateFromFile(string puzzlesFilePath, int numInitialTetrominos)
+        {
+            // create a builder and parse the puzzles
+            var gameStateBuilder = new GameStateBuilder(numInitialTetrominos);
+            PuzzleParser? puzzleParser = null;
+            try {
+                puzzleParser = new PuzzleParser(puzzlesFilePath);
+                while (true) {
+                    Puzzle? puzzle = puzzleParser.GetNextPuzzle();
+                    if (puzzle is null) {
+                        break;
+                    }
+                    gameStateBuilder.AddPuzzle(puzzle);
+                }
+            }
+            finally {
+                puzzleParser?.Dispose();
+            }
+            return gameStateBuilder.Build();
+        }
 
         /// <summary> Returns a list containing the puzzles in the white row. </summary>
         public List<Puzzle> GetAvailableWhitePuzzles()
@@ -256,10 +270,6 @@ namespace ProjectLCore.GameLogic
             }
         }
 
-        #endregion
-
-        #region Tetrominos
-
         /// <summary>
         /// Returns the number of tetrominos of the given shape left in the shared reserve.
         /// </summary>
@@ -294,8 +304,6 @@ namespace ProjectLCore.GameLogic
             }
             NumTetrominosLeft[(int)shape]++;
         }
-
-        #endregion
 
         /// <summary>
         /// Returns a copy of information about the game wrapped in a <see cref="GameInfo" /> object.

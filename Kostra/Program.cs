@@ -4,16 +4,16 @@
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
     using ProjectLCore.Players;
+    using ProjectLCore.GamePieces;
 
     internal class Program
     {
-        #region Methods
-
         internal static void Main(string[] args)
         {
             // initialize a new game
             int numInitialTetrominos = 15;
-            GameState gameState = new GameStateBuilder(numInitialTetrominos).Build();
+            GameState gameState = GameState.CreateFromFile("puzzles.txt", numInitialTetrominos);
+
             Player[] players = [
                 new HumanPlayer(),
                 new HumanPlayer(),
@@ -85,8 +85,6 @@
             var playerInfo = game.PlayerStates.First(playerState => playerState.PlayerId == playerId).GetPlayerInfo();
             return new ActionVerifier(gameInfo, playerInfo, turnInfo);
         }
-
-        #endregion
     }
 }
 

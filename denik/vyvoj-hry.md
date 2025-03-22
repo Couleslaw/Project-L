@@ -88,3 +88,12 @@ Design hry jsem udelal ve Figme, puvodne jsem planoval pouze pro tri hrace, prot
     - tie -> most puzzles completed wins
     - tie -> most pieces leftover wins
     - tie -> all tied players share the victory
+
+## cteni puzzle config souboru
+
+- dve moznosti
+
+  1. kdyz je nevalidni format radku / puzzlu, tak ten puzzle skipnout, ale nacist ostatni a zapnout hru
+  2. nebo vyhodit vyjimku a zavrit reader
+
+- zvolil jsem 2. protoze pokud je nejake puzzle invalid, tak o tom chci vedet a opravit to
