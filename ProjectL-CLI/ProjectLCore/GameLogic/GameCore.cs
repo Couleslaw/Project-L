@@ -1,6 +1,7 @@
 namespace ProjectLCore.GameLogic
 {
     using ProjectLCore.GameManagers;
+    using ProjectLCore.GamePieces;
     using ProjectLCore.Players;
 
     /// <summary>
@@ -88,6 +89,20 @@ namespace ProjectLCore.GameLogic
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Initializes the game by giving every player a O1 and I2 tetromino from the shared reserve.
+        /// </summary>
+        public void InitializeGame()
+        {
+            // give all players their initial tetrominos
+            foreach (var playerState in PlayerStates) {
+                playerState.AddTetromino(TetrominoShape.O1);
+                playerState.AddTetromino(TetrominoShape.I2);
+                GameState.RemoveTetromino(TetrominoShape.O1);
+                GameState.RemoveTetromino(TetrominoShape.I2);
+            }
+        }
 
         /// <summary>
         /// Returns information about the next turn and updates <see cref="CurrentPlayerId"/> and <see cref="CurrentGamePhase"/>.

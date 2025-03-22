@@ -46,8 +46,6 @@ namespace ProjectLCore.GameLogic
 
         #region Methods
 
-        #region Implement IComparable 
-
         /// <summary>
         /// <para>
         /// Compares THIS instance with another <see cref="PlayerState" /> and returns an integer that indicates whether THIS instance precedes, follows, or occurs in the same position in the final scoring order as the other player.
@@ -92,33 +90,6 @@ namespace ProjectLCore.GameLogic
             }
         }
 
-        // Define the is greater than operator.
-        public static bool operator >(PlayerState operand1, PlayerState operand2)
-        {
-            return operand1.CompareTo(operand2) > 0;
-        }
-
-        // Define the is less than operator.
-        public static bool operator <(PlayerState operand1, PlayerState operand2)
-        {
-            return operand1.CompareTo(operand2) < 0;
-        }
-
-        // Define the is greater than or equal to operator.
-        public static bool operator >=(PlayerState operand1, PlayerState operand2)
-        {
-            return operand1.CompareTo(operand2) >= 0;
-        }
-
-        // Define the is less than or equal to operator.
-        public static bool operator <=(PlayerState operand1, PlayerState operand2)
-        {
-            return operand1.CompareTo(operand2) <= 0;
-        }
-
-        #endregion
-
-        #region Implement IEquatable
         public bool Equals(PlayerState? other)
         {
             return CompareTo(other) == 0;
@@ -136,22 +107,6 @@ namespace ProjectLCore.GameLogic
         {
             return PlayerId.GetHashCode();
         }
-
-        // Define the is equal to operator.
-        public static bool operator ==(PlayerState operand1, PlayerState operand2)
-        {
-            return operand1.Equals(operand2);
-        }
-
-        // Define the is not equal to operator.
-        public static bool operator !=(PlayerState operand1, PlayerState operand2)
-        {
-            return !operand1.Equals(operand2);
-        }
-
-        #endregion
-
-        #region Puzzles
 
         /// <summary>
         /// Adds the puzzle to the player's unfinished puzzles.
@@ -214,10 +169,6 @@ namespace ProjectLCore.GameLogic
             return result;
         }
 
-        #endregion
-
-        #region Tetrominos
-
         /// <summary>
         /// Adds the given tetromino to the player's personal collection.
         /// </summary>
@@ -235,8 +186,6 @@ namespace ProjectLCore.GameLogic
         {
             _numTetrominosOwned[(int)shape]++;
         }
-
-        #endregion
 
         /// <summary>
         /// Returns a copy of information about the player wrapped in a <see cref="PlayerInfo" /> object.
@@ -270,6 +219,40 @@ namespace ProjectLCore.GameLogic
             #endregion
         }
 
-        
+        // Define the is greater than operator.
+        public static bool operator >(PlayerState operand1, PlayerState operand2)
+        {
+            return operand1.CompareTo(operand2) > 0;
+        }
+
+        // Define the is less than operator.
+        public static bool operator <(PlayerState operand1, PlayerState operand2)
+        {
+            return operand1.CompareTo(operand2) < 0;
+        }
+
+        // Define the is greater than or equal to operator.
+        public static bool operator >=(PlayerState operand1, PlayerState operand2)
+        {
+            return operand1.CompareTo(operand2) >= 0;
+        }
+
+        // Define the is less than or equal to operator.
+        public static bool operator <=(PlayerState operand1, PlayerState operand2)
+        {
+            return operand1.CompareTo(operand2) <= 0;
+        }
+
+        // Define the is equal to operator.
+        public static bool operator ==(PlayerState operand1, PlayerState operand2)
+        {
+            return operand1.Equals(operand2);
+        }
+
+        // Define the is not equal to operator.
+        public static bool operator !=(PlayerState operand1, PlayerState operand2)
+        {
+            return !operand1.Equals(operand2);
+        }
     }
 }

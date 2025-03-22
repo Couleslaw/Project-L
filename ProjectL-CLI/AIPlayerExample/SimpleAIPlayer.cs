@@ -32,7 +32,7 @@
 
         #region Methods
 
-        public override void Init(int numPlayers, int numInitialTetrominos, string? filePath)
+        public override void Init(int numPlayers, string? filePath)
         {
         }
 

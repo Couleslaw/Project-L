@@ -6,14 +6,33 @@ namespace ProjectLCore.GameLogic
     /// <summary>
     /// Builder for the <see cref="GameState"/> class.
     /// </summary>
-    /// <param name="numInitialTetrominos">The amount of tetrominos of each shape in the shared reserve at the beginning of the game.</param>
-    public class GameStateBuilder(int numInitialTetrominos)
+    public class GameStateBuilder
     {
         #region Fields
 
         private readonly List<Puzzle> _whitePuzzlesDeck = new();
 
         private readonly List<Puzzle> _blackPuzzlesDeck = new();
+
+        private readonly int _numInitialTetrominos;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GameStateBuilder"/> class.
+        /// </summary>
+        /// <param name="numInitialTetrominos">The number initial tetrominos.</param>
+        /// <exception cref="System.ArgumentException">The number of initial tetrominos must be at least <see cref="GameState.MinNumInitialTetrominos"/>.</exception>
+        public GameStateBuilder(int numInitialTetrominos)
+        {
+            // check if the number of initial tetrominos is valid
+            if (numInitialTetrominos < GameState.MinNumInitialTetrominos) {
+                throw new ArgumentException($"The number of initial tetrominos must be at least {GameState.MinNumInitialTetrominos}");
+            }
+            _numInitialTetrominos = numInitialTetrominos;
+        }
 
         #endregion
 
@@ -41,7 +60,7 @@ namespace ProjectLCore.GameLogic
         {
             _whitePuzzlesDeck.Shuffle();
             _blackPuzzlesDeck.Shuffle();
-            return new GameState(_whitePuzzlesDeck, _blackPuzzlesDeck, numInitialTetrominos);
+            return new GameState(_whitePuzzlesDeck, _blackPuzzlesDeck, _numInitialTetrominos);
         }
 
         #endregion
@@ -59,6 +78,11 @@ namespace ProjectLCore.GameLogic
     public class GameState
     {
         #region Constants
+
+        /// <summary>
+        /// The minimum number initial tetrominos of each shape in the shared reserve at the beginning of the game.
+        /// </summary>
+        public const int MinNumInitialTetrominos = 10;
 
         // puzzles in decks and on the game board
         private const int _numPuzzlesInRow = 4;
@@ -89,8 +113,14 @@ namespace ProjectLCore.GameLogic
         /// <param name="blackPuzzlesDeck">A collection of the black puzzles.</param>
         /// <param name="numInitialTetrominos">The amount of tetrominos of each shape in the shared reserve at the beginning of the game.</param>
         /// <exception cref="ArgumentException">Not enough puzzles to fill the rows.</exception>
+        /// <exception cref="ArgumentException">The number of initial tetrominos must be at least <see cref="MinNumInitialTetrominos"/>.</exception>"
         public GameState(ICollection<Puzzle> whitePuzzlesDeck, ICollection<Puzzle> blackPuzzlesDeck, int numInitialTetrominos)
         {
+            // check if number of initial tetrominos is valid
+            if (numInitialTetrominos < MinNumInitialTetrominos) {
+                throw new ArgumentException($"The number of initial tetrominos must be at least {MinNumInitialTetrominos}");
+            }
+
             // check if there are enough puzzles to fill the rows
             if (whitePuzzlesDeck.Count < _numPuzzlesInRow || blackPuzzlesDeck.Count < _numPuzzlesInRow) {
                 throw new ArgumentException("Not enough puzzles to fill the rows.");
@@ -130,8 +160,19 @@ namespace ProjectLCore.GameLogic
 
         #region Methods
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GameState"/> class from a file containing puzzles.
+        /// </summary>
+        /// <param name="puzzlesFilePath">The puzzles file path.</param>
+        /// <param name="numInitialTetrominos">The number initial tetrominos.</param>
+        /// <exception cref="ArgumentException">The number of initial tetrominos must be at least <see cref="MinNumInitialTetrominos"/>.</exception>
         public static GameState CreateFromFile(string puzzlesFilePath, int numInitialTetrominos)
         {
+            // check if the number of initial tetrominos is valid
+            if (numInitialTetrominos < MinNumInitialTetrominos) {
+                throw new ArgumentException($"The number of initial tetrominos must be at least {MinNumInitialTetrominos}");
+            }
+
             // create a builder and parse the puzzles
             var gameStateBuilder = new GameStateBuilder(numInitialTetrominos);
             PuzzleParser? puzzleParser = null;

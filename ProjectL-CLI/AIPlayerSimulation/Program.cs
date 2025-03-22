@@ -20,10 +20,11 @@
             ];
 
             SimpleAIPlayer simpleAIPlayer = new SimpleAIPlayer();
-            simpleAIPlayer.Init(players.Length, numInitialTetrominos, null);
+            simpleAIPlayer.Init(players.Length, null);
 
             // create game core and action processors
             var game = new GameCore(gameState, players, shufflePlayers: false);
+            game.InitializeGame();
             var signaler = game.TurnManager.GetSignaler();
 
             Dictionary<uint, GameActionProcessor> actionProcessors = new();
