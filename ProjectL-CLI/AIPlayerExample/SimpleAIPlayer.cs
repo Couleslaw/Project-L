@@ -12,7 +12,7 @@
     /// <summary>
     /// A Simple AI player that chooses the best puzzle to solve and then solves it using IDA*.
     /// </summary>
-    internal class SimpleAIPlayer : AIPlayerBase
+    public class SimpleAIPlayer : AIPlayerBase
     {
         #region Fields
 

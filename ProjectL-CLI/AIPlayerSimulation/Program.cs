@@ -1,10 +1,9 @@
-﻿namespace ProjectLCore
+﻿namespace AIPlayerSimulation
 {
-    using ProjectLCore.AIPlayerExample;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
     using ProjectLCore.Players;
-    using ProjectLCore.GamePieces;
+    using AIPlayerExample;
 
     internal class Program
     {
