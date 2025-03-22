@@ -1,6 +1,15 @@
-﻿namespace Kostra {
-    internal class Program {
-        static void Main(string[] args) {
+﻿using Kostra.GameActions;
+using Kostra.AIPlayerExample;
+using Kostra.GameManagers;
+using Kostra.GameLogic;
+using Kostra.Players;
+
+namespace Kostra
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
             // initialize a new game
             int numInitialTetrominos = 15;
             GameState gameState = new GameStateBuilder(numInitialTetrominos).Build();
@@ -9,15 +18,16 @@
                 new HumanPlayer(),
                 new HumanPlayer()
             ];
+
             SimpleAIPlayer simpleAIPlayer = new SimpleAIPlayer();
+            simpleAIPlayer.Init(players.Length, numInitialTetrominos, null);
 
             // create game core and action processors
             var game = new GameCore(gameState, players, shufflePlayers: false);
             var signaler = game.TurnManager.GetSignaler();
 
             Dictionary<uint, GameActionProcessor> actionProcessors = new();
-            for (int i = 0; i < players.Length; i++)
-            {
+            for (int i = 0; i < players.Length; i++) {
                 uint playerId = game.Players[i].Id;
                 actionProcessors[playerId] = new GameActionProcessor(game, playerId, signaler);
             }
@@ -39,23 +49,19 @@
                 var playerInfos = game.PlayerStates.Select(playerState => playerState.GetPlayerInfo()).ToArray();
                 var verifier = GetActionVerifier(game, turnInfo, playerId);
 
-                VerifiableAction action;
-                try
-                {
+                VerifiableAction? action;
+                try {
                     action = game.GetPlayerWithId(playerId).GetActionAsync(gameInfo, playerInfos, turnInfo, verifier).Result;
                 }
-                catch (Exception)
-                {
-                    action = simpleAIPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier).Result;
+                catch (Exception) {
+                    action = null;
                 }
 
-                if (action.Status == ActionStatus.Unverified)
-                {
+                if (action is not null && action.Status == ActionStatus.Unverified) {
                     action.GetVerifiedBy(verifier);
                 }
 
-                if (action.Status == ActionStatus.FailedVerification)
-                {
+                if (action is null || action.Status == ActionStatus.FailedVerification) {
                     action = simpleAIPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier).Result;
                 }
 
@@ -77,9 +83,11 @@
 
 
 
-public static class IListExtensions {
+public static class IListExtensions
+{
     // Fisher–Yates shuffle
-    public static void Shuffle<T>(this IList<T> list) {
+    public static void Shuffle<T>(this IList<T> list)
+    {
         Random rng = new Random();
         int n = list.Count;
         while (n > 1) {

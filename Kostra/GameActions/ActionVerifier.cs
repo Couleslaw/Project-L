@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Kostra.GameLogic;
+using Kostra.GameManagers;
+using Kostra.GamePieces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kostra
+namespace Kostra.GameActions
 {
     /// <summary>
     /// Verifies the validity of actions in the context of the current game state.
@@ -79,7 +82,7 @@ namespace Kostra
         /// </item>
         ///   </list>
         /// </returns>
-        /// <exception cref="System.InvalidOperationException">Unknown TakePuzzleAction option</exception>
+        /// <exception cref="InvalidOperationException">Unknown TakePuzzleAction option</exception>
         private VerificationStatus VerifyTakePuzzleAction(TakePuzzleAction action)
         {
             switch (action.Option)
@@ -361,13 +364,13 @@ namespace Kostra
     /// <summary>
     /// Represents a successful verification.
     /// </summary>
-    /// <seealso cref="Kostra.VerificationStatus" />
+    /// <seealso cref="VerificationStatus" />
     class VerificationSuccess : VerificationStatus { }
 
     /// <summary>
     /// Represents a failed verification and provides a message describing the failure. Derived classes should provide more context.
     /// </summary>
-    /// <seealso cref="Kostra.VerificationStatus" />
+    /// <seealso cref="VerificationStatus" />
     abstract class VerificationFailure : VerificationStatus
     {
         /// <summary>
@@ -379,7 +382,7 @@ namespace Kostra
     /// <summary>
     /// There are no tetrominos of this shape left in the shared reserve.
     /// </summary>
-    /// <seealso cref="Kostra.VerificationFailure" />
+    /// <seealso cref="VerificationFailure" />
     class TetrominoNotInSharedReserveFail(TetrominoShape shape) : VerificationFailure
     {
         /// <summary>
@@ -392,7 +395,7 @@ namespace Kostra
     /// <summary>
     /// It is not possible to change the old tetromino for the new one.
     /// </summary>
-    /// <seealso cref="Kostra.VerificationFailure" />
+    /// <seealso cref="VerificationFailure" />
     class InvalidTetrominoChangeFail(TetrominoShape oldShape, TetrominoShape newShape) : VerificationFailure
     {
         /// <summary>
@@ -409,7 +412,7 @@ namespace Kostra
     /// <summary>
     /// The player doesn't have any tetrominos of the given shape.
     /// </summary>
-    /// <seealso cref="Kostra.VerificationFailure" />
+    /// <seealso cref="VerificationFailure" />
     class TetrominoNotInPersonalSupplyFail(TetrominoShape shape) : VerificationFailure
     {
         /// <summary>
@@ -422,7 +425,7 @@ namespace Kostra
     /// <summary>
     /// The player tried to recycle the puzzles of the given color, but the number of puzzles to recycle doesn't match the number of puzzles in the row.
     /// </summary>
-    /// <seealso cref="Kostra.VerificationFailure" />
+    /// <seealso cref="VerificationFailure" />
     class NumberOfRecycledPuzzlesMismatchFail(int expected, int actual, RecycleAction.Options color) : VerificationFailure
     {
         /// <summary>
@@ -443,7 +446,7 @@ namespace Kostra
     /// <summary>
     /// The player tried to recycle an empty row.
     /// </summary>
-    /// <seealso cref="Kostra.VerificationFailure" />
+    /// <seealso cref="VerificationFailure" />
     class EmptyRowRecycleFail(RecycleAction.Options color) : VerificationFailure
     {
         /// <summary>
@@ -456,7 +459,7 @@ namespace Kostra
     /// <summary>
     /// There is an ID in <see cref="RecycleAction.Order"/> which doesn't match any puzzle in specified row.
     /// </summary>
-    /// <seealso cref="Kostra.VerificationFailure" />
+    /// <seealso cref="VerificationFailure" />
     class PuzzleNotInRowFail(uint id, RecycleAction.Options color) : VerificationFailure
     {
         /// <summary>
@@ -473,7 +476,7 @@ namespace Kostra
     /// <summary>
     /// The player tried to take a puzzle which isn't available.
     /// </summary>
-    /// <seealso cref="Kostra.VerificationFailure" />
+    /// <seealso cref="VerificationFailure" />
     class PuzzleNotAvailableFail(uint id) : VerificationFailure
     {
         /// <summary>
@@ -486,7 +489,7 @@ namespace Kostra
     /// <summary>
     /// The player specified <see cref="TakePuzzleAction.Options.Normal"/> but <see cref="TakePuzzleAction.PuzzleId"/> was <c>null</c>.
     /// </summary>
-    /// <seealso cref="Kostra.VerificationFailure" />
+    /// <seealso cref="VerificationFailure" />
     class PuzzleIdIsNullFail : VerificationFailure
     {
         public override string Message => "Puzzle id is null";
@@ -495,7 +498,7 @@ namespace Kostra
     /// <summary>
     /// The player specified <see cref="TakePuzzleAction.Options.TopBlack"/> or <see cref="TakePuzzleAction.Options.TopWhite"/> but the specified deck is empty.
     /// </summary>
-    /// <seealso cref="Kostra.VerificationFailure" />
+    /// <seealso cref="VerificationFailure" />
     class PuzzleDeckIsEmptyFail(TakePuzzleAction.Options color) : VerificationFailure
     {
         /// <summary>
@@ -508,7 +511,7 @@ namespace Kostra
     /// <summary>
     /// The given configuration doesn't match the given shape.
     /// </summary>
-    /// <seealso cref="Kostra.VerificationFailure" />
+    /// <seealso cref="VerificationFailure" />
     class InvalidTetrominoConfigurationFail(TetrominoShape shape, BinaryImage configuration) : VerificationFailure
     {
         /// <summary>
@@ -525,7 +528,7 @@ namespace Kostra
     /// <summary>
     /// The player doesn't have the puzzle with this ID.
     /// </summary>
-    /// <seealso cref="Kostra.VerificationFailure" />
+    /// <seealso cref="VerificationFailure" />
     class PlayerDoesntHavePuzzleFail(uint id) : VerificationFailure
     {
         /// <summary>
@@ -538,7 +541,7 @@ namespace Kostra
     /// <summary>
     /// The specified tetromino cannot be placed into the puzzle with the given ID.
     /// </summary>
-    /// <seealso cref="Kostra.VerificationFailure" />
+    /// <seealso cref="VerificationFailure" />
     class CannotPlaceTetrominoFail(uint puzzleId, BinaryImage position) : VerificationFailure
     {
         /// <summary>
@@ -555,7 +558,7 @@ namespace Kostra
     /// <summary>
     /// The player has already used the <see cref="MasterAction"/> in this turn.
     /// </summary>
-    /// <seealso cref="Kostra.VerificationFailure" />
+    /// <seealso cref="VerificationFailure" />
     class MasterActionAlreadyUsedFail : VerificationFailure
     {
         public override string Message => "Master action already used in this turn";
@@ -564,7 +567,7 @@ namespace Kostra
     /// <summary>
     /// Two of the placements specified by a Master action are to the same puzzle.
     /// </summary>
-    /// <seealso cref="Kostra.VerificationFailure" />
+    /// <seealso cref="VerificationFailure" />
     class MasterActionUniquePlacementFail : VerificationFailure
     {
         public override string Message => "Each placement must be to a different puzzle";
@@ -573,7 +576,7 @@ namespace Kostra
     /// <summary>
     /// The player doesn't have enough tetrominos needed by a <see cref="MasterAction"/>.
     /// </summary>
-    /// <seealso cref="Kostra.VerificationFailure" />
+    /// <seealso cref="VerificationFailure" />
     class MasterActionNotEnoughTetrominosFail(TetrominoShape shape, int owned, int used) : VerificationFailure
     {
         /// <summary>
@@ -595,7 +598,7 @@ namespace Kostra
     /// The player used an invalid action during <see cref="GamePhase.FinishingTouches"/>. 
     /// The only allowed actions are <see cref="PlaceTetrominoAction"/> and <see cref="EndFinishingTouchesAction"/>.
     /// </summary>
-    /// <seealso cref="Kostra.VerificationFailure" />
+    /// <seealso cref="VerificationFailure" />
     class InvalidActionDuringFinishingTouchesFail(Type actionType) : VerificationFailure
     {
         /// <summary>
@@ -608,7 +611,7 @@ namespace Kostra
     /// <summary>
     /// The player used the <see cref="EndFinishingTouchesAction"/> during a different phase than <see cref="GamePhase.FinishingTouches"/>.
     /// </summary>
-    /// <seealso cref="Kostra.VerificationFailure" />
+    /// <seealso cref="VerificationFailure" />
     class InvalidEndFinishingTouchesActionUseFail(GamePhase phase) : VerificationFailure
     {
         /// <summary>
@@ -621,7 +624,7 @@ namespace Kostra
     /// <summary>
     /// The player tried to take a second black puzzle in the same turn during <see cref="GamePhase.EndOfTheGame"/>.
     /// </summary>
-    /// <seealso cref="Kostra.VerificationFailure" />
+    /// <seealso cref="VerificationFailure" />
     class PlayerAlreadyTookBlackPuzzleInEndOfTheGameFail : VerificationFailure
     {
         public override string Message => "Players can take only 1 black puzzle per round during the EndOfTheGame phase";

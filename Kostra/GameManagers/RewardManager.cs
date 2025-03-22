@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Kostra.GameActions;
+using Kostra.GamePieces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kostra
+namespace Kostra.GameManagers
 {
     /// <summary>
     /// Utility class for managing rewards and upgrades for players.
@@ -25,7 +27,7 @@ namespace Kostra
         /// </item>
         ///   </list>
         /// </returns>
-        /// <exception cref="System.ArgumentException">Invalid numTetrominosLeft length</exception>
+        /// <exception cref="ArgumentException">Invalid numTetrominosLeft length</exception>
         public static List<TetrominoShape> GetRewardOptions(IReadOnlyList<int> numTetrominosLeft, TetrominoShape shape)
         {
             if (numTetrominosLeft.Count != TetrominoManager.NumShapes)
@@ -75,7 +77,7 @@ namespace Kostra
         /// <returns>
         /// A list of shapes with <c>level(shape) &lt;= level(oldShape)+1</c>. If there are no shapes with <c>level(oldShape)+1</c> available, the player can choose from the next available level.
         /// </returns>
-        /// <exception cref="System.ArgumentException">Invalid numTetrominosLeft length</exception>
+        /// <exception cref="ArgumentException">Invalid numTetrominosLeft length</exception>
         public static List<TetrominoShape> GetUpgradeOptions(IReadOnlyList<int> numTetrominosLeft, TetrominoShape shape)
         {
             if (numTetrominosLeft.Count != TetrominoManager.NumShapes)

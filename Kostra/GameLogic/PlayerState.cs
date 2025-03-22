@@ -1,4 +1,7 @@
-namespace Kostra {
+using Kostra.GameManagers;
+using Kostra.GamePieces;
+
+namespace Kostra.GameLogic {
 
     /// <summary>
     ///   <para>
@@ -134,7 +137,7 @@ namespace Kostra {
         /// Adds the puzzle to the player's unfinished puzzles.
         /// </summary>
         /// <param name="puzzle">The puzzle.</param>
-        /// <exception cref="System.InvalidOperationException">No space for puzzle</exception>
+        /// <exception cref="InvalidOperationException">No space for puzzle</exception>
         public void PlaceNewPuzzle(Puzzle puzzle) {
             for (int i = 0; i < MaxPuzzles; i++) {
                 if (_puzzles[i] is null) {
@@ -149,7 +152,7 @@ namespace Kostra {
         /// Removes the puzzle with the specified identifier from the player's unfinished puzzles and adds it to the list of finished puzzles.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <exception cref="System.InvalidOperationException">Puzzle not found</exception>
+        /// <exception cref="InvalidOperationException">Puzzle not found</exception>
         public void FinishPuzzleWithId(uint id) {
             for (int i = 0; i < MaxPuzzles; i++) {
                 if (_puzzles[i] is not null && _puzzles[i]!.Id == id) {

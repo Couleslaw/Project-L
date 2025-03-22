@@ -1,4 +1,9 @@
-﻿using System;
+﻿using Kostra.GameActions;
+using Kostra.GameLogic;
+using Kostra.GameManagers;
+using Kostra.GamePieces;
+using Kostra.Players;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
@@ -7,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Sources;
 
-namespace Kostra
+namespace Kostra.AIPlayerExample
 {
     /// <summary>
     /// A Simple AI player that chooses the best puzzle to solve and then solves it using IDA*.
@@ -20,8 +25,8 @@ namespace Kostra
         /// <summary>Returns a random element from the given list.</summary>
         private static T RandomElementFrom<T>(List<T> list) => list[_rnd.Next(list.Count)];
 
-        public override void Init(string? filePath) { }
-        public override TetrominoShape GetReward(List<TetrominoShape> rewardOptions)
+        public override void Init(int numPlayers, int numInitialTetrominos, string? filePath) { }
+        public override TetrominoShape GetReward(List<TetrominoShape> rewardOptions, Puzzle puzzle)
         {
             return RandomElementFrom(rewardOptions);
         }
@@ -433,7 +438,7 @@ namespace Kostra
 
         /// <summary>
         /// Returns the possible transitions from this node. To get to a neighbor, the use of a <see cref="PlaceTetrominoAction"/> is required. 
-        /// This ensures that there are no loops in the graph. (<see cref="PuzzleNode.Id"/> is based on how filled in the puzzle is).
+        /// This ensures that there are no loops in the graph. (<see cref="Id"/> is based on how filled in the puzzle is).
         /// </summary>
         public IEnumerable<IEdge<PuzzleNode>> GetEdges()
         {

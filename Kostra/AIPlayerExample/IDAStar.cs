@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kostra
+namespace Kostra.AIPlayerExample
 {
     /// <summary>
     /// Represents a node of a graph.

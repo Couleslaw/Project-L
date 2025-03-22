@@ -1,0 +1,59 @@
+using Kostra.GameActions;
+using Kostra.GameLogic;
+using Kostra.GameManagers;
+using Kostra.GamePieces;
+using System.Text.Json.Serialization;
+
+namespace Kostra.Players {
+    /// <summary>
+    /// Represents the type of the player.
+    /// </summary>
+    enum PlayerType {
+        /// <summary>
+        /// Human players pick their action using the UI.
+        /// </summary>
+        Human,
+
+        /// <summary>
+        /// AI players pick their action using an algorithm.
+        /// </summary>
+        AI
+    };
+
+    /// <summary>
+    /// Represents a player in the game.
+    /// </summary>
+    abstract class Player {
+        private static uint _idCounter = 0;
+        /// <summary>
+        /// The unique ID of the player.
+        /// </summary>
+        public uint Id { get; } = _idCounter++;
+
+        /// <summary>
+        /// The type of the player.
+        /// </summary>
+        public abstract PlayerType Type { get; }
+
+        /// <summary>
+        /// Asynchronously gets the action the player wants to take based on the current game context.
+        /// </summary>
+        /// <param name="gameInfo">Information about the shared resources.</param>
+        /// <param name="playerInfos">Information about the resources of the players.</param>
+        /// <param name="turnInfo">Information about the current turn.</param>
+        /// <param name="verifier">Verifier for verifying the validity of actions in the current game context.</param>
+        /// <returns>The action the player wants to take.</returns>
+        public abstract Task<VerifiableAction> GetActionAsync(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, TurnInfo turnInfo, ActionVerifier verifier);
+
+        /// <summary>
+        /// Asynchronously gets the shape the player wants as a reward for completing a puzzle.
+        /// Note that the player doesn't get the current game context here. 
+        /// This is because this function will be called right after he completes a puzzle and therefore he knows the current game state from the last <see cref="GetActionAsync"/> call.
+        /// </summary>
+        /// <param name="rewardOptions">The reward options.</param>
+        /// <param name="puzzle">The puzzle that was completed.</param>
+        /// <returns>The shape the player wants to take.</returns>
+        public abstract Task<TetrominoShape> GetRewardAsync(List<TetrominoShape> rewardOptions, Puzzle puzzle);
+    }
+}
+
