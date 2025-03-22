@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html ><html lang="en-US"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><link rel="shortcut icon" href="../icons/favicon.ico" /><link rel="stylesheet" href="../css/bulma.css" /><link rel="stylesheet" href="../css/font-awesome.min.css" /><link rel="stylesheet" href="../css/presentationStyle.css" /><link rel="stylesheet" href="../css/vs.min.css" /><script src="../scripts/jquery-3.5.1.min.js"></script><script src="../scripts/clipboard.min.js"></script><script src="../scripts/highlight.min.js"></script><script src="../scripts/presentationStyle.js"></script><title>ProjectLCore.GameActions Namespace</title><meta name="Title" content="ProjectLCore.GameActions" /><meta name="Help.Id" content="N:ProjectLCore.GameActions" /><meta name="Help.ContentType" content="Reference" /><meta name="container" content="ProjectLCore.GameActions" /><meta name="guid" content="N_ProjectLCore_GameActions" /><meta name="tocFile" content="../toc/IDA.xml" /></head><body><div class="fixedLayout"><div id="Header" class="fixedHeader"><div class="pageHeader level mb-0 py-2 px-4"><div id="TitleContainer" class="level-left"><div class="level-item"><img src="../icons/Help.png" /></div><div id="DocumentationTitle" class="level-item">Project L Core Documentation</div></div><div id="LangFilterSearchContainer" class="level-right"><div class="level-item"><div class="dropdown is-hoverable"><div class="dropdown-trigger"><button class="button" aria-haspopup="true" aria-controls="dropdown-menu"><span id="CurrentLanguage"></span><span class="icon is-small"><i class="fa fa-angle-down" aria-hidden="true"></i></span></button></div><div class="dropdown-menu" role="menu"><div id="LanguageSelections" class="dropdown-content"><a class="dropdown-item languageFilterItem" data-languageId="cs">C#</a></div></div></div></div><div class="level-item"><form id="SearchForm" action="#" onsubmit="TransferToSearchPage(); return false;"><div class="field"><div class="control has-icons-left"><input id="SearchTerms" class="input" type="text" maxlength="200" placeholder="Search" /><span class="icon is-small is-left"><i class="fa fa-search"></i></span><button id="SearchButton" type="submit" class="is-hidden"></button></div></div></form></div></div></div></div><div class="fixedContent"><nav class="breadcrumb my-1 px-2 border-bottom" role="navigation"><ul id="TopicBreadcrumbs" /></nav><div id="ContentContainer" class="columns pl-5 pr-5 fixedContent"><div id="ShowHideTOCColumn" class="column is-hidden-tablet"><a id="ShowHideTOC">Show/Hide TOC</a></div><div id="TOCColumn" class="column is-hidden-mobile"><nav class="toc"><ul id="TableOfContents" class="toc-menu" /></nav></div><div id="Resizer" class="is-hidden"></div><div id="TopicContent" class="column content is-7"><h1>Project<wbr />LCore.<wbr />Game<wbr />Actions Namespace</h1><div class="summary"> </div><h2 class="quickLinkHeader"><span class="icon toggleSection" tabindex="0"><i class="fa fa-angle-down"></i></span>Classes</h2><div id="IDCCASection"><table id="classList" class="table is-hoverable"><tr><td><a href="T_ProjectLCore_GameActions_ActionVerifier.htm">ActionVerifier</a></td><td>
+            Verifies the validity of actions in the context of the current game state.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_CannotPlaceTetrominoFail.htm">CannotPlaceTetrominoFail</a></td><td>
+            The specified tetromino cannot be placed into the puzzle with the given ID.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_DoNothingAction.htm">DoNothingAction</a></td><td>
+            Last resort action for AI players, they should never actually need to use it. It will always be accepted unless the game phase is <span class="noLink">[!:GamePhase.FinishingTouches]</span>.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_EmptyRowRecycleFail.htm">EmptyRowRecycleFail</a></td><td>
+            The player tried to recycle an empty row.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_EndFinishingTouchesAction.htm">EndFinishingTouchesAction</a></td><td>
+            Represents the action of ending a player's turn during <span class="noLink">[!:GamePhase.FinishingTouches]</span></td></tr><tr><td><a href="T_ProjectLCore_GameActions_GameActionProcessor.htm">GameActionProcessor</a></td><td>
+            A class for processing player actions in the game. One instance should be created for each player.
+            The class is responsible for updating the game state based on the player's actions.
+            It isn't responsible for verifying the actions. The actions should be verified by <a href="T_ProjectLCore_GameActions_ActionVerifier.htm">ActionVerifier</a> before being processed.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_ChangeTetrominoAction.htm">ChangeTetrominoAction</a></td><td>
+            Represents the action of changing a tetromino for a different one.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_InvalidActionDuringFinishingTouchesFail.htm">InvalidActionDuringFinishingTouchesFail</a></td><td>
+            The player used an invalid action during <a href="T_ProjectLCore_GameLogic_GamePhase.htm">FinishingTouches</a>. 
+            The only allowed actions are <a href="T_ProjectLCore_GameActions_PlaceTetrominoAction.htm">PlaceTetrominoAction</a> and <a href="T_ProjectLCore_GameActions_EndFinishingTouchesAction.htm">EndFinishingTouchesAction</a>.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_InvalidEndFinishingTouchesActionUseFail.htm">InvalidEndFinishingTouchesActionUseFail</a></td><td>
+            The player used the <a href="T_ProjectLCore_GameActions_EndFinishingTouchesAction.htm">EndFinishingTouchesAction</a> during a different phase than <a href="T_ProjectLCore_GameLogic_GamePhase.htm">FinishingTouches</a>.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_InvalidTetrominoConfigurationFail.htm">InvalidTetrominoConfigurationFail</a></td><td>
+            The given configuration doesn't match the given shape.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_InvalidTetrominoChangeFail.htm">InvalidTetrominoChangeFail</a></td><td>
+            It is not possible to change the old tetromino for the new one.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_MasterAction.htm">MasterAction</a></td><td>
+            Represents the use of the Master Action.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_MasterActionAlreadyUsedFail.htm">MasterActionAlreadyUsedFail</a></td><td>
+            The player has already used the <a href="T_ProjectLCore_GameActions_MasterAction.htm">MasterAction</a> in this turn.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_MasterActionNotEnoughTetrominosFail.htm">MasterActionNotEnoughTetrominosFail</a></td><td>
+            The player doesn't have enough tetrominos needed by a <a href="T_ProjectLCore_GameActions_MasterAction.htm">MasterAction</a>.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_MasterActionUniquePlacementFail.htm">MasterActionUniquePlacementFail</a></td><td>
+            Two of the placements specified by a Master action are to the same puzzle.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_NumberOfRecycledPuzzlesMismatchFail.htm">NumberOfRecycledPuzzlesMismatchFail</a></td><td>
+            The player tried to recycle the puzzles of the given color, but the number of puzzles to recycle doesn't match the number of puzzles in the row.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_PlaceTetrominoAction.htm">PlaceTetrominoAction</a></td><td>
+            Represents the action of placing a tetromino on a puzzle.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_PlayerAlreadyTookBlackPuzzleInEndOfTheGameFail.htm">PlayerAlreadyTookBlackPuzzleInEndOfTheGameFail</a></td><td>
+            The player tried to take a second black puzzle in the same turn during <a href="T_ProjectLCore_GameLogic_GamePhase.htm">EndOfTheGame</a>.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_PlayerDoesntHavePuzzleFail.htm">PlayerDoesntHavePuzzleFail</a></td><td>
+            The player doesn't have the puzzle with this ID.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_PuzzleDeckIsEmptyFail.htm">PuzzleDeckIsEmptyFail</a></td><td>
+            The player specified <a href="T_ProjectLCore_GameActions_TakePuzzleAction_Options.htm">TopBlack</a> or <a href="T_ProjectLCore_GameActions_TakePuzzleAction_Options.htm">TopWhite</a> but the specified deck is empty.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_PuzzleIdIsNullFail.htm">PuzzleIdIsNullFail</a></td><td>
+            The player specified <a href="T_ProjectLCore_GameActions_TakePuzzleAction_Options.htm">Normal</a> but <a href="P_ProjectLCore_GameActions_TakePuzzleAction_PuzzleId.htm">PuzzleId</a> was <span class="code">null</span>.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_PuzzleNotAvailableFail.htm">PuzzleNotAvailableFail</a></td><td>
+            The player tried to take a puzzle which isn't available.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_PuzzleNotInRowFail.htm">PuzzleNotInRowFail</a></td><td>
+            There is an ID in <a href="P_ProjectLCore_GameActions_RecycleAction_Order.htm">Order</a> which doesn't match any puzzle in specified row.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_RecycleAction.htm">RecycleAction</a></td><td>
+            Represents the action of recycling puzzles.
+            The player chooses a row to recycle. The puzzles from the row will be put to the bottom of the deck in the order specified by the player. The puzzle row is then refilled.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_TakeBasicTetrominoAction.htm">TakeBasicTetrominoAction</a></td><td>
+            Represents the action of taking a <a href="T_ProjectLCore_GamePieces_TetrominoShape.htm">O1</a> tetromino from the shared reserve.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_TakePuzzleAction.htm">TakePuzzleAction</a></td><td>
+            Represents the action of taking a puzzle.
+            Players can take puzzles from the top of the white deck, top of the black deck or a specific puzzle in one of the rows.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_TetrominoAction.htm">TetrominoAction</a></td><td>
+            The base class for <a href="T_ProjectLCore_GameActions_TakeBasicTetrominoAction.htm">TakeBasicTetrominoAction</a> and <a href="T_ProjectLCore_GameActions_ChangeTetrominoAction.htm">ChangeTetrominoAction</a> because they are technically the same action, just with different parameters.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_TetrominoNotInPersonalSupplyFail.htm">TetrominoNotInPersonalSupplyFail</a></td><td>
+            The player doesn't have any tetrominos of the given shape.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_TetrominoNotInSharedReserveFail.htm">TetrominoNotInSharedReserveFail</a></td><td>
+            There are no tetrominos of this shape left in the shared reserve.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_VerifiableAction.htm">VerifiableAction</a></td><td>
+            Represents an action which can be verified.
+            All subclasses which inherit from this class should be <strong>immutable</strong>. This ensures that the action can not be changed after it has been created and therefore it's <a href="P_ProjectLCore_GameActions_VerifiableAction_Status.htm">Status</a> can be trusted.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_VerificationFailure.htm">VerificationFailure</a></td><td>
+            Represents a failed verification and provides a message describing the failure. Derived classes should provide more context.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_VerificationStatus.htm">VerificationStatus</a></td><td>
+            Represents the result of the verification.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_VerificationSuccess.htm">VerificationSuccess</a></td><td>
+            Represents a successful verification.
+            </td></tr></table></div><h2 class="quickLinkHeader"><span class="icon toggleSection" tabindex="0"><i class="fa fa-angle-down"></i></span>Interfaces</h2><div id="IDBCASection"><table id="interfaceList" class="table is-hoverable"><tr><td><a href="T_ProjectLCore_GameActions_IAction.htm">IAction</a></td><td>
+            Interface for the visitor pattern.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_IActionProcessor.htm">IActionProcessor</a></td><td>
+            An interface for processing actions using the visitor pattern.
+            Each action should be verified before being processed.
+            </td></tr></table></div><h2 class="quickLinkHeader"><span class="icon toggleSection" tabindex="0"><i class="fa fa-angle-down"></i></span>Enumerations</h2><div id="IDACASection"><table id="enumerationList" class="table is-hoverable"><tr><td><a href="T_ProjectLCore_GameActions_ActionStatus.htm">ActionStatus</a></td><td>
+            Represents the verification status of an action.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_RecycleAction_Options.htm">RecycleAction<span id="LSTBB454BF0_0" data-languageSpecificText="cs=.|vb=.|cpp=::|nu=.|fs=."></span>Options</a></td><td> </td></tr><tr><td><a href="T_ProjectLCore_GameActions_TakePuzzleAction_Options.htm">TakePuzzleAction<span id="LSTBB454BF0_1" data-languageSpecificText="cs=.|vb=.|cpp=::|nu=.|fs=."></span>Options</a></td><td>
+            Possible options for taking a puzzle.
+            </td></tr></table></div></div><div id="InThisArticleColumn" class="column is-hidden-mobile"><nav class="menu sticky is-hidden"><p class="menu-label"><strong>In This Article</strong></p><ul id="InThisArticleMenu" class="menu-list"><li><a class="quickLink">Classes</a></li><li><a class="quickLink">Interfaces</a></li><li><a class="quickLink">Enumerations</a></li></ul></nav></div></div></div></div><script>$(function(){
+SetDefaultLanguage("cs");
+LoadTocFile(null, null);
+InitializeQuickLinks();
+
+$(".toggleSection" ).click(function () {
+    SectionExpandCollapse(this);
+});
+
+$(".toggleSection").keypress(function () {
+    SectionExpandCollapseCheckKey(this, event)
+});
+});</script></body></html>
