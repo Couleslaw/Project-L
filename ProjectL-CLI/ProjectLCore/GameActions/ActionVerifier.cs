@@ -8,23 +8,25 @@
     using System.Linq;
 
     /// <summary>
-    /// Verifies the validity of actions in the context of the current game state.
+    /// Verifies the validity of actions made by a player in the context of the current game state.
     /// </summary>
-    /// <param name="gameInfo">The current game state.</param>
-    /// <param name="playerInfo">The current player state.</param>
-    /// <param name="turnInfo">Info about the current turn.</param>
+    /// <param name="gameInfo">Information about the current state of the game.</param>
+    /// <param name="playerInfo">Information about the tetrominos and puzzles owned by the player who makes the actions.</param>
+    /// <param name="turnInfo">Information about the current turn.</param>
+    /// <seealso cref="VerifiableAction"/>
+    /// <seealso cref="VerificationResult"/>
+    /// <seealso cref="GameActionProcessor"/>
     public class ActionVerifier(GameState.GameInfo gameInfo, PlayerState.PlayerInfo playerInfo, TurnInfo turnInfo)
     {
         #region Methods
 
-        /// <summary>
-        /// Verifies the specified action.
-        /// </summary>
-        /// <param name="action">The action.</param>
+        /// <summary> Verifies the given <see cref="VerifiableAction"/>. </summary>
+        /// <param name="action">The action to verify.</param>
         /// <returns>The result of the verification. 
         /// <see cref="VerificationSuccess"/> if the action is valid. 
-        /// In case the action is invalid, returns a <see cref="VerificationFailure"/> describing the first wrong thing encountered.</returns>
-        public VerificationStatus Verify(VerifiableAction action)
+        /// In case the action is invalid, returns a <see cref="VerificationFailure"/> describing the first wrong thing encountered.
+        /// </returns>
+        public VerificationResult Verify(VerifiableAction action)
         {
             // if FinishingTouches --> only EndFinishingTouchesAction and PlaceAction are allowed
             if (turnInfo.GamePhase == GamePhase.FinishingTouches) {
@@ -46,15 +48,15 @@
             };
         }
 
-        /// <summary>Verifies the end finishing touches action.</summary>
-        /// <param name="action">The action</param>
+        /// <summary>Verifies the given <see cref="EndFinishingTouchesAction"/>.</summary>
+        /// <param name="action">The action to verify.</param>
         /// <returns>
         ///   <list type="bullet">
-        ///     <item><see cref="VerificationSuccess"/> if the action is used during the <see cref="GamePhase.FinishingTouches"/> game phase.</item>
+        ///     <item><see cref="VerificationSuccess"/> if <see cref="GameCore.CurrentGamePhase"/> is <see cref="GamePhase.FinishingTouches"/>.</item>
         ///     <item><see cref="InvalidEndFinishingTouchesActionUseFail"/> otherwise.</item>
         ///   </list>
         /// </returns>
-        private VerificationStatus VerifyEndFinishingTouchesAction(EndFinishingTouchesAction action)
+        private VerificationResult VerifyEndFinishingTouchesAction(EndFinishingTouchesAction action)
         {
             if (turnInfo.GamePhase == GamePhase.FinishingTouches) {
                 return new VerificationSuccess();
@@ -62,19 +64,18 @@
             return new InvalidEndFinishingTouchesActionUseFail(turnInfo.GamePhase);
         }
 
-        /// <summary>Verifies the take puzzle action.</summary>
-        /// <param name="action">The action</param>
+        /// <summary>Verifies the given <see cref="TakePuzzleAction"/>.</summary>
+        /// <param name="action">The action to verify.</param>
         /// <returns>
         ///   <list type="bullet">
         ///     <item> <see cref="PuzzleDeckIsEmptyFail"/> if the player is taking a puzzle from the top of a deck but it is empty.</item>
-        ///     <item> <see cref="PuzzleIdIsNullFail"/> if the player wants a specific puzzle but the ID is null.</item>
+        ///     <item> <see cref="PuzzleIdIsNullFail"/> if the player wants a specific puzzle but the ID is <see langword="null"/>.</item>
         ///     <item> <see cref="PuzzleNotAvailableFail"/> if the player wants a specific puzzle but the ID doesn't match any of the available puzzles.</item>
-        ///     <item> <see cref="PlayerAlreadyTookBlackPuzzleInEndOfTheGameFail"/> if its <see cref="GamePhase.EndOfTheGame"/> and the player want to take a black puzzle but he already took one this turn.</item>
+        ///     <item> <see cref="PlayerAlreadyTookBlackPuzzleInEndOfTheGameFail"/> if the player wants to take a black puzzle when <see cref="GameCore.CurrentGamePhase"/> is <see cref="GamePhase.EndOfTheGame"/>, but he already took one this turn.</item>
         ///     <item> <see cref="VerificationSuccess"/> otherwise.</item>
         ///   </list>
         /// </returns>
-        /// <exception cref="InvalidOperationException">Unknown TakePuzzleAction option</exception>
-        private VerificationStatus VerifyTakePuzzleAction(TakePuzzleAction action)
+        private VerificationResult VerifyTakePuzzleAction(TakePuzzleAction action)
         {
             switch (action.Option) {
                 case TakePuzzleAction.Options.TopWhite: {
@@ -111,8 +112,8 @@
             }
         }
 
-        /// <summary>Verifies the recycle action.</summary>
-        /// <param name="action">The action</param>
+        /// <summary>Verifies the given <see cref="RecycleAction"/>.</summary>
+        /// <param name="action">The action to verify.</param>
         /// <returns>
         ///   <list type="bullet">
         ///     <item><see cref="EmptyRowRecycleFail"/> if the player want to recycle an empty row.</item>
@@ -121,7 +122,7 @@
         ///     <item><see cref="VerificationSuccess"/> otherwise.</item>
         ///   </list>
         /// </returns>
-        private VerificationStatus VerifyRecycleAction(RecycleAction action)
+        private VerificationResult VerifyRecycleAction(RecycleAction action)
         {
             // if recycle white puzzles --> check white puzzle count
             if (action.Option == RecycleAction.Options.White) {
@@ -154,15 +155,15 @@
             return new VerificationSuccess();
         }
 
-        /// <summary>Verifies the take basic tetromino action.</summary>
-        /// <param name="action">The action</param>
+        /// <summary>Verifies the given <see cref="TakeBasicTetrominoAction"/>.</summary>
+        /// <param name="action">The action to verify.</param>
         /// <returns>
         ///   <list type="bullet">
         ///     <item><see cref="TetrominoNotInSharedReserveFail"/> if there are no <see cref="TetrominoShape.O1"/> tetrominos left in the shared reserve.</item>
         ///     <item><see cref="VerificationSuccess"/> otherwise.</item>
         ///   </list>
         /// </returns>
-        private VerificationStatus VerifyTakeBasicTetrominoAction(TakeBasicTetrominoAction action)
+        private VerificationResult VerifyTakeBasicTetrominoAction(TakeBasicTetrominoAction action)
         {
             if (gameInfo.NumTetrominosLeft[(int)TetrominoShape.O1] == 0) {
                 return new TetrominoNotInSharedReserveFail(TetrominoShape.O1);
@@ -170,18 +171,22 @@
             return new VerificationSuccess();
         }
 
-        /// <summary>Verifies the change tetromino action.</summary>
-        /// <param name="action">The action</param>
+        /// <summary>Verifies the given <see cref="ChangeTetrominoAction"/>.</summary>
+        /// <param name="action">The action to verify.</param>
         /// <returns>
         ///   <list type="bullet">
         ///     <item><see cref="TetrominoNotInPersonalSupplyFail"/> if the player doesn't have the old tetromino.</item>
-        ///     <item><see cref="InvalidTetrominoChangeFail"/> if the player can't trade the old tetromino for the new one.</item>
+        ///     <item><see cref="InvalidTetrominoChangeFail"/> if the player can't trade the old tetromino for the new one. This includes the scenario when the new tetromino is the same as the old one.</item>
         ///     <item><see cref="VerificationSuccess"/> otherwise.</item>
         ///   </list>
         /// </returns>
-        /// <seealso cref="RewardManager.GetUpgradeOptions(IReadOnlyList{int}, TetrominoShape)"/>
-        private VerificationStatus VerifyChangeTetrominoAction(ChangeTetrominoAction action)
+        /// <seealso cref="RewardManager.GetUpgradeOptions"/>
+        private VerificationResult VerifyChangeTetrominoAction(ChangeTetrominoAction action)
         {
+            // check if the two tetrominos are different
+            if (action.OldTetromino == action.NewTetromino) {
+                return new InvalidTetrominoChangeFail(action.OldTetromino, action.NewTetromino);
+            }
             // check if the player has the old tetromino
             if (playerInfo.NumTetrominosOwned[(int)action.OldTetromino] == 0) {
                 return new TetrominoNotInPersonalSupplyFail(action.OldTetromino);
@@ -195,8 +200,8 @@
             return new VerificationSuccess();
         }
 
-        /// <summary>Verifies the place tetromino action.</summary>
-        /// <param name="action">The action</param>
+        /// <summary>Verifies the given <see cref="PlaceTetrominoAction"/>.</summary>
+        /// <param name="action">The action to verify.</param>
         /// <returns>
         ///   <list type="bullet">
         ///     <item><see cref="TetrominoNotInPersonalSupplyFail"/> if the player doesn't have the tetromino.</item>
@@ -208,7 +213,7 @@
         /// </returns>
         /// <seealso cref="TetrominoManager.CompareShapeToImage(TetrominoShape, BinaryImage)"/>
         /// <seealso cref="Puzzle.CanPlaceTetromino(BinaryImage)"/>
-        private VerificationStatus VerifyPlaceTetrominoAction(PlaceTetrominoAction action)
+        private VerificationResult VerifyPlaceTetrominoAction(PlaceTetrominoAction action)
         {
             // check if player has the tetromino
             if (playerInfo.NumTetrominosOwned[(int)action.Shape] == 0) {
@@ -238,19 +243,20 @@
             return new VerificationSuccess();
         }
 
-        /// <summary>Verifies the Master action.</summary>
-        /// <param name="action">The action</param>
+        /// <summary>Verifies the given <see cref="MasterAction"/>.</summary>
+        /// <param name="action">The action to verify.</param>
         /// <returns>
         ///   <list type="bullet">
         ///     <item><see cref="MasterActionAlreadyUsedFail"/> if the player already used the Master action in this turn.</item>
         ///     <item><see cref="MasterActionUniquePlacementFail"/> if two placements are to the same puzzle.</item>
         ///     <item><see cref="MasterActionNotEnoughTetrominosFail"/> if the player doesn't have the tetrominos he wants to place.</item>
-        ///     <item>Any verification fail which can occur during <see cref="VerifyPlaceTetrominoAction"/></item>
+        ///     <item>Any <see cref="VerificationFailure"/> which can occur when verifying a <see cref="PlaceTetrominoAction"/> with <see cref="VerifyPlaceTetrominoAction"/>.</item>
         ///     <item><see cref="VerificationSuccess"/> otherwise.</item>
         ///   </list>
         /// </returns>
+        /// <seealso cref="PlaceTetrominoAction"/>
         /// <seealso cref="VerifyPlaceTetrominoAction(PlaceTetrominoAction)"/>
-        private VerificationStatus VerifyMasterAction(MasterAction action)
+        private VerificationResult VerifyMasterAction(MasterAction action)
         {
             // check if master action was already used
             if (turnInfo.UsedMasterAction) {
@@ -277,7 +283,7 @@
 
             // each placement must be valid 
             foreach (PlaceTetrominoAction placement in action.TetrominoPlacements) {
-                VerificationStatus status = VerifyPlaceTetrominoAction(placement);
+                VerificationResult status = VerifyPlaceTetrominoAction(placement);
                 if (status is VerificationFailure) {
                     return status;
                 }

@@ -32,15 +32,40 @@
 
         #region Methods
 
+        /// <summary>
+        /// Does nothing.
+        /// </summary>
+        /// <param name="numPlayers">The number of players in the game.</param>
+        /// <param name="filePath">The path to a file where the player might be storing some information.</param>
         public override void Init(int numPlayers, string? filePath)
         {
         }
 
+        /// <summary>
+        /// Chooses a random reward.
+        /// </summary>
+        /// <param name="rewardOptions">The reward options.</param>
+        /// <param name="puzzle">The puzzle that was completed.</param>
+        /// <returns>
+        /// A random element of <paramref name="rewardOptions"/>.
+        /// </returns>
         public override TetrominoShape GetReward(List<TetrominoShape> rewardOptions, Puzzle puzzle)
         {
-            return RandomElementFrom(rewardOptions);
+            return rewardOptions.GetRandomElement();
         }
 
+        /// <summary>
+        /// Uses the IDA* algorithm to solve one puzzle at a time.
+        /// </summary>
+        /// <param name="gameInfo">Information about the shared resources.</param>
+        /// <param name="myInfo">Information about the resources of THIS player</param>
+        /// <param name="enemyInfos">Information about the resources of the OTHER players.</param>
+        /// <param name="turnInfo">Information about the current turn.</param>
+        /// <param name="verifier">Verifier for verifying the validity of actions in the current game context.</param>
+        /// <returns>
+        /// The action the player wants to take.
+        /// </returns>
+        /// <exception cref="System.InvalidOperationException">Invalid game phase</exception>
         public override VerifiableAction GetAction(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, List<PlayerState.PlayerInfo> enemyInfos, TurnInfo turnInfo, ActionVerifier verifier)
         {
             // get an unfinished puzzle if there is one
@@ -112,15 +137,12 @@
             throw new InvalidOperationException("Invalid game phase");
         }
 
-        /// <summary>Returns a random element from the given list.</summary>
-        private static T RandomElementFrom<T>(List<T> list) => list[_rnd.Next(list.Count)];
-
         /// <summary>
         /// Gets the valid action involving getting a tetromino.
         /// </summary>
         /// <param name="gameInfo">Information about the game state.</param>
         /// <param name="myInfo">Information about THIS player.</param>
-        /// <returns>A <see cref="TakeBasicTetrominoAction"/> if possible, else <see cref="ChangeTetrominoAction"/>. <c>null</c> if no such action is possible.</returns>
+        /// <returns>A <see cref="TakeBasicTetrominoAction"/> if possible, else <see cref="ChangeTetrominoAction"/>. <see langword="null"/> if no such action is possible.</returns>
         private static TetrominoAction? GetValidTetrominoAction(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo)
         {
             if (gameInfo.NumTetrominosLeft[(int)TetrominoShape.O1] > 0) {
@@ -130,7 +152,7 @@
                 if (myInfo.NumTetrominosOwned[i] > 0) {
                     var options = RewardManager.GetUpgradeOptions(gameInfo.NumTetrominosLeft, (TetrominoShape)i);
                     if (options.Count > 0) {
-                        return new ChangeTetrominoAction((TetrominoShape)i, RandomElementFrom(options));
+                        return new ChangeTetrominoAction((TetrominoShape)i, options.GetRandomElement());
                     }
                 }
             }
@@ -141,7 +163,7 @@
         /// Gets a valid recycle action.
         /// </summary>
         /// <param name="gameInfo">Information about the game state.</param>
-        /// <returns>A <see cref="RecycleAction"/> or <c>null</c> if no such action is possible.</returns>
+        /// <returns>A <see cref="RecycleAction"/> or <see langword="null"/> if no such action is possible.</returns>
         private static RecycleAction? GetValidRecycleAction(GameState.GameInfo gameInfo)
         {
             if (gameInfo.AvailableWhitePuzzles.Length > 0) {
@@ -162,7 +184,7 @@
         /// <param name="numTetrominosLeft">Information about the tetrominos left in the shared reserve.</param>
         /// <param name="numTetrominosOwned">Information about the tetrominos owned by THIS player.</param>
         /// <param name="maxDepth">The maximum depth for IDA*.</param>
-        /// <param name="finishingTouches">If set to <c>true</c> the algorithm will use only the tetrominos owned by the player.</param>
+        /// <param name="finishingTouches">If set to <see langword="true"/> the algorithm will use only the tetrominos owned by the player.</param>
         /// <returns>
         ///   <list type="bullet">
         ///     <item><c>(shortest solution, length)</c> if the solution was found.</item>
@@ -197,7 +219,7 @@
         /// <param name="myInfo">Information about THIS player.</param>
         /// <param name="maxDepth">The maximum depth for IDA*.</param>
         /// <param name="levelSumToConsiderBlackPuzzles">If the sum of the levels of the tetrominos owned by the player is less than this number then only white puzzles are considered.</param>
-        /// <returns>The puzzle to solve and a solution, or <c>null</c> if no puzzle can be solved.</returns>
+        /// <returns>The puzzle to solve and a solution, or <see langword="null"/> if no puzzle can be solved.</returns>
         private static Tuple<Puzzle, List<VerifiableAction>>? ChoosePuzzle(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, int maxDepth = -1, int levelSumToConsiderBlackPuzzles = 20)
         {
             List<Puzzle> possiblePuzzles = new();
@@ -318,320 +340,5 @@
         /// Represents the information about a puzzle needed to determine how advantageous would be to take and solve it.
         /// </summary>
         private record struct PuzzleSolutionInfo(Puzzle Puzzle, List<VerifiableAction> Solution, int NumSteps);
-    }
-
-    /// <summary>
-    /// Represents transition between two game states using an action.
-    /// </summary>
-    internal class ActionEdge<T>(T from, T to, IReadOnlyList<VerifiableAction> actions) : IEdge<T> where T : INode<T>
-    {
-        #region Properties
-
-        /// <summary>
-        /// The original game state.
-        /// </summary>
-        public T From => from;
-
-        /// <summary>
-        /// The new game state.
-        /// </summary>
-        public T To => to;
-
-        /// <summary>
-        /// The number of actions needed to get from <see cref="From"/> to <see cref="To"/>.
-        /// </summary>
-        public int Cost => actions.Count;
-
-        /// <summary>
-        /// The actions needed to get from <see cref="From"/> to <see cref="To"/>.
-        /// </summary>
-        public IReadOnlyList<VerifiableAction> Action => actions;
-
-        #endregion
-    }
-
-    /// <summary>
-    /// Represents a puzzle being solved by a player.
-    /// </summary>
-    internal class PuzzleNode(BinaryImage puzzle, uint puzzleId, IReadOnlyList<int> numTetrominosLeft, IReadOnlyList<int> numTetrominosOwned, bool finishingTouches) : INode<PuzzleNode>
-    {
-        #region Fields
-
-        // capture puzzle and numTetrominosOwned for heuristic (its static)
-        private readonly BinaryImage _puzzle = puzzle;
-
-        private readonly IReadOnlyList<int> _numTetrominosOwned = numTetrominosOwned;
-
-        // cache the edges to avoid recalculating them
-        private List<ActionEdge<PuzzleNode>>? _getEdgesCache = null;
-
-        #endregion
-
-        #region Properties
-
-        /// <summary>
-        /// Represents a puzzle that has been completed.
-        /// </summary>
-        public static PuzzleNode FinishedPuzzle => new(BinaryImage.FullImage, 0, null, null, false);
-
-        /// <summary>
-        /// The ID of the node. Should be unique for each puzzle configuration.
-        /// </summary>
-        public int Id => _puzzle.GetHashCode();
-
-        /// <summary>
-        /// The ID of the puzzle represented by this node.
-        /// </summary>
-        public uint PuzzleId => puzzleId;
-
-        #endregion
-
-        #region Methods
-
-        public static int Heuristic(PuzzleNode node, PuzzleNode goal)
-        {
-            // how many tetrominos we need to place to finish the puzzle
-            // we also might need to take some tetrominos from the bank
-            // simplify the problem --> we just need to fill in X cells and tetromino of level L can fill in L cells
-
-            int numCellsToFillIn = goal._puzzle.CountFilledCells() - node._puzzle.CountFilledCells();
-            int[] numShapesOfLevelOwned = new int[TetrominoManager.MaxLevel + 1];
-            for (int i = 0; i < TetrominoManager.NumShapes; i++) {
-                numShapesOfLevelOwned[TetrominoManager.GetLevelOf((TetrominoShape)i)] += node._numTetrominosOwned[i];
-            }
-
-            // put in the largest shapes we can
-            int[] numShapesOfLevelUsed = new int[TetrominoManager.MaxLevel + 1];
-            for (int level = TetrominoManager.MaxLevel; level >= TetrominoManager.MinLevel; level--) {
-                int numUsed = Math.Min(numShapesOfLevelOwned[level], numCellsToFillIn / level);
-                numCellsToFillIn -= level * numUsed;
-                numShapesOfLevelUsed[level] = numUsed;
-                numShapesOfLevelOwned[level] -= numUsed;
-            }
-
-            return numShapesOfLevelUsed.Sum() + GetStepsToFixDiff(numCellsToFillIn);
-
-            // fix the difference
-            int GetStepsToFixDiff(int diff)
-            {
-                if (diff == 0) {
-                    return 0;
-                }
-                // if we have used everything --> assume we could have upgraded the tetrominos used to make up the difference
-                if (numShapesOfLevelOwned.Sum() == 0) {
-                    return diff;
-                }
-
-                // we have not used everything --> the difference can be 1, 2 or 3
-
-                // if diff == 1, we can upgrade a used tetromino (+1) or perhaps there could a change we could do 
-                // e.g. use 2 instead of 3 and than use 2 again --> still result +1
-                if (diff == 1) {
-                    return 1;
-                }
-
-                // if diff == 2, we dont have any level 1 or 2 tetrominos
-                // if we have used a level 4 and still have two level 3, we can do: (4, diff=2, price=n+2) -> (3,3, diff=0, price=n+1)
-                if (diff == 2) {
-                    if (numShapesOfLevelUsed[4] > 0 && numShapesOfLevelOwned[3] >= 2)
-                        return 1;
-                    return 2;
-                }
-
-                if (diff != 3) {
-                    throw new InvalidOperationException("Invalid diff - should never happen");
-                }
-
-                // if diff == 3, one of the following must be true
-                // 1. I have used everything (already taken care of)
-                // 2. I had only level 4 tetrominos
-                //    a) original sum == 3 and I had no tetrominos at all --> need to upgrade to a level 3 from nothing
-
-                if (numShapesOfLevelUsed[4] == 0 && numShapesOfLevelOwned[4] == 0) {
-                    return 4;
-                }
-
-                //    b) original sum == 3 and I had a level 4 tetromino --> downgrade to level 3 and use it
-                //    c) original sum == 4*k + 3 and I still have a level 4 tetromino --> downgrade to level 3 and use it
-
-                return 2;
-            }
-        }
-
-        /// <summary>
-        /// Returns the possible transitions from this node. To get to a neighbor, the use of a <see cref="PlaceTetrominoAction"/> is required. 
-        /// This ensures that there are no loops in the graph. (<see cref="Id"/> is based on how filled in the puzzle is).
-        /// </summary>
-        public IEnumerable<IEdge<PuzzleNode>> GetEdges()
-        {
-            _getEdgesCache ??= GetEdgesEnumerable().ToList();
-            return _getEdgesCache;
-        }
-
-        private IEnumerable<ActionEdge<PuzzleNode>> GetEdgesEnumerable()
-        {
-            // foreach tetromino shape
-            for (int i = 0; i < TetrominoManager.NumShapes; i++) {
-                var newNumTetrominosLeft = numTetrominosLeft.ToArray();
-                var newNumTetrominosOwned = numTetrominosOwned.ToArray();
-
-                // if we have the shape --> try placing it in all possible positions
-                if (numTetrominosOwned[i] > 0) {
-                    newNumTetrominosOwned[i]--;
-
-                    foreach (var placement in GetAllValidPlacements(puzzle, (TetrominoShape)i)) {
-                        var newPuzzleNode = new PuzzleNode(puzzle | placement.Position, puzzleId, numTetrominosLeft, newNumTetrominosOwned, finishingTouches);
-                        yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, [placement]);
-                    }
-                    continue;
-                }
-
-                // if FinishingTouches --> can only used the shapes we own --> continue
-                if (finishingTouches) {
-                    continue;
-                }
-
-                // if there are no tetrominos of this shape left --> continue
-                if (numTetrominosLeft[i] == 0) {
-                    continue;
-                }
-
-                // if we don't have the basic shape
-                if (i == (int)TetrominoShape.O1) {
-                    newNumTetrominosLeft[i]--;
-
-                    foreach (var placement in GetAllValidPlacements(puzzle, (TetrominoShape)i)) {
-                        var newPuzzleNode = new PuzzleNode(puzzle | placement.Position, puzzleId, newNumTetrominosLeft, numTetrominosOwned, finishingTouches);
-                        yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, [new TakeBasicTetrominoAction(), placement]);
-                    }
-                    continue;
-                }
-
-                // if we don't have a more complex shape --> try to upgrade to it
-                var upgradePath = GetUpgradePathTo((TetrominoShape)i);
-                if (upgradePath is null)
-                    continue;
-
-                // adjust the game state
-                TetrominoAction firstAction = upgradePath[0];
-                if (firstAction is TakeBasicTetrominoAction) {
-                    newNumTetrominosLeft[(int)TetrominoShape.O1]--;
-                }
-                else if (firstAction is ChangeTetrominoAction changeAction) {
-                    int firstShapeTraded = (int)changeAction.OldTetromino;
-                    newNumTetrominosOwned[firstShapeTraded]--;
-                    newNumTetrominosLeft[firstShapeTraded]++;
-                    newNumTetrominosLeft[i]--;
-                }
-
-                foreach (var placement in GetAllValidPlacements(puzzle, (TetrominoShape)i)) {
-                    var newPuzzleNode = new PuzzleNode(puzzle | placement.Position, puzzleId, newNumTetrominosLeft, numTetrominosOwned, finishingTouches);
-                    yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, new List<VerifiableAction>(upgradePath) { placement });
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets all valid placements of the given tetromino shape to the given puzzle.
-        /// </summary>
-        /// <param name="puzzle">The puzzle.</param>
-        /// <param name="shape">The shape.</param>
-        /// <returns>A list of placements.</returns>
-        private List<PlaceTetrominoAction> GetAllValidPlacements(BinaryImage puzzle, TetrominoShape shape)
-        {
-            return TetrominoManager.GetAllUniqueConfigurationsOf(shape) // get all possible placements
-                .FindAll(tetromino => (puzzle & tetromino) == BinaryImage.EmptyImage) // find valid ones
-                .Select(tetromino => new PlaceTetrominoAction(PuzzleId, shape, tetromino)) // create actions
-                .ToList();
-        }
-
-        /// <summary>
-        /// Gets a strategy on how to get the given shape based on the shapes the player already owns..
-        /// </summary>
-        /// <param name="shape">The goal shape.</param>
-        /// <returns>The strategy on how to get the shape or <c>null</c> if it isn't possible.</returns>
-        private List<TetrominoAction>? GetUpgradePathTo(TetrominoShape shape)
-        {
-            // get a shape of the closest level
-            int level = TetrominoManager.GetLevelOf(shape);
-            TetrominoShape? closestShape = null;
-
-            for (int i = 0; i < TetrominoManager.NumShapes; i++) {
-                if (numTetrominosOwned[i] == 0)
-                    continue;
-                if (closestShape is null) {
-                    closestShape = (TetrominoShape)i;
-                    continue;
-                }
-                if (Math.Abs(TetrominoManager.GetLevelOf((TetrominoShape)i) - level) < Math.Abs(TetrominoManager.GetLevelOf(closestShape.Value) - level)) {
-                    closestShape = (TetrominoShape)i;
-                }
-            }
-
-            List<TetrominoAction> strategy;
-
-            // if I have no tetrominos
-            if (closestShape == null) {
-                // if there are no level1 tetrominos left --> we cant do anything
-                if (numTetrominosLeft[(int)TetrominoShape.O1] == 0)
-                    return null;
-
-                // otherwise take a level1 tetromino and then upgrade it
-                closestShape = TetrominoShape.O1;
-                strategy = [new TakeBasicTetrominoAction()];
-            }
-            else {
-                strategy = [];
-            }
-
-            // use IDA* to find the path
-            var start = new ShapeNode(closestShape.Value, numTetrominosLeft);
-            var goal = new ShapeNode(shape, null);
-            var path = IDAStar.IterativeDeepeningAStar(start, goal).Item1;
-
-            // if there is no path --> return null
-            if (path is null) {
-                return null;
-            }
-
-            // add the path to the strategy
-            strategy.AddRange(path.Cast<ActionEdge<ShapeNode>>().Select(edge => (ChangeTetrominoAction)edge.Action[0]));
-
-            return strategy;
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// Represents a tetromino in the shared reserve.
-    /// </summary>
-    internal class ShapeNode(TetrominoShape shape, IReadOnlyList<int> numTetrominosLeft) : INode<ShapeNode>
-    {
-        #region Properties
-
-        public int Id => (int)shape;
-
-        #endregion
-
-        #region Methods
-
-        public static int Heuristic(ShapeNode node, ShapeNode goal) => node.Id == goal.Id ? 0 : 1;
-
-        /// <summary>
-        /// Returns the possible <see cref="ChangeTetrominoAction"/> actions that can be taken from this node.
-        /// </summary>
-        public IEnumerable<IEdge<ShapeNode>> GetEdges()
-        {
-            foreach (TetrominoShape newShape in RewardManager.GetUpgradeOptions(numTetrominosLeft, shape)) {
-                var newNumTetrominosLeft = numTetrominosLeft.ToArray();
-                newNumTetrominosLeft[(int)newShape]--;
-                newNumTetrominosLeft[(int)shape]++;
-                var newShapeNode = new ShapeNode(newShape, newNumTetrominosLeft);
-                yield return new ActionEdge<ShapeNode>(this, newShapeNode, [new ChangeTetrominoAction(shape, newShape)]);
-            }
-        }
-
-        #endregion
     }
 }

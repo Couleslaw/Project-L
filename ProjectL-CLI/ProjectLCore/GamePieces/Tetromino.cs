@@ -1,8 +1,10 @@
 ﻿namespace ProjectLCore.GamePieces
 {
+    using ProjectLCore.GameManagers;
     /// <summary>
     /// Represents a specific tetromino shape.
     /// </summary>
+    /// <seealso cref="TetrominoManager"/>
     public enum TetrominoShape
     {
         /// <summary>

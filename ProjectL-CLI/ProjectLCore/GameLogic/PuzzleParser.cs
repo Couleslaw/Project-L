@@ -6,13 +6,13 @@
     /// Reads puzzles from a file.
     /// Each puzzle is encoded in the following way:
     /// <list type="bullet">
-    ///     <item>I (identifier) B/W (black/white) puzzleNumber</item>
-    ///     <item>R (reward) score tetromino (O1/O2/I2/I3/I4/L2/L3/Z/T)</item>
-    ///     <item>five rows starting with P encoding the puzzle; '#' = filled cell, '.' = empty cell</item>
+    ///     <item><c>I</c> (identifier) <c>B</c>/<c>W</c> (black/white) <c>puzzleNumber</c></item>
+    ///     <item><c>R</c> (reward) <c>score</c> <c>tetromino</c> (<c>O1</c>/<c>O2</c>/<c>I2</c>/<c>I3</c>/<c>I4</c>/<c>L2</c>/<c>L3</c>/<c>Z</c>/<c>T</c>)</item>
+    ///     <item>five rows starting with <c>P</c> encoding the puzzle; <c>#</c> = filled cell, <c>.</c> = empty cell</item>
     /// </list>
     /// Example:
-    /// <example><code>
-    ///     I B 1
+    /// <example><code language="none">
+    ///     I B 13
     ///     R 5 O1
     ///     P ##..#
     ///     P ....#
@@ -20,6 +20,8 @@
     ///     P #....
     ///     P #..##
     /// </code></example>
+    /// This example encodes a black puzzle with number 13, reward of 5 points and <c>O1</c> tetromino.
+    /// The puzzle color and puzzle number together uniquely identify the file in which the puzzle image is stored.
     /// </summary>
     /// <param name="path">The path to the puzzle configuration file.</param>
     public class PuzzleParser(string path) : IDisposable
@@ -41,6 +43,11 @@
 
         #region Methods
 
+        /// <summary>
+        /// Disposes the <see cref="StreamReader"/> object used to read the file.
+        /// </summary>
+        /// <seealso cref="TextReader.Dispose()"/>
+        /// <seealso cref="IDisposable"/>
         public void Dispose()
         {
             _reader.Dispose();
@@ -49,7 +56,7 @@
         /// <summary>
         /// Parses the next puzzle from the file.
         /// </summary>
-        /// <returns>The decoded puzzle or <c>null</c> if reached end of file.</returns>
+        /// <returns>The decoded puzzle or <see langword="null"/> if reached end of file.</returns>
         /// <exception cref="System.ArgumentException">
         /// Invalid puzzle configuration file. Line starting with special character is empty.
         /// or
@@ -146,6 +153,15 @@
             return CreatePuzzle(isBlack!.Value, puzzleNum, score, tetromino!.Value, image!.Value);
         }
 
+        /// <summary>
+        /// Creates a <seealso cref="Puzzle"/> object from the parsed data.
+        /// </summary>
+        /// <param name="isBlack">Specifies the color of the puzzle.</param>
+        /// <param name="puzzleNum">The puzzle number.</param>
+        /// <param name="score">The puzzle reward score.</param>
+        /// <param name="tetromino">The puzzle reward tetromino.</param>
+        /// <param name="image">The puzzle image encoded with a <see cref="BinaryImage"/>.</param>
+        /// <returns>The puzzle initialized from the given parameters.</returns>
         protected virtual Puzzle CreatePuzzle(bool isBlack, int puzzleNum, int score, TetrominoShape tetromino, BinaryImage image)
         {
             return new Puzzle(image, score, tetromino, isBlack);

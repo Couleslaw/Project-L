@@ -2,9 +2,10 @@ namespace ProjectLCore.GameLogic
 {
     using ProjectLCore.GameManagers;
     using ProjectLCore.GamePieces;
+    using ProjectLCore.Players;
 
     /// <summary>
-    /// Represents the resources and progress of a single player.
+    /// Represents the resources and progress of a single <see cref="Player"/>.
     ///   <list type="bullet">
     ///     <item>His current score.</item>
     ///     <item>Tetrominos he has.</item>
@@ -13,6 +14,8 @@ namespace ProjectLCore.GameLogic
     ///   </list>
     /// </summary>
     /// <param name="playerId">The unique identifier of the player.</param>
+    /// <seealso cref="PlayerInfo"/>
+    /// <seealso cref="GameState"/>
     public class PlayerState(uint playerId) : IComparable<PlayerState>, IEquatable<PlayerState>
     {
         #region Constants
@@ -53,16 +56,18 @@ namespace ProjectLCore.GameLogic
         /// Meaning that if <c>A&lt;B</c> then A is in a better position than B.
         /// </para>
         /// <para>The player with the highest score wins.</para>
-        ///   <list type="bullet">
-        ///     <item>In case of a tie, the player who has completed the most puzzles wins.</item>
-        ///     <item>In case of a tie, the player with the most leftover tetrominos wins.</item>
-        ///     <item>If there is still a tie, the payers are placed at the same position. </item>
-        ///   </list>
+        /// <list type="bullet">
+        ///   <item>In case of a tie, the player who has completed the most puzzles wins.</item>
+        ///   <item>In case of a tie, the player with the most leftover tetrominos wins.</item>
+        ///   <item>If there is still a tie, the payers are placed at the same position. </item>
+        /// </list>
         /// </summary>
         /// <param name="other">An object to compare with this instance.</param>
         /// <returns>
         /// A value that indicates the relative order of the objects being compared. The return value has these meanings:
-        /// <list type="table"><listheader><term> Value</term><term> Meaning</term></listheader><item><description> Less than zero</description><description> This instance precedes <paramref name="other" /> in the sort order.</description></item><item><description> Zero</description><description> This instance occurs in the same position in the sort order as <paramref name="other" />.</description></item><item><description> Greater than zero</description><description> This instance follows <paramref name="other" /> in the sort order.</description></item></list></returns>
+        /// <list type="table"><listheader><term> Value</term><term> Meaning</term></listheader><item><description> Less than zero</description><description> This instance precedes <paramref name="other" /> in the sort order.</description></item><item><description> Zero</description><description> This instance occurs in the same position in the sort order as <paramref name="other" />.</description></item><item><description> Greater than zero</description><description> This instance follows <paramref name="other" /> in the sort order.</description></item></list>
+        /// </returns>
+        /// <seealso cref="IComparable{T}"/>
         public int CompareTo(PlayerState? other)
         {
             if (other is null) {
@@ -90,11 +95,28 @@ namespace ProjectLCore.GameLogic
             }
         }
 
+        /// <summary>
+        /// Indicates whether the current <see cref="PlayerState"/> is equal to another <see cref="PlayerState"/> of the same type.
+        /// </summary>
+        /// <param name="other">An <see cref="PlayerState"/> to compare with this <see cref="PlayerState"/>.</param>
+        /// <returns>
+        ///   <see langword="true" /> if the current <see cref="PlayerState"/> is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.
+        /// </returns>
+        /// <seealso cref="CompareTo"/>
+        /// <seealso cref="IEquatable{T}"/>
         public bool Equals(PlayerState? other)
         {
             return CompareTo(other) == 0;
         }
 
+        /// <summary>
+        /// Determines whether the specified object is equal to the current <see cref="PlayerState"/>.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current <see cref="PlayerState"/>.</param>
+        /// <returns>
+        ///   <see langword="true" /> if the specified object is equal to the current <see cref="PlayerState"/>; otherwise, <see langword="false" />.
+        /// </returns>
+        /// <seealso cref="Equals(PlayerState?)"/>
         public override bool Equals(object? obj)
         {
             if (obj is PlayerState other) {
@@ -103,6 +125,12 @@ namespace ProjectLCore.GameLogic
             return false;
         }
 
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
         public override int GetHashCode()
         {
             return PlayerId.GetHashCode();
@@ -142,9 +170,10 @@ namespace ProjectLCore.GameLogic
         }
 
         /// <summary>
-        /// Returns the puzzle matching the specified identifier.
+        /// Gets the puzzle matching the specified identifier.
         /// </summary>
-        /// <param name="id">The identifier.</param>
+        /// <param name="id">The puzzle identifier.</param>
+        /// <returns>The puzzle with the specified identifier or <see langword="null" /> if the player doesn't have a puzzle matching the <paramref name="id"/>.</returns>
         public Puzzle? GetPuzzleWithId(uint id)
         {
             for (int i = 0; i < MaxPuzzles; i++) {
@@ -156,8 +185,9 @@ namespace ProjectLCore.GameLogic
         }
 
         /// <summary>
-        /// Returns the puzzles that the player is currently working on.
+        /// Creates a list of puzzles the player is currently working on.
         /// </summary>
+        /// <returns>A list of puzzles the player is currently working on.</returns>
         public List<Puzzle> GetUnfinishedPuzzles()
         {
             List<Puzzle> result = new();
@@ -172,7 +202,7 @@ namespace ProjectLCore.GameLogic
         /// <summary>
         /// Adds the given tetromino to the player's personal collection.
         /// </summary>
-        /// <param name="shape">The shape.</param>
+        /// <param name="shape">The tetromino type to add.</param>
         public void AddTetromino(TetrominoShape shape)
         {
             _numTetrominosOwned[(int)shape]++;
@@ -181,22 +211,26 @@ namespace ProjectLCore.GameLogic
         /// <summary>
         /// Removes the tetromino from the player's personal collection.
         /// </summary>
-        /// <param name="shape">The shape.</param>
+        /// <param name="shape">The tetromino type to remove.</param>
         public void RemoveTetromino(TetrominoShape shape)
         {
             _numTetrominosOwned[(int)shape]++;
         }
 
         /// <summary>
-        /// Returns a copy of information about the player wrapped in a <see cref="PlayerInfo" /> object.
+        /// Returns a copy of information about the player wrapped in a <see cref="PlayerInfo" /> object. It prevents modification of the original data.
         /// </summary>
+        /// <returns>A copy of information about the player.</returns>
         public PlayerInfo GetPlayerInfo() => new PlayerInfo(this);
 
         #endregion
 
         /// <summary>
-        /// Provides information about about a player while preventing modification of the original data.
+        /// Provides information about about a <see cref="PlayerState"/> while preventing modification of the original data.
         /// </summary>
+        /// <param name="playerState">The player state that will be wrapped.</param>
+        /// <seealso cref="PlayerState"/>
+        /// <seealso cref="Player"/>
         public class PlayerInfo(PlayerState playerState)
         {
             #region Fields
@@ -219,40 +253,88 @@ namespace ProjectLCore.GameLogic
             #endregion
         }
 
-        // Define the is greater than operator.
-        public static bool operator >(PlayerState operand1, PlayerState operand2)
+        /// <summary>
+        /// Implements the operator &gt;.
+        /// </summary>
+        /// <param name="left">The operand on the left.</param>
+        /// <param name="right">The operand on the right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        /// <seealso cref="CompareTo"/>
+        public static bool operator >(PlayerState left, PlayerState right)
         {
-            return operand1.CompareTo(operand2) > 0;
+            return left.CompareTo(right) > 0;
         }
 
-        // Define the is less than operator.
-        public static bool operator <(PlayerState operand1, PlayerState operand2)
+        /// <summary>
+        /// Implements the operator &lt;.
+        /// </summary>
+        /// <param name="left">The operand on the left.</param>
+        /// <param name="right">The operand on the right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        /// <seealso cref="CompareTo"/>
+        public static bool operator <(PlayerState left, PlayerState right)
         {
-            return operand1.CompareTo(operand2) < 0;
+            return left.CompareTo(right) < 0;
         }
 
-        // Define the is greater than or equal to operator.
-        public static bool operator >=(PlayerState operand1, PlayerState operand2)
+        /// <summary>
+        /// Implements the operator &gt;=.
+        /// </summary>
+        /// <param name="left">The operand on the left.</param>
+        /// <param name="right">The operand on the right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        /// <seealso cref="CompareTo"/>
+        public static bool operator >=(PlayerState left, PlayerState right)
         {
-            return operand1.CompareTo(operand2) >= 0;
+            return left.CompareTo(right) >= 0;
         }
 
-        // Define the is less than or equal to operator.
-        public static bool operator <=(PlayerState operand1, PlayerState operand2)
+        /// <summary>
+        /// Implements the operator &lt;=.
+        /// </summary>
+        /// <param name="left">The operand on the left.</param>
+        /// <param name="right">The operand on the right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        /// <seealso cref="CompareTo"/>
+        public static bool operator <=(PlayerState left, PlayerState right)
         {
-            return operand1.CompareTo(operand2) <= 0;
+            return left.CompareTo(right) <= 0;
         }
 
-        // Define the is equal to operator.
-        public static bool operator ==(PlayerState operand1, PlayerState operand2)
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="left">The operand on the left.</param>
+        /// <param name="right">The operand on the right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        /// <seealso cref="Equals(PlayerState?)"/>
+        public static bool operator ==(PlayerState left, PlayerState right)
         {
-            return operand1.Equals(operand2);
+            return left.Equals(right);
         }
 
-        // Define the is not equal to operator.
-        public static bool operator !=(PlayerState operand1, PlayerState operand2)
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
+        /// <param name="left">The operand on the left.</param>
+        /// <param name="right">The operand on the right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        /// <seealso cref="Equals(PlayerState?)"/>
+        public static bool operator !=(PlayerState left, PlayerState right)
         {
-            return !operand1.Equals(operand2);
+            return !left.Equals(right);
         }
     }
 }

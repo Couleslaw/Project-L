@@ -6,12 +6,13 @@
     /// <summary>
     /// Represents a node of a graph.
     /// </summary>
+    /// <typeparam name="TSelf">The type of the node.</typeparam>
     public interface INode<TSelf> where TSelf : INode<TSelf>
     {
         #region Properties
 
         /// <summary>
-        /// The ID of the node.
+        /// The ID of the node. Two nodes with the same ID are considered equal.
         /// </summary>
         public int Id { get; }
 
@@ -19,14 +20,18 @@
 
         #region Methods
 
-        /// <summary>Heuristic function to estimate distances between nodes. For IDA* to work properly, it needs to be admissible (optimistic), meaning <c>heuristic(a,b) &lt;= distance(a,b)</c></summary>
+        /// <summary>
+        /// Heuristic function to estimate distances between two nodes. For IDA* to work properly, it needs to be admissible (optimistic), meaning <c>heuristic(a,b) &lt;= distance(a,b)</c>.
+        /// </summary>
+        /// <param name="start">The start node.</param>
+        /// <param name="goal">The goal node.</param>
         /// <returns>The estimated distance between the nodes.</returns>
-        public static abstract int Heuristic(TSelf a, TSelf b);
+        public static abstract int Heuristic(TSelf start, TSelf goal);
 
         /// <summary>
         /// Gets the edges incident with this node. The entire graph doesn't need to be stored in memory but it can be dynamically generated instead.
         /// </summary>
-        /// <returns>A collection of the incident edges.</returns>
+        /// <returns>An enumerable collection of the incident edges.</returns>
         public IEnumerable<IEdge<TSelf>> GetEdges();
 
         #endregion

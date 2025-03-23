@@ -9,7 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIPlayerSimulation", "AIPla
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIPlayerExample", "AIPlayerExample\AIPlayerExample.csproj", "{DFAEB64B-9B65-43DC-97C9-0D77424FBADE}"
 EndProject
-Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "DocumentationSHFB", "DocumentationSHFB\DocumentationSHFB.shfbproj", "{D21112B1-BE9B-499D-94BE-58C044B54A4C}"
+Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "AIPlayerExampleDocs", "AIPlayerExampleDocs\AIPlayerExampleDocs.shfbproj", "{BF92A3E8-7D25-4D56-9223-B91AA4AEC3C6}"
+EndProject
+Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "ProjectLCoreDocs", "ProjectLCoreDocs\ProjectLCoreDocs.shfbproj", "{D21112B1-BE9B-499D-94BE-58C044B54A4C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +31,10 @@ Global
 		{DFAEB64B-9B65-43DC-97C9-0D77424FBADE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFAEB64B-9B65-43DC-97C9-0D77424FBADE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFAEB64B-9B65-43DC-97C9-0D77424FBADE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF92A3E8-7D25-4D56-9223-B91AA4AEC3C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF92A3E8-7D25-4D56-9223-B91AA4AEC3C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF92A3E8-7D25-4D56-9223-B91AA4AEC3C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF92A3E8-7D25-4D56-9223-B91AA4AEC3C6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D21112B1-BE9B-499D-94BE-58C044B54A4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D21112B1-BE9B-499D-94BE-58C044B54A4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D21112B1-BE9B-499D-94BE-58C044B54A4C}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -15,18 +15,46 @@
     {
         #region Methods
 
+        /// <summary>
+        /// Processes the given <see cref="EndFinishingTouchesAction"/>.
+        /// </summary>
+        /// <param name="action">The action to process.</param>
         public void ProcessEndFinishingTouchesAction(EndFinishingTouchesAction action);
 
+        /// <summary>
+        /// Processes the given <see cref="TakePuzzleAction"/>.
+        /// </summary>
+        /// <param name="action">The action to process.</param>
         public void ProcessTakePuzzleAction(TakePuzzleAction action);
 
+        /// <summary>
+        /// Processes the given <see cref="RecycleAction"/>.
+        /// </summary>
+        /// <param name="action">The action to process.</param>
         public void ProcessRecycleAction(RecycleAction action);
 
+        /// <summary>
+        /// Processes the given <see cref="TakeBasicTetrominoAction"/>.
+        /// </summary>
+        /// <param name="action">The action to process.</param>
         public void ProcessTakeBasicTetrominoAction(TakeBasicTetrominoAction action);
 
+        /// <summary>
+        /// Processes the given <see cref="ChangeTetrominoAction"/>.
+        /// </summary>
+        /// <param name="action">The action to process.</param>
         public void ProcessChangeTetrominoAction(ChangeTetrominoAction action);
 
+        /// <summary>
+        /// Processes the given <see cref="PlaceTetrominoAction"/>.
+        /// </summary>
+        /// <param name="action">The action to process.</param>
         public void ProcessPlaceTetrominoAction(PlaceTetrominoAction action);
 
+        /// <summary>
+        /// Processes the given <see cref="MasterAction"/>.
+        /// </summary>
+        /// <param name="action">The action to process.</param>
         public void ProcessMasterAction(MasterAction action);
 
         #endregion
@@ -35,12 +63,14 @@
     /// <summary>
     /// A class for processing player actions in the game. One instance should be created for each player.
     /// The class is responsible for updating the game state based on the player's actions.
-    /// It isn't responsible for verifying the actions. The actions should be verified by <see cref="ActionVerifier"/> before being processed.
+    /// It isn't responsible for verifying the actions. The actions should be verified by an <see cref="ActionVerifier"/> before being processed.
     /// </summary>
-    /// <seealso cref="IActionProcessor" />
     /// <param name="game">The current game.</param>
     /// <param name="playerId">The ID of the player the processor is for.</param>
-    /// <param name="signaler">A <see cref="TurnManager.Signaler"/> to send signals when processing actions.</param>
+    /// <param name="signaler">A <see cref="TurnManager.Signaler"/> for sending signals when processing actions.</param>
+    /// <seealso cref="ActionVerifier"/>
+    /// <seealso cref="VerifiableAction"/>
+    /// <seealso cref="IActionProcessor" />
     public class GameActionProcessor(GameCore game, uint playerId, TurnManager.Signaler signaler) : IActionProcessor
     {
         #region Fields
@@ -56,23 +86,21 @@
         #region Methods
 
         /// <summary>
-        /// Processes the end finishing touches action.
+        /// Signals <see cref="TurnManager.Signaler.PlayerEndedFinishingTouches"/>.
         /// </summary>
+        /// <param name="action">The action to process.</param>
         public void ProcessEndFinishingTouchesAction(EndFinishingTouchesAction action)
         {
             signaler.PlayerEndedFinishingTouches();
         }
 
         /// <summary>
-        /// Processes the take puzzle action.
-        ///   <list type="number">
-        ///     <item> Removes the puzzle from the <see cref="GameState"/> (throws an exception if the puzzle is not found)</item>
-        ///     <item>Adds the puzzle to the <see cref="PlayerState"/> </item>
-        ///   </list>
-        /// Signals if the player took a black puzzle. Also signals if the black deck is empty.
+        /// Removes the puzzle from the <see cref="GameCore.GameState"/> and adds it the appropriate <see cref="PlayerState"/>.
+        /// Signals <see cref="TurnManager.Signaler.PlayerTookBlackPuzzle"/> if the player took a black puzzle, 
+        /// and <see cref="TurnManager.Signaler.BlackDeckIsEmpty"/> if the black deck is empty.
         /// </summary>
-        /// <param name="action">The action.</param>
-        /// <exception cref="InvalidOperationException">Puzzle not found</exception>
+        /// <param name="action">The action to be processed.</param>
+        /// <exception cref="InvalidOperationException">The specified puzzle was not found.</exception>
         public void ProcessTakePuzzleAction(TakePuzzleAction action)
         {
             Puzzle? puzzle = null;
@@ -98,7 +126,7 @@
 
             // check if the puzzle was found
             if (puzzle is null) {
-                throw new InvalidOperationException("Puzzle not found");
+                throw new InvalidOperationException("The specified puzzle was not found");
             }
 
             // signal if the player took a black puzzle
@@ -116,16 +144,17 @@
         }
 
         /// <summary>
-        /// Processes the recycle action. Raises an exception if the puzzle is not found.
+        /// Removes the puzzles from the <see cref="GameCore.GameState"/> puzzle rows and puts them to the bottom of the deck.
+        /// Then refills the puzzle rows.
         /// </summary>
-        /// <param name="action">The action.</param>
-        /// <exception cref="InvalidOperationException">Puzzle not found</exception>
+        /// <param name="action">The action to process.</param>
+        /// <exception cref="System.InvalidOperationException">One of the puzzles specified in the <see cref="RecycleAction.Order"/> of <paramref name="action"/> was not found.</exception>
         public void ProcessRecycleAction(RecycleAction action)
         {
             foreach (var id in action.Order) {
                 Puzzle? puzzle = _gameState.GetPuzzleWithId(id);
                 if (puzzle is null) {
-                    throw new InvalidOperationException("Puzzle not found");
+                    throw new InvalidOperationException($"Puzzle with id={id} not found");
                 }
                 _gameState.RemovePuzzleWithId(id);
                 _gameState.PutPuzzleToTheBottomOfDeck(puzzle);
@@ -134,9 +163,9 @@
         }
 
         /// <summary>
-        /// Processes the take basic tetromino action.
+        /// Removes a <see cref="TetrominoShape.O1"/> tetromino from the <see cref="GameCore.GameState"/> and adds it to the appropirate <see cref="PlayerState"/>.
         /// </summary>
-        /// <param name="action">The action.</param>
+        /// <param name="action">The action to process.</param>
         public void ProcessTakeBasicTetrominoAction(TakeBasicTetrominoAction action)
         {
             _gameState.RemoveTetromino(TetrominoShape.O1);
@@ -144,9 +173,10 @@
         }
 
         /// <summary>
-        /// Processes the change tetromino action.
+        /// Removes the old tetromino from the appropriate <see cref="PlayerState"/> and returns it to the <see cref="GameCore.GameState"/>.
+        /// Then removes the new tetromino from the <see cref="GameCore.GameState"/> and adds it to the <see cref="PlayerState"/>.
         /// </summary>
-        /// <param name="action">The action.</param>
+        /// <param name="action">The action to process.</param>
         public void ProcessChangeTetrominoAction(ChangeTetrominoAction action)
         {
             // remove old tetromino
@@ -158,16 +188,17 @@
         }
 
         /// <summary>
-        /// Processes the place tetromino action. Adds the tetromino to the puzzle. If the puzzle is finished, the player gets a reward and the used tetrominos back.
-        /// During <see cref="GamePhase.FinishingTouches"/>, the player doesn't get any rewards and this action costs 1 score.
+        /// Adds the tetromino to the puzzle. If the puzzle is finished and the <see cref="GameCore.CurrentGamePhase"/> is not <see cref="GamePhase.FinishingTouches"/>, 
+        /// the player gets a reward and the tetrominos he used to complete the puzzle are returned to him.
+        /// This doesn't happen during <see cref="GamePhase.FinishingTouches"/> and the <see cref="PlaceTetrominoAction"/> costs 1 score.
         /// </summary>
-        /// <param name="action">The action.</param>
-        /// <exception cref="InvalidOperationException">Puzzle not found</exception>
+        /// <param name="action">The action to process.</param>
+        /// <exception cref="InvalidOperationException">The player doesn't have the puzzle specified by the action</exception>
         public void ProcessPlaceTetrominoAction(PlaceTetrominoAction action)
         {
-            Puzzle? puzzle = _gameState.GetPuzzleWithId(action.PuzzleId);
+            Puzzle? puzzle = _playerState.GetPuzzleWithId(action.PuzzleId);
             if (puzzle is null) {
-                throw new InvalidOperationException("Puzzle not found");
+                throw new InvalidOperationException("The player doesn't have the puzzle specified by the action");
             }
             puzzle.AddTetromino(action.Shape, action.Position);
 
@@ -204,9 +235,11 @@
         }
 
         /// <summary>
-        /// Processes the master action.
+        /// Places all the tetrominos specified by <see cref="MasterAction.TetrominoPlacements"/>.
+        /// Each of these placements is treaded like a <see cref="PlaceTetrominoAction"/>.
+        /// Also signals <see cref="TurnManager.Signaler.PlayerUsedMasterAction()"/>
         /// </summary>
-        /// <param name="action">The action.</param>
+        /// <param name="action">The action to process.</param>
         public void ProcessMasterAction(MasterAction action)
         {
             signaler.PlayerUsedMasterAction();
@@ -220,6 +253,7 @@
         /// Gets the reward for completing a puzzle. If there are multiple options, the player gets to choose.
         /// </summary>
         /// <param name="puzzle">The puzzle the reward is for.</param>
+        /// <returns>The reward the player chose or <see langword="null"/> if there are no reward options.</returns>
         private TetrominoShape? GetPuzzleReward(Puzzle puzzle)
         {
             var rewardOptions = RewardManager.GetRewardOptions(_gameState.NumTetrominosLeft, puzzle.RewardTetromino);

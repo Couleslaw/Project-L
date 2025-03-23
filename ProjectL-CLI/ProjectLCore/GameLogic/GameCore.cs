@@ -23,7 +23,7 @@ namespace ProjectLCore.GameLogic
         /// </summary>
         /// <param name="gameState">State of the game.</param>
         /// <param name="players">The players.</param>
-        /// <param name="shufflePlayers">If set to <c>true</c> then the players are shuffled to randomize turn order.</param>
+        /// <param name="shufflePlayers">If set to <see langword="true"/> then the players are shuffled to randomize turn order.</param>
         /// <exception cref="ArgumentException">Too many players. <c>players.Count &gt; <see cref="MaxPlayers"/></c></exception>
         public GameCore(GameState gameState, ICollection<Player> players, bool shufflePlayers)
         {
@@ -105,8 +105,10 @@ namespace ProjectLCore.GameLogic
         }
 
         /// <summary>
-        /// Returns information about the next turn and updates <see cref="CurrentPlayerId"/> and <see cref="CurrentGamePhase"/>.
+        /// Queries the <see cref="TurnManager"/> for information about the next turn and updates <see cref="CurrentPlayerId"/> and <see cref="CurrentGamePhase"/>.
         /// </summary>
+        /// <returns>Information about the next turn.</returns>
+        /// <seealso cref="TurnManager.NextTurn"/>
         public TurnInfo GetNextTurnInfo()
         {
             TurnInfo info = TurnManager.NextTurn();
@@ -116,9 +118,10 @@ namespace ProjectLCore.GameLogic
         }
 
         /// <summary>
-        /// Returns the player matching the ID. Throws an exception if no such player exists.
+        /// Returns the <see cref="Player"/> matching the given ID. Throws an exception if no such player exists.
         /// </summary>
         /// <param name="id">The identifier.</param>
+        /// <returns>The player with the given ID.</returns>
         /// <exception cref="ArgumentException">Player not found</exception>
         public Player GetPlayerWithId(uint id)
         {
@@ -131,9 +134,10 @@ namespace ProjectLCore.GameLogic
         }
 
         /// <summary>
-        /// Returns the <see cref="PlayerState"/> of the player matching the ID. Throws an exception if no such player exists.
+        /// Returns the <see cref="PlayerState"/> of the player matching the given ID. Throws an exception if no such player exists.
         /// </summary>
         /// <param name="id">The identifier.</param>
+        /// <returns>The player state of the player with the given ID.</returns>
         /// <exception cref="ArgumentException">Player state not found</exception>
         public PlayerState GetPlayerStateWithId(uint id)
         {
@@ -149,7 +153,6 @@ namespace ProjectLCore.GameLogic
         /// Finishes up internal game state and prepares for evaluating the results of the game.
         /// Should be called after <see cref="CurrentGamePhase"/> changes to <see cref="GamePhase.Finished"/>.
         /// </summary>
-        /// <returns></returns>
         public void GameEnded()
         {
             // remove points for unfinished puzzles

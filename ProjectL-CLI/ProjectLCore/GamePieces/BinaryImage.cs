@@ -7,7 +7,7 @@ namespace ProjectLCore.GamePieces
     /// Represents a 5x5 binary image. The image is stored as an integer, where each bit represents a cell in the image.
     /// The top left corner is viewed the least significant bit. We go down row by row from left to right.
     /// 
-    /// <example><code>
+    /// <example><code language="none">
     /// 
     /// #####         11111
     /// ##.##         11011  
@@ -73,13 +73,28 @@ namespace ProjectLCore.GamePieces
             return sb.ToString();
         }
 
-        #region Implement IEquatable
-
+        /// <summary>
+        /// Indicates whether the current <see cref="BinaryImage"/> is equal to another <see cref="BinaryImage"/>.
+        /// Two images are equal if all of their cells are the same.
+        /// </summary>
+        /// <param name="other">A <see cref="BinaryImage"/> to compare with this <see cref="BinaryImage"/>.</param>
+        /// <returns>
+        ///   <see langword="true" /> if the current <see cref="BinaryImage"/> is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.
+        /// </returns>
+        /// <seealso cref="IEquatable{T}"/>
         public bool Equals(BinaryImage other)
         {
             return _image == other._image;
         }
 
+        /// <summary>
+        /// Determines whether the specified object is equal to the current <see cref="BinaryImage"/>.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current <see cref="BinaryImage"/>.</param>
+        /// <returns>
+        ///   <see langword="true" /> if the specified object is equal to the current <see cref="BinaryImage"/>; otherwise, <see langword="false" />.
+        /// </returns>
+        /// <seealso cref="Equals(BinaryImage)"/>
         public override bool Equals([NotNullWhen(true)] object? obj)
         {
             if (obj is BinaryImage bi) {
@@ -88,9 +103,13 @@ namespace ProjectLCore.GamePieces
             return false;
         }
 
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
         public override int GetHashCode() => _image.GetHashCode();
-
-        #endregion
 
         /// <summary>
         /// Counts the filled cells.
@@ -113,8 +132,6 @@ namespace ProjectLCore.GamePieces
         {
             return 25 - CountFilledCells();
         }
-
-        #region Image Transformations
 
         /// <summary>
         /// Attempts to move the cells of the image up by one cell. If there is a filled cell in the top row, no transformation is done.
@@ -252,14 +269,29 @@ namespace ProjectLCore.GamePieces
 
         #endregion
 
-        #endregion
-
-        #region Operators
-
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="left">The operand on the left.</param>
+        /// <param name="right">The operand on the right.</param>
+        /// <returns>
+        /// <see langword="true" /> if the specified object is equal to the current <see cref="BinaryImage"/>; otherwise, <see langword="false" />.
+        /// </returns>
+        /// <seealso cref="Equals(BinaryImage)"/>
         public static bool operator ==(BinaryImage left, BinaryImage right)
         {
             return left.Equals(right);
         }
+
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
+        /// <param name="left">The operand on the left.</param>
+        /// <param name="right">The operand on the right.</param>
+        /// <returns>
+        /// <see langword="true" /> if the specified object is not equal to the current <see cref="BinaryImage"/>; otherwise, <see langword="false" />.
+        /// </returns>
+        /// <seealso cref="Equals(BinaryImage)"/>
         public static bool operator !=(BinaryImage left, BinaryImage right)
         {
             return !left.Equals(right);
@@ -267,7 +299,16 @@ namespace ProjectLCore.GamePieces
 
         /// <summary>
         /// Implements the operator &amp;.
+        /// <example><code language="none">
+        /// #####       ###..        ###..
+        /// ##.##       ..#..        .....
+        /// ##..#   &amp;   .###.   ==   .#...
+        /// #...#       #####        #...#
+        /// ##..#       .....        .....
+        /// </code></example>
         /// </summary>
+        /// <param name="left">The operator on the left.</param>
+        /// <param name="right">The operator on the right.</param>
         /// <returns>
         /// The intersection of the two images.
         /// </returns>
@@ -278,7 +319,16 @@ namespace ProjectLCore.GamePieces
 
         /// <summary>
         /// Implements the operator |.
+        /// <example><code language="none">
+        /// #####       ###..        #####
+        /// ##.##       ..#..        #####
+        /// ##..#   |   .....   ==   ##..#
+        /// #...#       ###..        ###.#
+        /// ##..#       .....        ##..#
+        /// </code></example>
         /// </summary>
+        /// <param name="left">The operator on the left.</param>
+        /// <param name="right">The operator on the right.</param>
         /// <returns>
         /// The union of the two images.
         /// </returns>
@@ -289,7 +339,15 @@ namespace ProjectLCore.GamePieces
 
         /// <summary>
         /// Implements the operator ~.
+        /// <example><code language="none">
+        ///   #####        .....
+        ///   ##.##        ..#..
+        /// ~ ##..#   ==   ..##.   
+        ///   #...#        .###.
+        ///   ##..#        ..##.
+        /// </code></example>
         /// </summary>
+        /// <param name="image">The operator on the image.</param>
         /// <returns>
         /// The complement of the image.
         /// </returns>
@@ -297,7 +355,5 @@ namespace ProjectLCore.GamePieces
         {
             return new(~image._image);
         }
-
-        #endregion
     }
 }

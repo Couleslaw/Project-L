@@ -6,6 +6,8 @@ namespace ProjectLCore.GameLogic
     /// <summary>
     /// Builder for the <see cref="GameState"/> class.
     /// </summary>
+    /// <seealso cref="GameState"/>
+    /// <seealso cref="PuzzleParser"/>
     public class GameStateBuilder
     {
         #region Fields
@@ -42,6 +44,7 @@ namespace ProjectLCore.GameLogic
         /// Adds the given puzzle to the appropriate deck.
         /// </summary>
         /// <param name="puzzle">The puzzle.</param>
+        /// <returns>The modified <see cref="GameStateBuilder"/>.</returns>
         public GameStateBuilder AddPuzzle(Puzzle puzzle)
         {
             if (puzzle.IsBlack) {
@@ -56,6 +59,7 @@ namespace ProjectLCore.GameLogic
         /// <summary>
         /// Builds a new instance of the <see cref="GameState"/> class containing shuffled decks of the added puzzles.
         /// </summary>
+        /// <returns>A new instance of the <see cref="GameState"/> class.</returns>
         public GameState Build()
         {
             _whitePuzzlesDeck.Shuffle();
@@ -75,6 +79,8 @@ namespace ProjectLCore.GameLogic
     ///     <item>The decks of white and black puzzles. </item>
     ///   </list>
     /// </summary>
+    /// <seealso cref="GameStateBuilder"/>
+    /// <seealso cref="GameInfo"/>
     public class GameState
     {
         #region Constants
@@ -165,7 +171,10 @@ namespace ProjectLCore.GameLogic
         /// </summary>
         /// <param name="puzzlesFilePath">The puzzles file path.</param>
         /// <param name="numInitialTetrominos">The number initial tetrominos.</param>
+        /// <returns>Initialized <see cref="GameState"/>.</returns>
         /// <exception cref="ArgumentException">The number of initial tetrominos must be at least <see cref="MinNumInitialTetrominos"/>.</exception>
+        /// <seealso cref="GameStateBuilder"/>"
+        /// <seealso cref="PuzzleParser"/>
         public static GameState CreateFromFile(string puzzlesFilePath, int numInitialTetrominos)
         {
             // check if the number of initial tetrominos is valid
@@ -192,7 +201,8 @@ namespace ProjectLCore.GameLogic
             return gameStateBuilder.Build();
         }
 
-        /// <summary> Returns a list containing the puzzles in the white row. </summary>
+        /// <summary> Creates a list containing the puzzles in the white row. </summary>
+        /// <returns>A list containing the puzzles in the white row.</returns>
         public List<Puzzle> GetAvailableWhitePuzzles()
         {
             var result = new List<Puzzle>();
@@ -204,7 +214,8 @@ namespace ProjectLCore.GameLogic
             return result;
         }
 
-        /// <summary> Returns a list containing the puzzles in the black row. </summary>
+        /// <summary> Creates a list containing the puzzles in the black row. </summary>
+        /// <returns>A list containing the puzzles in the black row.</returns>
         public List<Puzzle> GetAvailableBlackPuzzles()
         {
             var result = new List<Puzzle>();
@@ -219,7 +230,7 @@ namespace ProjectLCore.GameLogic
         /// <summary>
         /// Removes 1 puzzle from the top of the white deck and returns it.
         /// </summary>
-        /// <returns>The puzzle if the deck is nonempty; <c>null</c> otherwise.</returns>
+        /// <returns>The puzzle if the deck is nonempty; <see langword="null"/> otherwise.</returns>
         public Puzzle? TakeTopWhitePuzzle()
         {
             if (_whitePuzzlesDeck.Count == 0) {
@@ -231,7 +242,7 @@ namespace ProjectLCore.GameLogic
         /// <summary>
         /// Removes 1 puzzle from the top of the black deck and returns it.
         /// </summary>
-        /// <returns>The puzzle if the deck is nonempty; <c>null</c> otherwise.</returns>
+        /// <returns>The puzzle if the deck is nonempty; <see langword="null"/> otherwise.</returns>
         public Puzzle? TakeTopBlackPuzzle()
         {
             if (_blackPuzzlesDeck.Count == 0) {
@@ -244,7 +255,7 @@ namespace ProjectLCore.GameLogic
         /// Finds the puzzle matching the given identifier in one of the rows.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <returns>The puzzle if it is present; <c>null</c> otherwise.</returns>
+        /// <returns>The puzzle if it is present; <see langword="null"/> otherwise.</returns>
         public Puzzle? GetPuzzleWithId(uint id)
         {
             for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
@@ -312,9 +323,10 @@ namespace ProjectLCore.GameLogic
         }
 
         /// <summary>
-        /// Returns the number of tetrominos of the given shape left in the shared reserve.
+        /// Gets the number of tetrominos of the given shape left in the shared reserve.
         /// </summary>
         /// <param name="shape">The shape.</param>
+        /// <returns>The number of tetrominos of type <paramref name="shape"/> left in the shared reserve.</returns>
         public int GetNumTetrominosOfType(TetrominoShape shape)
         {
             return NumTetrominosLeft[(int)shape];
@@ -347,8 +359,9 @@ namespace ProjectLCore.GameLogic
         }
 
         /// <summary>
-        /// Returns a copy of information about the game wrapped in a <see cref="GameInfo" /> object.
+        /// Creates a copy of information about the game wrapped in a <see cref="GameInfo" /> object. It prevents modification of the original data.
         /// </summary>
+        /// <returns>Information about the game.</returns>
         public GameInfo GetGameInfo() => new GameInfo(this);
 
         #endregion
@@ -356,6 +369,7 @@ namespace ProjectLCore.GameLogic
         /// <summary>
         /// Provides information about about the game while preventing modification of the original data.
         /// </summary>
+        /// <param name="gameState">The game state that will be wrapped.</param>
         public class GameInfo(GameState gameState)
         {
             #region Fields

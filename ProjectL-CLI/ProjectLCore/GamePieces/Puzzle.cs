@@ -35,7 +35,7 @@
         /// Specifies whether the puzzle is black or white.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if this instance is black; <c>false</c> if it is white.
+        ///   <see langword="true"/> if this instance is black; <see langword="false"/> if it is white.
         /// </value>
         public bool IsBlack { get; } = isBlack;
 
@@ -64,7 +64,7 @@
         /// Indicates whether this puzzle has been completed.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if this puzzle has been completed; otherwise, <c>false</c>.
+        ///   <see langword="true"/> if this puzzle has been completed; otherwise, <see langword="false"/>.
         /// </value>
         public bool IsFinished => NumEmptyCells == 0;
 
@@ -77,7 +77,7 @@
         /// </summary>
         /// <param name="tetromino">The position of the tetromino.</param>
         /// <returns>
-        ///   <c>true</c> if the tetromino can be placed; <c>false</c> otherwise.
+        ///   <see langword="true"/> if the tetromino can be placed; <see langword="false"/> otherwise.
         /// </returns>
         public bool CanPlaceTetromino(BinaryImage tetromino) => (Image & tetromino) == BinaryImage.EmptyImage;
 
@@ -95,6 +95,7 @@
         /// <summary>
         /// Enumerates all tetrominos placed on the puzzle.
         /// </summary>
+        /// <returns>An enumeration of the tetrominos placed on the puzzle.</returns>
         public IEnumerable<TetrominoShape> GetUsedTetrominos()
         {
             for (int shape = 0; shape < TetrominoManager.NumShapes; shape++) {

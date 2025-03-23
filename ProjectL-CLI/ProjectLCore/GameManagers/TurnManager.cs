@@ -76,6 +76,7 @@
         }
 
         /// <summary> Creates a new signaler for this instance. </summary>
+        /// <returns> A new signaler for this instance. </returns>
         public Signaler GetSignaler() => new Signaler(this);
 
         /// <summary>
@@ -109,8 +110,9 @@
         #endregion
 
         /// <summary>
-        /// Signal the given <see cref="TurnManager"/> about the events that happened during the turn.
+        /// Signal a <see cref="TurnManager"/> about the events that happened during the turn.
         /// </summary>
+        /// <param name="turnManager">The <see cref="TurnManager"/> to send signals to.</param>
         public class Signaler(TurnManager turnManager)
         {
             #region Methods

@@ -88,15 +88,17 @@
         #region Methods
 
         /// <summary>
-        /// Returns the <see cref="BinaryImage"/> representation of the given tetromino shape.
+        /// Gets the standard <see cref="BinaryImage"/> representation of the given tetromino shape.
         /// </summary>
-        /// <param name="shape">The shape.</param>
+        /// <param name="shape">Specifies the tetromino type.</param>
+        /// <returns>The <see cref="BinaryImage"/> representation of the shape.</returns>
         public static BinaryImage GetImageOf(TetrominoShape shape) => _binaryImages[(int)shape];
 
         /// <summary>
-        /// Returns the level of the given tetromino shape.
+        /// Gets the level of the given tetromino shape.
         /// </summary>
         /// <param name="shape">The shape.</param>
+        /// <returns>The level of the shape.</returns>
         public static int GetLevelOf(TetrominoShape shape) => _levels[(int)shape];
 
         /// <summary>
@@ -111,7 +113,7 @@
         /// </summary>
         /// <param name="shape">The shape.</param>
         /// <param name="image">The image.</param>
-        /// <returns><c>true</c> if the given configuration is valid; otherwise <c>false</c>.</returns>
+        /// <returns><see langword="true"/> if the given configuration is valid; otherwise <see langword="false"/>.</returns>
         public static bool CompareShapeToImage(TetrominoShape shape, BinaryImage image)
         {
             // checks if the images is a valid configuration of the shape

@@ -8,14 +8,17 @@
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Represents an AI player in the game.
+    /// Represents an AI player in the game. AI players pick their action using an algorithm by implementing the <see cref="GetAction"/> and <see cref="GetReward"/> methods.
     /// </summary>
     /// <seealso cref="Player" />
     public abstract class AIPlayerBase : Player
     {
         #region Properties
 
-        public override PlayerType Type => PlayerType.AI;
+        /// <summary>
+        /// The type of AI players is <see cref="PlayerType.AI"/>.
+        /// </summary>
+        public override sealed PlayerType Type => PlayerType.AI;
 
         #endregion
 
@@ -39,7 +42,18 @@
         /// <returns>The action the player wants to take.</returns>
         public abstract VerifiableAction GetAction(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, List<PlayerState.PlayerInfo> enemyInfos, TurnInfo turnInfo, ActionVerifier verifier);
 
-        public override async Task<VerifiableAction> GetActionAsync(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, TurnInfo turnInfo, ActionVerifier verifier)
+        /// <summary>
+        /// Asynchronously passes the parameters to <see cref="GetAction"/> and returns a <see cref="Task"/> containing the result.
+        /// </summary>
+        /// <param name="gameInfo">Information about the shared resources.</param>
+        /// <param name="playerInfos">Information about the resources of the players.</param>
+        /// <param name="turnInfo">Information about the current turn.</param>
+        /// <param name="verifier">Verifier for verifying the validity of actions in the current game context.</param>
+        /// <returns>
+        /// The action the player wants to take.
+        /// </returns>
+        /// <exception cref="System.ArgumentException"><see cref="PlayerState"/> matching this player's <see cref="Player.Id"/> not found in <paramref name="playerInfos"/>.</exception>
+        public override sealed async Task<VerifiableAction> GetActionAsync(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, TurnInfo turnInfo, ActionVerifier verifier)
         {
             // extract the state of THIS player and the OTHER players from playerInfos
             PlayerState.PlayerInfo? myState = null;
@@ -65,10 +79,20 @@
         /// </summary>
         /// <param name="rewardOptions">The reward options.</param>
         /// <param name="puzzle">The puzzle that was completed.</param>
-        /// <returns>The shape the player wants to take.</returns>
+        /// <returns>The tetromino the player wants to take.</returns>
         public abstract TetrominoShape GetReward(List<TetrominoShape> rewardOptions, Puzzle puzzle);
 
-        public override async Task<TetrominoShape> GetRewardAsync(List<TetrominoShape> rewardOptions, Puzzle puzzle)
+        /// <summary>
+        /// Asynchronously passes the parameters to <see cref="GetReward"/> and returns a <see cref="Task"/> containing the result.
+        /// Note that the player doesn't get the current game context here.
+        /// This is because this function will be called right after he completes a puzzle and therefore he knows the current game state from the last <see cref="GetActionAsync" /> call.
+        /// </summary>
+        /// <param name="rewardOptions">The reward options.</param>
+        /// <param name="puzzle">The puzzle that was completed.</param>
+        /// <returns>
+        /// The tetromino the player wants to take.
+        /// </returns>
+        public override sealed async Task<TetrominoShape> GetRewardAsync(List<TetrominoShape> rewardOptions, Puzzle puzzle)
         {
             // call the method that implements the AI algorithm
             return await Task.Run(() => GetReward(rewardOptions, puzzle));

@@ -16,6 +16,7 @@ namespace ProjectLCore
         /// <summary>
         /// Shuffles the given list in place using the Fisher-Yates algorithm.
         /// </summary>
+        /// <param name="list">The list to shuffle.</param>
         public static void Shuffle<T>(this IList<T> list)
         {
             Random rng = new Random();

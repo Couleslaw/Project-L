@@ -7,10 +7,10 @@
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Represents a human player in the game.
+    /// Represents a human player in the game. Human players pick their action using the UI.
     /// </summary>
     /// <seealso cref="Player" />
-    public class HumanPlayer : Player
+    public sealed class HumanPlayer : Player
     {
         #region Fields
 
@@ -23,6 +23,9 @@
 
         #region Properties
 
+        /// <summary>
+        /// The type of human players is <see cref="PlayerType.Human"/>.
+        /// </summary>
         public override PlayerType Type => PlayerType.Human;
 
         #endregion
@@ -41,12 +44,32 @@
         /// <param name="reward">The reward.</param>
         public void SetReward(TetrominoShape reward) => _getRewardCompletionSource.SetResult(reward);
 
+        /// <summary>
+        /// Creates a new <see cref="TaskCompletionSource"/> for <see cref="VerifiableAction"/> and asynchronously waits until it is set by calling the <see cref="SetAction"/> method.
+        /// </summary>
+        /// <param name="gameInfo">Information about the shared resources.</param>
+        /// <param name="playerInfos">Information about the resources of the players.</param>
+        /// <param name="turnInfo">Information about the current turn.</param>
+        /// <param name="verifier">Verifier for verifying the validity of actions in the current game context.</param>
+        /// <returns>
+        /// The action the player wants to take.
+        /// </returns>
         public override async Task<VerifiableAction> GetActionAsync(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, TurnInfo turnInfo, ActionVerifier verifier)
         {
             _getActionCompletionSource = new();
             return await _getActionCompletionSource.Task;
         }
 
+        /// <summary>
+        /// Creates a new <see cref="TaskCompletionSource"/> for <see cref="TetrominoShape"/> and asynchronously waits until it is set by calling the <see cref="SetReward"/> method.
+        /// Note that the player doesn't get the current game context here.
+        /// This is because this function will be called right after he completes a puzzle and therefore he knows the current game state from the last <see cref="GetActionAsync" /> call.
+        /// </summary>
+        /// <param name="rewardOptions">The reward options.</param>
+        /// <param name="puzzle">The puzzle that was completed.</param>
+        /// <returns>
+        /// The shape the player wants to take.
+        /// </returns>
         public override async Task<TetrominoShape> GetRewardAsync(List<TetrominoShape> rewardOptions, Puzzle puzzle)
         {
             _getRewardCompletionSource = new();
