@@ -21,15 +21,6 @@
 
         #endregion
 
-        #region Properties
-
-        /// <summary>
-        /// The type of human players is <see cref="PlayerType.Human"/>.
-        /// </summary>
-        public override PlayerType Type => PlayerType.Human;
-
-        #endregion
-
         #region Methods
 
         /// <summary>

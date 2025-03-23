@@ -13,15 +13,6 @@
     /// <seealso cref="Player" />
     public abstract class AIPlayerBase : Player
     {
-        #region Properties
-
-        /// <summary>
-        /// The type of AI players is <see cref="PlayerType.AI"/>.
-        /// </summary>
-        public override sealed PlayerType Type => PlayerType.AI;
-
-        #endregion
-
         #region Methods
 
         /// <summary>

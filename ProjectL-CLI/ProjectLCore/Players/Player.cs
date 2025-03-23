@@ -5,21 +5,6 @@ namespace ProjectLCore.Players
     using ProjectLCore.GamePieces;
 
     /// <summary>
-    /// Represents the type of the player.
-    /// </summary>
-    public enum PlayerType
-    {
-        /// <summary>
-        /// Human players pick their action using the UI.
-        /// </summary>
-        Human,
-        /// <summary>
-        /// AI players pick their action using an algorithm.
-        /// </summary>
-        AI
-    };
-
-    /// <summary>
     /// Represents a player in the game.
     /// </summary>
     public abstract class Player
@@ -36,11 +21,6 @@ namespace ProjectLCore.Players
         /// The unique ID of the player.
         /// </summary>
         public uint Id { get; } = _idCounter++;
-
-        /// <summary>
-        /// The type of the player.
-        /// </summary>
-        public abstract PlayerType Type { get; }
 
         #endregion
 
