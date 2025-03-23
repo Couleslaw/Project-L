@@ -13,6 +13,15 @@
     /// <seealso cref="Player" />
     public abstract class AIPlayerBase : Player
     {
+        #region Properties
+
+        /// <summary>
+        /// The name of the player.
+        /// </summary>
+        public required override sealed string Name { get; init; }
+
+        #endregion
+
         #region Methods
 
         /// <summary>

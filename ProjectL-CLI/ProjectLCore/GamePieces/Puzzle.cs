@@ -11,11 +11,10 @@
     /// <param name="rewardScore">The score the player will receive for completing the puzzle.</param>
     /// <param name="rewardTetromino">The tetromino the player will receive for completing the puzzle.</param>
     /// <param name="isBlack">Indicates whether the puzzle is black or white</param>
-    public class Puzzle(BinaryImage image, int rewardScore, TetrominoShape rewardTetromino, bool isBlack)
+    /// <param name="puzzleNumber">The order number of this puzzle. The file containing the graphics for this puzzle should have the name <c>color-number.png</c> where color is <c>black</c> or <c>white</c> and number is <paramref name="puzzleNumber"/>.</param>
+    public class Puzzle(BinaryImage image, int rewardScore, TetrominoShape rewardTetromino, bool isBlack, int puzzleNumber)
     {
         #region Fields
-
-        private static uint _idCounter = 0;
 
         /// <summary>
         /// Contains information about the number of tetrominos of each shape used on the puzzle.
@@ -29,7 +28,7 @@
         /// <summary>
         /// The unique identifier of the puzzle.
         /// </summary>
-        public uint Id { get; } = _idCounter++;
+        public uint Id { get; } = (uint)(isBlack, puzzleNumber).GetHashCode();
 
         /// <summary>
         /// Specifies whether the puzzle is black or white.
@@ -111,7 +110,7 @@
         /// <returns>A deep copy of this instance.</returns>
         public Puzzle Clone()
         {
-            Puzzle clone = new(Image, RewardScore, RewardTetromino, IsBlack);
+            Puzzle clone = new(Image, RewardScore, RewardTetromino, IsBlack, puzzleNumber);
             clone._usedTetrominos = _usedTetrominos.ToArray(); // copy array
             return clone;
         }

@@ -23,21 +23,21 @@
         #region Fields
 
         /// <summary> Contains the level of each tetromino shape.  </summary>
-        private static readonly int[] _levels = new int[NumShapes];
+        private static readonly int[] _levels;
 
         /// <summary>  For each possible level, contains a list of tetromino shapes with that level.  </summary>
         private static readonly List<TetrominoShape>[] _shapesByLevel = new List<TetrominoShape>[MaxLevel - MinLevel + 1];
 
         /// <summary> Contains the <see cref="BinaryImage"/> representation for each tetromino shape. </summary>
-        private static readonly BinaryImage[] _binaryImages = new BinaryImage[NumShapes];
+        private static readonly BinaryImage[] _binaryImages;
 
         /// <summary> 
         /// Contains a list of all base configurations for each tetromino shape.
         /// A base configuration is a position in the top left corner of the image, which can be achieved by transforming the image found in <see cref="_binaryImages"/>.
         /// </summary>
-        private static readonly List<BinaryImage>[] _baseConfigurations = new List<BinaryImage>[NumShapes];
+        private static readonly List<BinaryImage>[] _baseConfigurations;
 
-        private static readonly List<BinaryImage>[] _allConfigurationsCache = new List<BinaryImage>[NumShapes];
+        private static readonly List<BinaryImage>[] _allConfigurationsCache;
 
         #endregion
 
@@ -46,6 +46,7 @@
         static TetrominoManager()
         {
             // initialize tetromino images
+            _binaryImages = new BinaryImage[NumShapes];
             _binaryImages[(int)TetrominoShape.O1] = new(0b1);
             _binaryImages[(int)TetrominoShape.O2] = new(0b1100011);
             _binaryImages[(int)TetrominoShape.I2] = new(0b11);
@@ -57,6 +58,7 @@
             _binaryImages[(int)TetrominoShape.T] = new(0b1000111);
 
             // level of tetromino = number of 1s in its binary image
+            _levels = new int[NumShapes];
             for (int i = 0; i < NumShapes; i++) {
                 _levels[i] = _binaryImages[i].CountFilledCells();
             }
@@ -71,6 +73,8 @@
             }
 
             // generate all base configurations for each shape
+            _baseConfigurations = new List<BinaryImage>[NumShapes];
+            _allConfigurationsCache = new List<BinaryImage>[NumShapes];
             for (int i = 0; i < NumShapes; i++) {
                 _baseConfigurations[i] = GetBaseConfigurationsOf((TetrominoShape)i);
             }

@@ -85,7 +85,7 @@
         private void SetNextPlayer()
         {
             _currentPlayerOrder = (_currentPlayerOrder + 1) % _numPlayers;
-            _turnInfo.NumActionsLeft = NumActionsInTurn;
+            _turnInfo.NumActionsLeft = NumActionsInTurn - 1;
             _turnInfo.UsedMasterAction = false;
             _turnInfo.TookBlackPuzzle = false;
         }

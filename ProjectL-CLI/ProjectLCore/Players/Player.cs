@@ -22,6 +22,11 @@ namespace ProjectLCore.Players
         /// </summary>
         public uint Id { get; } = _idCounter++;
 
+        /// <summary>
+        /// The name of the player.
+        /// </summary>
+        public abstract string Name { get; init; }
+
         #endregion
 
         #region Methods

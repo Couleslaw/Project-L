@@ -2,6 +2,7 @@ namespace ProjectLCore.GameLogic
 {
     using ProjectLCore.GameManagers;
     using ProjectLCore.GamePieces;
+    using System.Text;
 
     /// <summary>
     /// Builder for the <see cref="GameState"/> class.
@@ -388,6 +389,61 @@ namespace ProjectLCore.GameLogic
 
             /// <summary> The number of tetrominos of each shape left in the shared reserve. </summary>
             public IReadOnlyList<int> NumTetrominosLeft = gameState.NumTetrominosLeft.AsReadOnly();
+
+            #endregion
+
+            #region Methods
+
+            /// <summary>
+            /// Converts to string. It shows the puzzles in the white and black rows and the number of tetrominos left in the shared reserve.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="System.String" /> that represents this instance.
+            /// </returns>
+            public override string ToString()
+            {
+                var sb = new StringBuilder();
+
+                // append puzzle info
+                AppendPuzzleRowInfo("White", AvailableWhitePuzzles, NumWhitePuzzlesLeft);
+                sb.AppendLine();
+                AppendPuzzleRowInfo("Black", AvailableBlackPuzzles, NumBlackPuzzlesLeft);
+                sb.AppendLine();
+
+                // append tetromino info
+                sb.Append("Tetrominos:");
+                for (int i = 0; i < NumTetrominosLeft.Count; i++) {
+                    sb.Append($"  {(TetrominoShape)i}: {NumTetrominosLeft[i]}");
+                    if (i < NumTetrominosLeft.Count - 1) {
+                        sb.Append(',');
+                    }
+                }
+                sb.AppendLine();
+                return sb.ToString();
+
+                void AppendPuzzleRowInfo(string rowColor, Puzzle[] puzzles, int numPuzzlesLeft)
+                {
+                    sb.Append("  ");
+                    foreach (Puzzle puzzle in puzzles) {
+                        string tetrominoName = puzzle.RewardTetromino.ToString().PadLeft(2);
+                        sb.Append($"{puzzle.RewardScore}  {tetrominoName}   ");
+                    }
+                    sb.AppendLine();
+                    StringReader[] puzzleReaders = puzzles.Select(p => p.Image.ToString()).Select(p => new StringReader(p)).ToArray();
+                    for (int i = 0; i < 5; i++) {
+                        for (int j = 0; j < puzzles.Length; j++) {
+                            if (j == 0) {
+                                sb.Append("  ");
+                            }
+                            sb.Append(puzzleReaders[j].ReadLine()).Append("   ");
+                        }
+                        if (i == 2) {
+                            sb.Append($"   {rowColor} puzzles left: {numPuzzlesLeft}");
+                        }
+                        sb.AppendLine();
+                    }
+                }
+            }
 
             #endregion
         }

@@ -8,12 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="AIPlayerExample">
-      <HintPath>..\AIPlayerExample\bin\Release\net8.0\AIPlayerExample.dll</HintPath>
-    </Reference>
-    <Reference Include="ProjectLCore">
-      <HintPath>..\ProjectLCore\bin\Release\net8.0\ProjectLCore.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\AIPlayerExample\AIPlayerExample.csproj" />
+    <ProjectReference Include="..\ProjectLCore\ProjectLCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="puzzles.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -10,7 +10,7 @@
     /// Represents a human player in the game. Human players pick their action using the UI.
     /// </summary>
     /// <seealso cref="Player" />
-    public sealed class HumanPlayer : Player
+    public sealed class HumanPlayer(string name) : Player
     {
         #region Fields
 
@@ -18,6 +18,15 @@
         private TaskCompletionSource<VerifiableAction> _getActionCompletionSource = new();
 
         private TaskCompletionSource<TetrominoShape> _getRewardCompletionSource = new();
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// The name of the player.
+        /// </summary>
+        public override string Name { get; init; } = name;
 
         #endregion
 

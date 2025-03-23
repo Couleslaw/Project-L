@@ -3,6 +3,7 @@ namespace ProjectLCore.GameLogic
     using ProjectLCore.GameManagers;
     using ProjectLCore.GamePieces;
     using ProjectLCore.Players;
+    using System.Text;
 
     /// <summary>
     /// Represents the resources and progress of a single <see cref="Player"/>.
@@ -249,6 +250,69 @@ namespace ProjectLCore.GameLogic
 
             /// <summary> The Ids of the puzzles that the player has already completed. </summary>
             public IReadOnlyList<uint> FinishedPuzzlesIds = playerState._finishedPuzzleIds.AsReadOnly();
+
+            #endregion
+
+            #region Methods
+
+            /// <summary>
+            /// Converts to string. It shows the player's score, the number of tetrominos owned for each shape, the puzzles the player is working on, and the number of puzzles the player has completed.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="System.String" /> that represents this instance.
+            /// </returns>
+            public override string ToString()
+            {
+                StringBuilder sb = new();
+                sb.AppendLine($"Player {PlayerId}, score: {Score}, num finished puzzles: {FinishedPuzzlesIds.Count}");
+
+                // add info about unfinished puzzles
+                StringReader[] puzzleReaders = UnfinishedPuzzles.Select(p => p.Image.ToString()).Select(p => new StringReader(p)).ToArray();
+
+                sb.AppendLine();
+
+                // append puzzle info
+                if (UnfinishedPuzzles.Length > 0) {
+                    AppendPuzzleInfo();
+                }
+                else {
+                    sb.AppendLine("  The player doesn't have any puzzles.");
+                }
+                sb.AppendLine();
+
+                // append tetromino info
+                sb.Append("Tetrominos:");
+                for (int i = 0; i < NumTetrominosOwned.Count; i++) {
+                    sb.Append($"  {(TetrominoShape)i}: {NumTetrominosOwned[i]}");
+                    if (i < NumTetrominosOwned.Count - 1) {
+                        sb.Append(',');
+                    }
+                }
+                sb.AppendLine();
+                return sb.ToString();
+
+                void AppendPuzzleInfo()
+                {
+                    sb.Append("  ");
+                    foreach (Puzzle puzzle in UnfinishedPuzzles) {
+                        string tetrominoName = puzzle.RewardTetromino.ToString().PadLeft(2);
+                        sb.Append($"{puzzle.RewardScore}  {tetrominoName}   ");
+                    }
+                    sb.AppendLine();
+                    for (int i = 0; i < 5; i++) {
+                        for (int j = 0; j < UnfinishedPuzzles.Length; j++) {
+                            if (j == 0) {
+                                sb.Append("  ");
+                            }
+                            sb.Append(puzzleReaders[j].ReadLine()).Append("   ");
+                        }
+                        if (i == 2) {
+                            sb.Append($"   ");
+                        }
+                        sb.AppendLine();
+                    }
+                }
+            }
 
             #endregion
         }

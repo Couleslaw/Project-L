@@ -4,7 +4,7 @@
     using System.Collections.Generic;
 
     /// <summary>
-    /// Represents transition between two states using a sequence of <see cref="ProjectLCore.GameActions.VerifiableAction"/> actions.
+    /// Represents transition between two states using a sequence of <see cref="VerifiableAction"/> actions.
     /// </summary>
     /// <param name="from">The original state.</param>
     /// <param name="to">The new state.</param>

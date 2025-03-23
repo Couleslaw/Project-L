@@ -49,7 +49,7 @@ namespace ProjectLCore.GamePieces
         public static BinaryImage EmptyImage => new(0);
 
         /// <summary> The image which has all cells filled in. </summary>
-        public static BinaryImage FullImage => new((1 << 26) - 1);
+        public static BinaryImage FullImage => new((1 << 25) - 1);
 
         #endregion
 

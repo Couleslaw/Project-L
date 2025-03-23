@@ -141,8 +141,16 @@
                             break;
                     }
                 }
-                catch (ArgumentException e) {
-                    throw new ArgumentException($"Invalid puzzle configuration file. Line {lineNum}: {e.Message}");
+                catch (Exception e) {
+                    throw new InvalidPuzzleException($"Invalid puzzle configuration file: {e.Message}") {
+                        IsBlack = isBlack,
+                        PuzzleNumber = puzzleNum,
+                        Score = score,
+                        Tetromino = tetromino,
+                        CurrentImage = currentImage,
+                        NumPuzzleLinesRead = numPuzzleLinesRead,
+                        LineNumber = lineNum,
+                    };
                 }
             }
 
@@ -164,7 +172,7 @@
         /// <returns>The puzzle initialized from the given parameters.</returns>
         protected virtual Puzzle CreatePuzzle(bool isBlack, int puzzleNum, int score, TetrominoShape tetromino, BinaryImage image)
         {
-            return new Puzzle(image, score, tetromino, isBlack);
+            return new Puzzle(image, score, tetromino, isBlack, puzzleNum);
         }
 
         /// <summary>
@@ -246,15 +254,33 @@
             }
 
             // parse the line
-            string numericEncoding = line[0].Replace('#', '1').Replace('.', '0');
-            bool success = int.TryParse(numericEncoding, out int imagePart);
-            if (!success || imagePart < 0) {
-                throw new ArgumentException($"Invalid image line: {line[0]}");
+            int imagePart = 0;
+            foreach (char c in line[0]) {
+                imagePart <<= 1;
+                if (c == '#') {
+                    imagePart |= 1;
+                }
+                if (c != '#' && c != '.') {
+                    throw new ArgumentException($"Invalid character in image line: {c}");
+                }
             }
 
             return currentImage << 5 | imagePart;
         }
 
         #endregion
+    }
+
+    class InvalidPuzzleException : Exception
+    {
+        public bool? IsBlack { get; init; } = null;
+        public int? PuzzleNumber { get; init; } = null;
+        public int? Score { get; init; } = null;
+        public TetrominoShape? Tetromino { get; init; } = null;
+        public int CurrentImage { get; init; } = 0;
+        public int NumPuzzleLinesRead { get; init; } = 0;
+        public int? LineNumber { get; init; } = null;
+
+        public InvalidPuzzleException(string message) : base(message) { }
     }
 }
