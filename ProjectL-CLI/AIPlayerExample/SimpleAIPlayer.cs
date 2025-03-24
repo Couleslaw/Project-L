@@ -285,7 +285,6 @@
         /// </returns>
         private Queue<VerifiableAction> GetStrategy(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, int maxDepth = -1)
         {
-
             if (_currentPuzzle is null) {
                 // choose puzzle
                 var res = ChoosePuzzle(gameInfo, myInfo, maxDepth);

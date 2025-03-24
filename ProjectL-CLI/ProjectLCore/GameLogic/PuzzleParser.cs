@@ -1,6 +1,7 @@
 ﻿namespace ProjectLCore.GameLogic
 {
     using ProjectLCore.GamePieces;
+    using System.IO;
 
     /// <summary>
     /// Reads puzzles from a file.
@@ -37,7 +38,7 @@
 
         private readonly char[] _specialChars = ['I', 'R', 'P'];
 
-        private StreamReader _reader = new StreamReader(path);
+        private StreamReader _reader = new(path);
 
         #endregion
 
@@ -70,11 +71,11 @@
         {
             // parsing identifiers
             bool? isBlack = null;
-            uint puzzleNum = 0;
+            uint? puzzleNum = null;
 
             // parsing reward
             TetrominoShape? tetromino = null;
-            int score = 0;
+            int? score = null;
 
             // parsing image
             int currentImage = 0;
@@ -99,57 +100,19 @@
 
                 // read the rest of the line
                 string? line = _reader.ReadLine();
-                if (line == null) {
-                    throw new ArgumentException($"Invalid puzzle configuration file. Line {lineNum} starting with special character {firstChar} is empty.");
-                }
-                string[] parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                 // parse the line
                 try {
-                    switch (firstChar) {
-                        case 'I': {
-                            if (isBlack is not null) {
-                                throw new ArgumentException("Duplicate identifier line.");
-                            }
-                            (isBlack, puzzleNum) = ParseIdentifier(parts);
-                            break;
-                        }
-                        case 'R': {
-                            if (tetromino is not null) {
-                                throw new ArgumentException("Duplicate reward line.");
-                            }
-                            (score, tetromino) = ParseReward(parts);
-                            break;
-                        }
-                        case 'P': {
-                            if (image is not null) {
-                                throw new ArgumentException("Too many puzzle lines.");
-                            }
-                            currentImage = ParseImageLine(currentImage, parts);
-
-                            // if we have read all lines, create the image
-                            if (++numPuzzleLinesRead == _numPuzzleLines) {
-                                // the image needs to be rotated 180 degrees
-                                // we parse it so that the most significant bit is the top left corner
-                                // but the image is stored so that the least significant bit is the top left corner
-                                image = new BinaryImage(currentImage).RotateLeft().RotateLeft();
-                            }
-                            break;
-                        }
-                        default:
-                            // should never happen
-                            break;
-                    }
+                    ParseLine(line, firstChar);
                 }
                 catch (Exception e) {
-                    throw new InvalidPuzzleException($"Invalid puzzle configuration file: {e.Message}") {
+                    throw new InvalidPuzzleException($"Invalid puzzle configuration file on line {lineNum}: {e.Message}") {
                         IsBlack = isBlack,
                         PuzzleNumber = puzzleNum,
                         Score = score,
                         Tetromino = tetromino,
                         CurrentImage = currentImage,
                         NumPuzzleLinesRead = numPuzzleLinesRead,
-                        LineNumber = lineNum,
                     };
                 }
             }
@@ -158,7 +121,50 @@
                 return null;
             }
 
-            return CreatePuzzle(isBlack!.Value, puzzleNum, score, tetromino!.Value, image!.Value);
+            return CreatePuzzle(isBlack!.Value, puzzleNum!.Value, score!.Value, tetromino!.Value, image!.Value);
+
+            void ParseLine(string? line, char firstChar)
+            {
+                if (line == null || line == "") {
+                    throw new ArgumentException($"Line {lineNum} starting with special character {firstChar} is empty.");
+                }
+
+                string[] parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                switch (firstChar) {
+                    case 'I': {
+                        if (isBlack is not null) {
+                            throw new ArgumentException("Duplicate identifier line.");
+                        }
+                        (isBlack, puzzleNum) = ParseIdentifier(parts);
+                        break;
+                    }
+                    case 'R': {
+                        if (tetromino is not null) {
+                            throw new ArgumentException("Duplicate reward line.");
+                        }
+                        (score, tetromino) = ParseReward(parts);
+                        break;
+                    }
+                    case 'P': {
+                        if (image is not null) {
+                            throw new ArgumentException("Too many puzzle lines.");
+                        }
+                        currentImage = ParseImageLine(currentImage, parts);
+
+                        // if we have read all lines, create the image
+                        if (++numPuzzleLinesRead == _numPuzzleLines) {
+                            // the image needs to be rotated 180 degrees
+                            // we parse it so that the most significant bit is the top left corner
+                            // but the image is stored so that the least significant bit is the top left corner
+                            image = new BinaryImage(currentImage).RotateLeft().RotateLeft();
+                        }
+                        break;
+                    }
+                    default:
+                        // should never happen
+                        break;
+                }
+            }
         }
 
         /// <summary>
@@ -236,11 +242,11 @@
         }
 
         /// <summary>
-        /// Parses one line of the puzzle. Should be in the format P 0bxxxxx.
+        /// Parses one line of the puzzle. Should be in the format <c>P</c> 0bxxxxx.
         /// After parsing all 5 lines, the integer encodes the image where the top left corner corresponds to the most significant bit.
         /// </summary>
         /// <param name="currentImage">The value of what has already been parsed.</param>
-        /// <param name="line">Words on the line after 'P'.</param>
+        /// <param name="line">Words on the line after <c>P</c>'.</param>
         /// <returns>Image representation extended by characters on the current line.</returns>
         /// <exception cref="System.ArgumentException">Invalid line format.</exception>"
         private static int ParseImageLine(int currentImage, string[] line)
@@ -271,16 +277,45 @@
         #endregion
     }
 
-    class InvalidPuzzleException : Exception
+    /// <summary>
+    /// Represents an error that occurred while parsing a puzzle.
+    /// </summary>
+    /// <param name="message">The message that describes the error.</param>
+    /// <seealso cref="System.Exception"/>
+    internal class InvalidPuzzleException(string message) : Exception(message)
     {
-        public bool? IsBlack { get; init; } = null;
-        public uint? PuzzleNumber { get; init; } = null;
-        public int? Score { get; init; } = null;
-        public TetrominoShape? Tetromino { get; init; } = null;
-        public int CurrentImage { get; init; } = 0;
-        public int NumPuzzleLinesRead { get; init; } = 0;
-        public int? LineNumber { get; init; } = null;
+        #region Properties
 
-        public InvalidPuzzleException(string message) : base(message) { }
+        /// <summary>
+        /// <see langword="null"/> if the puzzle color was not parsed. Otherwise <see langword="true"/> if the puzzle is black, <see langword="false"/> if it is white.
+        /// </summary>
+        public bool? IsBlack { get; init; } = null;
+
+        /// <summary>
+        /// <see langword="null"/> if the puzzle number was not parsed. Otherwise the puzzle number.
+        /// </summary>
+        public uint? PuzzleNumber { get; init; } = null;
+
+        /// <summary>
+        /// <see langword="null"/> if the score reward was not parsed. Otherwise the score reward.
+        /// </summary>
+        public int? Score { get; init; } = null;
+
+        /// <summary>
+        /// <see langword="null"/> if the tetromino reward was not parsed. Otherwise the tetromino reward.
+        /// </summary>
+        public TetrominoShape? Tetromino { get; init; } = null;
+
+        /// <summary>
+        /// The image part that was parsed so far.
+        /// </summary>
+        public int CurrentImage { get; init; } = 0;
+
+        /// <summary>
+        /// The number of image coding lines (starting with <c>P</c>) read so far.
+        /// </summary>
+        public int NumPuzzleLinesRead { get; init; } = 0;
+
+        #endregion
     }
 }

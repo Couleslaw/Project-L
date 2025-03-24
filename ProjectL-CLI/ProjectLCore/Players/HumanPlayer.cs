@@ -10,7 +10,7 @@
     /// Represents a human player in the game. Human players pick their action using the UI.
     /// </summary>
     /// <seealso cref="Player" />
-    public sealed class HumanPlayer(string name) : Player
+    public sealed class HumanPlayer : Player
     {
         #region Fields
 
@@ -26,7 +26,7 @@
         /// <summary>
         /// The name of the player.
         /// </summary>
-        public override string Name { get; init; } = name;
+        public override string Name { get; init; } = "Human Player";
 
         #endregion
 

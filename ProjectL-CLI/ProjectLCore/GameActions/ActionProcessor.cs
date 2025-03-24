@@ -206,7 +206,6 @@
             // remove the tetromino from the player's state
             _playerState.RemoveTetromino(action.Shape);
 
-
             // handle FinishingTouches separately
             if (game.CurrentGamePhase == GamePhase.FinishingTouches) {
                 _playerState.Score -= 1;

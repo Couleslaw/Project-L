@@ -109,6 +109,7 @@
                     Console.WriteLine($"WARNING! GetAction call took {stopwatch.ElapsedMilliseconds} ms");
                 }
 
+                // check if the player provided a action
                 if (action == null) {
                     Console.WriteLine("Player failed to provide a action. Skipping action...");
                     if (simParams.IsInteractive) {
@@ -118,6 +119,7 @@
                     continue;
                 }
 
+                // verify the action
                 var result = action.GetVerifiedBy(verifier);
                 if (result is VerificationFailure fail) {
                     Console.WriteLine($"Player provided an invalid {action.GetType()}. Verification result:\n{fail.GetType()}: {fail.Message}\n");
@@ -129,8 +131,7 @@
                     continue;
                 }
 
-                // valid action
-
+                // process valid action
                 Console.WriteLine($"The player used a {action}\n");
                 if (simParams.IsInteractive) {
                     Console.WriteLine("Press 'Enter' to process action.");
@@ -140,7 +141,7 @@
                 action.Accept(actionProcessors[playerId]);
             }
 
-            // final results
+            // print final results
             Console.WriteLine("Getting final results...\n");
             var results = game.GetFinalResults();
             var order = results.OrderBy(pair => pair.Value).Select(pair => pair.Key);
