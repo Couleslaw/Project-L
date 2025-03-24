@@ -24,7 +24,7 @@
             var simParams = SimulationParams.GetSimulationParamsFromStdIn();
 
             // initialize a new game
-            Console.CursorVisible = false;
+            Console.Clear();
             Console.WriteLine("Loading game state from file...");
             GameState gameState = GameState.CreateFromFile("puzzles.txt", simParams.NumInitialTetrominos, simParams.NumWhitePuzzles, simParams.NumBlackPuzzles);
 
@@ -62,10 +62,11 @@
                     roundCount++;
                 }
 
-                Console.WriteLine($"{LargeSeparator}\n{LargeSeparator}\n");
-                // move the window to the top of the console - only works on Windows
-                if (OperatingSystem.IsWindows()) {
-                    Console.WindowTop = Console.CursorTop;
+                if (simParams.ShouldClearConsole) {
+                    Console.Clear();
+                }
+                else {
+                    Console.WriteLine($"{LargeSeparator}\n{LargeSeparator}\n");
                 }
 
                 // check if game ended

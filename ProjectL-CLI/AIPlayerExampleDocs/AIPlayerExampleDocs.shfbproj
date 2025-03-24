@@ -57,10 +57,10 @@
     <PlugInConfigurations>
       <PlugInConfig id="Additional Reference Links" enabled="True">
         <configuration>
-  <targets>
-    <target htmlSdkLinkType="None" helpViewerSdkLinkType="Id" websiteSdkLinkType="None" helpFileProject="..\ProjectLCoreDocs\ProjectLCoreDocs.shfbproj" />
-  </targets>
-</configuration>
+          <targets>
+            <target htmlSdkLinkType="None" helpViewerSdkLinkType="Id" websiteSdkLinkType="None" helpFileProject="..\ProjectLCoreDocs\ProjectLCoreDocs.shfbproj" />
+          </targets>
+        </configuration>
       </PlugInConfig>
     </PlugInConfigurations>
   </PropertyGroup>

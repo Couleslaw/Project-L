@@ -185,7 +185,7 @@ namespace ProjectLCore.GameLogic
                     result[PlayerStates[i]] = result[PlayerStates[i - 1]];
                 }
                 else {
-                    result[PlayerStates[i]] = i + 1;
+                    result[PlayerStates[i]] = result[PlayerStates[i - 1]] + 1;
                 }
             }
 

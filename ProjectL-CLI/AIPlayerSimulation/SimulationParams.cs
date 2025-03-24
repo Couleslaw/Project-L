@@ -15,6 +15,7 @@
         public int NumBlackPuzzles { get; set; }
 
         public bool IsInteractive { get; set; }
+        public bool ShouldClearConsole { get; set; }
 
         #endregion
 
@@ -27,7 +28,8 @@
                 NumInitialTetrominos = GetIntFromStdIn(GameState.MinNumInitialTetrominos, 99, 15, "Number of initial tetrominos"),
                 NumWhitePuzzles = GetIntFromStdIn(GameState.NumPuzzlesInRow, 100, 100, "Number of white puzzles"),
                 NumBlackPuzzles = GetIntFromStdIn(GameState.NumPuzzlesInRow + 1, 100, 100, "Number of black puzzles"),
-                IsInteractive = GetBoolFromStdIn(true, "Interactive mode")
+                IsInteractive = GetBoolFromStdIn(true, "Interactive mode"),
+                ShouldClearConsole = GetBoolFromStdIn(true, "Clear console")
             };
         }
 
@@ -49,7 +51,8 @@
         private static bool GetBoolFromStdIn(bool defaultVal, string valueName)
         {
             while (true) {
-                Console.Write($"{valueName} [y=Yes, n=No]: ");
+                string defaultStr = defaultVal ? "Yes" : "No";
+                Console.Write($"{valueName} [y=Yes, n=No, default={defaultStr}]: ");
                 string? input = Console.ReadLine()?.ToLower();
                 if (input is null || input == "") {
                     return defaultVal;
