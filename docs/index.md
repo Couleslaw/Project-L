@@ -4,11 +4,11 @@ This is the documentation for a computer version of the **Project L** board game
 
 ## User Documentation
 
-The user [documentation](./UserDocs/) provides a guide on how to play the game.
+The [user documentation](./UserDocs/) provides a guide on how to play the game.
 
 ## Functional Documentation
 
-The functional [documentation](./FunctionDocs/) specifies everything about the user perspective of the Unity implementation of the game.
+The [functional documentation](./FunctionDocs/) specifies everything about the user perspective of the Unity implementation of the game.
 
 ## Technical Documentation
 
