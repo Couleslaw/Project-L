@@ -1,42 +1,48 @@
 ﻿namespace AIPlayerSimulation
 {
+    using AIPlayerExample;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
     using ProjectLCore.Players;
-    using AIPlayerExample;
     using System.Diagnostics;
 
     internal class Program
     {
-        readonly static string LargeSeparator = new String('X', 110);
-        readonly static string SmallSeparator = new String('-', 90);
+        #region Fields
+
+        internal readonly static string LargeSeparator = new String('X', 110);
+
+        internal readonly static string SmallSeparator = new String('-', 95);
+
+        #endregion
+
+        #region Methods
 
         internal static void Main(string[] args)
         {
+            // get program parameters
+            var simParams = SimulationParams.GetSimulationParamsFromStdIn();
+
             // initialize a new game
-            int numInitialTetrominos = 15;
             Console.CursorVisible = false;
             Console.WriteLine("Loading game state from file...");
-            GameState gameState = GameState.CreateFromFile("puzzles.txt", numInitialTetrominos, 12, 5);
+            GameState gameState = GameState.CreateFromFile("puzzles.txt", simParams.NumInitialTetrominos, simParams.NumWhitePuzzles, simParams.NumBlackPuzzles);
 
-            Player[] players = [
-                new SimpleAIPlayer() {Name="First"},
-                new SimpleAIPlayer() {Name="Second"},
-            ];
-
+            // create players
             Console.WriteLine("Initializing players...");
-            foreach (Player player in players) {
-                if (player is AIPlayerBase aiPlyer) {
-                    aiPlyer.Init(players.Length, null);
-                }
+            Player[] players = new Player[simParams.NumPlayers];
+            for (int i = 0; i < simParams.NumPlayers; i++) {
+                players[i] = new SimpleAIPlayer();
+                ((SimpleAIPlayer)players[i]).Init(players.Length, null);
             }
 
-            // create game core and action processors
+            // create game core
             Console.WriteLine("Creating a GameCore object and initializing game...");
             var game = new GameCore(gameState, players, shufflePlayers: false);
             var signaler = game.TurnManager.GetSignaler();
             game.InitializeGame();
 
+            // create action processors
             Console.WriteLine("Creating action processors...");
             Dictionary<uint, GameActionProcessor> actionProcessors = new();
             for (int i = 0; i < players.Length; i++) {
@@ -55,7 +61,7 @@
                 if (turnInfo.NumActionsLeft == 2 && game.CurrentPlayerId == firstPlayerId) {
                     roundCount++;
                 }
-                
+
                 Console.WriteLine($"{LargeSeparator}\n{LargeSeparator}\n");
                 // move the window to the top of the console - only works on Windows
                 if (OperatingSystem.IsWindows()) {
@@ -70,9 +76,8 @@
                 }
 
                 // print turn info
-                Console.WriteLine($"Round: {roundCount}, Current player: {game.CurrentPlayerId}, Action: {3-turnInfo.NumActionsLeft}");
+                Console.WriteLine($"Round: {roundCount}, Current player: {game.CurrentPlayerId}, Action: {3 - turnInfo.NumActionsLeft}");
                 Console.WriteLine($"TurnInfo: GamePhase={turnInfo.GamePhase}, LastRound={turnInfo.LastRound}, TookBlackPuzzle={turnInfo.TookBlackPuzzle}, UsedMaster={turnInfo.UsedMasterAction}");
-
 
                 // get action from current player and process it
                 uint playerId = game.CurrentPlayerId;
@@ -100,15 +105,16 @@
                     action = null;
                 }
                 stopwatch.Stop();
-                Console.WriteLine($"Warning! GetAction call took {stopwatch.ElapsedMilliseconds} ms");
                 if (stopwatch.ElapsedMilliseconds >= 1000) {
-                    Console.ReadLine();
+                    Console.WriteLine($"WARNING! GetAction call took {stopwatch.ElapsedMilliseconds} ms");
                 }
 
                 if (action == null) {
                     Console.WriteLine("Player failed to provide a action. Skipping action...");
-                    Console.WriteLine("Press 'Enter' to continue.");
-                    Console.ReadLine();
+                    if (simParams.IsInteractive) {
+                        Console.WriteLine("Press 'Enter' to continue.");
+                        Console.ReadLine();
+                    }
                     continue;
                 }
 
@@ -116,16 +122,20 @@
                 if (result is VerificationFailure fail) {
                     Console.WriteLine($"Player provided an invalid {action.GetType()}. Verification result:\n{fail.GetType()}: {fail.Message}\n");
                     Console.WriteLine("Skipping action...");
-                    Console.WriteLine("Press 'Enter' to continue.");
-                    Console.ReadLine();
+                    if (simParams.IsInteractive) {
+                        Console.WriteLine("Press 'Enter' to continue.");
+                        Console.ReadLine();
+                    }
                     continue;
                 }
 
                 // valid action
 
                 Console.WriteLine($"The player used a {action}\n");
-                Console.WriteLine("Press 'Enter' to process action.");
-                //Console.ReadLine();
+                if (simParams.IsInteractive) {
+                    Console.WriteLine("Press 'Enter' to process action.");
+                    Console.ReadLine();
+                }
 
                 action.Accept(actionProcessors[playerId]);
             }
@@ -134,13 +144,13 @@
             Console.WriteLine("Getting final results...\n");
             var results = game.GetFinalResults();
             var order = results.OrderBy(pair => pair.Value).Select(pair => pair.Key);
-            Console.WriteLine(new String(' ', 30));
+            Console.WriteLine(SmallSeparator);
             foreach (var key in order) {
                 var info = key.GetPlayerInfo();
-                Console.WriteLine($" {{results[key]}}. | Player {info.PlayerId} | Score: {info.Score}, Number of finished puzzles: {info.FinishedPuzzlesIds.Count}, Number of leftover tetrominos: {info.NumTetrominosOwned.Sum()}");
+                Console.WriteLine($" {results[key]}. | Player {info.PlayerId} | Score: {info.Score,2}, Number of finished puzzles: {info.FinishedPuzzlesIds.Count,2}, Number of leftover tetrominos: {info.NumTetrominosOwned.Sum()}");
             }
-            Console.WriteLine(new String(' ', 30));
-            
+            Console.WriteLine(SmallSeparator);
+
             Console.WriteLine("\n The game is finished. Press 'Enter' to exit.");
             Console.ReadLine();
         }
@@ -157,5 +167,7 @@
             var playerInfo = game.PlayerStates.First(playerState => playerState.PlayerId == playerId).GetPlayerInfo();
             return new ActionVerifier(gameInfo, playerInfo, turnInfo);
         }
+
+        #endregion
     }
 }

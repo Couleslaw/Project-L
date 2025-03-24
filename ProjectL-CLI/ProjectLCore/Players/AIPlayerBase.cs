@@ -18,7 +18,7 @@
         /// <summary>
         /// The name of the player.
         /// </summary>
-        public required override sealed string Name { get; init; }
+        public override sealed string Name { get; init; } = "AI Player";
 
         #endregion
 

@@ -196,8 +196,8 @@ namespace ProjectLCore.GameLogic
             if (numWhitePuzzles < NumPuzzlesInRow) {
                 throw new ArgumentException($"The number of white puzzles must be at least {NumPuzzlesInRow}");
             }
-            if (numBlackPuzzles < NumPuzzlesInRow) {
-                throw new ArgumentException($"The number of black puzzles must be at least {NumPuzzlesInRow}");
+            if (numBlackPuzzles < NumPuzzlesInRow+1) {
+                throw new ArgumentException($"The number of black puzzles must be at least {NumPuzzlesInRow+1}");
             }
 
             int numWhiteParsed = 0;

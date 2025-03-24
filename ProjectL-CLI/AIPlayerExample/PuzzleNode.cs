@@ -25,9 +25,6 @@
 
         private readonly IReadOnlyList<int> _numTetrominosOwned = numTetrominosOwned;
 
-        // cache the edges to avoid recalculating them
-        private List<ActionEdge<PuzzleNode>>? _getEdgesCache = null;
-
         #endregion
 
         #region Properties
@@ -136,23 +133,17 @@
         /// <returns>An enumerable collection of the incident edges.</returns>
         public IEnumerable<IEdge<PuzzleNode>> GetEdges()
         {
-            _getEdgesCache ??= GetEdgesEnumerable().ToList();
-            return _getEdgesCache;
-        }
-
-        private IEnumerable<ActionEdge<PuzzleNode>> GetEdgesEnumerable()
-        {
             // foreach tetromino shape
             for (int i = 0; i < TetrominoManager.NumShapes; i++) {
                 var newNumTetrominosLeft = numTetrominosLeft.ToArray();
-                var newNumTetrominosOwned = numTetrominosOwned.ToArray();
+                var newNumTetrominosOwned = _numTetrominosOwned.ToArray();
 
                 // if we have the shape --> try placing it in all possible positions
-                if (numTetrominosOwned[i] > 0) {
+                if (_numTetrominosOwned[i] > 0) {
                     newNumTetrominosOwned[i]--;
 
-                    foreach (var placement in GetAllValidPlacements(puzzle, (TetrominoShape)i)) {
-                        var newPuzzleNode = new PuzzleNode(puzzle | placement.Position, puzzleId, numTetrominosLeft, newNumTetrominosOwned, finishingTouches);
+                    foreach (var placement in GetAllValidPlacements(_puzzle, (TetrominoShape)i)) {
+                        var newPuzzleNode = new PuzzleNode(_puzzle | placement.Position, puzzleId, numTetrominosLeft, newNumTetrominosOwned, finishingTouches);
                         yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, [placement]);
                     }
                     continue;
@@ -172,8 +163,8 @@
                 if (i == (int)TetrominoShape.O1) {
                     newNumTetrominosLeft[i]--;
 
-                    foreach (var placement in GetAllValidPlacements(puzzle, (TetrominoShape)i)) {
-                        var newPuzzleNode = new PuzzleNode(puzzle | placement.Position, puzzleId, newNumTetrominosLeft, numTetrominosOwned, finishingTouches);
+                    foreach (var placement in GetAllValidPlacements(_puzzle, (TetrominoShape)i)) {
+                        var newPuzzleNode = new PuzzleNode(_puzzle | placement.Position, puzzleId, newNumTetrominosLeft, _numTetrominosOwned, finishingTouches);
                         yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, [new TakeBasicTetrominoAction(), placement]);
                     }
                     continue;
@@ -196,8 +187,8 @@
                     newNumTetrominosLeft[i]--;
                 }
 
-                foreach (var placement in GetAllValidPlacements(puzzle, (TetrominoShape)i)) {
-                    var newPuzzleNode = new PuzzleNode(puzzle | placement.Position, puzzleId, newNumTetrominosLeft, numTetrominosOwned, finishingTouches);
+                foreach (var placement in GetAllValidPlacements(_puzzle, (TetrominoShape)i)) {
+                    var newPuzzleNode = new PuzzleNode(_puzzle | placement.Position, puzzleId, newNumTetrominosLeft, _numTetrominosOwned, finishingTouches);
                     yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, new List<VerifiableAction>(upgradePath) { placement });
                 }
             }
@@ -229,7 +220,7 @@
             TetrominoShape? closestShape = null;
 
             for (int i = 0; i < TetrominoManager.NumShapes; i++) {
-                if (numTetrominosOwned[i] == 0)
+                if (_numTetrominosOwned[i] == 0)
                     continue;
                 if (closestShape is null) {
                     closestShape = (TetrominoShape)i;
