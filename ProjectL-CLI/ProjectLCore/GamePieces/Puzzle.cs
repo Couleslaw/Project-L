@@ -7,14 +7,14 @@
     /// <summary>
     /// Represents a puzzle in the game.
     /// </summary>
-    /// <param name="image">The binary image representing the puzzle.</param>
-    /// <param name="rewardScore">The score the player will receive for completing the puzzle.</param>
-    /// <param name="rewardTetromino">The tetromino the player will receive for completing the puzzle.</param>
-    /// <param name="isBlack">Indicates whether the puzzle is black or white</param>
-    /// <param name="puzzleNumber">The order number of this puzzle. The file containing the graphics for this puzzle should have the name <c>color-number.png</c> where color is <c>black</c> or <c>white</c> and number is <paramref name="puzzleNumber"/>.</param>
-    public class Puzzle(BinaryImage image, int rewardScore, TetrominoShape rewardTetromino, bool isBlack, int puzzleNumber)
+    public class Puzzle
     {
         #region Fields
+
+        /// <summary>
+        /// The order number of this puzzle. The file containing the graphics for this puzzle should have the name <c>color-number.png</c> where color is <c>black</c> or <c>white</c> and number is <see cref="_puzzleNumber"/>.
+        /// </summary>
+        private readonly uint _puzzleNumber;
 
         /// <summary>
         /// Contains information about the number of tetrominos of each shape used on the puzzle.
@@ -23,12 +23,34 @@
 
         #endregion
 
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Puzzle"/> class.
+        /// </summary>
+        /// <param name="image">The binary image representing the puzzle.</param>
+        /// <param name="rewardScore">The score the player will receive for completing the puzzle.</param>
+        /// <param name="rewardTetromino">The tetromino the player will receive for completing the puzzle.</param>
+        /// <param name="isBlack">Indicates whether the puzzle is black or white</param>
+        /// <param name="puzzleNumber">The order number of this puzzle. The file containing the graphics for this puzzle should have the name <c>color-number.png</c> where color is <c>black</c> or <c>white</c> and number is <paramref name="puzzleNumber"/>.</param>
+        public Puzzle(BinaryImage image, int rewardScore, TetrominoShape rewardTetromino, bool isBlack, uint puzzleNumber)
+        {
+            _puzzleNumber = puzzleNumber;
+            IsBlack = isBlack;
+            RewardScore = rewardScore;
+            RewardTetromino = rewardTetromino;
+            Image = image;
+            Id = PuzzleIDProvider.GetId(this);
+        }
+
+        #endregion
+
         #region Properties
 
         /// <summary>
-        /// The unique identifier of the puzzle.
+        /// The unique identifier of the puzzle. Two puzzles have the same ID if they have the same color and puzzle number.
         /// </summary>
-        public uint Id { get; } = (uint)(isBlack, puzzleNumber).GetHashCode();
+        public uint Id { get; }
 
         /// <summary>
         /// Specifies whether the puzzle is black or white.
@@ -36,23 +58,23 @@
         /// <value>
         ///   <see langword="true"/> if this instance is black; <see langword="false"/> if it is white.
         /// </value>
-        public bool IsBlack { get; } = isBlack;
+        public bool IsBlack { get; }
 
         /// <summary>
         /// The score the player gets for completing the puzzle.
         /// </summary>
-        public int RewardScore { get; } = rewardScore;
+        public int RewardScore { get; }
 
         /// <summary>
         /// The tetromino the player gets for completing the puzzle.
         /// </summary>
-        public TetrominoShape RewardTetromino { get; } = rewardTetromino;
+        public TetrominoShape RewardTetromino { get; }
 
         /// <summary>
         /// A binary image representing the puzzle.
         /// Specifies which cells of the puzzle need to be filled in.
         /// </summary>
-        public BinaryImage Image { get; private set; } = image;
+        public BinaryImage Image { get; private set; }
 
         /// <summary>
         /// The number of cells which need to be filled in.
@@ -110,11 +132,35 @@
         /// <returns>A deep copy of this instance.</returns>
         public Puzzle Clone()
         {
-            Puzzle clone = new(Image, RewardScore, RewardTetromino, IsBlack, puzzleNumber);
+            Puzzle clone = new(Image, RewardScore, RewardTetromino, IsBlack, _puzzleNumber);
             clone._usedTetrominos = _usedTetrominos.ToArray(); // copy array
             return clone;
         }
 
         #endregion
+
+        private static class PuzzleIDProvider
+        {
+            #region Fields
+
+            private static uint _idCounter = 0;
+
+            private static Dictionary<Tuple<bool, uint>, uint> _puzzleToId = new();
+
+            #endregion
+
+            #region Methods
+
+            public static uint GetId(Puzzle puzzle)
+            {
+                Tuple<bool, uint> key = new(puzzle.IsBlack, puzzle._puzzleNumber);
+                if (!_puzzleToId.ContainsKey(key)) {
+                    _puzzleToId[key] = _idCounter++;
+                }
+                return _puzzleToId[key];
+            }
+
+            #endregion
+        }
     }
 }

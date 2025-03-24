@@ -196,11 +196,16 @@
         /// <exception cref="InvalidOperationException">The player doesn't have the puzzle specified by the action</exception>
         public void ProcessPlaceTetrominoAction(PlaceTetrominoAction action)
         {
+            // add the tetromino to the puzzle
             Puzzle? puzzle = _playerState.GetPuzzleWithId(action.PuzzleId);
             if (puzzle is null) {
                 throw new InvalidOperationException("The player doesn't have the puzzle specified by the action");
             }
             puzzle.AddTetromino(action.Shape, action.Position);
+
+            // remove the tetromino from the player's state
+            _playerState.RemoveTetromino(action.Shape);
+
 
             // handle FinishingTouches separately
             if (game.CurrentGamePhase == GamePhase.FinishingTouches) {

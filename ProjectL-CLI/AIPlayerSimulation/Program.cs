@@ -4,15 +4,20 @@
     using ProjectLCore.GameLogic;
     using ProjectLCore.Players;
     using AIPlayerExample;
+    using System.Diagnostics;
 
     internal class Program
     {
+        readonly static string LargeSeparator = new String('X', 110);
+        readonly static string SmallSeparator = new String('-', 90);
+
         internal static void Main(string[] args)
         {
             // initialize a new game
             int numInitialTetrominos = 15;
+            Console.CursorVisible = false;
             Console.WriteLine("Loading game state from file...");
-            GameState gameState = GameState.CreateFromFile("puzzles.txt", numInitialTetrominos);
+            GameState gameState = GameState.CreateFromFile("puzzles.txt", numInitialTetrominos, 12, 5);
 
             Player[] players = [
                 new SimpleAIPlayer() {Name="First"},
@@ -51,17 +56,23 @@
                     roundCount++;
                 }
                 
+                Console.WriteLine($"{LargeSeparator}\n{LargeSeparator}\n");
+                // move the window to the top of the console - only works on Windows
+                if (OperatingSystem.IsWindows()) {
+                    Console.WindowTop = Console.CursorTop;
+                }
 
-                Console.WriteLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-                Console.WriteLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
-                Console.WriteLine($"Round: {roundCount}, Current player: {game.CurrentPlayerId}, Action: {3-turnInfo.NumActionsLeft}");
-                Console.WriteLine($"TurnInfo: GamePhase={turnInfo.GamePhase}, LastRound={turnInfo.LastRound}, TookBlackPuzzle={turnInfo.TookBlackPuzzle}, UsedMaster={turnInfo.UsedMasterAction}");
-
+                // check if game ended
                 if (game.CurrentGamePhase == GamePhase.Finished) {
                     Console.WriteLine("Game ended! Clearing the playing board...");
                     game.GameEnded();
                     break;
                 }
+
+                // print turn info
+                Console.WriteLine($"Round: {roundCount}, Current player: {game.CurrentPlayerId}, Action: {3-turnInfo.NumActionsLeft}");
+                Console.WriteLine($"TurnInfo: GamePhase={turnInfo.GamePhase}, LastRound={turnInfo.LastRound}, TookBlackPuzzle={turnInfo.TookBlackPuzzle}, UsedMaster={turnInfo.UsedMasterAction}");
+
 
                 // get action from current player and process it
                 uint playerId = game.CurrentPlayerId;
@@ -70,14 +81,17 @@
                 var playerInfos = game.PlayerStates.Select(playerState => playerState.GetPlayerInfo()).ToArray();
                 var verifier = GetActionVerifier(game, turnInfo, playerId);
 
-                Console.WriteLine("------------------------------------------------------------------------------------------");
+                Console.WriteLine(SmallSeparator);
                 Console.Write(gameInfo);
-                Console.WriteLine("------------------------------------------------------------------------------------------");
                 foreach (var playerInfo in playerInfos) {
+                    Console.WriteLine(SmallSeparator);
                     Console.Write(playerInfo);
-                    Console.WriteLine("------------------------------------------------------------------------------------------");
                 }
+                Console.WriteLine(LargeSeparator);
+                Console.WriteLine();
 
+                // time how long getting the action took
+                Stopwatch stopwatch = Stopwatch.StartNew();
                 VerifiableAction? action;
                 try {
                     action = game.GetPlayerWithId(playerId).GetActionAsync(gameInfo, playerInfos, turnInfo, verifier).Result;
@@ -85,45 +99,48 @@
                 catch (Exception) {
                     action = null;
                 }
+                stopwatch.Stop();
+                Console.WriteLine($"Warning! GetAction call took {stopwatch.ElapsedMilliseconds} ms");
+                if (stopwatch.ElapsedMilliseconds >= 1000) {
+                    Console.ReadLine();
+                }
 
                 if (action == null) {
                     Console.WriteLine("Player failed to provide a action. Skipping action...");
-                }
-
-                if (action != null && action.Status == ActionStatus.Unverified) {
-                    Console.WriteLine($"Player provided an unverified {action.GetType()}. Verifying... ");
-                    action.GetVerifiedBy(verifier);
-                }
-
-                if (action != null && action.Status == ActionStatus.FailedVerification) {
-                    var result = verifier.Verify(action);
-                    if (result is VerificationFailure fail) {
-                        Console.WriteLine($"Player provided an invalid {action.GetType()}. Verification result:\n{fail.GetType()}: {fail.Message}\n");
-                        Console.WriteLine("Skipping action...");
-                    }
-                }
-
-                if (action == null || action.Status == ActionStatus.FailedVerification) {
                     Console.WriteLine("Press 'Enter' to continue.");
                     Console.ReadLine();
                     continue;
                 }
 
-                Console.WriteLine($"The player used a {action.GetType()}:");
-                Console.WriteLine(action);
+                var result = action.GetVerifiedBy(verifier);
+                if (result is VerificationFailure fail) {
+                    Console.WriteLine($"Player provided an invalid {action.GetType()}. Verification result:\n{fail.GetType()}: {fail.Message}\n");
+                    Console.WriteLine("Skipping action...");
+                    Console.WriteLine("Press 'Enter' to continue.");
+                    Console.ReadLine();
+                    continue;
+                }
+
+                // valid action
+
+                Console.WriteLine($"The player used a {action}\n");
                 Console.WriteLine("Press 'Enter' to process action.");
-                Console.ReadLine();
+                //Console.ReadLine();
 
                 action.Accept(actionProcessors[playerId]);
             }
 
             // final results
-            Console.WriteLine("Getting final results...");
+            Console.WriteLine("Getting final results...\n");
             var results = game.GetFinalResults();
             var order = results.OrderBy(pair => pair.Value).Select(pair => pair.Key);
+            Console.WriteLine(new String(' ', 30));
             foreach (var key in order) {
-                Console.WriteLine($"Player {key}: {results[key]}");
+                var info = key.GetPlayerInfo();
+                Console.WriteLine($" {{results[key]}}. | Player {info.PlayerId} | Score: {info.Score}, Number of finished puzzles: {info.FinishedPuzzlesIds.Count}, Number of leftover tetrominos: {info.NumTetrominosOwned.Sum()}");
             }
+            Console.WriteLine(new String(' ', 30));
+            
             Console.WriteLine("\n The game is finished. Press 'Enter' to exit.");
             Console.ReadLine();
         }

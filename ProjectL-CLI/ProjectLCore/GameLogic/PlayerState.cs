@@ -215,7 +215,7 @@ namespace ProjectLCore.GameLogic
         /// <param name="shape">The tetromino type to remove.</param>
         public void RemoveTetromino(TetrominoShape shape)
         {
-            _numTetrominosOwned[(int)shape]++;
+            _numTetrominosOwned[(int)shape]--;
         }
 
         /// <summary>
@@ -266,50 +266,70 @@ namespace ProjectLCore.GameLogic
                 StringBuilder sb = new();
                 sb.AppendLine($"Player {PlayerId}, score: {Score}, num finished puzzles: {FinishedPuzzlesIds.Count}");
 
+                // append tetromino info
+                sb.Append("Tetrominos:");
+                AppendTetrominoInfo(NumTetrominosOwned);
+
                 // add info about unfinished puzzles
-                StringReader[] puzzleReaders = UnfinishedPuzzles.Select(p => p.Image.ToString()).Select(p => new StringReader(p)).ToArray();
-
-                sb.AppendLine();
-
-                // append puzzle info
+                sb.AppendLine().AppendLine();
                 if (UnfinishedPuzzles.Length > 0) {
                     AppendPuzzleInfo();
                 }
                 else {
                     sb.AppendLine("  The player doesn't have any puzzles.");
                 }
-                sb.AppendLine();
 
-                // append tetromino info
-                sb.Append("Tetrominos:");
-                for (int i = 0; i < NumTetrominosOwned.Count; i++) {
-                    sb.Append($"  {(TetrominoShape)i}: {NumTetrominosOwned[i]}");
-                    if (i < NumTetrominosOwned.Count - 1) {
-                        sb.Append(',');
+                return sb.AppendLine().ToString();
+
+                void AppendTetrominoInfo(IReadOnlyList<int> tetrominos)
+                {
+                    bool first = true;
+                    for (int i = 0; i < tetrominos.Count; i++) {
+                        if (tetrominos[i] == 0) {
+                            continue;
+                        }
+                        if (first) {
+                            first = false;
+                            sb.Append(',');
+                        }
+                        sb.Append($"  {(TetrominoShape)i}: {tetrominos[i]}");
                     }
                 }
-                sb.AppendLine();
-                return sb.ToString();
 
                 void AppendPuzzleInfo()
                 {
-                    sb.Append("  ");
-                    foreach (Puzzle puzzle in UnfinishedPuzzles) {
-                        string tetrominoName = puzzle.RewardTetromino.ToString().PadLeft(2);
-                        sb.Append($"{puzzle.RewardScore}  {tetrominoName}   ");
-                    }
-                    sb.AppendLine();
-                    for (int i = 0; i < 5; i++) {
-                        for (int j = 0; j < UnfinishedPuzzles.Length; j++) {
-                            if (j == 0) {
-                                sb.Append("  ");
+                    StringReader[] puzzleReaders = UnfinishedPuzzles.Select(p => p.Image.ToString()).Select(p => new StringReader(p)).ToArray();
+
+                    for (int i = 0; i < UnfinishedPuzzles.Length; i++) {
+                        if (i > 0) {
+                            sb.AppendLine();
+                        }
+                        Puzzle puzzle = UnfinishedPuzzles[i];
+
+                        // make a reader for the image
+                        var reader = new StringReader(puzzle.Image.ToString());
+                        for (int lineNum = 0; lineNum < 5; lineNum++) {
+                            // add the image line
+                            sb.Append("  ").Append(reader.ReadLine()).Append("   ");
+                            // add reward info to second line
+                            if (lineNum == 1) {
+                                sb.Append($"Reward: {puzzle.RewardScore},  {puzzle.RewardTetromino}");
                             }
-                            sb.Append(puzzleReaders[j].ReadLine()).Append("   ");
+                            // add used tetrominos to third line
+                            if (lineNum == 2) {
+                                sb.Append($"Used tetrominos:");
+                                var usedTetrominoCounts = new int[TetrominoManager.NumShapes];
+                                foreach (TetrominoShape shape in puzzle.GetUsedTetrominos()) {
+                                    usedTetrominoCounts[(int)shape]++;
+                                }
+                                AppendTetrominoInfo(usedTetrominoCounts);
+                            }
+                            // add puzzle id to fourth line
+                            if (lineNum == 3) {
+                                sb.Append($"ID: {puzzle.Id}");
+                            }
+                            sb.AppendLine();
                         }
-                        if (i == 2) {
-                            sb.Append($"   ");
-                        }
-                        sb.AppendLine();
                     }
                 }
             }

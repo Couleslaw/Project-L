@@ -2,6 +2,7 @@
 {
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
+    using System.Text;
 
     /// <summary>
     /// Represents the verification status of an action.
@@ -87,6 +88,10 @@
     {
         #region Methods
 
+        /// <summary>  Converts to string. States that this is a <see cref="DoNothingAction"/>.</summary>
+        /// <returns> A <see cref="System.String" /> that represents this instance.  </returns>
+        public override string ToString() => $"{nameof(DoNothingAction)}";
+
         /// <summary>
         /// Does nothing, but implements the visitor pattern.
         /// </summary>
@@ -105,6 +110,10 @@
     public class EndFinishingTouchesAction : VerifiableAction
     {
         #region Methods
+
+        /// <summary>  Converts to string. States that this is a <see cref="EndFinishingTouchesAction"/>.</summary>
+        /// <returns> A <see cref="System.String" /> that represents this instance.  </returns>
+        public override string ToString() => $"{nameof(EndFinishingTouchesAction)}";
 
         /// <summary>
         /// Accepts the specified visitor by calling <see cref="IActionProcessor.ProcessEndFinishingTouchesAction"/>.
@@ -158,6 +167,23 @@
         #region Methods
 
         /// <summary>
+        /// Converts to string. States the action the player wants to take. E.g. "Take top white puzzle".
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            string action = Option switch {
+                Options.TopWhite => "Take top white puzzle",
+                Options.TopBlack => "Take top black puzzle",
+                Options.Normal => $"Take puzzle with ID={PuzzleId}",
+                _ => "Invalid option"
+            };
+            return $"{nameof(TakePuzzleAction)}: {action}";
+        }
+
+        /// <summary>
         /// Accepts the specified visitor by calling <see cref="IActionProcessor.ProcessTakePuzzleAction"/>.
         /// </summary>
         /// <param name="visitor">The visitor to accept.</param>
@@ -207,6 +233,19 @@
         #region Methods
 
         /// <summary>
+        /// Converts to string. States the color of the row to recycle and the order in which the puzzles will be recycled.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            string color = Option == Options.White ? "white" : "black";
+            string orderString = string.Join(", ", Order);
+            return $"{nameof(RecycleAction)}: Recycle {color} row in order: {orderString}";
+        }
+
+        /// <summary>
         /// Accepts the specified visitor by calling <see cref="IActionProcessor.ProcessRecycleAction"/>.
         /// </summary>
         /// <param name="visitor">The visitor to accept.</param>
@@ -233,6 +272,10 @@
     public class TakeBasicTetrominoAction : TetrominoAction
     {
         #region Methods
+
+        /// <summary>Converts to string. States that this is a <see cref="TakeBasicTetrominoAction"/>.</summary>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public override string ToString() => $"{nameof(TakeBasicTetrominoAction)}";
 
         /// <summary>
         /// Accepts the specified visitor by calling <see cref="IActionProcessor.ProcessTakeBasicTetrominoAction"/>.
@@ -269,6 +312,10 @@
         #endregion
 
         #region Methods
+
+        /// <summary>Converts to string. Specifies the old and new tetrominos.</summary>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public override string ToString() => $"{nameof(ChangeTetrominoAction)}: {OldTetromino}  --->  {NewTetromino}";
 
         /// <summary>
         /// Accepts the specified visitor by calling <see cref="IActionProcessor.ProcessChangeTetrominoAction"/>.
@@ -312,6 +359,25 @@
 
         #region Methods
 
+        /// <summary>Converts to string. Specifies the shape, puzzle ID and position of the tetromino.</summary>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public override string ToString()
+        {
+            var imageReader = new StringReader(position.ToString());
+            StringBuilder action = new($"{nameof(PlaceTetrominoAction)}: Place shape {shape} on puzzle with ID={puzzleId} on position\n");
+            for (int lineNum = 0; lineNum < 5; lineNum++) {
+                action.Append("  ").Append(imageReader.ReadLine()).Append("   ");
+                if (lineNum == 1) {
+                    action.Append($"Shape: {shape}");
+                }
+                if (lineNum == 2) {
+                    action.Append($"ID: {puzzleId}");
+                }
+                action.AppendLine();
+            }
+            return action.ToString();
+        }
+
         /// <summary>
         /// Accepts the specified visitor by calling <see cref="IActionProcessor.ProcessPlaceTetrominoAction"/>.
         /// </summary>
@@ -341,6 +407,17 @@
         #endregion
 
         #region Methods
+
+        /// <summary> Converts to string. States that this is a <see cref="MasterAction"/> and lists the tetromino placements. </summary>
+        /// <returns> A <see cref="System.String" /> that represents this instance.</returns>
+        public override string ToString()
+        {
+            string action = $"{nameof(MasterAction)} with placements:\n";
+            for (int i = 0; i < TetrominoPlacements.Count; i++) {
+                action += $"{i + 1}. " + TetrominoPlacements[i].ToString();
+            }
+            return action;
+        }
 
         /// <summary>
         /// Accepts the specified visitor by calling <see cref="IActionProcessor.ProcessMasterAction"/>.

@@ -70,7 +70,7 @@
         {
             // parsing identifiers
             bool? isBlack = null;
-            int puzzleNum = 0;
+            uint puzzleNum = 0;
 
             // parsing reward
             TetrominoShape? tetromino = null;
@@ -170,7 +170,7 @@
         /// <param name="tetromino">The puzzle reward tetromino.</param>
         /// <param name="image">The puzzle image encoded with a <see cref="BinaryImage"/>.</param>
         /// <returns>The puzzle initialized from the given parameters.</returns>
-        protected virtual Puzzle CreatePuzzle(bool isBlack, int puzzleNum, int score, TetrominoShape tetromino, BinaryImage image)
+        protected virtual Puzzle CreatePuzzle(bool isBlack, uint puzzleNum, int score, TetrominoShape tetromino, BinaryImage image)
         {
             return new Puzzle(image, score, tetromino, isBlack, puzzleNum);
         }
@@ -181,7 +181,7 @@
         /// <param name="line">Words in the line after 'I'.</param>
         /// <returns><c>(isBlack, num)</c> where <c>isBlack</c> specifies the color of the puzzle and <c>num</c> is the file number of this puzzle.</returns>
         /// <exception cref="System.ArgumentException">Invalid line format.</exception>
-        private static Tuple<bool, int> ParseIdentifier(string[] line)
+        private static Tuple<bool, uint> ParseIdentifier(string[] line)
         {
             if (line.Length != 2) {
                 throw new ArgumentException("Invalid number of arguments.");
@@ -193,12 +193,12 @@
             bool isBlack = line[0] == "B";
 
             // parse puzzle number
-            bool success = int.TryParse(line[1], out int puzzleNumber);
+            bool success = uint.TryParse(line[1], out uint puzzleNumber);
             if (!success || puzzleNumber < 0) {
                 throw new ArgumentException($"Invalid puzzle number: {line[1]}");
             }
 
-            return new Tuple<bool, int>(isBlack, puzzleNumber);
+            return new Tuple<bool, uint>(isBlack, puzzleNumber);
         }
 
         /// <summary>
@@ -274,7 +274,7 @@
     class InvalidPuzzleException : Exception
     {
         public bool? IsBlack { get; init; } = null;
-        public int? PuzzleNumber { get; init; } = null;
+        public uint? PuzzleNumber { get; init; } = null;
         public int? Score { get; init; } = null;
         public TetrominoShape? Tetromino { get; init; } = null;
         public int CurrentImage { get; init; } = 0;

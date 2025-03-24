@@ -91,16 +91,18 @@ namespace ProjectLCore.GameLogic
         /// </summary>
         public const int MinNumInitialTetrominos = 10;
 
-        // puzzles in decks and on the game board
-        private const int _numPuzzlesInRow = 4;
+        /// <summary>
+        /// The number puzzles in a row.
+        /// </summary>
+        public const int NumPuzzlesInRow = 4;
 
         #endregion
 
         #region Fields
 
-        private readonly Puzzle?[] _whitePuzzlesRow = new Puzzle?[_numPuzzlesInRow];
+        private readonly Puzzle?[] _whitePuzzlesRow = new Puzzle?[NumPuzzlesInRow];
 
-        private readonly Puzzle?[] _blackPuzzlesRow = new Puzzle?[_numPuzzlesInRow];
+        private readonly Puzzle?[] _blackPuzzlesRow = new Puzzle?[NumPuzzlesInRow];
 
         private readonly Queue<Puzzle> _whitePuzzlesDeck;
 
@@ -129,7 +131,7 @@ namespace ProjectLCore.GameLogic
             }
 
             // check if there are enough puzzles to fill the rows
-            if (whitePuzzlesDeck.Count < _numPuzzlesInRow || blackPuzzlesDeck.Count < _numPuzzlesInRow) {
+            if (whitePuzzlesDeck.Count < NumPuzzlesInRow || blackPuzzlesDeck.Count < NumPuzzlesInRow) {
                 throw new ArgumentException("Not enough puzzles to fill the rows.");
             }
 
@@ -138,7 +140,7 @@ namespace ProjectLCore.GameLogic
             _blackPuzzlesDeck = new Queue<Puzzle>(blackPuzzlesDeck);
 
             // reveal the top 4 puzzles
-            for (int i = 0; i < _numPuzzlesInRow; i++) {
+            for (int i = 0; i < NumPuzzlesInRow; i++) {
                 _whitePuzzlesRow[i] = _whitePuzzlesDeck.Dequeue();
                 _blackPuzzlesRow[i] = _blackPuzzlesDeck.Dequeue();
             }
@@ -172,16 +174,34 @@ namespace ProjectLCore.GameLogic
         /// </summary>
         /// <param name="puzzlesFilePath">The puzzles file path.</param>
         /// <param name="numInitialTetrominos">The number initial tetrominos.</param>
+        /// <param name="numWhitePuzzles">The number of white puzzles to load. Loads all white puzzles, if the number of white puzzles in the source file doesn't exceed this number. Should be at least <see cref="NumPuzzlesInRow"/></param>
+        /// <param name="numBlackPuzzles">The number of black puzzles to load. Loads all black puzzles, if the number of black puzzles in the source file doesn't exceed this number. Should be at least <see cref="NumPuzzlesInRow"/></param>
         /// <returns>Initialized <see cref="GameState"/>.</returns>
-        /// <exception cref="ArgumentException">The number of initial tetrominos must be at least <see cref="MinNumInitialTetrominos"/>.</exception>
+        /// <exception cref="ArgumentException">
+        /// The number of initial tetrominos must be at least <see cref="MinNumInitialTetrominos"/>.
+        /// or
+        /// The number of white puzzles must be at least <see cref="NumPuzzlesInRow"/>.
+        /// or
+        /// The number of black puzzles must be at least <see cref="NumPuzzlesInRow"/>.
+        /// </exception>
         /// <seealso cref="GameStateBuilder"/>"
         /// <seealso cref="PuzzleParser"/>
-        public static GameState CreateFromFile(string puzzlesFilePath, int numInitialTetrominos)
+        public static GameState CreateFromFile(string puzzlesFilePath, int numInitialTetrominos, int numWhitePuzzles = int.MaxValue, int numBlackPuzzles = int.MaxValue)
         {
             // check if the number of initial tetrominos is valid
             if (numInitialTetrominos < MinNumInitialTetrominos) {
                 throw new ArgumentException($"The number of initial tetrominos must be at least {MinNumInitialTetrominos}");
             }
+            // check if the number of puzzles is valid
+            if (numWhitePuzzles < NumPuzzlesInRow) {
+                throw new ArgumentException($"The number of white puzzles must be at least {NumPuzzlesInRow}");
+            }
+            if (numBlackPuzzles < NumPuzzlesInRow) {
+                throw new ArgumentException($"The number of black puzzles must be at least {NumPuzzlesInRow}");
+            }
+
+            int numWhiteParsed = 0;
+            int numBlackParsed = 0;
 
             // create a builder and parse the puzzles
             var gameStateBuilder = new GameStateBuilder(numInitialTetrominos);
@@ -193,7 +213,21 @@ namespace ProjectLCore.GameLogic
                     if (puzzle is null) {
                         break;
                     }
-                    gameStateBuilder.AddPuzzle(puzzle);
+                    // add the puzzle if we haven't reached the limit
+                    if (puzzle.IsBlack) {
+                        if (numBlackParsed < numBlackPuzzles) {
+                            gameStateBuilder.AddPuzzle(puzzle);
+                            numBlackParsed++;
+                        }
+                    }
+                    else if (numWhiteParsed < numWhitePuzzles) {
+                        gameStateBuilder.AddPuzzle(puzzle);
+                        numWhiteParsed++;
+                    }
+                    // check if we have loaded enough puzzles
+                    if (numWhiteParsed == numWhitePuzzles && numBlackParsed == numBlackPuzzles) {
+                        break;
+                    }
                 }
             }
             finally {
@@ -403,13 +437,6 @@ namespace ProjectLCore.GameLogic
             public override string ToString()
             {
                 var sb = new StringBuilder();
-
-                // append puzzle info
-                AppendPuzzleRowInfo("White", AvailableWhitePuzzles, NumWhitePuzzlesLeft);
-                sb.AppendLine();
-                AppendPuzzleRowInfo("Black", AvailableBlackPuzzles, NumBlackPuzzlesLeft);
-                sb.AppendLine();
-
                 // append tetromino info
                 sb.Append("Tetrominos:");
                 for (int i = 0; i < NumTetrominosLeft.Count; i++) {
@@ -418,7 +445,13 @@ namespace ProjectLCore.GameLogic
                         sb.Append(',');
                     }
                 }
+                sb.AppendLine().AppendLine();
+
+                // append puzzle info
+                AppendPuzzleRowInfo("White", AvailableWhitePuzzles, NumWhitePuzzlesLeft);
                 sb.AppendLine();
+                AppendPuzzleRowInfo("Black", AvailableBlackPuzzles, NumBlackPuzzlesLeft);
+
                 return sb.ToString();
 
                 void AppendPuzzleRowInfo(string rowColor, Puzzle[] puzzles, int numPuzzlesLeft)
@@ -442,6 +475,13 @@ namespace ProjectLCore.GameLogic
                         }
                         sb.AppendLine();
                     }
+                    sb.Append("  ");
+                    foreach (Puzzle puzzle in puzzles) {
+                        string color = puzzle.IsBlack ? "B" : "W";
+                        string puzzleID = $"{color}-{puzzle.Id}";
+                        sb.Append($"{puzzleID.PadRight(5)}   ");
+                    }
+                    sb.AppendLine();
                 }
             }
 
