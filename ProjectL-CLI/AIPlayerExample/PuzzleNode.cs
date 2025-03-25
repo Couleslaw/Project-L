@@ -189,7 +189,7 @@
 
                 foreach (var placement in GetAllValidPlacements(_puzzle, (TetrominoShape)i)) {
                     var newPuzzleNode = new PuzzleNode(_puzzle | placement.Position, puzzleId, newNumTetrominosLeft, _numTetrominosOwned, finishingTouches);
-                    yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, new List<VerifiableAction>(upgradePath) { placement });
+                    yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, new List<IAction>(upgradePath) { placement });
                 }
             }
         }

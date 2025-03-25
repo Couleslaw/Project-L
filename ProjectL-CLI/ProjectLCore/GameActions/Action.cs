@@ -5,30 +5,13 @@
     using ProjectLCore.GameActions.Verification;
     using System.Text;
 
-    /// <summary>
-    /// Represents the verification status of an action.
-    /// </summary>
-    public enum ActionStatus
-    {
-        /// <summary>
-        /// The action has been verified and is valid.
-        /// </summary>
-        Verified,
-        /// <summary>
-        /// The action hasn't been verified yet.
-        /// </summary>
-        Unverified,
-        /// <summary>
-        /// The action has been verified and is invalid.
-        /// </summary>
-        FailedVerification
-    };
 
     /// <summary>
-    /// Interface for the visitor pattern.
+    /// Represents an action that a player can take during their turn. Together with <see cref="IActionProcessor" /> it implements the visitor pattern.
+    /// The validity of the action should be checked by an <see cref="ActionVerifier" /> before being processed.
     /// </summary>
-    /// <seealso cref="IActionProcessor"/>
-    /// <seealso cref="VerifiableAction"/>
+    /// <seealso cref="IActionProcessor" />
+    /// <seealso cref="ActionVerifier" />
     public interface IAction
     {
         #region Methods
@@ -43,50 +26,10 @@
     }
 
     /// <summary>
-    /// Represents an action which can be verified.
-    /// All subclasses which inherit from this class should be <strong>immutable</strong>. This ensures that the action can not be changed after it has been created and therefore it's <see cref="Status"/> can be trusted.
-    /// </summary>
-    /// <seealso cref="IAction"/>
-    public abstract class VerifiableAction : IAction
-    {
-        #region Properties
-
-        /// <summary>
-        /// Represents the verification status of the action. 
-        /// Every action starts as unverified and can be verified by a verifier.
-        /// </summary>
-        public ActionStatus Status { get; private set; } = ActionStatus.Unverified;
-
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// Accepts the specified visitor by calling the appropriate method.
-        /// </summary>
-        /// <param name="visitor">The visitor to accept.</param>
-        public abstract void Accept(IActionProcessor visitor);
-
-        /// <summary>
-        /// Accepts a verifier, updates the verification status and return the result of the verification.
-        /// </summary>
-        /// <param name="verifier">The verifier.</param>
-        /// <returns>The result of the verification</returns>
-        public VerificationResult GetVerifiedBy(ActionVerifier verifier)
-        {
-            var result = verifier.Verify(this);
-            Status = result is VerificationSuccess ? ActionStatus.Verified : ActionStatus.FailedVerification;
-            return result;
-        }
-
-        #endregion
-    }
-
-    /// <summary>
     /// Last resort action for AI players, they should never actually need to use it. It will always be accepted unless the game phase is <see cref="GamePhase.FinishingTouches"/>.
     /// </summary>
-    /// <seealso cref="VerifiableAction" />
-    public class DoNothingAction : VerifiableAction
+    /// <seealso cref="IAction" />
+    public class DoNothingAction : IAction
     {
         #region Methods
 
@@ -98,7 +41,7 @@
         /// Does nothing, but implements the visitor pattern.
         /// </summary>
         /// <param name="visitor">The visitor to accept.</param>
-        public override void Accept(IActionProcessor visitor)
+        public void Accept(IActionProcessor visitor)
         {
         }
 
@@ -108,8 +51,8 @@
     /// <summary>
     /// Represents the action of ending a player's turn during <see cref="GamePhase.FinishingTouches"/>
     /// </summary>
-    /// <seealso cref="VerifiableAction" />
-    public class EndFinishingTouchesAction : VerifiableAction
+    /// <seealso cref="IAction" />
+    public class EndFinishingTouchesAction : IAction
     {
         #region Methods
 
@@ -121,7 +64,7 @@
         /// Accepts the specified visitor by calling <see cref="IActionProcessor.ProcessEndFinishingTouchesAction"/>.
         /// </summary>
         /// <param name="visitor">The visitor to accept.</param>
-        public override void Accept(IActionProcessor visitor)
+        public void Accept(IActionProcessor visitor)
         {
             visitor.ProcessEndFinishingTouchesAction(this);
         }
@@ -135,8 +78,8 @@
     /// </summary>
     /// <param name="option">From where the player wants to take the puzzle.</param>
     /// <param name="puzzleId">The ID of the specific puzzle to take, if <paramref name="option"/> is <see cref="TakePuzzleAction.Options.Normal"/>. Should be null otherwise.</param>
-    /// <seealso cref="VerifiableAction" />
-    public class TakePuzzleAction(TakePuzzleAction.Options option, uint? puzzleId = null) : VerifiableAction
+    /// <seealso cref="IAction" />
+    public class TakePuzzleAction(TakePuzzleAction.Options option, uint? puzzleId = null) : IAction
     {
         /// <summary>
         /// Possible options for taking a puzzle.
@@ -189,7 +132,7 @@
         /// Accepts the specified visitor by calling <see cref="IActionProcessor.ProcessTakePuzzleAction"/>.
         /// </summary>
         /// <param name="visitor">The visitor to accept.</param>
-        public override void Accept(IActionProcessor visitor)
+        public void Accept(IActionProcessor visitor)
         {
             visitor.ProcessTakePuzzleAction(this);
         }
@@ -203,8 +146,8 @@
     /// </summary>
     /// <param name="order">The order in which the puzzles will be put to the bottom of the deck. Smaller index means that the puzzle will be recycled earlier.</param>
     /// <param name="option">The color of the row to recycle.</param>
-    /// <seealso cref="VerifiableAction" />
-    public class RecycleAction(List<uint> order, RecycleAction.Options option) : VerifiableAction
+    /// <seealso cref="IAction" />
+    public class RecycleAction(List<uint> order, RecycleAction.Options option) : IAction
     {
         /// <summary>
         /// Player can choose to recycle the white or the black row.
@@ -251,7 +194,7 @@
         /// Accepts the specified visitor by calling <see cref="IActionProcessor.ProcessRecycleAction"/>.
         /// </summary>
         /// <param name="visitor">The visitor to accept.</param>
-        public override void Accept(IActionProcessor visitor)
+        public void Accept(IActionProcessor visitor)
         {
             visitor.ProcessRecycleAction(this);
         }
@@ -262,15 +205,17 @@
     /// <summary>
     /// The base class for <see cref="TakeBasicTetrominoAction"/> and <see cref="ChangeTetrominoAction"/> because they are technically the same action, just with different parameters.
     /// </summary>
-    /// <seealso cref="VerifiableAction" />
-    public abstract class TetrominoAction : VerifiableAction
+    /// <seealso cref="IAction" />
+    public abstract class TetrominoAction : IAction
     {
+        /// <inheritdoc/>
+        public abstract void Accept(IActionProcessor visitor);
     }
 
     /// <summary>
     /// Represents the action of taking a <see cref="TetrominoShape.O1"/> tetromino from the shared reserve.
     /// </summary>
-    /// <seealso cref="VerifiableAction" />
+    /// <seealso cref="IAction" />
     public class TakeBasicTetrominoAction : TetrominoAction
     {
         #region Methods
@@ -296,7 +241,7 @@
     /// </summary>
     /// <param name="oldTetromino">The tetromino the player is returning to the shared reserve.</param>
     /// <param name="newTetromino">The tetromino the player is taking from the shared reserve.</param>
-    /// <seealso cref="VerifiableAction"/>
+    /// <seealso cref="IAction"/>
     public class ChangeTetrominoAction(TetrominoShape oldTetromino, TetrominoShape newTetromino) : TetrominoAction
     {
         #region Properties
@@ -337,8 +282,8 @@
     /// <param name="puzzleId">The ID of the puzzle on which the player wants to place the tetromino.</param>
     /// <param name="shape">The shape of the tetromino the player wants to place.</param>
     /// <param name="position">The position on the puzzle where the player wants to place the tetromino.</param>
-    /// <seealso cref="VerifiableAction" />
-    public class PlaceTetrominoAction(uint puzzleId, TetrominoShape shape, BinaryImage position) : VerifiableAction
+    /// <seealso cref="IAction" />
+    public class PlaceTetrominoAction(uint puzzleId, TetrominoShape shape, BinaryImage position) : IAction
     {
         #region Properties
 
@@ -384,7 +329,7 @@
         /// Accepts the specified visitor by calling <see cref="IActionProcessor.ProcessPlaceTetrominoAction"/>.
         /// </summary>
         /// <param name="visitor">The visitor to accept.</param>
-        public override void Accept(IActionProcessor visitor)
+        public void Accept(IActionProcessor visitor)
         {
             visitor.ProcessPlaceTetrominoAction(this);
         }
@@ -396,8 +341,8 @@
     /// Represents the use of the Master Action.
     /// </summary>
     /// <param name="tetrominoPlacements">The tetrominos placed with the Master Action.</param>
-    /// <seealso cref="VerifiableAction" />
-    public class MasterAction(List<PlaceTetrominoAction> tetrominoPlacements) : VerifiableAction
+    /// <seealso cref="IAction" />
+    public class MasterAction(List<PlaceTetrominoAction> tetrominoPlacements) : IAction
     {
         #region Properties
 
@@ -425,7 +370,7 @@
         /// Accepts the specified visitor by calling <see cref="IActionProcessor.ProcessMasterAction"/>.
         /// </summary>
         /// <param name="visitor">The visitor to accept.</param>
-        public override void Accept(IActionProcessor visitor)
+        public void Accept(IActionProcessor visitor)
         {
             visitor.ProcessMasterAction(this);
         }

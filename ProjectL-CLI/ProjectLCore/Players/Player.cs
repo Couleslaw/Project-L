@@ -42,7 +42,7 @@ namespace ProjectLCore.Players
         /// <param name="turnInfo">Information about the current turn.</param>
         /// <param name="verifier">Verifier for verifying the validity of actions in the current game context.</param>
         /// <returns>The action the player wants to take.</returns>
-        public abstract Task<VerifiableAction> GetActionAsync(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, TurnInfo turnInfo, ActionVerifier verifier);
+        public abstract Task<IAction> GetActionAsync(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, TurnInfo turnInfo, ActionVerifier verifier);
 
         /// <summary>
         /// Asynchronously gets the shape the player wants as a reward for completing a puzzle.

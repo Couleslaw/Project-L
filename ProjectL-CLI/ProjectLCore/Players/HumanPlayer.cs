@@ -16,7 +16,7 @@
         #region Fields
 
         // completion sources for setting the result of the async methods
-        private TaskCompletionSource<VerifiableAction> _getActionCompletionSource = new();
+        private TaskCompletionSource<IAction> _getActionCompletionSource = new();
 
         private TaskCompletionSource<TetrominoShape> _getRewardCompletionSource = new();
 
@@ -37,7 +37,7 @@
         /// Sets the next action the player wants to take. This method should be called after the player has made a decision through the UI.
         /// </summary>
         /// <param name="action">The action.</param>
-        public void SetAction(VerifiableAction action) => _getActionCompletionSource.SetResult(action);
+        public void SetAction(IAction action) => _getActionCompletionSource.SetResult(action);
 
         /// <summary>
         /// Sets the reward the player wants to get. This method should be called after the player has made a decision through the UI.
@@ -46,7 +46,7 @@
         public void SetReward(TetrominoShape reward) => _getRewardCompletionSource.SetResult(reward);
 
         /// <summary>
-        /// Creates a new <see cref="TaskCompletionSource"/> for <see cref="VerifiableAction"/> and asynchronously waits until it is set by calling the <see cref="SetAction"/> method.
+        /// Creates a new <see cref="TaskCompletionSource"/> for <see cref="IAction"/> and asynchronously waits until it is set by calling the <see cref="SetAction"/> method.
         /// </summary>
         /// <param name="gameInfo">Information about the shared resources.</param>
         /// <param name="playerInfos">Information about the resources of the players.</param>
@@ -55,7 +55,7 @@
         /// <returns>
         /// The action the player wants to take.
         /// </returns>
-        public override async Task<VerifiableAction> GetActionAsync(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, TurnInfo turnInfo, ActionVerifier verifier)
+        public override async Task<IAction> GetActionAsync(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, TurnInfo turnInfo, ActionVerifier verifier)
         {
             _getActionCompletionSource = new();
             return await _getActionCompletionSource.Task;

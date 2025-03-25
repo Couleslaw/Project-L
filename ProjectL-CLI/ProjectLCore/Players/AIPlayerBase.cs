@@ -41,7 +41,7 @@
         /// <param name="turnInfo">Information about the current turn.</param>
         /// <param name="verifier">Verifier for verifying the validity of actions in the current game context.</param>
         /// <returns>The action the player wants to take.</returns>
-        public abstract VerifiableAction GetAction(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, List<PlayerState.PlayerInfo> enemyInfos, TurnInfo turnInfo, ActionVerifier verifier);
+        public abstract IAction GetAction(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, List<PlayerState.PlayerInfo> enemyInfos, TurnInfo turnInfo, ActionVerifier verifier);
 
         /// <summary>
         /// Asynchronously passes the parameters to <see cref="GetAction"/> and returns a <see cref="Task"/> containing the result.
@@ -54,7 +54,7 @@
         /// The action the player wants to take.
         /// </returns>
         /// <exception cref="System.ArgumentException"><see cref="PlayerState"/> matching this player's <see cref="Player.Id"/> not found in <paramref name="playerInfos"/>.</exception>
-        public override sealed async Task<VerifiableAction> GetActionAsync(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, TurnInfo turnInfo, ActionVerifier verifier)
+        public override sealed async Task<IAction> GetActionAsync(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, TurnInfo turnInfo, ActionVerifier verifier)
         {
             // extract the state of THIS player and the OTHER players from playerInfos
             PlayerState.PlayerInfo? myState = null;

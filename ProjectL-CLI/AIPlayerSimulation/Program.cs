@@ -97,7 +97,7 @@
 
                 // time how long getting the action took
                 Stopwatch stopwatch = Stopwatch.StartNew();
-                VerifiableAction? action;
+                IAction? action;
                 try {
                     action = game.CurrentPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier).Result;
                 }

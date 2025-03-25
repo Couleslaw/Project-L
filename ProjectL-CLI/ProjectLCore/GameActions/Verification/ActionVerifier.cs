@@ -13,20 +13,20 @@
     /// <param name="gameInfo">Information about the current state of the game.</param>
     /// <param name="playerInfo">Information about the tetrominos and puzzles owned by the player who makes the actions.</param>
     /// <param name="turnInfo">Information about the current turn.</param>
-    /// <seealso cref="VerifiableAction"/>
+    /// <seealso cref="IAction"/>
     /// <seealso cref="VerificationResult"/>
     /// <seealso cref="GameActionProcessor"/>
     public class ActionVerifier(GameState.GameInfo gameInfo, PlayerState.PlayerInfo playerInfo, TurnInfo turnInfo)
     {
         #region Methods
 
-        /// <summary> Verifies the given <see cref="VerifiableAction"/>. </summary>
+        /// <summary> Verifies the given <see cref="IAction"/>. </summary>
         /// <param name="action">The action to verify.</param>
         /// <returns>The result of the verification. 
         /// <see cref="VerificationSuccess"/> if the action is valid. 
         /// In case the action is invalid, returns a <see cref="VerificationFailure"/> describing the first issue encountered.
         /// </returns>
-        public VerificationResult Verify(VerifiableAction action)
+        public VerificationResult Verify(IAction action)
         {
             // if FinishingTouches --> only EndFinishingTouchesAction and PlaceAction are allowed
             if (turnInfo.GamePhase == GamePhase.FinishingTouches) {

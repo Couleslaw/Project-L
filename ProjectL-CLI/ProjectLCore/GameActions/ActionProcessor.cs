@@ -9,10 +9,9 @@
 
     /// <summary>
     /// An interface for processing actions using the visitor pattern.
-    /// Each action should be verified before being processed.
+    /// Each action should be verified by an <see cref="ActionVerifier"/> before being processed.
     /// </summary>
     /// <seealso cref="IAction"/>
-    /// <seealso cref="VerifiableAction"/>
     /// <seealso cref="ActionVerifier"/>
     /// <seealso cref="GameActionProcessor"/>
     public interface IActionProcessor
@@ -73,7 +72,7 @@
     /// <param name="playerId">The ID of the player the processor is for.</param>
     /// <param name="signaler">A <see cref="TurnManager.Signaler"/> for sending signals when processing actions.</param>
     /// <seealso cref="ActionVerifier"/>
-    /// <seealso cref="VerifiableAction"/>
+    /// <seealso cref="IAction"/>
     /// <seealso cref="IActionProcessor" />
     public class GameActionProcessor(GameCore game, uint playerId, TurnManager.Signaler signaler) : IActionProcessor
     {
