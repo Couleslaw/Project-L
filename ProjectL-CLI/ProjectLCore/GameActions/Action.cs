@@ -2,6 +2,7 @@
 {
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
+    using ProjectLCore.GameActions.Verification;
     using System.Text;
 
     /// <summary>
@@ -226,7 +227,7 @@
         /// Return the order in which the puzzles will be put to the bottom of the deck.
         /// Smaller index means that the puzzle will be recycled earlier.
         /// </summary>
-        public IReadOnlyList<uint> Order => order.AsReadOnly();
+        public IReadOnlyList<uint> Order { get; } = order.AsReadOnly();
 
         #endregion
 
@@ -402,7 +403,7 @@
         /// <summary>
         /// The tetrominos placed with the Master Action.
         /// </summary>
-        public IReadOnlyList<PlaceTetrominoAction> TetrominoPlacements => tetrominoPlacements.AsReadOnly();
+        public IReadOnlyList<PlaceTetrominoAction> TetrominoPlacements { get; } = tetrominoPlacements.AsReadOnly();
 
         #endregion
 

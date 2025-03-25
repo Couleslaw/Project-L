@@ -2,6 +2,7 @@
 {
     using AIPlayerExample;
     using ProjectLCore.GameActions;
+    using ProjectLCore.GameActions.Verification;
     using ProjectLCore.GameLogic;
     using ProjectLCore.Players;
     using System.Diagnostics;

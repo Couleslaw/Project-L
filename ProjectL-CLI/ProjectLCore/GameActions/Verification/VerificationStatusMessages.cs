@@ -1,4 +1,4 @@
-﻿namespace ProjectLCore.GameActions
+﻿namespace ProjectLCore.GameActions.Verification
 {
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
@@ -37,29 +37,26 @@
     }
 
     /// <summary>
-    /// There are no tetrominos of type <paramref name="shape"/> left in the shared reserve.
-    /// </summary>
-    /// <param name="shape">The type of the missing tetromino.</param>
+    /// The player tried to take a basic tetromino but there are none left in the shared reserve.
+    /// This failure can be produced by the <see cref="TakeBasicTetrominoAction"/>.
+    /// /// </summary>
     /// <seealso cref="VerificationFailure"/>
-    public class TetrominoNotInSharedReserveFail(TetrominoShape shape) : VerificationFailure
+    public class BasicTetrominoNotInSharedReserveFail : VerificationFailure
     {
         #region Properties
 
         /// <summary>
-        /// The type of the missing tetromino.
+        /// A description of the failure. States that there are no basic tetrominos left in the shared reserve.
         /// </summary>
-        public TetrominoShape Shape => shape;
-
-        /// <summary>
-        /// A description of the failure. Specifies the type of the missing tetromino.
-        /// </summary>
-        public override string Message => $"Tetromino {shape} not in shared reserve";
+        public override string Message => $"There are no basic tetrominos left in the shared reserve";
 
         #endregion
     }
 
     /// <summary>
-    /// It is not possible to change a tetromino of type <paramref name="oldShape"/> for a tetromino of type <paramref name="newShape"/>.
+    /// The player tried to change the <paramref name="oldShape"/> tetromino for the <paramref name="newShape"/> tetromino, but this trade is not possible.
+    /// This includes the scenario when the new tetromino is the same as the old one.
+    /// This failure can be produced by the <see cref="ChangeTetrominoAction"/>.
     /// </summary>
     /// <param name="oldShape">The shape of the tetromino the player wants to return to the shared reserve.</param>
     /// <param name="newShape">The shape of the tetromino the player wants to take from the shared reserve.</param>
@@ -87,7 +84,8 @@
     }
 
     /// <summary>
-    /// The player doesn't have any tetrominos of type <paramref name="shape"/> in their personal supply.
+    /// The player tried to use a tetromino of type <paramref name="shape"/>, but doesn't have any in their personal supply.
+    /// This failure can be produced by the <see cref="ChangeTetrominoAction"/>, <see cref="PlaceTetrominoAction"/> or <see cref="MasterAction"/>.
     /// </summary>
     /// <param name="shape">The shape of the missing tetromino.</param>
     /// <seealso cref="VerificationFailure"/>
@@ -110,6 +108,7 @@
 
     /// <summary>
     /// The player tried to recycle the puzzle row with color <paramref name="color"/>, but the number of puzzles to recycle doesn't match the number of puzzles in the row.
+    /// This failure can be produced by the <see cref="RecycleAction"/>.
     /// </summary>
     /// <param name="expected">The number of puzzles in the row.</param>
     /// <param name="actual">The number of puzzle IDs in the <see cref="RecycleAction.Order"/>.</param>
@@ -144,6 +143,7 @@
 
     /// <summary>
     /// The player tried to recycle an empty row.
+    /// This failure can be produced by the <see cref="RecycleAction"/>.
     /// </summary>
     /// <param name="color">The color of the row the player tried to recycle.</param>
     /// <seealso cref="VerificationFailure" />
@@ -165,7 +165,8 @@
     }
 
     /// <summary>
-    /// There is an ID in <see cref="RecycleAction.Order"/> which doesn't match any puzzle in the row with color <paramref name="color"/>.
+    /// The player tried to recycle the row with color <paramref name="color"/>, but the puzzle with ID <paramref name="id"/> found in the <see cref="RecycleAction.Order"/> is not in the row.
+    /// This failure can be produced by the <see cref="RecycleAction"/>.
     /// </summary>
     /// <param name="id">The ID of the puzzle which doesn't match any puzzle in the row.</param>
     /// <param name="color">The color of the row the player tried to recycle.</param>
@@ -193,7 +194,8 @@
     }
 
     /// <summary>
-    /// The player tried to take a puzzle which isn't available.
+    /// The player tried to take the puzzle with ID <paramref name="id"/> from one of the rows, but no such puzzle is available.
+    /// This failure can be produced by the <see cref="TakePuzzleAction"/>.
     /// </summary>
     /// <param name="id">The ID of the puzzle the player tried to take.</param>
     /// <seealso cref="VerificationFailure" />
@@ -216,6 +218,7 @@
 
     /// <summary>
     /// The player specified <see cref="TakePuzzleAction.Options.Normal"/> but <see cref="TakePuzzleAction.PuzzleId"/> was <see langword="null"/>.
+    /// This failure can be produced by the <see cref="TakePuzzleAction"/>.
     /// </summary>
     /// <seealso cref="VerificationFailure"/>
     public class PuzzleIdIsNullFail : VerificationFailure
@@ -232,6 +235,7 @@
 
     /// <summary>
     /// The player specified <see cref="TakePuzzleAction.Options.TopBlack"/> or <see cref="TakePuzzleAction.Options.TopWhite"/> but the corresponding deck is empty.
+    /// This failure can be produced by the <see cref="TakePuzzleAction"/>.
     /// </summary>
     /// <param name="color">The color of the deck. Either <see cref="TakePuzzleAction.Options.TopBlack"/> or <see cref="TakePuzzleAction.Options.TopWhite"/>.</param>
     /// <seealso cref="VerificationFailure" />
@@ -253,7 +257,8 @@
     }
 
     /// <summary>
-    /// The given <paramref name="configuration"/> is invalid for a tetromino of type <paramref name="shape"/>.
+    /// The player tried to place a tetromino of type <paramref name="shape"/>, but the given <paramref name="configuration"/> doesn't match the shape.
+    /// This failure can be produced by the <see cref="PlaceTetrominoAction"/> or <see cref="MasterAction"/>.
     /// </summary>
     /// <param name="shape">The type of the tetromino.</param>
     /// <param name="configuration">The configuration of the tetromino.</param>
@@ -281,7 +286,8 @@
     }
 
     /// <summary>
-    /// The player doesn't have the puzzle with the given ID.
+    /// The player tried to place a tetromino into the puzzle with ID <paramref name="id"/>, but the player doesn't have this puzzle.
+    /// This failure can be produced by the <see cref="PlaceTetrominoAction"/> or <see cref="MasterAction"/>.
     /// </summary>
     /// <param name="id">The ID of the puzzle.</param>
     /// <seealso cref="VerificationFailure" />
@@ -303,12 +309,13 @@
     }
 
     /// <summary>
-    /// The tetromino specified by <paramref name="position"/> cannot be placed into the puzzle with the given ID.
+    /// The player tried to place a tetromino with the given <paramref name="configuration"/> into the puzzle with ID <paramref name="puzzleId"/>, but the tetromino cannot be placed there.
+    /// This failure can be produced by the <see cref="PlaceTetrominoAction"/> or <see cref="MasterAction"/>.
     /// </summary>
     /// <param name="puzzleId">The ID of the puzzle.</param>
-    /// <param name="position">The configuration of the tetromino.</param>
+    /// <param name="configuration">The configuration of the tetromino.</param>
     /// <seealso cref="VerificationFailure" />
-    public class CannotPlaceTetrominoFail(uint puzzleId, BinaryImage position) : VerificationFailure
+    public class CannotPlaceTetrominoFail(uint puzzleId, BinaryImage configuration) : VerificationFailure
     {
         #region Properties
 
@@ -320,7 +327,7 @@
         /// <summary>
         /// The configuration of the tetromino.
         /// </summary>
-        public BinaryImage Position => position;
+        public BinaryImage Configuration => configuration;
 
         /// <summary>
         /// A description of the failure. Specifies the ID of the puzzle and the configuration of the tetromino.
@@ -347,7 +354,7 @@
     }
 
     /// <summary>
-    /// Two of the placements specified by a Master action are to the same puzzle.
+    /// The player tried to place two tetrominos into the same puzzle using the <see cref="MasterAction"/>.
     /// </summary>
     /// <seealso cref="VerificationFailure" />
     public class MasterActionUniquePlacementFail : VerificationFailure
@@ -364,6 +371,16 @@
 
     /// <summary>
     /// The player doesn't have enough tetrominos needed by a <see cref="MasterAction"/>.
+    /// <example>
+    /// The player tried to make the following placements:
+    /// <list type="table">
+    ///     <listheader><term> Puzzle ID</term><term> Used tetromino</term></listheader>
+    ///     <item><description> 13</description><description> <see cref="TetrominoShape.L3"/></description></item>
+    ///     <item><description> 9</description><description> <see cref="TetrominoShape.O2"/></description></item>
+    ///     <item><description> 27</description><description> <see cref="TetrominoShape.L3"/></description></item>
+    /// </list>
+    /// But the player has only one <see cref="TetrominoShape.L3"/> tetromino, while two are needed.
+    /// </example>
     /// </summary>
     /// <param name="shape">The tetromino type the player doesn't have enough tetrominos of.</param>
     /// <param name="owned">The number of tetrominos type <paramref name="shape"/> the player owns.</param>
@@ -443,6 +460,7 @@
 
     /// <summary>
     /// The player tried to take a second black puzzle in the same turn during <see cref="GamePhase.EndOfTheGame"/>.
+    /// This failure can be produced by the <see cref="TakePuzzleAction"/>.
     /// </summary>
     /// <seealso cref="VerificationFailure" />
     public class PlayerAlreadyTookBlackPuzzleInEndOfTheGameFail : VerificationFailure

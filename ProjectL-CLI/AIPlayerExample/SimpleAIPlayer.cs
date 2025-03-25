@@ -1,6 +1,7 @@
 ﻿namespace AIPlayerExample
 {
     using ProjectLCore.GameActions;
+    using ProjectLCore.GameActions.Verification;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GameManagers;
     using ProjectLCore.GamePieces;

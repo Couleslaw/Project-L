@@ -1,4 +1,4 @@
-﻿namespace ProjectLCore.GameActions
+﻿namespace ProjectLCore.GameActions.Verification
 {
     using ProjectLCore.GameLogic;
     using ProjectLCore.GameManagers;
@@ -24,7 +24,7 @@
         /// <param name="action">The action to verify.</param>
         /// <returns>The result of the verification. 
         /// <see cref="VerificationSuccess"/> if the action is valid. 
-        /// In case the action is invalid, returns a <see cref="VerificationFailure"/> describing the first wrong thing encountered.
+        /// In case the action is invalid, returns a <see cref="VerificationFailure"/> describing the first issue encountered.
         /// </returns>
         public VerificationResult Verify(VerifiableAction action)
         {
@@ -36,7 +36,7 @@
             }
 
             return action switch {
-                DoNothingAction a => new VerificationSuccess(),
+                DoNothingAction => new VerificationSuccess(),
                 EndFinishingTouchesAction a => VerifyEndFinishingTouchesAction(a),
                 TakePuzzleAction a => VerifyTakePuzzleAction(a),
                 RecycleAction a => VerifyRecycleAction(a),
@@ -159,14 +159,14 @@
         /// <param name="action">The action to verify.</param>
         /// <returns>
         ///   <list type="bullet">
-        ///     <item><see cref="TetrominoNotInSharedReserveFail"/> if there are no <see cref="TetrominoShape.O1"/> tetrominos left in the shared reserve.</item>
+        ///     <item><see cref="BasicTetrominoNotInSharedReserveFail"/> if there are no <see cref="TetrominoShape.O1"/> tetrominos left in the shared reserve.</item>
         ///     <item><see cref="VerificationSuccess"/> otherwise.</item>
         ///   </list>
         /// </returns>
         private VerificationResult VerifyTakeBasicTetrominoAction(TakeBasicTetrominoAction action)
         {
             if (gameInfo.NumTetrominosLeft[(int)TetrominoShape.O1] == 0) {
-                return new TetrominoNotInSharedReserveFail(TetrominoShape.O1);
+                return new BasicTetrominoNotInSharedReserveFail();
             }
             return new VerificationSuccess();
         }
