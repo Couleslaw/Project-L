@@ -298,7 +298,13 @@ namespace ProjectLCore.GamePieces
         }
 
         /// <summary>
-        /// Implements the operator &amp;.
+        /// Implements the operator &amp;. The intersection of two images is the image where a cell is filled in if and only if both images have the cell filled in.
+        /// </summary>
+        /// <param name="left">The operator on the left.</param>
+        /// <param name="right">The operator on the right.</param>
+        /// <returns>
+        /// The intersection of the two images.
+        /// </returns>
         /// <example><code language="none">
         /// #####       ###..        ###..
         /// ##.##       ..#..        .....
@@ -306,19 +312,19 @@ namespace ProjectLCore.GamePieces
         /// #...#       #####        #...#
         /// ##..#       .....        .....
         /// </code></example>
-        /// </summary>
-        /// <param name="left">The operator on the left.</param>
-        /// <param name="right">The operator on the right.</param>
-        /// <returns>
-        /// The intersection of the two images.
-        /// </returns>
         public static BinaryImage operator &(BinaryImage left, BinaryImage right)
         {
             return new(left._image & right._image);
         }
 
         /// <summary>
-        /// Implements the operator |.
+        /// Implements the operator |. The union of two images is the image where a cell is filled in if and only if at least one of the images have the cell filled in.
+        /// </summary>
+        /// <param name="left">The operator on the left.</param>
+        /// <param name="right">The operator on the right.</param>
+        /// <returns>
+        /// The union of the two images.
+        /// </returns>
         /// <example><code language="none">
         /// #####       ###..        #####
         /// ##.##       ..#..        #####
@@ -326,19 +332,18 @@ namespace ProjectLCore.GamePieces
         /// #...#       ###..        ###.#
         /// ##..#       .....        ##..#
         /// </code></example>
-        /// </summary>
-        /// <param name="left">The operator on the left.</param>
-        /// <param name="right">The operator on the right.</param>
-        /// <returns>
-        /// The union of the two images.
-        /// </returns>
         public static BinaryImage operator |(BinaryImage left, BinaryImage right)
         {
             return new(left._image | right._image);
         }
 
         /// <summary>
-        /// Implements the operator ~.
+        /// Implements the operator ~. The complement of an image is the image where a cell is filled in if and only if the original image has the cell empty.
+        /// </summary>
+        /// <param name="image">The operator on the image.</param>
+        /// <returns>
+        /// The complement of the image.
+        /// </returns>
         /// <example><code language="none">
         ///   #####        .....
         ///   ##.##        ..#..
@@ -346,11 +351,6 @@ namespace ProjectLCore.GamePieces
         ///   #...#        .###.
         ///   ##..#        ..##.
         /// </code></example>
-        /// </summary>
-        /// <param name="image">The operator on the image.</param>
-        /// <returns>
-        /// The complement of the image.
-        /// </returns>
         public static BinaryImage operator ~(BinaryImage image)
         {
             return new(~image._image);

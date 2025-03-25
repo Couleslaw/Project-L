@@ -182,7 +182,7 @@ namespace ProjectLCore.GameLogic
         /// <returns>Initialized <see cref="GameState"/>.</returns>
         /// <seealso cref="GameStateBuilder"/>"
         /// <seealso cref="PuzzleParser"/>
-        public static GameState CreateFromFile(string puzzlesFilePath, int numInitialTetrominos, int numWhitePuzzles = int.MaxValue, int numBlackPuzzles = int.MaxValue)
+        public static GameState CreateFromFile(string puzzlesFilePath, int numInitialTetrominos = 15, int numWhitePuzzles = int.MaxValue, int numBlackPuzzles = int.MaxValue)
         {
             int numWhiteParsed = 0;
             int numBlackParsed = 0;

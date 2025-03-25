@@ -38,7 +38,7 @@
         /// </summary>
         /// <param name="numPlayers">The number of players in the game.</param>
         /// <param name="filePath">The path to a file where the player might be storing some information.</param>
-        public override void Init(int numPlayers, string? filePath)
+        public override void Init(int numPlayers, string? filePath = null)
         {
         }
 

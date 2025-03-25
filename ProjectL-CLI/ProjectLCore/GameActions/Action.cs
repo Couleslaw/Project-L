@@ -28,6 +28,7 @@
     /// Interface for the visitor pattern.
     /// </summary>
     /// <seealso cref="IActionProcessor"/>
+    /// <seealso cref="VerifiableAction"/>
     public interface IAction
     {
         #region Methods

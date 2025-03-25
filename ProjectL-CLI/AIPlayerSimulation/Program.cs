@@ -34,7 +34,7 @@
             Player[] players = new Player[simParams.NumPlayers];
             for (int i = 0; i < simParams.NumPlayers; i++) {
                 players[i] = new SimpleAIPlayer();
-                ((SimpleAIPlayer)players[i]).Init(players.Length, null);
+                ((SimpleAIPlayer)players[i]).Init(players.Length);
             }
 
             // create game core
@@ -45,10 +45,9 @@
 
             // create action processors
             Console.WriteLine("Creating action processors...");
-            Dictionary<uint, GameActionProcessor> actionProcessors = new();
-            for (int i = 0; i < players.Length; i++) {
-                uint playerId = game.Players[i].Id;
-                actionProcessors[playerId] = new GameActionProcessor(game, playerId, signaler);
+            Dictionary<Player, GameActionProcessor> actionProcessors = new();
+            foreach (var player in players) {
+                actionProcessors[player] = new GameActionProcessor(game, player.Id, signaler);
             }
 
             Console.WriteLine("Done! Starting game...\n");
@@ -59,7 +58,7 @@
             while (true) {
                 // get next turn, if game ended, break
                 TurnInfo turnInfo = game.GetNextTurnInfo();
-                if (turnInfo.NumActionsLeft == 2 && game.CurrentPlayerId == firstPlayerId) {
+                if (turnInfo.NumActionsLeft == 2 && game.CurrentPlayer.Id == firstPlayerId) {
                     roundCount++;
                 }
 
@@ -78,15 +77,14 @@
                 }
 
                 // print turn info
-                Console.WriteLine($"Round: {roundCount}, Current player: {game.CurrentPlayerId}, Action: {3 - turnInfo.NumActionsLeft}");
+                Console.WriteLine($"Round: {roundCount}, Current player: {game.CurrentPlayer.Id}, Action: {3 - turnInfo.NumActionsLeft}");
                 Console.WriteLine($"TurnInfo: GamePhase={turnInfo.GamePhase}, LastRound={turnInfo.LastRound}, TookBlackPuzzle={turnInfo.TookBlackPuzzle}, UsedMaster={turnInfo.UsedMasterAction}");
 
-                // get action from current player and process it
-                uint playerId = game.CurrentPlayerId;
-
+                // get action from current player
                 var gameInfo = gameState.GetGameInfo();
                 var playerInfos = game.PlayerStates.Select(playerState => playerState.GetPlayerInfo()).ToArray();
-                var verifier = GetActionVerifier(game, turnInfo, playerId);
+                var currentPlayerInfo = game.GetPlayerStateWithId(game.CurrentPlayer.Id).GetPlayerInfo();
+                var verifier = new ActionVerifier(gameInfo, currentPlayerInfo, turnInfo);
 
                 Console.WriteLine(SmallSeparator);
                 Console.Write(gameInfo);
@@ -101,7 +99,7 @@
                 Stopwatch stopwatch = Stopwatch.StartNew();
                 VerifiableAction? action;
                 try {
-                    action = game.GetPlayerWithId(playerId).GetActionAsync(gameInfo, playerInfos, turnInfo, verifier).Result;
+                    action = game.CurrentPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier).Result;
                 }
                 catch (Exception) {
                     action = null;
@@ -122,7 +120,7 @@
                 }
 
                 // verify the action
-                var result = action.GetVerifiedBy(verifier);
+                var result = verifier.Verify(action);
                 if (result is VerificationFailure fail) {
                     Console.WriteLine($"Player provided an invalid {action.GetType()}. Verification result:\n{fail.GetType()}: {fail.Message}\n");
                     Console.WriteLine("Skipping action...");
@@ -140,7 +138,7 @@
                     Console.ReadLine();
                 }
 
-                action.Accept(actionProcessors[playerId]);
+                action.Accept(actionProcessors[game.CurrentPlayer]);
             }
 
             // print final results
@@ -156,19 +154,6 @@
 
             Console.WriteLine("\n The game is finished. Press 'Enter' to exit.");
             Console.ReadLine();
-        }
-
-        /// <summary>
-        /// Creates an action verifier for the given player
-        /// </summary>
-        /// <param name="game">Info about the game</param>
-        /// <param name="turnInfo">Info about current turn</param>
-        /// <param name="playerId">ID of the current player</param>
-        private static ActionVerifier GetActionVerifier(GameCore game, TurnInfo turnInfo, uint playerId)
-        {
-            var gameInfo = game.GameState.GetGameInfo();
-            var playerInfo = game.PlayerStates.First(playerState => playerState.PlayerId == playerId).GetPlayerInfo();
-            return new ActionVerifier(gameInfo, playerInfo, turnInfo);
         }
 
         #endregion

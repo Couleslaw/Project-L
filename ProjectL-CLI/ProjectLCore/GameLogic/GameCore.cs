@@ -71,8 +71,8 @@ namespace ProjectLCore.GameLogic
         /// <summary> The current <see cref="GamePhase"/>. </summary>
         public GamePhase CurrentGamePhase { get; private set; } = GamePhase.Normal;
 
-        /// <summary> The ID of the player who's turn it currently is. </summary>
-        public uint CurrentPlayerId { get; private set; }
+        /// <summary> The player who's turn it currently is. </summary>
+        public Player CurrentPlayer { get; private set; }
 
         /// <summary> Information about the shared resources in the game. </summary>
         public GameState GameState { get; }
@@ -109,7 +109,7 @@ namespace ProjectLCore.GameLogic
         }
 
         /// <summary>
-        /// Queries the <see cref="TurnManager"/> for information about the next turn and updates <see cref="CurrentPlayerId"/> and <see cref="CurrentGamePhase"/>.
+        /// Queries the <see cref="TurnManager"/> for information about the next turn and updates <see cref="CurrentPlayer"/> and <see cref="CurrentGamePhase"/>.
         /// </summary>
         /// <returns>Information about the next turn.</returns>
         /// <seealso cref="TurnManager.NextTurn"/>
@@ -117,7 +117,7 @@ namespace ProjectLCore.GameLogic
         {
             TurnInfo info = TurnManager.NextTurn();
             CurrentGamePhase = info.GamePhase;
-            CurrentPlayerId = TurnManager.CurrentPlayerId;
+            CurrentPlayer = GetPlayerWithId(TurnManager.CurrentPlayerId);
             return info;
         }
 

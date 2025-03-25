@@ -7,6 +7,8 @@
     /// <summary>
     /// Represents the result of a verification of a <see cref="VerifiableAction"/> by a <see cref="ActionVerifier"/>.
     /// </summary>
+    /// <seealso cref="VerificationSuccess"/>
+    /// <seealso cref="VerificationFailure"/>
     public abstract class VerificationResult
     {
     }
@@ -15,6 +17,7 @@
     /// Represents a successful verification of a <see cref="VerifiableAction"/> by a <see cref="ActionVerifier"/>.
     /// </summary>
     /// <seealso cref="VerificationResult" />
+    /// <seealso cref="VerificationFailure" />
     public class VerificationSuccess : VerificationResult
     {
     }
@@ -24,6 +27,7 @@
     /// Derived classes should provide a description of the failure in the <see cref="Message"/> property.
     /// </summary>
     /// <seealso cref="VerificationResult" />
+    /// <seealso cref="VerificationSuccess" />
     public abstract class VerificationFailure : VerificationResult
     {
         #region Properties
@@ -371,6 +375,10 @@
 
     /// <summary>
     /// The player doesn't have enough tetrominos needed by a <see cref="MasterAction"/>.
+    /// </summary>
+    /// <param name="shape">The tetromino type the player doesn't have enough tetrominos of.</param>
+    /// <param name="owned">The number of tetrominos type <paramref name="shape"/> the player owns.</param>
+    /// <param name="used">The number of tetrominos of type <paramref name="shape"/> needed by the <see cref="MasterAction"/>.</param>
     /// <example>
     /// The player tried to make the following placements:
     /// <list type="table">
@@ -381,10 +389,6 @@
     /// </list>
     /// But the player has only one <see cref="TetrominoShape.L3"/> tetromino, while two are needed.
     /// </example>
-    /// </summary>
-    /// <param name="shape">The tetromino type the player doesn't have enough tetrominos of.</param>
-    /// <param name="owned">The number of tetrominos type <paramref name="shape"/> the player owns.</param>
-    /// <param name="used">The number of tetrominos of type <paramref name="shape"/> needed by the <see cref="MasterAction"/>.</param>
     /// <seealso cref="VerificationFailure"/>
     public class MasterActionNotEnoughTetrominosFail(TetrominoShape shape, int owned, int used) : VerificationFailure
     {

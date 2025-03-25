@@ -12,6 +12,9 @@
     /// Each action should be verified before being processed.
     /// </summary>
     /// <seealso cref="IAction"/>
+    /// <seealso cref="VerifiableAction"/>
+    /// <seealso cref="ActionVerifier"/>
+    /// <seealso cref="GameActionProcessor"/>
     public interface IActionProcessor
     {
         #region Methods
