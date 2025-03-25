@@ -18,7 +18,8 @@ namespace ProjectLCore.Players
         #region Properties
 
         /// <summary>
-        /// The unique ID of the player.
+        /// The unique ID of the player. Starts at zero and is incremented by one for each new player created.
+        /// This means that the n-th player created has <see cref="Id"/> = n-1.
         /// </summary>
         public uint Id { get; } = _idCounter++;
 

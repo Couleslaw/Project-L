@@ -121,29 +121,32 @@ namespace ProjectLCore.GameLogic
         /// <param name="whitePuzzlesDeck">A collection of the white puzzles.</param>
         /// <param name="blackPuzzlesDeck">A collection of the black puzzles.</param>
         /// <param name="numInitialTetrominos">The amount of tetrominos of each shape in the shared reserve at the beginning of the game.</param>
-        /// <exception cref="ArgumentException">Not enough puzzles to fill the rows.</exception>
-        /// <exception cref="ArgumentException">The number of initial tetrominos must be at least <see cref="MinNumInitialTetrominos"/>.</exception>"
+        /// <exception cref="ArgumentException">
+        /// The number of initial tetrominos must be at least <see cref="MinNumInitialTetrominos"/>.
+        /// or
+        /// The number of white puzzles must be at least <see cref="NumPuzzlesInRow"/>.
+        /// or
+        /// The number of black puzzles must be at least <see cref="NumPuzzlesInRow"/> + 1.
+        /// </exception>
+        /// <seealso cref="CreateFromFile"/>
         public GameState(ICollection<Puzzle> whitePuzzlesDeck, ICollection<Puzzle> blackPuzzlesDeck, int numInitialTetrominos)
         {
             // check if number of initial tetrominos is valid
             if (numInitialTetrominos < MinNumInitialTetrominos) {
                 throw new ArgumentException($"The number of initial tetrominos must be at least {MinNumInitialTetrominos}");
             }
-
-            // check if there are enough puzzles to fill the rows
-            if (whitePuzzlesDeck.Count < NumPuzzlesInRow || blackPuzzlesDeck.Count < NumPuzzlesInRow) {
-                throw new ArgumentException("Not enough puzzles to fill the rows.");
+            // check if the number of puzzles is valid
+            if (whitePuzzlesDeck.Count < NumPuzzlesInRow) {
+                throw new ArgumentException($"The number of white puzzles must be at least {NumPuzzlesInRow}");
+            }
+            // we need at least NumPuzzlesInRow + 1 black puzzles for the game to not end immediately
+            if (blackPuzzlesDeck.Count < NumPuzzlesInRow + 1) {
+                throw new ArgumentException($"The number of black puzzles must be at least {NumPuzzlesInRow + 1}");
             }
 
             // create queues representing the decks
             _whitePuzzlesDeck = new Queue<Puzzle>(whitePuzzlesDeck);
             _blackPuzzlesDeck = new Queue<Puzzle>(blackPuzzlesDeck);
-
-            // reveal the top 4 puzzles
-            for (int i = 0; i < NumPuzzlesInRow; i++) {
-                _whitePuzzlesRow[i] = _whitePuzzlesDeck.Dequeue();
-                _blackPuzzlesRow[i] = _blackPuzzlesDeck.Dequeue();
-            }
 
             // initialize tetrominos
             _numInitialTetrominos = numInitialTetrominos;
@@ -177,29 +180,10 @@ namespace ProjectLCore.GameLogic
         /// <param name="numWhitePuzzles">The number of white puzzles to load. Loads all white puzzles, if the number of white puzzles in the source file doesn't exceed this number. Should be at least <see cref="NumPuzzlesInRow"/></param>
         /// <param name="numBlackPuzzles">The number of black puzzles to load. Loads all black puzzles, if the number of black puzzles in the source file doesn't exceed this number. Should be at least <see cref="NumPuzzlesInRow"/></param>
         /// <returns>Initialized <see cref="GameState"/>.</returns>
-        /// <exception cref="ArgumentException">
-        /// The number of initial tetrominos must be at least <see cref="MinNumInitialTetrominos"/>.
-        /// or
-        /// The number of white puzzles must be at least <see cref="NumPuzzlesInRow"/>.
-        /// or
-        /// The number of black puzzles must be at least <see cref="NumPuzzlesInRow"/>.
-        /// </exception>
         /// <seealso cref="GameStateBuilder"/>"
         /// <seealso cref="PuzzleParser"/>
         public static GameState CreateFromFile(string puzzlesFilePath, int numInitialTetrominos, int numWhitePuzzles = int.MaxValue, int numBlackPuzzles = int.MaxValue)
         {
-            // check if the number of initial tetrominos is valid
-            if (numInitialTetrominos < MinNumInitialTetrominos) {
-                throw new ArgumentException($"The number of initial tetrominos must be at least {MinNumInitialTetrominos}");
-            }
-            // check if the number of puzzles is valid
-            if (numWhitePuzzles < NumPuzzlesInRow) {
-                throw new ArgumentException($"The number of white puzzles must be at least {NumPuzzlesInRow}");
-            }
-            if (numBlackPuzzles < NumPuzzlesInRow + 1) {
-                throw new ArgumentException($"The number of black puzzles must be at least {NumPuzzlesInRow + 1}");
-            }
-
             int numWhiteParsed = 0;
             int numBlackParsed = 0;
 
