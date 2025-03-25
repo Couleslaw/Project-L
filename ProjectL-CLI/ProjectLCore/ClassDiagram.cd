@@ -1,0 +1,392 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ProjectLCore.GameLogic.GameCore">
+    <Position X="8.5" Y="12.5" Width="2.25" />
+    <Members>
+      <Method Name="GameCore" Hidden="true" />
+      <Method Name="GetPlayerStateWithId" Hidden="true" />
+      <Method Name="GetPlayerWithId" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAFAAEAAAQAAAAgAAAAAEAIAwAAAAAEIAAAACKAA=</HashCode>
+      <FileName>GameLogic\GameCore.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="GameState" />
+      <Property Name="TurnManager" />
+      <Property Name="CurrentGamePhase" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Players" />
+      <Property Name="PlayerStates" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="ProjectLCore.GameLogic.GameState">
+    <Position X="4.5" Y="10.75" Width="2.25" />
+    <Members>
+      <Field Name="_numInitialTetrominos" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="ProjectLCore.GameLogic.GameState.GameInfo" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>GameLogic\GameState.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAABAACigAQAgAABAAgAEEUIgAAAAEAABEQCgAAABI=</HashCode>
+      <FileName>GameLogic\GameState.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="_blackPuzzlesDeck" />
+      <Field Name="_blackPuzzlesRow" />
+      <Field Name="_whitePuzzlesDeck" />
+      <Field Name="_whitePuzzlesRow" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="ProjectLCore.GameLogic.PlayerState">
+    <Position X="13.75" Y="12.5" Width="2" />
+    <Members>
+      <Method Name="CompareTo" Hidden="true" />
+      <Method Name="Equals" Hidden="true" />
+      <Method Name="GetHashCode" Hidden="true" />
+      <Method Name="operator !=" Hidden="true" />
+      <Method Name="operator &lt;" Hidden="true" />
+      <Method Name="operator &lt;=" Hidden="true" />
+      <Method Name="operator ==" Hidden="true" />
+      <Method Name="operator &gt;" Hidden="true" />
+      <Method Name="operator &gt;=" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="ProjectLCore.GameLogic.PlayerState.PlayerInfo" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>GameLogic\PlayerState.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAQIAAAgAAgAwAgICAQgAAAQAAAIAACAA4AAAABzA=</HashCode>
+      <FileName>GameLogic\PlayerState.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="_puzzles" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ProjectLCore.Players.Player">
+    <Position X="17.75" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAQAAAAAAAAAAAAACAAQAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Players\Player.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.GameManagers.TurnManager">
+    <Position X="9.75" Y="16" Width="1.75" />
+    <Members>
+      <Field Name="_currentPlayerOrder" Hidden="true" />
+      <Field Name="_numPlayers" Hidden="true" />
+      <Field Name="_playersIds" Hidden="true" />
+      <Field Name="_turnInfo" Hidden="true" />
+      <Method Name="ChangeGamePhaseIfNeeded" Hidden="true" />
+      <Property Name="IsEndOfRound" Hidden="true" />
+      <Method Name="SetNextPlayer" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="ProjectLCore.GameManagers.TurnManager.Signaler" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>GameManagers\TurnManager.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAAAABAAAIAAACgAAIQAgAQAAAAAAAEAAg=</HashCode>
+      <FileName>GameManagers\TurnManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.GameActions.VerifiableAction">
+    <Position X="23.5" Y="13" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAEAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAA=</HashCode>
+      <FileName>GameActions\Action.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Status" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ProjectLCore.GameActions.DoNothingAction" Collapsed="true">
+    <Position X="26.5" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GameActions\Action.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.GameActions.EndFinishingTouchesAction" Collapsed="true">
+    <Position X="32.5" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GameActions\Action.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.GameActions.TakePuzzleAction" Collapsed="true">
+    <Position X="20.5" Y="17.25" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="ProjectLCore.GameActions.TakePuzzleAction.Options" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>GameActions\Action.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAEAAAACAAAAAAAAAAABAAAAAAAAAA=</HashCode>
+      <FileName>GameActions\Action.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.GameActions.RecycleAction" Collapsed="true">
+    <Position X="22.5" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIEAAAAAAAAAAAAEAAAACAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GameActions\Action.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.GameActions.TetrominoAction" Collapsed="true">
+    <Position X="28.5" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GameActions\Action.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.GameActions.TakeBasicTetrominoAction" Collapsed="true">
+    <Position X="29.5" Y="18.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GameActions\Action.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.GameActions.ChangeTetrominoAction" Collapsed="true">
+    <Position X="27.5" Y="18.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAABAAAAAAAEAAAAAAAAAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>GameActions\Action.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.GameActions.PlaceTetrominoAction" Collapsed="true">
+    <Position X="24.5" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAEAAAAAAAAAAAkAAAAAAAAAAAAAAAABAAAAAAAAAA=</HashCode>
+      <FileName>GameActions\Action.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.GameActions.MasterAction" Collapsed="true">
+    <Position X="30.5" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAEAAAIAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GameActions\Action.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.GameActions.GameActionProcessor">
+    <Position X="8.75" Y="22.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AgABACAAABAQAAgAAgAACgAAAAAAIAAAAAAAAgAAAAA=</HashCode>
+      <FileName>GameActions\ActionProcessor.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_gameState" />
+      <Field Name="_player" />
+      <Field Name="_playerState" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ProjectLCore.GameActions.ActionVerifier">
+    <Position X="26" Y="13" Width="1.5" />
+    <Members>
+      <Method Name="VerifyEndFinishingTouchesAction" Hidden="true" />
+      <Method Name="VerifyChangeTetrominoAction" Hidden="true" />
+      <Method Name="VerifyMasterAction" Hidden="true" />
+      <Method Name="VerifyPlaceTetrominoAction" Hidden="true" />
+      <Method Name="VerifyRecycleAction" Hidden="true" />
+      <Method Name="VerifyTakeBasicTetrominoAction" Hidden="true" />
+      <Method Name="VerifyTakePuzzleAction" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>ACABAgAAAAQAAQIAAAAAAAAAAAAAAEAAAAAAAAAIAAA=</HashCode>
+      <FileName>GameActions\ActionVerifier.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.GameActions.VerificationResult" Collapsed="true">
+    <Position X="28.75" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GameActions\VerificationStatusMessages.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.GameActions.VerificationSuccess" Collapsed="true">
+    <Position X="27.75" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GameActions\VerificationStatusMessages.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.GameActions.VerificationFailure" Collapsed="true">
+    <Position X="29.75" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>GameActions\VerificationStatusMessages.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.GameLogic.PuzzleParser">
+    <Position X="2" Y="13" Width="1.5" />
+    <Members>
+      <Field Name="_numPuzzleLines" Hidden="true" />
+      <Field Name="_reader" Hidden="true" />
+      <Field Name="_specialChars" Hidden="true" />
+      <Method Name="CreatePuzzle" Hidden="true" />
+      <Method Name="ParseIdentifier" Hidden="true" />
+      <Method Name="ParseImageLine" Hidden="true" />
+      <Method Name="ParseReward" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAEgAAAAACAAQAAAACAAAgAAACAAAAAAAIAAAAAABAA=</HashCode>
+      <FileName>GameLogic\PuzzleParser.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ProjectLCore.GameLogic.InvalidPuzzleException" Collapsed="true">
+    <Position X="2" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAAQgAAIAAAAIAAAAAAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>GameLogic\PuzzleParser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.GameLogic.GameStateBuilder">
+    <Position X="2" Y="11.25" Width="1.5" />
+    <Members>
+      <Field Name="_blackPuzzlesDeck" Hidden="true" />
+      <Field Name="_numInitialTetrominos" Hidden="true" />
+      <Field Name="_whitePuzzlesDeck" Hidden="true" />
+      <Method Name="GameStateBuilder" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAAAAAAAAAgAAAAAAADAAAAAI=</HashCode>
+      <FileName>GameLogic\GameState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.Players.AIPlayerBase">
+    <Position X="19.75" Y="9.5" Width="1.5" />
+    <Members>
+      <Method Name="GetActionAsync" Hidden="true" />
+      <Method Name="GetRewardAsync" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABBAAAAAAAACAAQAAIAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>Players\AIPlayerBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.Players.HumanPlayer" Collapsed="true">
+    <Position X="19.75" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAQAAAAAAQAEAAACAAQAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Players\HumanPlayer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.GameManagers.RewardManager">
+    <Position X="19.25" Y="5.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>GameManagers\RewardManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.GameManagers.TetrominoManager">
+    <Position X="19.25" Y="3" Width="2.5" />
+    <Members>
+      <Field Name="_allConfigurationsCache" Hidden="true" />
+      <Field Name="_baseConfigurations" Hidden="true" />
+      <Field Name="_binaryImages" Hidden="true" />
+      <Field Name="_levels" Hidden="true" />
+      <Field Name="_shapesByLevel" Hidden="true" />
+      <Method Name="GetBaseConfigurationsOf" Hidden="true" />
+      <Method Name="TetrominoManager" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>IAAEAAAAAAEAAAAAgAAAAABCAAAAAAAAhBAABAEQAEQ=</HashCode>
+      <FileName>GameManagers\TetrominoManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectLCore.GamePieces.Puzzle">
+    <Position X="9.25" Y="1.75" Width="1.75" />
+    <Members>
+      <Field Name="_puzzleNumber" Hidden="true" />
+      <Method Name="Puzzle" Hidden="true" />
+    </Members>
+    <NestedTypes>
+      <Class Name="ProjectLCore.GamePieces.Puzzle.PuzzleIDProvider" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>GamePieces\Puzzle.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>gAACCAACAAAAAAEAAAAAAQAAAAAgABAABAAAQAAAEBA=</HashCode>
+      <FileName>GamePieces\Puzzle.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Image" />
+      <Property Name="RewardTetromino" />
+    </ShowAsAssociation>
+  </Class>
+  <Struct Name="ProjectLCore.GamePieces.BinaryImage">
+    <Position X="15.75" Y="2.5" Width="2" />
+    <Members>
+      <Field Name="_image" Hidden="true" />
+      <Method Name="BinaryImage" Hidden="true" />
+      <Method Name="Equals" Hidden="true" />
+      <Method Name="GetHashCode" Hidden="true" />
+      <Method Name="operator !=" Hidden="true" />
+      <Method Name="operator ~" Hidden="true" />
+      <Method Name="ToString" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAgAAAAEgBACAAAAAAAAQagKQAAAAAAQIjA=</HashCode>
+      <FileName>GamePieces\BinaryImage.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Struct>
+  <Enum Name="ProjectLCore.GameLogic.GamePhase">
+    <Position X="7.75" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAQAAAAAAAAIAAAAAAAAAAAAIIA=</HashCode>
+      <FileName>GameLogic\GamePhase.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ProjectLCore.GameActions.ActionStatus">
+    <Position X="21" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAACAAA=</HashCode>
+      <FileName>GameActions\Action.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ProjectLCore.GamePieces.TetrominoShape" Collapsed="true">
+    <Position X="16" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACABAAAAAAAAAAAAAAAABoAAAAAAAQAAAAAgAAEAAE=</HashCode>
+      <FileName>GamePieces\Tetromino.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI Variable Text" Size="9" />
+</ClassDiagram>
