@@ -2,7 +2,8 @@
   color: #d0d0d0;
 }
 
-.highlight .pre {
+.markdown-body .highlight pre,
+.markdown-body pre {
   background-color: white;
 }
 
@@ -56,12 +57,14 @@
 .highlight .kr,
 .highlight .kv {
   color: #f87a6c;
+  font-weight: normal;
 }
 
 .highlight .kc,
 .highlight .kt,
 .highlight .kd {
   color: #7dabeb;
+  font-weight: normal;
 }
 
 .highlight .s,
@@ -90,6 +93,7 @@
 .highlight .nf,
 .highlight .no {
   color: #ffbf65;
+  font-weight: normal;
 }
 
 .highlight .na {
