@@ -1,17 +1,9 @@
-.highlight {
-  color: #d0d0d0;
-}
-
 .highlight table td {
   padding: 5px;
 }
 
 .highlight table pre {
   margin: 0;
-}
-
-.highlight .w {
-  color: #d0d0d0;
 }
 
 .highlight .err {
@@ -34,19 +26,6 @@
 .highlight .o,
 .highlight .ow {
   color: #ffbf65;
-}
-
-.highlight .p,
-.highlight .pi {
-  color: #d0d0d0;
-}
-
-.highlight .gi {
-  color: #c7da67;
-}
-
-.highlight .gd {
-  color: #ac4142;
 }
 
 .highlight .gh {
@@ -91,6 +70,7 @@
 .highlight .nt,
 .highlight .nn,
 .highlight .nc,
+.highlight .nf,
 .highlight .no {
   color: #ffbf65;
 }
