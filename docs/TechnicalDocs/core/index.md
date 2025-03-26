@@ -208,7 +208,7 @@ While (game has not ended) {
 CalculateScores(playerStates)
 ```
 
-```C#
+```C# {.line-numbers}
 // load puzzles from file
 GameState gameState = GameState.CreateFromFile("puzzles.txt");
 

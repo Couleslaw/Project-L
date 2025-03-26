@@ -115,7 +115,7 @@
 }
 
 div.highlighter-rouge code {
-  background: #0f1419;
+  background: #1b1e21;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 7px;
   display: block;
@@ -124,7 +124,7 @@ div.highlighter-rouge code {
 }
 
 code.highlighter-rouge {
-  background: #141923;
+  background: #1b1e21;
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 3px;
   padding: 0px 3px;
