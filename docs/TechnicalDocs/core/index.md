@@ -97,7 +97,7 @@ Every game of Project L goes through several phases from the start to the end. T
 - setup - players are given starting pieces and puzzle rows are filled
 - normal - players take turns taking actions
 - end - triggers when the black puzzle deck is emptied
-  - players finish the curren round and then one last round is played
+  - players finish the current round and then play one last round
 - finishing touches
 - scoring - players calculate their scores
 
