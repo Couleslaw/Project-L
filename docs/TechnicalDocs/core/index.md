@@ -1,3 +1,5 @@
+<link rel='stylesheet' href='code_highlight.css'/>
+
 # Technical Documentation
 
 The game is played by both human and AI players, but the human players choose actions and interact with the game using a GUI, which isn't the focus of this document. This document only discusses the inner workings of the [Project L Core](../../ProjectLCoreDocs/index) library. The graphical side of things is documented [here](../unity/index).
