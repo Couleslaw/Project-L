@@ -16,21 +16,13 @@
             Reads puzzles from a file.
             Each puzzle is encoded in the following way:
             <ul><li><span class="code">I</span> (identifier) <span class="code">B</span>/<span class="code">W</span> (black/white) <span class="code">puzzleNumber</span></li><li><span class="code">R</span> (reward) <span class="code">score</span><span class="code">tetromino</span> (<span class="code">O1</span>/<span class="code">O2</span>/<span class="code">I2</span>/<span class="code">I3</span>/<span class="code">I4</span>/<span class="code">L2</span>/<span class="code">L3</span>/<span class="code">Z</span>/<span class="code">T</span>)</li><li>five rows starting with <span class="code">P</span> encoding the puzzle; <span class="code">#</span> = filled cell, <span class="code">.</span> = empty cell</li></ul>
-            Example:
-            <h2 class="quickLinkHeader"><span class="icon toggleSection" tabindex="0"><i class="fa fa-angle-down"></i></span>Example</h2><div id="IDDHHCASection"><div class="codeSnippet"><div class="codeHeader"><span class="codeHeaderTitle"> </span><button class="button is-small is-light copyCode" title="Copy"><span class="icon is-small"><i class="fa fa-copy"></i></span><span>Copy</span></button></div><div class="codePanel hljs"><pre xml:space="preserve"><code class="language-plaintext">I B 13
-R 5 O1
-P ##..#
-P ....#
-P #....
-P #....
-P #..##</code></pre></div></div></div>
             This example encodes a black puzzle with number 13, reward of 5 points and <span class="code">O1</span> tetromino.
             The puzzle color and puzzle number together uniquely identify the file in which the puzzle image is stored.
             </td></tr></table></div><h2 class="quickLinkHeader"><span class="icon toggleSection" tabindex="0"><i class="fa fa-angle-down"></i></span>Structures</h2><div id="IDJCASection"><table id="structureList" class="table is-hoverable"><tr><td><a href="T_ProjectLCore_GameLogic_TurnInfo.htm">TurnInfo</a></td><td>
             Represents the information about the current turn.
             </td></tr></table></div><h2 class="quickLinkHeader"><span class="icon toggleSection" tabindex="0"><i class="fa fa-angle-down"></i></span>Enumerations</h2><div id="IDBCASection"><table id="enumerationList" class="table is-hoverable"><tr><td><a href="T_ProjectLCore_GameLogic_GamePhase.htm">GamePhase</a></td><td>
             Represents the current phase of the game
-            </td></tr></table></div></div><div id="InThisArticleColumn" class="column is-hidden-mobile"><nav class="menu sticky is-hidden"><p class="menu-label"><strong>In This Article</strong></p><ul id="InThisArticleMenu" class="menu-list"><li><a class="quickLink">Classes</a></li><li><a class="quickLink">Example</a></li><li><a class="quickLink">Structures</a></li><li><a class="quickLink">Enumerations</a></li></ul></nav></div></div></div></div><script>$(function(){
+            </td></tr></table></div></div><div id="InThisArticleColumn" class="column is-hidden-mobile"><nav class="menu sticky is-hidden"><p class="menu-label"><strong>In This Article</strong></p><ul id="InThisArticleMenu" class="menu-list"><li><a class="quickLink">Classes</a></li><li><a class="quickLink">Structures</a></li><li><a class="quickLink">Enumerations</a></li></ul></nav></div></div></div></div><script>$(function(){
 SetDefaultLanguage("cs");
 LoadTocFile(null, null);
 InitializeQuickLinks();
@@ -42,5 +34,4 @@ $(".toggleSection" ).click(function () {
 $(".toggleSection").keypress(function () {
     SectionExpandCollapseCheckKey(this, event)
 });
-hljs.highlightAll();
 });</script></body></html>

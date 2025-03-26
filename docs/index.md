@@ -4,14 +4,14 @@ This is the documentation for a computer version of the **Project L** board game
 
 ## User Documentation
 
-The [user documentation](./UserDocs/) provides a guide on how to play the game.
+The [user documentation](./UserDocs/index) provides a guide on how to play the game.
 
 ## Functional Documentation
 
-The [functional documentation](./FunctionDocs/) specifies everything about the user perspective of the Unity implementation of the game.
+The [functional documentation](./FunctionDocs/index) specifies everything about the user perspective of the Unity implementation of the game.
 
 ## Technical Documentation
 
-The [Project-L Core](./ProjectLCoreDocs/) library contains all the necessary logic elements of the **Project L** game. You might find the documentation useful when training intelligent agents to play the game. The inner workings of the game are described in detail [here](./TechnicalDocs/).
+The [Project-L Core](./ProjectLCoreDocs/index) library contains all the necessary logic elements of the **Project L** game. You might find the documentation useful when training intelligent agents to play the game. The inner workings of the game core are described in detail [here](./TechnicalDocs/core/index). The graphical side of things is discussed [here](./TechnicalDocs/unity/index).
 
-A guide on how to create an AI player for the game is provided in the [AI Player Guide](./AIPlayerGuide/).
+A guide on how to create an AI player for the game is provided in the [AI Player Guide](./AIPlayerGuide/index).

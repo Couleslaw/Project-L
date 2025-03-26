@@ -32,7 +32,7 @@
         /// <summary>
         /// Represents a puzzle that has been completed.
         /// </summary>
-        public static PuzzleNode FinishedPuzzle => new(BinaryImage.FullImage, 0, null, null, false);
+        public static PuzzleNode FinishedPuzzle => new(BinaryImage.FullImage, 0, [], [], false);
 
         /// <summary>
         /// The ID of the node. Unique for each puzzle configuration.
@@ -249,7 +249,7 @@
 
             // use IDA* to find the path
             var start = new ShapeNode(closestShape.Value, numTetrominosLeft);
-            var goal = new ShapeNode(shape, null);
+            var goal = new ShapeNode(shape, []);
             var path = IDAStar.IterativeDeepeningAStar(start, goal).Item1;
 
             // if there is no path --> return null

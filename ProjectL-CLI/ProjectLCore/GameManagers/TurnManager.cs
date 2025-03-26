@@ -25,7 +25,7 @@
 
         private readonly uint[] _playersIds = playerIds;
 
-        private int _currentPlayerOrder = 0;
+        private int _currentPlayersIndex = 0;
 
         /// <summary>
         /// Internal representation if the current turn.
@@ -39,12 +39,12 @@
         /// <summary>
         /// Gets the current player's ID
         /// </summary>
-        public uint CurrentPlayerId => _playersIds[_currentPlayerOrder];
+        public uint CurrentPlayerId => _playersIds[_currentPlayersIndex];
 
         /// <summary>
         /// True if this is the turn of the last player. 
         /// </summary>
-        private bool IsEndOfRound => _currentPlayerOrder == _numPlayers - 1;
+        private bool IsEndOfRound => _currentPlayersIndex == _numPlayers - 1;
 
         #endregion
 
@@ -85,7 +85,7 @@
         /// </summary>
         private void SetNextPlayer()
         {
-            _currentPlayerOrder = (_currentPlayerOrder + 1) % _numPlayers;
+            _currentPlayersIndex = (_currentPlayersIndex + 1) % _numPlayers;
             _turnInfo.NumActionsLeft = NumActionsInTurn - 1;
             _turnInfo.UsedMasterAction = false;
             _turnInfo.TookBlackPuzzle = false;
@@ -154,7 +154,7 @@
             public void PlayerEndedFinishingTouches()
             {
                 turnManager.SetNextPlayer();
-                if (turnManager._currentPlayerOrder == 0) {
+                if (turnManager._currentPlayersIndex == 0) {
                     turnManager._turnInfo.GamePhase = GamePhase.Finished;
                 }
             }

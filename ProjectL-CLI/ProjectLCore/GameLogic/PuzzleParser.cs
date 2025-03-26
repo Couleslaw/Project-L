@@ -134,14 +134,14 @@
                         if (isBlack is not null) {
                             throw new ArgumentException("Duplicate identifier line.");
                         }
-                        (isBlack, puzzleNum) = ParseIdentifier(parts);
+                        (isBlack!, puzzleNum!) = ParseIdentifier(parts);
                         break;
                     }
                     case 'R': {
                         if (tetromino is not null) {
                             throw new ArgumentException("Duplicate reward line.");
                         }
-                        (score, tetromino) = ParseReward(parts);
+                        (score!, tetromino!) = ParseReward(parts);
                         break;
                     }
                     case 'P': {

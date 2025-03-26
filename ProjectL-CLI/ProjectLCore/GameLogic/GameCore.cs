@@ -47,18 +47,9 @@ namespace ProjectLCore.GameLogic
                 PlayerStates[i] = new PlayerState(playerId: Players[i].Id);
             }
 
-            // create turn manager
-            TurnManager = new(GetPlayerOrder());
-
-            // creates an array of player IDs order as how they are in the Player[] array
-            uint[] GetPlayerOrder()
-            {
-                uint[] order = new uint[NumPlayers];
-                for (int i = 0; i < NumPlayers; i++) {
-                    order[i] = Players[i].Id;
-                }
-                return order;
-            }
+            // create turn manager and set the first player
+            TurnManager = new TurnManager(Players.Select(p => p.Id).ToArray());
+            CurrentPlayer = GetPlayerWithId(TurnManager.CurrentPlayerId);
         }
 
         #endregion

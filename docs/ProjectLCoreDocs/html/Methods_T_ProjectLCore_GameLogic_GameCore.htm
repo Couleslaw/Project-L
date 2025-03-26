@@ -4,13 +4,14 @@
             </td></tr><tr><td><a href="M_ProjectLCore_GameLogic_GameCore_GetFinalResults.htm">GetFinalResults</a></td><td>
             Determines the results of the game. <a href="M_ProjectLCore_GameLogic_GameCore_GameEnded.htm">GameEnded<span id="LSTF58685BA_0" data-languageSpecificText="cs=()|vb=|cpp=()|nu=()|fs=()"></span></a> should be called before calling this function.
             </td></tr><tr><td><a href="M_ProjectLCore_GameLogic_GameCore_GetNextTurnInfo.htm">GetNextTurnInfo</a></td><td>
-            Queries the <a href="P_ProjectLCore_GameLogic_GameCore_TurnManager.htm">TurnManager</a> for information about the next turn and updates <a href="P_ProjectLCore_GameLogic_GameCore_CurrentPlayerId.htm">CurrentPlayerId</a> and <a href="P_ProjectLCore_GameLogic_GameCore_CurrentGamePhase.htm">CurrentGamePhase</a>.
+            Queries the <a href="P_ProjectLCore_GameLogic_GameCore_TurnManager.htm">TurnManager</a> for information about the next turn and updates <a href="P_ProjectLCore_GameLogic_GameCore_CurrentPlayer.htm">CurrentPlayer</a> and <a href="P_ProjectLCore_GameLogic_GameCore_CurrentGamePhase.htm">CurrentGamePhase</a>.
             </td></tr><tr><td><a href="M_ProjectLCore_GameLogic_GameCore_GetPlayerStateWithId.htm">GetPlayerStateWithId</a></td><td>
             Returns the <a href="T_ProjectLCore_GameLogic_PlayerState.htm">PlayerState</a> of the player matching the given ID. Throws an exception if no such player exists.
             </td></tr><tr><td><a href="M_ProjectLCore_GameLogic_GameCore_GetPlayerWithId.htm">GetPlayerWithId</a></td><td>
             Returns the <a href="T_ProjectLCore_Players_Player.htm">Player</a> matching the given ID. Throws an exception if no such player exists.
             </td></tr><tr><td><a href="M_ProjectLCore_GameLogic_GameCore_InitializeGame.htm">InitializeGame</a></td><td>
-            Initializes the game by giving every player a <a href="T_ProjectLCore_GamePieces_TetrominoShape.htm">O1</a> and <a href="T_ProjectLCore_GamePieces_TetrominoShape.htm">I2</a> tetromino from the shared reserve.
+            Initializes the game by giving every player a <a href="T_ProjectLCore_GamePieces_TetrominoShape.htm">O1</a> and <a href="T_ProjectLCore_GamePieces_TetrominoShape.htm">I2</a> tetromino from the shared reserve.\
+            And filling the black and white puzzle rows with puzzles from the decks.
             </td></tr></table></div><h2 class="quickLinkHeader"><span class="icon toggleSection" tabindex="0"><i class="fa fa-angle-down"></i></span>See Also</h2><div id="seeAlsoSection"><h4>Reference</h4><div><a href="T_ProjectLCore_GameLogic_GameCore.htm">GameCore Class</a></div><div><a href="N_ProjectLCore_GameLogic.htm">ProjectLCore.GameLogic Namespace</a></div></div></div><div id="InThisArticleColumn" class="column is-hidden-mobile"><nav class="menu sticky is-hidden"><p class="menu-label"><strong>In This Article</strong></p><ul id="InThisArticleMenu" class="menu-list"><li><a class="quickLink">Methods</a></li><li><a class="quickLink">See Also</a></li></ul></nav></div></div></div></div><script>$(function(){
 SetDefaultLanguage("cs");
 LoadTocFile(null, null);
