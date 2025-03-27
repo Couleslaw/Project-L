@@ -2,8 +2,7 @@
   color: #d0d0d0;
 }
 
-.markdown-body .highlight pre,
-.markdown-body pre {
+.markdown-body .highlight pre {
   background-color: white;
 }
 
@@ -121,7 +120,7 @@ div.highlighter-rouge code {
   border-radius: 7px;
   display: block;
   overflow-x: auto;
-  padding: 1rem;
+  padding: 0.5rem;
 }
 
 code.highlighter-rouge {

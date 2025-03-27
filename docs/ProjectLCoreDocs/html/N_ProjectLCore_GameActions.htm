@@ -2,7 +2,7 @@
             Last resort action for AI players, they should never actually need to use it. It will always be accepted unless the game phase is <a href="T_ProjectLCore_GameLogic_GamePhase.htm">FinishingTouches</a>.
             </td></tr><tr><td><a href="T_ProjectLCore_GameActions_EndFinishingTouchesAction.htm">EndFinishingTouchesAction</a></td><td>
             Represents the action of ending a player's turn during <a href="T_ProjectLCore_GameLogic_GamePhase.htm">FinishingTouches</a></td></tr><tr><td><a href="T_ProjectLCore_GameActions_GameActionProcessor.htm">GameActionProcessor</a></td><td>
-            A class for processing player actions in the game. One instance should be created for each player.
+            Processes actions of one player in the game.
             The class is responsible for updating the game state based on the player's actions.
             It isn't responsible for verifying the actions. The actions should be verified by an <a href="T_ProjectLCore_GameActions_Verification_ActionVerifier.htm">ActionVerifier</a> before being processed.
             </td></tr><tr><td><a href="T_ProjectLCore_GameActions_ChangeTetrominoAction.htm">ChangeTetrominoAction</a></td><td>
@@ -23,7 +23,7 @@
             The base class for <a href="T_ProjectLCore_GameActions_TakeBasicTetrominoAction.htm">TakeBasicTetrominoAction</a> and <a href="T_ProjectLCore_GameActions_ChangeTetrominoAction.htm">ChangeTetrominoAction</a> because they are technically the same action, just with different parameters.
             </td></tr></table></div><h2 class="quickLinkHeader"><span class="icon toggleSection" tabindex="0"><i class="fa fa-angle-down"></i></span>Interfaces</h2><div id="IDACASection"><table id="interfaceList" class="table is-hoverable"><tr><td><a href="T_ProjectLCore_GameActions_IAction.htm">IAction</a></td><td>
             Represents an action that a player can take during their turn. Together with <a href="T_ProjectLCore_GameActions_IActionProcessor.htm">IActionProcessor</a> it implements the visitor pattern.
-            The validity of the action should be checked by an <a href="T_ProjectLCore_GameActions_Verification_ActionVerifier.htm">ActionVerifier</a> before being processed.
+            The validity of every action should be checked by an <a href="T_ProjectLCore_GameActions_Verification_ActionVerifier.htm">ActionVerifier</a> before being processed.
             </td></tr><tr><td><a href="T_ProjectLCore_GameActions_IActionProcessor.htm">IActionProcessor</a></td><td>
             An interface for processing actions using the visitor pattern.
             Each action should be verified by an <a href="T_ProjectLCore_GameActions_Verification_ActionVerifier.htm">ActionVerifier</a> before being processed.
