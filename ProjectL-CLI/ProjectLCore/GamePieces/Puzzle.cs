@@ -94,16 +94,16 @@
         #region Methods
 
         /// <summary>
-        /// Determines whether the given tetromino can be placed on the puzzle.
+        /// Determines whether the given tetromino can be placed into the puzzle.
         /// </summary>
-        /// <param name="tetromino">The position of the tetromino.</param>
+        /// <param name="position">The position of the tetromino.</param>
         /// <returns>
         ///   <see langword="true"/> if the tetromino can be placed; <see langword="false"/> otherwise.
         /// </returns>
-        public bool CanPlaceTetromino(BinaryImage tetromino) => (Image & tetromino) == BinaryImage.EmptyImage;
+        public bool CanPlaceTetromino(BinaryImage position) => (Image & position) == BinaryImage.EmptyImage;
 
         /// <summary>
-        /// Places the given tetromino on the puzzle.
+        /// Places the given tetromino into the puzzle.
         /// </summary>
         /// <param name="tetromino">The shape of the tetromino.</param>
         /// <param name="position">The position of the tetromino.</param>
@@ -114,7 +114,7 @@
         }
 
         /// <summary>
-        /// Enumerates all tetrominos placed on the puzzle.
+        /// Enumerates all tetrominos placed into the puzzle.
         /// </summary>
         /// <returns>An enumeration of the tetrominos placed on the puzzle.</returns>
         public IEnumerable<TetrominoShape> GetUsedTetrominos()

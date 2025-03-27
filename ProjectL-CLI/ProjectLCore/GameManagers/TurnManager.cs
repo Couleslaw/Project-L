@@ -4,7 +4,7 @@
     using ProjectLCore.GameLogic;
 
     /// <summary>
-    /// Takes care of the order of players, the game phase and the current turn.
+    /// Takes care of the order in which the players take turns, the current game phase and information about the current turn.
     /// </summary>
     /// <param name="playerIds">The IDs of the players in the game.</param>
     /// <seealso cref="TurnManager.Signaler"/>
@@ -37,12 +37,12 @@
         #region Properties
 
         /// <summary>
-        /// Gets the current player's ID
+        /// The ID of the current player.
         /// </summary>
         public uint CurrentPlayerId => _playersIds[_currentPlayersIndex];
 
         /// <summary>
-        /// True if this is the turn of the last player. 
+        /// <see langword="true"/> if this is the turn of the last player; else <see langword="false"/>.
         /// </summary>
         private bool IsEndOfRound => _currentPlayersIndex == _numPlayers - 1;
 

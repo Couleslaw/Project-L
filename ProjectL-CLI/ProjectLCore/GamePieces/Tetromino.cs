@@ -48,7 +48,7 @@
         Z,
 
         /// <summary>
-        /// The T shaped tetromino. Likes like <see cref="I3"/> with <see cref="O1"/> attacked to the middle cell.
+        /// The T shaped tetromino. Looks like <see cref="I3"/> with <see cref="O1"/> attached to the middle cell.
         /// </summary>
         T
     }

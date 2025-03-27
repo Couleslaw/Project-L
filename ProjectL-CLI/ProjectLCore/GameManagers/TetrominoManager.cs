@@ -84,7 +84,7 @@
 
         #region Properties
 
-        /// <summary> The number tetromino shape in the game. </summary>
+        /// <summary> The number of different tetromino shapes in the game. </summary>
         public static int NumShapes { get; } = Enum.GetValues(typeof(TetrominoShape)).Length;
 
         #endregion
@@ -99,21 +99,21 @@
         public static BinaryImage GetImageOf(TetrominoShape shape) => _binaryImages[(int)shape];
 
         /// <summary>
-        /// Gets the level of the given tetromino shape.
+        /// Gets the level of the given tetromino <paramref name="shape"/>.
         /// </summary>
         /// <param name="shape">The shape.</param>
         /// <returns>The level of the shape.</returns>
         public static int GetLevelOf(TetrominoShape shape) => _levels[(int)shape];
 
         /// <summary>
-        /// Finds all tetromino shapes with the given level.
+        /// Finds all tetromino shapes with the given <paramref name="level"/>.
         /// </summary>
         /// <param name="level">The level.</param>
         /// <returns>A list containing the shapes.</returns>
         public static List<TetrominoShape> GetShapesWithLevel(int level) => _shapesByLevel[level - MinLevel];
 
         /// <summary>
-        /// Checks is the given image is a valid configuration of the given shape.
+        /// Checks is the given <paramref name="image"/> is a valid configuration of the given <paramref name="shape"/>.
         /// </summary>
         /// <param name="shape">The shape.</param>
         /// <param name="image">The image.</param>
@@ -126,7 +126,7 @@
         }
 
         /// <summary>
-        /// Generates all the possible unique configurations of the given shape.
+        /// Generates all the possible unique configurations of the given <paramref name="shape"/>.
         /// </summary>
         /// <param name="shape">The shape.</param>
         /// <returns>A list containing the configurations.</returns>
@@ -165,7 +165,7 @@
         }
 
         /// <summary>
-        /// Generates all base configurations of the given shape.
+        /// Generates all base configurations of the given <paramref name="shape"/>.
         /// </summary>
         /// <param name="shape">The shape.</param>
         /// <returns>A list containing the configurations.</returns>

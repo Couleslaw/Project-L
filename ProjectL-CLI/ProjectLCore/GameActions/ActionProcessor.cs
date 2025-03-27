@@ -64,7 +64,7 @@
     }
 
     /// <summary>
-    /// A class for processing player actions in the game. One instance should be created for each player.
+    /// Processes actions of one player in the game.
     /// The class is responsible for updating the game state based on the player's actions.
     /// It isn't responsible for verifying the actions. The actions should be verified by an <see cref="ActionVerifier"/> before being processed.
     /// </summary>

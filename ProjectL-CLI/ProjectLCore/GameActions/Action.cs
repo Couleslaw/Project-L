@@ -8,7 +8,7 @@
 
     /// <summary>
     /// Represents an action that a player can take during their turn. Together with <see cref="IActionProcessor" /> it implements the visitor pattern.
-    /// The validity of the action should be checked by an <see cref="ActionVerifier" /> before being processed.
+    /// The validity of every action should be checked by an <see cref="ActionVerifier" /> before being processed.
     /// </summary>
     /// <seealso cref="IActionProcessor" />
     /// <seealso cref="ActionVerifier" />

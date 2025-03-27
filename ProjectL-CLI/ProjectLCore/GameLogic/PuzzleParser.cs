@@ -15,7 +15,7 @@
     /// The puzzle color and puzzle number together uniquely identify the file in which the puzzle image is stored.
     /// </summary>
     /// <param name="path">The path to the puzzle configuration file.</param>
-    ///     /// <example><code language="none">
+    /// /// <example><code language="none">
     ///     I B 13
     ///     R 5 O1
     ///     P ##..#
