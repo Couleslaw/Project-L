@@ -1,3 +1,5 @@
+<link rel='stylesheet' href='../../style/markdown-alert.css'/>
+
 # Unity Technical Documentation
 
 Testing special backticks
@@ -16,3 +18,10 @@ Testing special backticks
 
 > [!CAUTION]
 > Negative potential consequences of an action.
+
+<div class="markdown-alert markdown-alert-note">
+  <p class="markdown-alert-title" dir="auto">Note</p><p>
+  Highlights information that users should take into account, even when skimming.</p>
+</div>
+
+{% include note.html content="This is my note. All the content I type here is treated as a single paragraph." %}

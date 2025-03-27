@@ -1,4 +1,4 @@
-<link rel='stylesheet' href='code_highlight.css'/>
+<link rel='stylesheet' href='../../style/code-highlight.css'/>
 
 # Technical Documentation
 
