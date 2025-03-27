@@ -4,8 +4,12 @@
     using ProjectLCore.GameActions;
     using ProjectLCore.GameActions.Verification;
     using ProjectLCore.GameLogic;
+    using ProjectLCore.GameManagers;
     using ProjectLCore.Players;
-    using System.Diagnostics;
+    using System;
+    using System.Runtime.CompilerServices;
+    using static ProjectLCore.GameLogic.GameState;
+    using static ProjectLCore.GameLogic.PlayerState;
 
     internal class Program
     {
@@ -15,6 +19,12 @@
 
         internal readonly static string SmallSeparator = new String('-', 95);
 
+        internal static int RoundCount = 0;
+        internal const uint FirstPlayerId = 0;
+        internal static bool IsInteractive = true;
+        internal static bool ShouldClearConsole = true;
+        internal static readonly string[] PlayerNames = { "Alice", "Bob", "Charlie", "David" };
+
         #endregion
 
         #region Methods
@@ -23,6 +33,8 @@
         {
             // get program parameters
             var simParams = SimulationParams.GetSimulationParamsFromStdIn();
+            IsInteractive = simParams.IsInteractive;
+            ShouldClearConsole = simParams.ShouldClearConsole;
 
             // initialize a new game
             Console.Clear();
@@ -33,70 +45,42 @@
             Console.WriteLine("Initializing players...");
             Player[] players = new Player[simParams.NumPlayers];
             for (int i = 0; i < simParams.NumPlayers; i++) {
-                players[i] = new SimpleAIPlayer();
+                players[i] = new SimpleAIPlayer() { Name = PlayerNames[i] };
                 ((SimpleAIPlayer)players[i]).Init(players.Length);
             }
 
             // create game core
             Console.WriteLine("Creating a GameCore object and initializing game...");
             var game = new GameCore(gameState, players, shufflePlayers: false);
-            var signaler = game.TurnManager.GetSignaler();
             game.InitializeGame();
-
-            // create action processors
-            Console.WriteLine("Creating action processors...");
-            Dictionary<Player, GameActionProcessor> actionProcessors = new();
-            foreach (var player in players) {
-                actionProcessors[player] = new GameActionProcessor(game, player.Id, signaler);
-            }
-
             Console.WriteLine("Done! Starting game...\n");
 
             // game loop
-            int roundCount = 0;
-            uint firstPlayerId = 0;
             while (true) {
-                // get next turn, if game ended, break
+                // get next turn info
                 TurnInfo turnInfo = game.GetNextTurnInfo();
-                if (turnInfo.NumActionsLeft == 2 && game.CurrentPlayer.Id == firstPlayerId) {
-                    roundCount++;
-                }
-
-                if (simParams.ShouldClearConsole) {
-                    Console.Clear();
-                }
-                else {
-                    Console.WriteLine($"{LargeSeparator}\n{LargeSeparator}\n");
-                }
 
                 // check if game ended
                 if (game.CurrentGamePhase == GamePhase.Finished) {
-                    Console.WriteLine("Game ended! Clearing the playing board...");
+                    Console.WriteLine("Game ended! Clearing the playing board...\n");
                     game.GameEnded();
                     break;
                 }
 
                 // print turn info
-                Console.WriteLine($"Round: {roundCount}, Current player: {game.CurrentPlayer.Id}, Action: {3 - turnInfo.NumActionsLeft}");
-                Console.WriteLine($"TurnInfo: GamePhase={turnInfo.GamePhase}, LastRound={turnInfo.LastRound}, TookBlackPuzzle={turnInfo.TookBlackPuzzle}, UsedMaster={turnInfo.UsedMasterAction}");
-
-                // get action from current player
+                PrintGameScreenSeparator();
+                PrintTurnInfo(game.CurrentPlayer, turnInfo);
+               
+                // create verifier for the current player
                 var gameInfo = gameState.GetGameInfo();
-                var playerInfos = game.PlayerStates.Select(playerState => playerState.GetPlayerInfo()).ToArray();
-                var currentPlayerInfo = game.GetPlayerStateWithId(game.CurrentPlayer.Id).GetPlayerInfo();
+                var playerInfos = game.GetPlayerInfos();
+                var currentPlayerInfo = game.PlayerStates[game.CurrentPlayer].GetPlayerInfo();
                 var verifier = new ActionVerifier(gameInfo, currentPlayerInfo, turnInfo);
 
-                Console.WriteLine(SmallSeparator);
-                Console.Write(gameInfo);
-                foreach (var playerInfo in playerInfos) {
-                    Console.WriteLine(SmallSeparator);
-                    Console.Write(playerInfo);
-                }
-                Console.WriteLine(LargeSeparator);
-                Console.WriteLine();
+                // print game screen
+                PrintGameScreen(gameInfo, playerInfos, game);
 
-                // time how long getting the action took
-                Stopwatch stopwatch = Stopwatch.StartNew();
+                // get action from player
                 IAction? action;
                 try {
                     action = game.CurrentPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier).Result;
@@ -104,51 +88,104 @@
                 catch (Exception) {
                     action = null;
                 }
-                stopwatch.Stop();
-                if (stopwatch.ElapsedMilliseconds >= 1000) {
-                    Console.WriteLine($"WARNING! GetAction call took {stopwatch.ElapsedMilliseconds} ms");
-                }
 
                 // check if the player provided a action
                 if (action == null) {
-                    Console.WriteLine("Player failed to provide a action. Skipping action...");
-                    if (simParams.IsInteractive) {
-                        Console.WriteLine("Press 'Enter' to continue.");
-                        Console.ReadLine();
-                    }
+                    PrintPlayerProvidedNoAction();
                     continue;
                 }
 
                 // verify the action
                 var result = verifier.Verify(action);
                 if (result is VerificationFailure fail) {
-                    Console.WriteLine($"Player provided an invalid {action.GetType()}. Verification result:\n{fail.GetType()}: {fail.Message}\n");
-                    Console.WriteLine("Skipping action...");
-                    if (simParams.IsInteractive) {
-                        Console.WriteLine("Press 'Enter' to continue.");
-                        Console.ReadLine();
-                    }
+                    PrintPlayerProvidedInvalidAction(action, fail);
                     continue;
                 }
 
                 // process valid action
-                Console.WriteLine($"The player used a {action}\n");
-                if (simParams.IsInteractive) {
-                    Console.WriteLine("Press 'Enter' to process action.");
-                    Console.ReadLine();
-                }
-
-                action.Accept(actionProcessors[game.CurrentPlayer]);
+                PrintPlayerProvidedValidAction(action);
+                game.ProcessAction(action);
             }
 
             // print final results
-            Console.WriteLine("Getting final results...\n");
             var results = game.GetFinalResults();
-            var order = results.OrderBy(pair => pair.Value).Select(pair => pair.Key);
+            PrintGameScreenSeparator();
+            PrintFinalResults(results, game);
+        }
+
+        internal static void PrintGameScreenSeparator()
+        {
+            if (ShouldClearConsole) {
+                Console.Clear();
+            }
+            else {
+                Console.WriteLine($"{LargeSeparator}\n{LargeSeparator}\n");
+            }
+        }
+
+        internal static void PrintTurnInfo(Player currentPlayer, TurnInfo turnInfo)
+        {
+            
+            // check if new round
+            if (currentPlayer.Id == FirstPlayerId && turnInfo.NumActionsLeft == TurnManager.NumActionsInTurn - 1) {
+                RoundCount++;
+            }
+            // print turn info
+            Console.WriteLine($"Round: {RoundCount}, Current player: {currentPlayer.Name}, Action: {3 - turnInfo.NumActionsLeft}");
+            Console.WriteLine($"TurnInfo: GamePhase={turnInfo.GamePhase}, LastRound={turnInfo.LastRound}, TookBlackPuzzle={turnInfo.TookBlackPuzzle}, UsedMaster={turnInfo.UsedMasterAction}");
+
+        }
+
+        internal static void PrintGameScreen(GameInfo gameInfo, PlayerInfo[] playerInfos, GameCore game)
+        {
             Console.WriteLine(SmallSeparator);
-            foreach (var key in order) {
-                var info = key.GetPlayerInfo();
-                Console.WriteLine($" {results[key]}. | Player {info.PlayerId} | Score: {info.Score,2}, Number of finished puzzles: {info.FinishedPuzzlesIds.Count,2}, Number of leftover tetrominos: {info.NumTetrominosOwned.Sum()}");
+            Console.Write(gameInfo);
+            foreach (var playerInfo in playerInfos) {
+                Player player = game.GetPlayerWithId(playerInfo.PlayerId);
+                Console.WriteLine(SmallSeparator);
+                Console.Write($"{player.Name}. ");
+                Console.Write(playerInfo);
+            }
+            Console.WriteLine(LargeSeparator);
+            Console.WriteLine();
+        }
+
+        internal static void PrintPlayerProvidedNoAction()
+        {
+            Console.WriteLine("Player failed to provide a action. Skipping action...");
+            if (IsInteractive) {
+                Console.WriteLine("Press 'Enter' to continue.");
+                Console.ReadLine();
+            }
+        }
+
+        internal static void PrintPlayerProvidedInvalidAction(IAction action, VerificationFailure fail)
+        {
+            Console.WriteLine($"Player provided an invalid {action.GetType()}. Verification result:\n{fail.GetType()}: {fail.Message}\n");
+            Console.WriteLine("Skipping action...");
+            if (IsInteractive) {
+                Console.WriteLine("Press 'Enter' to continue.");
+                Console.ReadLine();
+            }
+        }
+
+        internal static void PrintPlayerProvidedValidAction(IAction action)
+        {
+            Console.WriteLine($"The player used a {action}\n");
+            if (IsInteractive) {
+                Console.WriteLine("Press 'Enter' to process action.");
+                Console.ReadLine();
+            }
+        }
+
+        internal static void PrintFinalResults(Dictionary<Player, int> results, GameCore game)
+        {
+            Console.WriteLine("Getting final results...\n");
+            Console.WriteLine(SmallSeparator);
+
+            foreach (var item in results) {
+                var info = game.PlayerStates[item.Key].GetPlayerInfo();
+                Console.WriteLine($" {item.Value}. | {item.Key.Name,-8} | Score: {info.Score,2}, Number of finished puzzles: {info.FinishedPuzzlesIds.Count,2}, Number of leftover tetrominos: {info.NumTetrominosOwned.Sum(),2}");
             }
             Console.WriteLine(SmallSeparator);
 

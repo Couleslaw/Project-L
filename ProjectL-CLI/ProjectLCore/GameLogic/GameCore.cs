@@ -1,5 +1,7 @@
 namespace ProjectLCore.GameLogic
 {
+    using ProjectLCore.GameActions;
+    using ProjectLCore.GameActions.Verification;
     using ProjectLCore.GameManagers;
     using ProjectLCore.GamePieces;
     using ProjectLCore.Players;
@@ -13,6 +15,16 @@ namespace ProjectLCore.GameLogic
 
         /// <summary> The maximum number of players allowed. </summary>
         public const int MaxPlayers = 4;
+
+        #endregion
+
+        #region Fields
+
+        /// <summary> Action processors for each player. </summary>
+        private readonly Dictionary<Player, GameActionProcessor> _actionProcessors = new();
+
+        /// <summary> Manages who's turn it currently is and what is the game phase. </summary>
+        private readonly TurnManager _turnManager;
 
         #endregion
 
@@ -35,29 +47,27 @@ namespace ProjectLCore.GameLogic
             // capture game state
             GameState = gameState;
 
-            // shuffle players if needed
+            // capture players and shuffle them if needed
             Players = players.ToArray();
             if (shufflePlayers) {
                 Players.Shuffle();
             }
 
-            // create player states
-            PlayerStates = new PlayerState[NumPlayers];
-            for (int i = 0; i < NumPlayers; i++) {
-                PlayerStates[i] = new PlayerState(playerId: Players[i].Id);
-            }
-
             // create turn manager and set the first player
-            TurnManager = new TurnManager(Players.Select(p => p.Id).ToArray());
-            CurrentPlayer = GetPlayerWithId(TurnManager.CurrentPlayerId);
+            _turnManager = new TurnManager(Players.Select(p => p.Id).ToArray());
+            CurrentPlayer = GetPlayerWithId(_turnManager.CurrentPlayerId);
+
+            // create player states and action processors
+            var signaler = _turnManager.GetSignaler();
+            foreach (var player in players) {
+                PlayerStates[player] = new PlayerState(player.Id);
+                _actionProcessors[player] = new GameActionProcessor(this, player, signaler);
+            }
         }
 
         #endregion
 
         #region Properties
-
-        /// <summary> The number of players playing the game.  </summary>
-        public int NumPlayers => Players.Length;
 
         /// <summary> The current <see cref="GamePhase"/>. </summary>
         public GamePhase CurrentGamePhase { get; private set; } = GamePhase.Normal;
@@ -72,10 +82,7 @@ namespace ProjectLCore.GameLogic
         public Player[] Players { get; }
 
         /// <summary> Information about the resources of each player. </summary>
-        public PlayerState[] PlayerStates { get; }
-
-        /// <summary> Manages who's turn it currently is and what is the game phase. </summary>
-        public TurnManager TurnManager { get; }
+        public Dictionary<Player, PlayerState> PlayerStates { get; } = new();
 
         #endregion
 
@@ -88,7 +95,7 @@ namespace ProjectLCore.GameLogic
         public void InitializeGame()
         {
             // give all players their initial tetrominos
-            foreach (var playerState in PlayerStates) {
+            foreach (var playerState in PlayerStates.Values) {
                 playerState.AddTetromino(TetrominoShape.O1);
                 playerState.AddTetromino(TetrominoShape.I2);
                 GameState.RemoveTetromino(TetrominoShape.O1);
@@ -100,15 +107,58 @@ namespace ProjectLCore.GameLogic
         }
 
         /// <summary>
-        /// Queries the <see cref="TurnManager"/> for information about the next turn and updates <see cref="CurrentPlayer"/> and <see cref="CurrentGamePhase"/>.
+        /// Finishes up internal game state and prepares for evaluating the results of the game.
+        /// Should be called after <see cref="CurrentGamePhase"/> changes to <see cref="GamePhase.Finished"/>.
+        /// </summary>
+        public void GameEnded()
+        {
+            // remove points for unfinished puzzles
+            foreach (var playerState in PlayerStates.Values) {
+                foreach (var puzzle in playerState.GetUnfinishedPuzzles()) {
+                    playerState.Score -= puzzle.RewardScore;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Determines the results of the game. <see cref="GameEnded"/> should be called before calling this function.
+        /// </summary>
+        /// <returns>
+        /// A dictionary containing the result order for each player. Player with order 1 wins. It is possible for multiple players to have the same order.
+        /// </returns>
+        /// <seealso cref="PlayerState.CompareTo(PlayerState?)"/>
+        public Dictionary<Player, int> GetFinalResults()
+        {
+            // determine the order of players by score, completed puzzles and leftover tetrominos
+            // lover index means better position
+            Array.Sort(Players, (p1, p2) => PlayerStates[p1].CompareTo(PlayerStates[p2]));
+
+            // if PlayerState1 == PlayerState2, then order1 == order2
+            var order = new Dictionary<Player, int>();
+            order[Players[0]] = 1;
+
+            for (int i = 1; i < Players.Length; i++) {
+                if (PlayerStates[Players[i]] == PlayerStates[Players[i - 1]]) {
+                    order[Players[i]] = order[Players[i - 1]];
+                }
+                else {
+                    order[Players[i]] = order[Players[i - 1]] + 1;
+                }
+            }
+
+            return order;
+        }
+
+        /// <summary>
+        /// Queries the <see cref="_turnManager"/> for information about the next turn and updates <see cref="CurrentPlayer"/> and <see cref="CurrentGamePhase"/>.
         /// </summary>
         /// <returns>Information about the next turn.</returns>
         /// <seealso cref="TurnManager.NextTurn"/>
         public TurnInfo GetNextTurnInfo()
         {
-            TurnInfo info = TurnManager.NextTurn();
+            TurnInfo info = _turnManager.NextTurn();
             CurrentGamePhase = info.GamePhase;
-            CurrentPlayer = GetPlayerWithId(TurnManager.CurrentPlayerId);
+            CurrentPlayer = GetPlayerWithId(_turnManager.CurrentPlayerId);
             return info;
         }
 
@@ -129,62 +179,22 @@ namespace ProjectLCore.GameLogic
         }
 
         /// <summary>
-        /// Returns the <see cref="PlayerState"/> of the player matching the given ID. Throws an exception if no such player exists.
+        /// Creates a read-only <see cref="PlayerState.PlayerInfo"/> wrapper for each <see cref="PlayerState"/> in <see cref="PlayerStates"/>.
         /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns>The player state of the player with the given ID.</returns>
-        /// <exception cref="ArgumentException">Player state not found</exception>
-        public PlayerState GetPlayerStateWithId(uint id)
+        /// <returns> The array of <see cref="PlayerState.PlayerInfo"/> objects.</returns>
+        public PlayerState.PlayerInfo[] GetPlayerInfos()
         {
-            foreach (var playerState in PlayerStates) {
-                if (playerState.PlayerId == id) {
-                    return playerState;
-                }
-            }
-            throw new ArgumentException("Player state not found");
+            return PlayerStates.Select(playerState => playerState.Value.GetPlayerInfo()).ToArray();
         }
 
         /// <summary>
-        /// Finishes up internal game state and prepares for evaluating the results of the game.
-        /// Should be called after <see cref="CurrentGamePhase"/> changes to <see cref="GamePhase.Finished"/>.
+        /// Adjusts the <see cref="GameState"/> and the <see cref="PlayerState"/> of the current player based on the given action.
+        /// Doesn't check if the action is valid. Use an <see cref="ActionVerifier"/> to check if the action is valid before calling this function.
         /// </summary>
-        public void GameEnded()
+        /// <param name="action">The action.</param>
+        public void ProcessAction(IAction action)
         {
-            // remove points for unfinished puzzles
-            foreach (var playerState in PlayerStates) {
-                foreach (var puzzle in playerState.GetUnfinishedPuzzles()) {
-                    playerState.Score -= puzzle.RewardScore;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Determines the results of the game. <see cref="GameEnded"/> should be called before calling this function.
-        /// </summary>
-        /// <returns>
-        /// A dictionary containing the result order for each player. Player with order 1 wins. It is possible for multiple players to have the same order.
-        /// </returns>
-        /// <seealso cref="PlayerState.CompareTo(PlayerState?)"/>
-        public Dictionary<PlayerState, int> GetFinalResults()
-        {
-            // determine the order of players by score, completed puzzles and leftover tetrominos
-            // lover index means better position
-            Array.Sort(PlayerStates);
-
-            // (PlayerState, order)
-            // if PlayerState1 == PlayerState2, then order1 == order2
-            var result = new Dictionary<PlayerState, int>();
-            result[PlayerStates[0]] = 1;
-            for (int i = 1; i < NumPlayers; i++) {
-                if (PlayerStates[i] == PlayerStates[i - 1]) {
-                    result[PlayerStates[i]] = result[PlayerStates[i - 1]];
-                }
-                else {
-                    result[PlayerStates[i]] = result[PlayerStates[i - 1]] + 1;
-                }
-            }
-
-            return result;
+            action.Accept(_actionProcessors[CurrentPlayer]);
         }
 
         #endregion

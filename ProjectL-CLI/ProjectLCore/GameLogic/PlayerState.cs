@@ -264,7 +264,7 @@ namespace ProjectLCore.GameLogic
             public override string ToString()
             {
                 StringBuilder sb = new();
-                sb.AppendLine($"Player {PlayerId}, score: {Score}, num finished puzzles: {FinishedPuzzlesIds.Count}");
+                sb.AppendLine($"ID: {PlayerId}, Score: {Score}, Num finished puzzles: {FinishedPuzzlesIds.Count}");
 
                 // append tetromino info
                 sb.Append("Tetrominos:");

@@ -14,15 +14,6 @@
     /// <seealso cref="Player" />
     public abstract class AIPlayerBase : Player
     {
-        #region Properties
-
-        /// <summary>
-        /// The name of the player.
-        /// </summary>
-        public override sealed string Name { get; init; } = "AI Player";
-
-        #endregion
-
         #region Methods
 
         /// <summary>

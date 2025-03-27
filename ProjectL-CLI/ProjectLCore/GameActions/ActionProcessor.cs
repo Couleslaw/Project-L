@@ -69,20 +69,18 @@
     /// It isn't responsible for verifying the actions. The actions should be verified by an <see cref="ActionVerifier"/> before being processed.
     /// </summary>
     /// <param name="game">The current game.</param>
-    /// <param name="playerId">The ID of the player the processor is for.</param>
+    /// <param name="player">The player this processor is for.</param>
     /// <param name="signaler">A <see cref="TurnManager.Signaler"/> for sending signals when processing actions.</param>
     /// <seealso cref="ActionVerifier"/>
     /// <seealso cref="IAction"/>
     /// <seealso cref="IActionProcessor" />
-    public class GameActionProcessor(GameCore game, uint playerId, TurnManager.Signaler signaler) : IActionProcessor
+    public class GameActionProcessor(GameCore game, Player player, TurnManager.Signaler signaler) : IActionProcessor
     {
         #region Fields
 
         private readonly GameState _gameState = game.GameState;
 
-        private readonly Player _player = game.GetPlayerWithId(playerId);
-
-        private readonly PlayerState _playerState = game.GetPlayerStateWithId(playerId);
+        private readonly PlayerState _playerState = game.PlayerStates[player];
 
         #endregion
 
@@ -274,7 +272,7 @@
                 return rewardOptions[0];
             }
             // if there are multiple options, let the player choose
-            TetrominoShape reward = _player.GetRewardAsync(rewardOptions, puzzle.Clone()).Result;
+            TetrominoShape reward = player.GetRewardAsync(rewardOptions, puzzle.Clone()).Result;
             // if the chosen reward isn't valid, pick the first one
             if (!rewardOptions.Contains(reward)) {
                 reward = rewardOptions[0];

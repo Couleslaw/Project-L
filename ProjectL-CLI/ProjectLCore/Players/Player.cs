@@ -20,17 +20,24 @@ namespace ProjectLCore.Players
         #region Properties
 
         /// <summary>
-        /// The unique ID of the player. Starts at zero and is incremented by one for each new player created.
-        /// This means that the n-th player created has <see cref="Id"/> = n-1.
+        /// The unique ID of the player.
         /// </summary>
         public uint Id { get; } = _idCounter++;
 
         /// <summary>
         /// The name of the player.
         /// </summary>
-        public abstract string Name { get; init; }
+        public virtual string Name { get; init; }
 
         #endregion
+
+        /// <summary>
+        /// Sets the default player name to "Player {<see cref="Id"/>}".
+        /// </summary>
+        public Player()
+        {
+            Name = $"Player {Id}";
+        }
 
         #region Methods
 

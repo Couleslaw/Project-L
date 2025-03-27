@@ -22,15 +22,6 @@
 
         #endregion
 
-        #region Properties
-
-        /// <summary>
-        /// The name of the player.
-        /// </summary>
-        public override string Name { get; init; } = "Human Player";
-
-        #endregion
-
         #region Methods
 
         /// <summary>
