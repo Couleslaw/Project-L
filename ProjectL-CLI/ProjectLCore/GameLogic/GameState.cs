@@ -108,6 +108,8 @@ namespace ProjectLCore.GameLogic
 
         private readonly Queue<Puzzle> _blackPuzzlesDeck;
 
+        private readonly List<Puzzle> _allPuzzlesInGame = new();
+
         /// <summary> The amount of tetrominos of each shape in the shared reserve at the beginning of the game.  </summary>
         private readonly int _numInitialTetrominos;
 
@@ -143,6 +145,10 @@ namespace ProjectLCore.GameLogic
             if (blackPuzzlesDeck.Count < NumPuzzlesInRow + 1) {
                 throw new ArgumentException($"The number of black puzzles must be at least {NumPuzzlesInRow + 1}");
             }
+
+            // save the list of all puzzles in the game
+            _allPuzzlesInGame.AddRange(whitePuzzlesDeck);
+            _allPuzzlesInGame.AddRange(blackPuzzlesDeck);
 
             // create queues representing the decks
             _whitePuzzlesDeck = new Queue<Puzzle>(whitePuzzlesDeck);
@@ -219,6 +225,11 @@ namespace ProjectLCore.GameLogic
             }
             return gameStateBuilder.Build();
         }
+
+        /// <summary>
+        /// Returns a copy of all the puzzles in the game. The puzzles are cloned to prevent modification of the original data.
+        /// </summary>
+        public List<Puzzle> GetAllPuzzlesInGame() => _allPuzzlesInGame.Select(p => p.Clone()).ToList();
 
         /// <summary> Creates a list containing the puzzles in the white row. </summary>
         /// <returns>A list containing the puzzles in the white row.</returns>

@@ -5,7 +5,6 @@ namespace ProjectLCore.Players
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
 
-
     /// <summary>
     /// Represents a player in the game.
     /// </summary>
@@ -14,6 +13,18 @@ namespace ProjectLCore.Players
         #region Fields
 
         private static uint _idCounter = 0;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Sets the default player name to "Player {<see cref="Id"/>}".
+        /// </summary>
+        public Player()
+        {
+            Name = $"Player {Id}";
+        }
 
         #endregion
 
@@ -30,14 +41,6 @@ namespace ProjectLCore.Players
         public virtual string Name { get; init; }
 
         #endregion
-
-        /// <summary>
-        /// Sets the default player name to "Player {<see cref="Id"/>}".
-        /// </summary>
-        public Player()
-        {
-            Name = $"Player {Id}";
-        }
 
         #region Methods
 

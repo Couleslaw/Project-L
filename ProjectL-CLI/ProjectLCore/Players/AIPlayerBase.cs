@@ -20,8 +20,9 @@
         /// Function for initializing the AI player. This function is called once at the beginning of the game.
         /// </summary>
         /// <param name="numPlayers">The number of players in the game.</param>
+        /// <param name="allPuzzles">All the puzzles in the game.</param>
         /// <param name="filePath">The path to a file where the player might be storing some information.</param>
-        public abstract void Init(int numPlayers, string? filePath);
+        public abstract void Init(int numPlayers, List<Puzzle> allPuzzles, string? filePath);
 
         /// <summary>
         /// Implementation of an algorithm that decides the action the player wants to take based on the current game context.

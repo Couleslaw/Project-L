@@ -46,7 +46,7 @@
             Player[] players = new Player[simParams.NumPlayers];
             for (int i = 0; i < simParams.NumPlayers; i++) {
                 players[i] = new SimpleAIPlayer() { Name = PlayerNames[i] };
-                ((SimpleAIPlayer)players[i]).Init(players.Length);
+                ((SimpleAIPlayer)players[i]).Init(players.Length, gameState.GetAllPuzzlesInGame());
             }
 
             // create game core
