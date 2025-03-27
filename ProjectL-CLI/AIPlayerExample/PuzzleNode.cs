@@ -202,7 +202,7 @@
         /// <returns>A list of placements.</returns>
         private List<PlaceTetrominoAction> GetAllValidPlacements(BinaryImage puzzle, TetrominoShape shape)
         {
-            return TetrominoManager.GetAllUniqueConfigurationsOf(shape) // get all possible placements
+            return TetrominoManager.GetAllConfigurationsOf(shape) // get all possible placements
                 .FindAll(tetromino => (puzzle & tetromino) == BinaryImage.EmptyImage) // find valid ones
                 .Select(tetromino => new PlaceTetrominoAction(PuzzleId, shape, tetromino)) // create actions
                 .ToList();

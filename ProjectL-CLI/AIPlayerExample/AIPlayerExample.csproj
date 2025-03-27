@@ -9,9 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="ProjectLCore">
-      <HintPath>..\ProjectLCore\bin\Release\net8.0\ProjectLCore.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\ProjectLCore\ProjectLCore.csproj" />
   </ItemGroup>
 
 </Project>

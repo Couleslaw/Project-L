@@ -36,7 +36,7 @@
         /// <param name="numPlayers">The number of players in the game.</param>
         /// <param name="allPuzzles">All the puzzles in the game.</param>
         /// <param name="filePath">The path to a file where the player might be storing some information.</param>
-        public override void Init(int numPlayers, List<Puzzle> allPuzzles, string? filePath = null)
+        protected override void Init(int numPlayers, List<Puzzle> allPuzzles, string? filePath)
         {
         }
 
@@ -48,7 +48,7 @@
         /// <returns>
         /// A random element of <paramref name="rewardOptions"/>.
         /// </returns>
-        public override TetrominoShape GetReward(List<TetrominoShape> rewardOptions, Puzzle puzzle)
+        protected override TetrominoShape GetReward(List<TetrominoShape> rewardOptions, Puzzle puzzle)
         {
             return rewardOptions.GetRandomElement();
         }
@@ -65,7 +65,7 @@
         /// The action the player wants to take.
         /// </returns>
         /// <exception cref="System.InvalidOperationException">Invalid game phase</exception>
-        public override IAction GetAction(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, List<PlayerState.PlayerInfo> enemyInfos, TurnInfo turnInfo, ActionVerifier verifier)
+        protected override IAction GetAction(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, List<PlayerState.PlayerInfo> enemyInfos, TurnInfo turnInfo, ActionVerifier verifier)
         {
             // get an unfinished puzzle if there is one
             _currentPuzzle = myInfo.UnfinishedPuzzles.Length == 0 ? null : myInfo.UnfinishedPuzzles[0];
