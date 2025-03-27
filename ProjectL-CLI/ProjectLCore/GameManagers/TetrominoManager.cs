@@ -130,7 +130,7 @@
         /// </summary>
         /// <param name="shape">The shape.</param>
         /// <returns>A list containing the configurations.</returns>
-        public static List<BinaryImage> GetAllUniqueConfigurationsOf(TetrominoShape shape)
+        public static List<BinaryImage> GetAllConfigurationsOf(TetrominoShape shape)
         {
             // check cache first
             if (_allConfigurationsCache[(int)shape] is not null) {

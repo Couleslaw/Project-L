@@ -150,7 +150,7 @@ namespace ProjectLCore.GameLogic
         }
 
         /// <summary>
-        /// Queries the <see cref="_turnManager"/> for information about the next turn and updates <see cref="CurrentPlayer"/> and <see cref="CurrentGamePhase"/>.
+        /// Prepares the next turn and updates <see cref="CurrentPlayer"/> and <see cref="CurrentGamePhase"/>.
         /// </summary>
         /// <returns>Information about the next turn.</returns>
         /// <seealso cref="TurnManager.NextTurn"/>

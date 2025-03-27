@@ -7,23 +7,30 @@
     using ProjectLCore.GameManagers;
     using ProjectLCore.Players;
     using System;
-    using System.Runtime.CompilerServices;
     using static ProjectLCore.GameLogic.GameState;
     using static ProjectLCore.GameLogic.PlayerState;
 
     internal class Program
     {
+        #region Constants
+
+        internal const uint FirstPlayerId = 0;
+
+        #endregion
+
         #region Fields
 
         internal readonly static string LargeSeparator = new String('X', 110);
 
         internal readonly static string SmallSeparator = new String('-', 95);
 
-        internal static int RoundCount = 0;
-        internal const uint FirstPlayerId = 0;
-        internal static bool IsInteractive = true;
-        internal static bool ShouldClearConsole = true;
         internal static readonly string[] PlayerNames = { "Alice", "Bob", "Charlie", "David" };
+
+        internal static int RoundCount = 0;
+
+        internal static bool IsInteractive = true;
+
+        internal static bool ShouldClearConsole = true;
 
         #endregion
 
@@ -39,14 +46,14 @@
             // initialize a new game
             Console.Clear();
             Console.WriteLine("Loading game state from file...");
-            GameState gameState = GameState.CreateFromFile("puzzles.txt", simParams.NumInitialTetrominos, simParams.NumWhitePuzzles, simParams.NumBlackPuzzles);
+            var gameState = GameState.CreateFromFile("puzzles.txt", simParams.NumInitialTetrominos, simParams.NumWhitePuzzles, simParams.NumBlackPuzzles);
 
             // create players
             Console.WriteLine("Initializing players...");
             Player[] players = new Player[simParams.NumPlayers];
             for (int i = 0; i < simParams.NumPlayers; i++) {
                 players[i] = new SimpleAIPlayer() { Name = PlayerNames[i] };
-                ((SimpleAIPlayer)players[i]).Init(players.Length, gameState.GetAllPuzzlesInGame());
+                ((SimpleAIPlayer)players[i]).InitAsync(players.Length, gameState.GetAllPuzzlesInGame());
             }
 
             // create game core
@@ -70,7 +77,7 @@
                 // print turn info
                 PrintGameScreenSeparator();
                 PrintTurnInfo(game.CurrentPlayer, turnInfo);
-               
+
                 // create verifier for the current player
                 var gameInfo = gameState.GetGameInfo();
                 var playerInfos = game.GetPlayerInfos();
@@ -125,7 +132,7 @@
 
         internal static void PrintTurnInfo(Player currentPlayer, TurnInfo turnInfo)
         {
-            
+
             // check if new round
             if (currentPlayer.Id == FirstPlayerId && turnInfo.NumActionsLeft == TurnManager.NumActionsInTurn - 1) {
                 RoundCount++;
@@ -133,7 +140,6 @@
             // print turn info
             Console.WriteLine($"Round: {RoundCount}, Current player: {currentPlayer.Name}, Action: {3 - turnInfo.NumActionsLeft}");
             Console.WriteLine($"TurnInfo: GamePhase={turnInfo.GamePhase}, LastRound={turnInfo.LastRound}, TookBlackPuzzle={turnInfo.TookBlackPuzzle}, UsedMaster={turnInfo.UsedMasterAction}");
-
         }
 
         internal static void PrintGameScreen(GameInfo gameInfo, PlayerInfo[] playerInfos, GameCore game)

@@ -183,8 +183,8 @@ namespace ProjectLCore.GameLogic
         /// </summary>
         /// <param name="puzzlesFilePath">The puzzles file path.</param>
         /// <param name="numInitialTetrominos">The number initial tetrominos.</param>
-        /// <param name="numWhitePuzzles">The number of white puzzles to load. Loads all white puzzles, if the number of white puzzles in the source file doesn't exceed this number. Should be at least <see cref="NumPuzzlesInRow"/></param>
-        /// <param name="numBlackPuzzles">The number of black puzzles to load. Loads all black puzzles, if the number of black puzzles in the source file doesn't exceed this number. Should be at least <see cref="NumPuzzlesInRow"/></param>
+        /// <param name="numWhitePuzzles">The number of white puzzles to load. Loads all white puzzles, if the number of white puzzles in the source file doesn't exceed this number. Should be at least <see cref="NumPuzzlesInRow"/>.</param>
+        /// <param name="numBlackPuzzles">The number of black puzzles to load. Loads all black puzzles, if the number of black puzzles in the source file doesn't exceed this number. Should be at least <see cref="NumPuzzlesInRow"/> + 1.</param>
         /// <returns>Initialized <see cref="GameState"/>.</returns>
         /// <seealso cref="GameStateBuilder"/>"
         /// <seealso cref="PuzzleParser"/>
@@ -227,8 +227,10 @@ namespace ProjectLCore.GameLogic
         }
 
         /// <summary>
-        /// Returns a copy of all the puzzles in the game. The puzzles are cloned to prevent modification of the original data.
+        /// Creates a copy of all the puzzles in the game. This includes puzzles which have already been finished.
+        /// The puzzles are cloned to prevent modification of the original data.
         /// </summary>
+        /// <returns>A list of all puzzles in the game.</returns>
         public List<Puzzle> GetAllPuzzlesInGame() => _allPuzzlesInGame.Select(p => p.Clone()).ToList();
 
         /// <summary> Creates a list containing the puzzles in the white row. </summary>

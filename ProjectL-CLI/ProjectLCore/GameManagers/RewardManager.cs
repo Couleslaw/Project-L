@@ -59,7 +59,7 @@
         }
 
         /// <summary>
-        /// Gets the shapes the player can get in exchange for the given <c>shape</c> by using <see cref="ChangeTetrominoAction"/>.
+        /// Gets the shapes the player can get in exchange for the given <c>shape</c> by using a <see cref="ChangeTetrominoAction"/>.
         /// </summary>
         /// <param name="numTetrominosLeft">Contains information about how many tetrominos are left in the shared reserve. <c>numTetrominosLeft[shape]</c> gives information about <c>(<see cref="TetrominoShape" />)shape</c>.</param>
         /// <param name="shape">The shape the player wants to trade.</param>
@@ -89,7 +89,7 @@
             // now add all shapes of level <= oldLevel
             for (int level = TetrominoManager.MinLevel; level <= oldLevel; level++) {
                 foreach (var s in TetrominoManager.GetShapesWithLevel(level)) {
-                    if (numTetrominosLeft[(int)s] > 0) {
+                    if (numTetrominosLeft[(int)s] > 0 && s != shape) {
                         result.Add(s);
                     }
                 }

@@ -11,11 +11,14 @@
     ///     <item><c>R</c> (reward) <c>score</c> <c>tetromino</c> (<c>O1</c>/<c>O2</c>/<c>I2</c>/<c>I3</c>/<c>I4</c>/<c>L2</c>/<c>L3</c>/<c>Z</c>/<c>T</c>)</item>
     ///     <item>five rows starting with <c>P</c> encoding the puzzle; <c>#</c> = filled cell, <c>.</c> = empty cell</item>
     /// </list>
-    /// This example encodes a black puzzle with number 13, reward of 5 points and <c>O1</c> tetromino.
     /// The puzzle color and puzzle number together uniquely identify the file in which the puzzle image is stored.
     /// </summary>
     /// <param name="path">The path to the puzzle configuration file.</param>
-    /// /// <example><code language="none">
+    /// <remarks>
+    /// The order of the lines doesn't matter and there can be an arbitrary number of lines not starting with a special character scattered throughout the puzzle definition.
+    /// This however isn't recommended as it makes the file harder to read for humans.
+    /// </remarks>
+    /// <example><code language="none">
     ///     I B 13
     ///     R 5 O1
     ///     P ##..#
@@ -23,7 +26,9 @@
     ///     P #....
     ///     P #....
     ///     P #..##
-    /// </code></example>
+    /// </code>
+    /// This example encodes a black puzzle with number 13, reward of 5 points and <c>O1</c> tetromino.
+    /// </example>
     public class PuzzleParser(string path) : IDisposable
     {
         #region Constants
@@ -57,7 +62,7 @@
         /// Parses the next puzzle from the file.
         /// </summary>
         /// <returns>The decoded puzzle or <see langword="null"/> if reached end of file.</returns>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="InvalidPuzzleException">
         /// Invalid puzzle configuration file. Line starting with special character is empty.
         /// or
         /// Duplicate identifier line.
