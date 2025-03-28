@@ -219,7 +219,7 @@
         /// <param name="maxDepth">The maximum depth for IDA*.</param>
         /// <param name="levelSumToConsiderBlackPuzzles">If the sum of the levels of the tetrominos owned by the player is less than this number then only white puzzles are considered.</param>
         /// <returns>The puzzle to solve and a solution, or <see langword="null"/> if no puzzle can be solved.</returns>
-        private static Tuple<Puzzle, List<IAction>>? ChoosePuzzle(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, int maxDepth = -1, int levelSumToConsiderBlackPuzzles = 20)
+        private static Tuple<Puzzle, List<IAction>>? ChoosePuzzle(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, int maxDepth = -1, int levelSumToConsiderBlackPuzzles = 15)
         {
             List<Puzzle> possiblePuzzles = new();
 

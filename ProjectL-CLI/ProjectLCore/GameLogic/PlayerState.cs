@@ -290,6 +290,8 @@ namespace ProjectLCore.GameLogic
                         }
                         if (first) {
                             first = false;
+                        }
+                        else {
                             sb.Append(',');
                         }
                         sb.Append($"  {(TetrominoShape)i}: {tetrominos[i]}");

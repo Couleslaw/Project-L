@@ -98,19 +98,19 @@
 
                 // check if the player provided a action
                 if (action == null) {
-                    PrintPlayerProvidedNoAction();
+                    PrintPlayerProvidedNoAction(game.CurrentPlayer);
                     continue;
                 }
 
                 // verify the action
                 var result = verifier.Verify(action);
                 if (result is VerificationFailure fail) {
-                    PrintPlayerProvidedInvalidAction(action, fail);
+                    PrintPlayerProvidedInvalidAction(action, fail, game.CurrentPlayer);
                     continue;
                 }
 
                 // process valid action
-                PrintPlayerProvidedValidAction(action);
+                PrintPlayerProvidedValidAction(action, game.CurrentPlayer);
                 game.ProcessAction(action);
             }
 
@@ -156,18 +156,18 @@
             Console.WriteLine();
         }
 
-        internal static void PrintPlayerProvidedNoAction()
+        internal static void PrintPlayerProvidedNoAction(Player player)
         {
-            Console.WriteLine("Player failed to provide a action. Skipping action...");
+            Console.WriteLine($"{player.Name} failed to provide a action. Skipping action...");
             if (IsInteractive) {
                 Console.WriteLine("Press 'Enter' to continue.");
                 Console.ReadLine();
             }
         }
 
-        internal static void PrintPlayerProvidedInvalidAction(IAction action, VerificationFailure fail)
+        internal static void PrintPlayerProvidedInvalidAction(IAction action, VerificationFailure fail, Player player)
         {
-            Console.WriteLine($"Player provided an invalid {action.GetType()}. Verification result:\n{fail.GetType()}: {fail.Message}\n");
+            Console.WriteLine($"{player.Name} provided an invalid {action.GetType()}. Verification result:\n{fail.GetType()}: {fail.Message}\n");
             Console.WriteLine("Skipping action...");
             if (IsInteractive) {
                 Console.WriteLine("Press 'Enter' to continue.");
@@ -175,9 +175,9 @@
             }
         }
 
-        internal static void PrintPlayerProvidedValidAction(IAction action)
+        internal static void PrintPlayerProvidedValidAction(IAction action, Player player)
         {
-            Console.WriteLine($"The player used a {action}\n");
+            Console.WriteLine($"{player.Name} used a {action}\n");
             if (IsInteractive) {
                 Console.WriteLine("Press 'Enter' to process action.");
                 Console.ReadLine();
