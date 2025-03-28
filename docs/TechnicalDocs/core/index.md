@@ -1,5 +1,5 @@
-<!-- <link rel='stylesheet' href='../../style/code-highlight.css'/>
-<link rel='stylesheet' href='../../style/markdown-alert.css'/> -->
+<link rel='stylesheet' href='../../css/code-highlight.css'/>
+<link rel='stylesheet' href='../../css/markdown-alert.css'/>
 
 # Technical Documentation
 
