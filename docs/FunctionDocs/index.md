@@ -1,3 +1,5 @@
+<link rel='stylesheet' href='../css/markdown-alert.css'/>
+
 # Functional Specification
 
 ## Overview
@@ -78,8 +80,8 @@ Players are shuffled by default to ensure random order of play. This can be turn
 
 ## Main Game
 
-After Karel is done creating the game for him, Alice and his NEAT algorithm AI, he clicks on the **Start game** button and is taken to the [<u>Main Game</u>](#main-game) screen. After playing for a while, he takes a screenshot of the game to show it to his friends.
+After Karel is done creating the game for him, Alice and his NEAT algorithm AI player, he clicks on the **Start game** button and is taken to the [<u>Main Game</u>](#main-game) screen. After playing for a while, he takes a screenshot of the game to show it to his friends.
 
-![Main Game](images/main-game.png)
+![Main Game](images/main-game-big.png)
 
 ## End Screen
