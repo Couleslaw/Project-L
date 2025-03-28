@@ -264,13 +264,15 @@ Since every puzzle is a 5x5 grid, we can represent it using a 32 bit integer and
 
 The pieces are represented by the [TetrominoShape](../../ProjectLCoreDocs/html/T_ProjectLCore_GamePieces_TetrominoShape.htm) enum. The class [TetrominoManager](../../ProjectLCoreDocs/html/T_ProjectLCore_GameManagers_TetrominoManager.htm) serves as a proxy between the `TetrominoShape` abstraction and `BinaryImage` configurations.
 
-> [!TIP]
-> Especially the methods [CompareShapeToImage](../../ProjectLCoreDocs/html/M_ProjectLCore_GameManagers_TetrominoManager_CompareShapeToImage.htm) [GetAllConfigurationsOf](../../ProjectLCoreDocs/html/M_ProjectLCore_GameManagers_TetrominoManager_GetAllConfigurationsOf.htm)(`shape`) might come in handy when implementing your own AI player.
+{% include tip.html content="
+Especially the methods [CompareShapeToImage](../../ProjectLCoreDocs/html/M_ProjectLCore_GameManagers_TetrominoManager_CompareShapeToImage.htm) [GetAllConfigurationsOf](../../ProjectLCoreDocs/html/M_ProjectLCore_GameManagers_TetrominoManager_GetAllConfigurationsOf.htm)(`shape`) might come in handy when implementing your own AI player.
+"%}
 
 The puzzles are represented by the [Puzzle](../../ProjectLCoreDocs/html/T_ProjectLCore_GamePieces_Puzzle.htm) which contains the `BinaryImage` of the puzzle and a list of pieces which have been placed into the puzzle. The class also has methods to check if a piece can be placed into the puzzle and to place it.
 
-> [!NOTE]
-> The `Puzzle` class has two other noteworthy methods. The [GetUsedTetrominos](../../ProjectLCoreDocs/html/M_ProjectLCore_GamePieces_Puzzle_GetUsedTetrominos.htm) method is called when the puzzle is finished and the pieces are returned to the player. The [Clone](../../ProjectLCoreDocs/html/M_ProjectLCore_GamePieces_Puzzle_Clone.htm) method returns a deep copy of the puzzle. This is used when creating a representation the game, which can safely be passed to an AI player, without the risk of it modifying the actual game state.
+{% include note.html content="
+The `Puzzle` class has two other noteworthy methods. The [GetUsedTetrominos](../../ProjectLCoreDocs/html/M_ProjectLCore_GamePieces_Puzzle_GetUsedTetrominos.htm) method is called when the puzzle is finished and the pieces are returned to the player. The [Clone](../../ProjectLCoreDocs/html/M_ProjectLCore_GamePieces_Puzzle_Clone.htm) method returns a deep copy of the puzzle. This is used when creating a representation the game, which can safely be passed to an AI player, without the risk of it modifying the actual game state.
+"%}
 
 The puzzles are loaded from a file using the [PuzzleParser](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_PuzzleParser.htm) class. The puzzles are stored in a simple text format which is easy to read and write. For more details on the format, please refer to the [PuzzleParser](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_PuzzleParser.htm) class documentation.
 
@@ -278,27 +280,31 @@ The puzzles are loaded from a file using the [PuzzleParser](../../ProjectLCoreDo
 
 The game state is represented by the [GameState](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GameState.htm) class. It remembers the puzzle rows, puzzle decks and the shared tetromino reserve. It has a simple API for viewing and modifying these resources, which is used when validating and processing actions.
 
-> [!TIP]
-> The `GameState` can be easily initialized from a puzzle file with the [CreateFromFile](../../ProjectLCoreDocs/html/M_ProjectLCore_GameLogic_GameState_CreateFromFile.htm) method, which uses a [PuzzleParser](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_PuzzleParser.htm) and a [GameStateBuilder](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GameStateBuilder.htm).
+{% include tip.html content="
+The `GameState` can be easily initialized from a puzzle file with the [CreateFromFile](../../ProjectLCoreDocs/html/M_ProjectLCore_GameLogic_GameState_CreateFromFile.htm) method, which uses a [PuzzleParser](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_PuzzleParser.htm) and a [GameStateBuilder](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GameStateBuilder.htm).
+" %}
 
 As we have mentioned previously, we need a means to represent the game state in a way that the AI players can interact with it, without a risk of modifying the underlying data. We can get such a representation using the [GetGameInfo](../../ProjectLCoreDocs/html/M_ProjectLCore_GameLogic_GameState_GetGameInfo.htm) method, which returns a [GameInfo](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GameState_GameInfo.htm) object. It provides all necessary information an AI player might need and nothing more, while preventing any modifications.
 
-> [!NOTE]
-> This is done by a combination of copies, deep copies and read-only views of the underlying `GameState` data.
+{% include note.html content="
+This is done by a combination of copies, deep copies and read-only views of the underlying `GameState` data.
+"%}
 
 ## Individual Resource - solution
 
 The player state is represented by the [PlayerState](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_PlayerState.htm) class. It remembers the player's score, the tetrominos he has, the puzzles he is working on, and the puzzles he has finished. Similarly to `GameState`, it also has a simple API to modify these resources and a method to create a [PlayerInfo](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_PlayerState_PlayerInfo.htm) object, which is similar in nature to `GameInfo`.
 
-> [!NOTE]
-> The `PlayerState` class also implements the `IComparable` interface to allow sorting the players by their score, finished puzzles and left-over pieces. This is used when displaying the final results.
+{% include note.html content="
+The `PlayerState` class also implements the `IComparable` interface to allow sorting the players by their score, finished puzzles and left-over pieces. This is used when displaying the final results.
+"%}
 
 ## Game Phases - solution
 
 The game phase is represented by a simple [GamePhase](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GamePhase.htm) enum. Managing the current game phase and transitioning between phases is the job of the [TurnManager](../../ProjectLCoreDocs/html/T_ProjectLCore_GameManagers_TurnManager.htm) class. The other job it has is keeping track of who the current player is. It contains the [NextTurn](../../ProjectLCoreDocs/html/M_ProjectLCore_GameManagers_TurnManager_NextTurn.htm) method which adjusts the internal turn state and return a [TurnInfo](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_TurnInfo.htm) object, which contains information about the current turn, such as the number of actions the current player has left in their turn or the current game phase.
 
-> [!NOTE]
-> The `TurnInfo` object also contains some additional information needed to determine the validity of actions in some cases. For example, it remembers if the current player has already used the Master action in this turn. Recall that the Master action can be used only once per turn.
+{% include note.html content="
+The `TurnInfo` object also contains some additional information needed to determine the validity of actions in some cases. For example, it remembers if the current player has already used the Master action in this turn. Recall that the Master action can be used only once per turn.
+"%}
 
 You might wander, how does the `TurnManager` get the information that the master action has been used? The answer lies in the [TurnManager.Signaler](../../ProjectLCoreDocs/html/T_ProjectLCore_GameManagers_TurnManager_Signaler.htm) class. When an action processor is created, it is passed a `Signaler` for the `TurnManager` and when a Master action is processed, the action processor will inform the `TurnManager` by calling the appropriate function on the `Signaler`.
 
@@ -312,23 +318,27 @@ The second one is [GetUpgradeOptions](../../ProjectLCoreDocs/html/M_ProjectLCore
 
 The actions are represented by the [IAction](../../ProjectLCoreDocs/html/T_ProjectLCore_GameActions_IAction.htm) interface. Together with the [IActionProcessor](../../ProjectLCoreDocs/html/T_ProjectLCore_GameActions_IActionProcessor.htm) interface, it implements the visitor pattern for processing actions. The idea is that in this way it is easy to add new action processors, e.g. for modifying the graphics in the Unity game.
 
-> [!TIP]
-> For details about the individual actions, see the [game action](../../ProjectLCoreDocs/html/N_ProjectLCore_GameActions.htm) namespace.
+{% include tip.html content="
+For details about the individual actions, see the [game action](../../ProjectLCoreDocs/html/N_ProjectLCore_GameActions.htm) namespace.
+" %}
 
 The validity of an action in the current game context can be checked using an [ActionVerifier](../../ProjectLCoreDocs/html/T_ProjectLCore_GameActions_Verification_ActionVerifier.htm) and its `Verify` method. The verifier is constructed with regard to the current game context, meaning that it is given the current `GameInfo`, `PlayerInfo` of each player and `TurnInfo` of the current turn. The [Verify](../../ProjectLCoreDocs/html/M_ProjectLCore_GameActions_Verification_ActionVerifier_Verify.htm)(`action`) method returns a [VerificationResult](../../ProjectLCoreDocs/html/T_ProjectLCore_GameActions_Verification_VerificationResult.htm), which can either be a success or a failure.
 
-> [!TIP]
-> For more details about verification results see the [VerificationFailure](../../ProjectLCoreDocs/html/T_ProjectLCore_GameActions_Verification_VerificationFailure.htm) abstract class and its derived classes, which can be found in the [action verification](../../ProjectLCoreDocs/html/N_ProjectLCore_GameActions_Verification.htm) namespace.. The derived classes contain the information about the reason why the action is invalid. This can be used by the AI player (and its programmer) to debug its decision making process.
+{% include tip.html content="
+For more details about verification results see the [VerificationFailure](../../ProjectLCoreDocs/html/T_ProjectLCore_GameActions_Verification_VerificationFailure.htm) abstract class and its derived classes, which can be found in the [action verification](../../ProjectLCoreDocs/html/N_ProjectLCore_GameActions_Verification.htm) namespace.. The derived classes contain the information about the reason why the action is invalid. This can be used by the AI player (and its programmer) to debug its decision making process.
+" %}
 
 After a successful verification, the action can be processed using the [GameActionProcessor](../../ProjectLCoreDocs/html/T_ProjectLCore_GameActions_GameActionProcessor.htm), which implements the `IActionProcessor` interface and modifies the `GameState` and `PlayerState` objects accordingly.
 
-> [!WARNING]
-> The `GameActionProcessor` doesn't check action validity, so it should only be called after a successful verification. It is the responsibility of the caller to ensure that the action is valid.
+{% include important.html content="
+The `GameActionProcessor` doesn't check action validity, so it should only be called after a successful verification. It is the responsibility of the caller to ensure that the action is valid.
+"%}
 
 A `GameActionProcessor` needs to be created for every player.
 
-> [!NOTE]
-> If an action processor should be universal (remember all player states), then it would need a way to identify the correct player from the given action. So either the action would need to contain the ID of the player, or the action processor would need to have a reference to some other object which could tell it who the current player is. Neither of these solutions are elegant in my opinion, so I chose to create a separate action processor for each player.
+{% include note.html content="
+ If an action processor should be universal (remember all player states), then it would need a way to identify the correct player from the given action. So either the action would need to contain the ID of the player, or the action processor would need to have a reference to some other object which could tell it who the current player is. <br/>Neither of these solutions are elegant in my opinion, so I chose to create a separate action processor for each player.
+"%}
 
 If a puzzle is finished by a `PlaceTetrominoAction`, the player needs to be rewarded. The `GameActionProcessor` will get a list of all possible rewards (usually only one) from the [RewardManager](../../ProjectLCoreDocs/html/T_ProjectLCore_GameManagers_RewardManager.htm) and if there is more then one, the player will be prompted to choose one.
 
@@ -336,25 +346,29 @@ If a puzzle is finished by a `PlaceTetrominoAction`, the player needs to be rewa
 
 We represent players with the abstract class [Player](../../ProjectLCoreDocs/html/T_ProjectLCore_Players_Player.htm). It contains the [GetActionAsync](../../ProjectLCoreDocs/html/M_ProjectLCore_Players_Player_GetActionAsync.htm) method which is called by the game engine to get the action from the player. The method takes in a safe-to-modify wrapper of the current game context (using [GameInfo](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GameState_GameInfo.htm) and [PlayerInfo](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_PlayerState_PlayerInfo.htm) objects), the current [TurnInfo](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_TurnInfo.htm) and an [ActionVerifier](../../ProjectLCoreDocs/html/T_ProjectLCore_GameActions_Verification_ActionVerifier.htm) for AI players to debug their decision making process.
 
-> [!NOTE]
-> The [Player](../../ProjectLCoreDocs/html/T_ProjectLCore_Players_Player.htm) also has a [GetRewardAsync](../../ProjectLCoreDocs/html/M_ProjectLCore_Players_Player_GetRewardAsync.htm) method, which is called by a [GameActionProcessor](../../ProjectLCoreDocs/html/T_ProjectLCore_GameActions_GameActionProcessor.htm) to get the reward for the player when he finishes a puzzle and there is more then one reward option.
+{% include note.html content="
+The [Player](../../ProjectLCoreDocs/html/T_ProjectLCore_Players_Player.htm) also has a [GetRewardAsync](../../ProjectLCoreDocs/html/M_ProjectLCore_Players_Player_GetRewardAsync.htm) method, which is called by a [GameActionProcessor](../../ProjectLCoreDocs/html/T_ProjectLCore_GameActions_GameActionProcessor.htm) to get the reward for the player when he finishes a puzzle and there is more then one reward option.
+"%}
 
 These methods are asynchronous, so that they don't block the main thread and therefore make the game unresponsive. Every AI player inherits from the abstract class [AIPlayerBase](../../ProjectLCoreDocs/html/T_ProjectLCore_Players_AIPlayerBase.htm) and must implement the `GetAction` and `GetReward` methods. The asynchronous methods are implemented in the base class and asynchronously call the synchronous methods.
 
 AI players also have to implement the [Init](../../ProjectLCoreDocs/Help/html/M_ProjectLCore_Players_AIPlayerBase_Init.htm) method which is called by the game engine at the start of the game. The AI player gets information about the number of players in the game and a list of all puzzles in the game. There is also an option to pass a path to a configuration file. This is useful for AI players which need to load some data from a file.
 
-> [!TIP]
-> The puzzle information might also prove useful. Among the information the player gets when `GetAction` is called, there is a list of finished puzzles for every player. This can be used to deduce which puzzles are still left in the puzzle decks.
+{% include tip.html content="
+The puzzle information might also prove useful. Among the information the player gets when `GetAction` is called, there is a list of finished puzzles for every player. This can be used to deduce which puzzles are still left in the puzzle decks.
+"%}
 
-> [!NOTE]
-> The `AIPlayerBase` abstract class also implements the `InitAsync` method, which asynchronously calls the user implemented `Init` method. All of the non-async methods (`Init`, `GetAction`, `GetReward`) are protected, meaning that only their async counterparts can be called from outside.
+{% include note.html content="
+The `AIPlayerBase` abstract class also implements the `InitAsync` method, which asynchronously calls the user implemented `Init` method. All of the non-async methods (`Init`, `GetAction`, `GetReward`) are protected, meaning that only their async counterparts can be called from outside.
+"%}
 
 ## GameCore - tying it all together
 
 It all comes together in the [GameCore](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GameCore.htm) class which provides a high-level abstraction of the entire game. It remembers the `GameState`, `Players` and their `PlayerStates`. It also has a `TurnManager` and `ActionProcessors` for each player. The API of the `GameCore` class is simple and easy to use, as seen in the [game loop example](#preview-of-the-game-engine).
 
-> [!NOTE]
-> For more details about the `GameCore`API, see the [GameCore](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GameCore.htm) class documentation.
+{% include note.html content="
+For more details about the `GameCore`API, see the [GameCore](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GameCore.htm) class documentation.
+"%}
 
 ## Where to go from here?
 
