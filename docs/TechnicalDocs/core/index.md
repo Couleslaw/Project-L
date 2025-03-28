@@ -368,7 +368,7 @@ The `AIPlayerBase` abstract class also implements the `InitAsync` method, which 
 It all comes together in the [GameCore](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GameCore.htm) class which provides a high-level abstraction of the entire game. It remembers the `GameState`, `Players` and their `PlayerStates`. It also has a `TurnManager` and `ActionProcessors` for each player. The API of the `GameCore` class is simple and easy to use, as seen in the [game loop example](#preview-of-the-game-engine).
 
 {% include note.html content="
-For more details about the `GameCore`API, see the [GameCore](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GameCore.htm) class documentation.
+For more details about the `GameCore` API, see the [GameCore](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GameCore.htm) class documentation.
 "%}
 
 ## Where to go from here?
