@@ -2,13 +2,13 @@
 
 This is the documentation for a computer version of the **Project L** board game. This project implements the game in Unity and provides an API for training intelligent agents to play the game.
 
-## User Documentation
+## User Guide
 
-The [user documentation](./UserDocs/index) provides a guide on how to play the game.
+The [user guide](./UserDocs/index) explains the game rules and how to play the game.
 
-## Functional Documentation
+## Functional Specification
 
-The [functional documentation](./FunctionDocs/index) specifies everything about the user perspective of the Unity implementation of the game.
+The [functional specification](./FunctionDocs/index) specifies everything about the user perspective of the Unity implementation of the game.
 
 ## Technical Documentation
 

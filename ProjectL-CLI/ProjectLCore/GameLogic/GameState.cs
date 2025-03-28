@@ -2,6 +2,8 @@ namespace ProjectLCore.GameLogic
 {
     using ProjectLCore.GameManagers;
     using ProjectLCore.GamePieces;
+    using System.ComponentModel.Design;
+    using System.Runtime.InteropServices;
     using System.Text;
 
     /// <summary>
@@ -183,19 +185,17 @@ namespace ProjectLCore.GameLogic
         /// </summary>
         /// <param name="puzzlesFilePath">The puzzles file path.</param>
         /// <param name="numInitialTetrominos">The number initial tetrominos.</param>
-        /// <param name="numWhitePuzzles">The number of white puzzles to load. Loads all white puzzles, if the number of white puzzles in the source file doesn't exceed this number. Should be at least <see cref="NumPuzzlesInRow"/>.</param>
-        /// <param name="numBlackPuzzles">The number of black puzzles to load. Loads all black puzzles, if the number of black puzzles in the source file doesn't exceed this number. Should be at least <see cref="NumPuzzlesInRow"/> + 1.</param>
+        /// <param name="numWhitePuzzles">The resulting <see cref="GameState"/> will contain <paramref name="numWhitePuzzles"/> random puzzles from the file. This number can exceed the number of puzzles in the file. Should be at least <see cref="NumPuzzlesInRow"/>.</param>
+        /// <param name="numBlackPuzzles">The resulting <see cref="GameState"/> will contain <paramref name="numBlackPuzzles"/> random puzzles from the file. This number can exceed the number of puzzles in the file. Should be at least <see cref="NumPuzzlesInRow"/> + 1.</param>
         /// <returns>Initialized <see cref="GameState"/>.</returns>
         /// <seealso cref="GameStateBuilder"/>"
         /// <seealso cref="PuzzleParser"/>
         public static GameState CreateFromFile(string puzzlesFilePath, int numInitialTetrominos = 15, int numWhitePuzzles = int.MaxValue, int numBlackPuzzles = int.MaxValue)
         {
-            int numWhiteParsed = 0;
-            int numBlackParsed = 0;
-
-            // create a builder and parse the puzzles
-            var gameStateBuilder = new GameStateBuilder(numInitialTetrominos);
+            // parse the puzzles
             PuzzleParser? puzzleParser = null;
+            List<Puzzle> whitePuzzles = new();
+            List<Puzzle> blackPuzzles = new();
             try {
                 puzzleParser = new PuzzleParser(puzzlesFilePath);
                 while (true) {
@@ -203,26 +203,31 @@ namespace ProjectLCore.GameLogic
                     if (puzzle is null) {
                         break;
                     }
-                    // add the puzzle if we haven't reached the limit
+                    // add the puzzle 
                     if (puzzle.IsBlack) {
-                        if (numBlackParsed < numBlackPuzzles) {
-                            gameStateBuilder.AddPuzzle(puzzle);
-                            numBlackParsed++;
-                        }
+                        blackPuzzles.Add(puzzle);
                     }
-                    else if (numWhiteParsed < numWhitePuzzles) {
-                        gameStateBuilder.AddPuzzle(puzzle);
-                        numWhiteParsed++;
-                    }
-                    // check if we have loaded enough puzzles
-                    if (numWhiteParsed == numWhitePuzzles && numBlackParsed == numBlackPuzzles) {
-                        break;
+                    else {
+                        whitePuzzles.Add(puzzle);
                     }
                 }
             }
             finally {
                 puzzleParser?.Dispose();
             }
+
+            // create the game state by picking random puzzles
+            whitePuzzles.Shuffle();
+            blackPuzzles.Shuffle();
+
+            var gameStateBuilder = new GameStateBuilder(numInitialTetrominos);
+            for (int i = 0; i < numWhitePuzzles && i < whitePuzzles.Count; i++) {
+                gameStateBuilder.AddPuzzle(whitePuzzles[i]);
+            }
+            for (int i = 0; i < numBlackPuzzles && i < blackPuzzles.Count; i++) {
+                gameStateBuilder.AddPuzzle(blackPuzzles[i]);
+            }
+
             return gameStateBuilder.Build();
         }
 
