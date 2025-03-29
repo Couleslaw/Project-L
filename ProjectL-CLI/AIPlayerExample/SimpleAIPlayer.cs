@@ -276,10 +276,8 @@
         /// A queue containing:
         /// </para>
         ///   <list type="bullet">
-        ///     <item>The <see cref="DoNothingAction" /> if there are no puzzles the player can solve in the current game context.
-        /// </item>
-        ///     <item>A strategy to (take) and solve the next puzzle otherwise.
-        /// </item>
+        ///     <item>The <see cref="DoNothingAction" /> if there are no puzzles the player can solve in the current game context.</item>
+        ///     <item>A strategy to (take) and solve the next puzzle otherwise.</item>
         ///   </list>
         /// </returns>
         private Queue<IAction> GetStrategy(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, int maxDepth = -1)

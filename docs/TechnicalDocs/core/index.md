@@ -6,9 +6,9 @@
 The game is played by both human and AI players, but the human players choose actions and interact with the game using a GUI, which isn't the focus of this document. This document only discusses the inner workings of the [Project L Core](../../ProjectLCoreDocs/index) library. The graphical side of things is documented [here](../unity/index).
 As a result we will be mostly focusing on the AI players point of view.
 
-### Prerequisites
-
+{% include important.html content="
 Before reading this document, please make sure that you have read the rules of the game. The [rulebook](../../UserDocs/rulebook.pdf) can be found on the official [Boardcubator](https://www.boardcubator.com/games/project-l/) website. You should know the rules of the **Project L BASE GAME**. This project doesn't implement the solo variant or any of the expansions.
+"%}
 
 ### Outline
 
@@ -181,7 +181,7 @@ foreach (var player in players) {
         aiPlayer.InitAsync(
             players.Length,
             gameState.GetAllPuzzlesInGame(),
-            ["path/to/ai/player/config"]
+            "path/to/ai/player/config"
         );
     }
 }
@@ -229,7 +229,7 @@ Since every puzzle is a 5x5 grid, we can represent it using a 32 bit integer and
 The pieces are represented by the [TetrominoShape](../../ProjectLCoreDocs/html/T_ProjectLCore_GamePieces_TetrominoShape.htm) enum. The class [TetrominoManager](../../ProjectLCoreDocs/html/T_ProjectLCore_GameManagers_TetrominoManager.htm) serves as a proxy between the `TetrominoShape` abstraction and `BinaryImage` configurations.
 
 {% include tip.html content="
-Especially the methods [CompareShapeToImage](../../ProjectLCoreDocs/html/M_ProjectLCore_GameManagers_TetrominoManager_CompareShapeToImage.htm) [GetAllConfigurationsOf](../../ProjectLCoreDocs/html/M_ProjectLCore_GameManagers_TetrominoManager_GetAllConfigurationsOf.htm)(`shape`) might come in handy when implementing your own AI player.
+Especially the methods [CompareShapeToImage](../../ProjectLCoreDocs/html/M_ProjectLCore_GameManagers_TetrominoManager_CompareShapeToImage.htm) and [GetAllConfigurationsOf](../../ProjectLCoreDocs/html/M_ProjectLCore_GameManagers_TetrominoManager_GetAllConfigurationsOf.htm)(`shape`) might come in handy when implementing your own AI player.
 "%}
 
 The puzzles are represented by the [Puzzle](../../ProjectLCoreDocs/html/T_ProjectLCore_GamePieces_Puzzle.htm) which contains the `BinaryImage` of the puzzle and a list of pieces which have been placed into the puzzle. The class also has methods to check if a piece can be placed into the puzzle and to place it.

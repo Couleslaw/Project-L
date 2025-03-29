@@ -37,6 +37,9 @@
         /// <summary>
         /// Asynchronously passes the parameters to <see cref="GetAction"/> and returns a <see cref="Task"/> containing the result.
         /// </summary>
+        /// <remarks>
+        /// This methods waits for initialization of the AI player. It will not return until <see cref="InitAsync(int, List{Puzzle}, string?)"/> is called and finished running.
+        /// </remarks>
         /// <param name="gameInfo">Information about the shared resources.</param>
         /// <param name="playerInfos">Information about the resources of the players.</param>
         /// <param name="turnInfo">Information about the current turn.</param>

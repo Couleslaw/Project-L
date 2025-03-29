@@ -64,6 +64,8 @@ He then uses the slider below to set the initial amount of pieces of each type i
 
 After that he just hits "Start game" and is taken to the [<u>Main Game</u>](#main-game) screen.
 
+If Alice had a change of heart and wanted to read the credits, she could click on the arrow in the bottom left corner to go back to the [<u>Start Screen</u>](#start-screen).
+
 ### Player selection in detail
 
 The game can can be played by a maximum of 4 players and a minimum of 1 player (it might not be very interesting though). To add a player, Karel needs to select a type from the dropdown menu and add a name.
@@ -72,11 +74,15 @@ The game can can be played by a maximum of 4 players and a minimum of 1 player (
 The AI players are defined in a Json file, for details see the [AI Player Guide](../AIPlayerGuide/index).
 "%}
 
-Once at least one parameter for a player is set, a reset button will appear on the right. The player can then be removed by clicking on it. The game cannot be started until at least one player is added. If a player is only partially defined (e.g. only a name is set), the game cannot be started either.
+{% include important.html content="
+Only the entries containing a valid AI player will be shown in the dropdown menu.
+"%}
 
-The number of starting pieces in the shared reserve is 15 by default (the value in the original game), but can be adjusted using a slider below the player selection. The minimum number of pieces is 10 and the maximum is 30.
+Once at least one parameter for a player is set, the reset button will appear to the right of their name. The player information can then be cleared by clicking on it. The game cannot be started until at least one player is added. If a player is only partially defined (e.g. only a name is set), the game cannot be started either.
 
-Players are shuffled by default to ensure random order of play. This can be turned off by unchecking the checkbox below the player selection. In that case, the order of play is specified by the numbers next to the players in the [<u>New Game</u>](#new-game) screen.
+The number of starting pieces in the shared reserve is 15 by default (the value in the original game), but can be adjusted using a slider below the player selection. The minimum number of pieces is 10, the maximum is 30 and the tick interval is 5.
+
+Players are shuffled by default to ensure random order of play. This can be turned off by unchecking the checkbox below the player selection. In that case, the order of play is specified by the numbers left of the players in the [<u>New Game</u>](#new-game) screen.
 
 ## Main Game
 
@@ -99,27 +105,27 @@ The <u>Main Game</u> screen is subdivided into multiple subsections.
   - the name of the current player (Karel) is **highlighted**
 - <u>Control Zone</u> - the area above the <u>Player Zone</u> where "Cancel", "Last round!" and "Confirm" are on the previous image
   - used for displaying critical information about the game and for confirming or cancelling actions
-- <u>Pieces Zone</u> - contains information about the number of pieces owned by each player and the number of pieces left in the shared reserve
-  - on the left, there is column of all puzzle shapes in the game (`O1`, `I2`, `L2`, `O2`, `I3`, `Z`, `T`, `L3`, `I4` in order from top to bottom)
+- <u>Piece Zone</u> - contains information about the number of pieces owned by each player and the number of pieces left in the shared reserve
+  - on the left, there is column of all piece types in the game (`O1`, `I2`, `L2`, `O2`, `I3`, `Z`, `T`, `L3`, `I4` in order from top to bottom)
   - then there is one column for each player (NEAT, Karel and Alice), which says how many pieces of each type they have
     - above each column, there is the first letter of the player's name (N, K and A)
     - the first player has the first column, the second player who plays second has the second column, etc.
     - the column of the current player (Karel) is **highlighted**
-  - lastly there is a column with the number of pieces left in the shared reserve
+  - lastly, there is a column with the number of pieces left in the shared reserve
   - e.g. NEAT has 3 `L2` pieces, Karel has 1, Alice has 0 and there are 8 left in the shared reserve
-- <u>Score Zone</u> - the area below <u>Pieces Zone</u> where the score of each player is displayed
+- <u>Score Zone</u> - the area below <u>Piece Zone</u> where the score of each player is displayed
   - in this case, Karel has 7 points, NEAT has 9 and Alice has 14
 - <u>Puzzle Zone</u> - consists of the following:
   - column of white puzzles which can be taken by the current player
     - the <u>White Deck Card</u> located below this column indicates the number of puzzles left in the white deck - 25 in this case
   - column of black puzzles and the <u>Black Deck Card</u> indicating the number of puzzles left in the back deck
 - <u>Action Zone</u> - the area above the <u>Puzzle Zone</u>, which contains
-  - the <u>Action Number</u> (in orange) indicates how many actions the current player has left in this turn - 2 in this case
+  - the <u>Action Number</u> (in orange), indicating how many actions the current player has left in this turn - 2 in this case
   - buttons for using the different actions; from left to right they are:
     - <u>Take Puzzle</u> - used for taking a puzzle from the <u>Puzzle Zone</u>
     - <u>Recycle</u> - recycles the black or white column in the <u>Puzzle Zone</u>
     - <u>Take Basic Piece</u> - gives the player the `O1` piece from the shared reserve
-    - <u>Upgrade</u> - for changing one piece for another
+    - <u>Upgrade</u> - changes one piece for another
     - <u>Master</u> - parallel place action
 
 {% include tip.html content="
@@ -134,11 +140,21 @@ The <u>Action Number</u> changes color depending on the number of actions left f
 
 ### Creating Actions
 
-When Alice first enters the <u>Main Game</u> screen, she has no puzzles, so for her first action she chooses to take a puzzle from the <u>Puzzle Zone</u>. She clicks on <u>Take Puzzle</u>, clicks on a puzzle, confirms her selection in the <u>Control Zone</u> and the puzzle appears in her row in the <u>Player Zone</u>.
+When Alice first enters the <u>Main Game</u> screen, she has no puzzles, so for her first action she decides to take a puzzle from the <u>Puzzle Zone</u>. She clicks on <u>Take Puzzle</u>, selects a puzzle by clicking on it, confirms her selection in the <u>Control Zone</u> and the puzzle appears in her row in the <u>Player Zone</u>.
 
-Now she would like to complete the puzzle with some pieces to get the reward. Thankfully, every player gets two pieces (`O1` and `I2`) at the start of the game. She decides to place the `I2` piece, so she clicks it with her mouse and drags it to the puzzle. She then rotates the piece with her mouse wheel and once she's happy with the position, she clicks again which locks to piece in place. After thinking for a bit, she changes her mind about the placement, so she clicks on it again, drags to to the new position, locks it in place and confirms her action in the <u>Control Zone</u>.
+Now she would like to complete the puzzle to get the reward. Thankfully, every player gets two pieces (`O1` and `I2`) at the start of the game. She decides to place the `I2` piece, so she drags it onto the puzzle using her mouse. Then she rotates the piece with the mouse wheel and once she's happy with the position, she clicks to lock it in place. After contemplating for a bit, she changes her mind about the placement, so she drags the piece to a new position, locks it in place and confirms her action in the <u>Control Zone</u>.
 
 #### Creating Actions in Detail
+
+The general process of creating an action is as follows:
+
+1. Start dragging a piece from the <u>Piece Zone</u> to use the _Place action_ or click the appropriate button in the <u>Action Zone</u> to use any of the other actions.
+2. The **Cancel** button will appear in the <u>Control Zone</u>, clicking on it will return the game to its state before the action was started.
+3. After a valid action is created, the **Confirm** button will appear in the <u>Control Zone</u>. Clicking on it will confirm the action and the game will be updated accordingly. The number of actions left for the current player decrease by 1. The action can also be confirmed by pressing the **Enter** key on your keyboard.
+
+{% include note.html content="
+The **Cancel** button is visible if and only if an action is being created.<br/>The **Confirm** button is visible if and only if the action is valid.
+"%}
 
 #### Place Piece
 
@@ -151,5 +167,7 @@ Now she would like to complete the puzzle with some pieces to get the reward. Th
 #### Upgrade
 
 #### Master
+
+#### End Finishing Touches
 
 ## End Screen
