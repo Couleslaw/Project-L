@@ -2,6 +2,8 @@
 {
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
+    using ProjectLCore.GamePieces;
+    using ProjectLCore.Players;
 
     /// <summary>
     /// Takes care of the order in which the players take turns, the current game phase and information about the current turn.
@@ -20,6 +22,11 @@
         #endregion
 
         #region Fields
+
+        /// <summary>
+        /// When a <see cref="Puzzle"/> is finished, a <see cref="Signaler"/> will add information about it to this queue.
+        /// </summary>
+        public readonly Queue<FinishedPuzzleInfo> FinishedPuzzleQueue = new();
 
         private readonly int _numPlayers = playerIds.Length;
 
@@ -159,7 +166,27 @@
                 }
             }
 
+            /// <summary>
+            /// Signals that the current player finished a puzzle. Information about the reward is added to the <see cref="FinishedPuzzleQueue"/>.
+            /// </summary>
+            /// <param name="puzzle">The puzzle that was finished.</param>
+            /// <param name="rewardOptions">A list of possible rewards the player go to choose from.</param>
+            /// <param name="selectedReward">The reward the player selected. Should be <see langword="null"/> if <paramref name="rewardOptions"/> is empty.</param>
+            public void PlayerFinishedPuzzle(Puzzle puzzle, List<TetrominoShape> rewardOptions, TetrominoShape? selectedReward)
+            {
+                turnManager.FinishedPuzzleQueue.Enqueue(new FinishedPuzzleInfo(turnManager.CurrentPlayerId, puzzle, rewardOptions, selectedReward));
+            }
+
             #endregion
         }
+
+        /// <summary>
+        /// Contains information about the reward a player chose for finishing a puzzle.
+        /// </summary>
+        /// <param name="PlayerId">The ID of the <see cref="Player"/> who completed the puzzle.</param>
+        /// <param name="Puzzle">The puzzle the player completed.</param>
+        /// <param name="RewardOptions">A list of possible rewards the player got to choose from.</param>
+        /// <param name="SelectedReward">The reward the player selected, or <see langword="null"/> if <paramref name="RewardOptions"/> is empty.</param>
+        public record struct FinishedPuzzleInfo(uint PlayerId, Puzzle Puzzle, List<TetrominoShape> RewardOptions, TetrominoShape? SelectedReward);
     }
 }

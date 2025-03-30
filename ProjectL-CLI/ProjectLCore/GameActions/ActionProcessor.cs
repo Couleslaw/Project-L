@@ -265,18 +265,17 @@
 
             // if there are no reward options, the player doesn't get anything
             if (rewardOptions.Count == 0) {
+                signaler.PlayerFinishedPuzzle(puzzle, rewardOptions, null);
                 return null;
             }
-            // if there is only one option, return it
-            if (rewardOptions.Count == 1) {
-                return rewardOptions[0];
-            }
-            // if there are multiple options, let the player choose
+            // get reward from player
             TetrominoShape reward = player.GetRewardAsync(rewardOptions, puzzle.Clone()).Result;
             // if the chosen reward isn't valid, pick the first one
             if (!rewardOptions.Contains(reward)) {
                 reward = rewardOptions[0];
             }
+
+            signaler.PlayerFinishedPuzzle(puzzle, rewardOptions, reward);
             return reward;
         }
 

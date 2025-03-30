@@ -86,7 +86,11 @@
         /// </returns>
         public override sealed async Task<TetrominoShape> GetRewardAsync(List<TetrominoShape> rewardOptions, Puzzle puzzle)
         {
-            // call the method that implements the AI algorithm
+            // if there is only 1 reward option, return it immediately
+            if (rewardOptions.Count == 1) {
+                return rewardOptions[0];
+            }
+            // otherwise call the method that implements the AI algorithm
             return await Task.Run(() => GetReward(rewardOptions, puzzle));
         }
 
@@ -112,9 +116,10 @@
         /// <summary>
         /// Implementation of an algorithm that decides the shape the player wants as a reward for completing a puzzle.
         /// </summary>
-        /// <param name="rewardOptions">The reward options.</param>
+        /// <param name="rewardOptions">A list containing at least two possible reward options.</param>
         /// <param name="puzzle">The puzzle that was completed.</param>
         /// <returns>The tetromino the player wants to take.</returns>
+        /// <remarks>If there is only one reward option, it will be chosen automatically and this method will not be called.</remarks>
         protected abstract TetrominoShape GetReward(List<TetrominoShape> rewardOptions, Puzzle puzzle);
 
         /// <summary>

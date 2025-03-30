@@ -5,8 +5,10 @@
     using ProjectLCore.GameActions.Verification;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GameManagers;
+    using ProjectLCore.GamePieces;
     using ProjectLCore.Players;
     using System;
+    using System.Text;
     using static ProjectLCore.GameLogic.GameState;
     using static ProjectLCore.GameLogic.PlayerState;
 
@@ -112,6 +114,11 @@
                 // process valid action
                 PrintPlayerProvidedValidAction(action, game.CurrentPlayer);
                 game.ProcessAction(action);
+
+                // check if player completed any puzzles
+                while (game.TryGetUnprocessedFinishedPuzzle(out var finishedPuzzleInfo)) {
+                    PrintFinishedPuzzleInfo(finishedPuzzleInfo, game.CurrentPlayer);
+                }
             }
 
             // print final results
@@ -140,6 +147,41 @@
             // print turn info
             Console.WriteLine($"Round: {RoundCount}, Current player: {currentPlayer.Name}, Action: {3 - turnInfo.NumActionsLeft}");
             Console.WriteLine($"TurnInfo: GamePhase={turnInfo.GamePhase}, LastRound={turnInfo.LastRound}, TookBlackPuzzle={turnInfo.TookBlackPuzzle}, UsedMaster={turnInfo.UsedMasterAction}");
+        }
+
+        internal static void PrintFinishedPuzzleInfo(TurnManager.FinishedPuzzleInfo puzzleInfo, Player currentPlayer) 
+        {
+            Console.WriteLine($"{currentPlayer.Name} completed puzzle with ID={puzzleInfo.Puzzle.Id}");
+
+            Console.WriteLine($"   Returned pieces: {GetUsedTetrominos()}");
+            Console.WriteLine($"   Reward: {puzzleInfo.SelectedReward}");
+            Console.WriteLine($"   Points: {puzzleInfo.Puzzle.RewardScore}");
+            Console.WriteLine("\nPress 'Enter' to continue.");
+            Console.ReadLine();
+
+            string GetUsedTetrominos()
+            {
+                StringBuilder sb = new StringBuilder();
+                int[] tetrominos = new int[TetrominoManager.NumShapes];
+                foreach (var tetromino in puzzleInfo.Puzzle.GetUsedTetrominos()) {
+                    tetrominos[(int)tetromino]++;
+                }
+
+                bool first = true;
+                for (int i = 0; i < tetrominos.Length; i++) {
+                    if (tetrominos[i] == 0) {
+                        continue;
+                    }
+                    if (first) {
+                        first = false;
+                    }
+                    else {
+                        sb.Append(", ");
+                    }
+                    sb.Append($"{(TetrominoShape)i}: {tetrominos[i]}");
+                }
+                return sb.ToString();
+            }
         }
 
         internal static void PrintGameScreen(GameInfo gameInfo, PlayerInfo[] playerInfos, GameCore game)

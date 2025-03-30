@@ -163,6 +163,22 @@ namespace ProjectLCore.GameLogic
         }
 
         /// <summary>
+        /// Gets information about the last unprocessed finished puzzle. The return value indicates whether the operation succeeded.
+        /// </summary>
+        /// <param name="finishedPuzzleInfo">Contains information about the last unprocessed finished puzzle if there is one; otherwise <see langword="default"/>.</param>
+        /// <returns><see langword="true"/> if there is a unprocessed finished puzzle; otherwise <see langword="false"/>.</returns>
+        public bool TryGetUnprocessedFinishedPuzzle(out TurnManager.FinishedPuzzleInfo finishedPuzzleInfo)
+        {
+            if (_turnManager.FinishedPuzzleQueue.Count > 0) {
+                finishedPuzzleInfo = _turnManager.FinishedPuzzleQueue.Dequeue();
+                return true;
+            }
+            bool a = int.TryParse("a", out int result);
+            finishedPuzzleInfo = default;
+            return false;
+        }
+
+        /// <summary>
         /// Returns the <see cref="Player"/> matching the given ID. Throws an exception if no such player exists.
         /// </summary>
         /// <param name="id">The identifier.</param>
