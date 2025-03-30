@@ -305,7 +305,7 @@ A `GameActionProcessor` needs to be created for every player.
  If an action processor should be universal (remember all player states), then it would need a way to identify the correct player from the given action. So either the action would need to contain the ID of the player, or the action processor would need to have a reference to some other object which could tell it who the current player is. <br/>Neither of these solutions are elegant in my opinion, so I chose to create a separate action processor for each player.
 "%}
 
-If a puzzle is finished by a `PlaceTetrominoAction`, the player needs to be rewarded. The `GameActionProcessor` will get a list of all possible rewards (usually only one) from the [RewardManager](../../ProjectLCoreDocs/html/T_ProjectLCore_GameManagers_RewardManager.htm) and if there is more then one, the player will be prompted to choose one.
+If a puzzle is finished by a `PlaceTetrominoAction`, the player needs to be rewarded. The `GameActionProcessor` will get a list of all possible rewards (usually only one) from the [RewardManager](../../ProjectLCoreDocs/html/T_ProjectLCore_GameManagers_RewardManager.htm), and the player will be prompted to choose one by calling the `Player.GetRewardAsync` method. Subsequently, a [FinishedPuzzleInfo](../../ProjectLCoreDocs/Help/html/T_ProjectLCore_GameManagers_TurnManager_FinishedPuzzleInfo.htm) object containing information about the possible rewards and the selected reward will be passed outside of the `GameActionProcessor` using the [TurnManager.Signaler](../../ProjectLCoreDocs/html/T_ProjectLCore_GameManagers_TurnManager_Signaler.htm) of this processor.
 
 ## Humans vs AI Players (solution)
 
