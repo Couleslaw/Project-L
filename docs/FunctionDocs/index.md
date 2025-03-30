@@ -139,7 +139,8 @@ Contains information about the number of pieces owned by each player and the num
   - The first player has the first column, the second player has the second column, etc.
   - The column of the current player (Karel) is **highlighted**.
 - Lastly, there is a column with the number of pieces left in the shared reserve.
-- E.g. NEAT has 3 `L2` pieces, Karel has 1, Alice has 0 and there are 8 left in the shared reserve.
+
+For example, NEAT has 3 `L2` pieces, Karel has 1, Alice has 0 and there are 8 left in the shared reserve.
 
 {% include tip.html content="
 The name and piece column of the current player are **highlighted**.
@@ -201,7 +202,7 @@ Drag a piece from the <u>Piece Zone</u> to the <u>Player Zone</u> and place it o
 
 Once the position of the piece has been locked, it will be **highlighted** to indicate its position. It can then be dragged again and moved to a new place. This can be repeated until the action is _confirmed_.
 
-#### <u>Take Puzzle</u>
+#### Take Puzzle
 
 To take a puzzle from the <u>Puzzle zone</u> simply click on it. To take the top puzzle from one of the puzzle decks, just click on the corresponding <u>Deck Card</u>.
 The selected puzzle/card will be highlighter and you can change your mind until you confirm the action.
@@ -212,7 +213,7 @@ After you confirm the action, the puzzle will be placed on the first empty slop 
 If the black deck is empty and the game is coming to an end, you can only take one black puzzle per turn. This means that you will not be able to select a black puzzle if you already took one in the same turn.
 "%}
 
-#### <u>Recycle</u>
+#### Recycle
 
 Chose a row to recycle and then click on the puzzles in the row in the order you want to recycle them. The first puzzle will go to the bottom of the deck first etc. After you have clicked on all the puzzles in the row, you can confirm the action. The puzzles you have clicked on will be **highlighted**. CLicking on a **highlighted** puzzle again will remove it from the selection and shift the recycle order. Once you have clicked on a puzzle of a certain color, you cannot add a puzzle of the other color to the selection.
 
@@ -220,11 +221,11 @@ Chose a row to recycle and then click on the puzzles in the row in the order you
 If you want to recycle the white row, but accidentally click on a black puzzle, you can either unselect it by clicking on it again, or you can cancel the action and start over.
 "%}
 
-#### <u>Take Basic Piece</u>
+#### Take Basic Piece
 
 Simply confirm the action to get the `O1` piece. The button will be disabled if there are no `O1` pieces left in the shared reserve.
 
-#### <u>Upgrade</u>
+#### Upgrade
 
 The process of creating an upgrade action happens in the <u>Piece Zone</u>, is very visual and goes like this:
 
@@ -243,7 +244,7 @@ Once you select a piece to upgrade, it's numer in you column will decrease by 1 
 If you don't have any pieces in your collection, the <u>Upgrade</u> button will be disabled.
 "%}
 
-#### <u>Master</u>
+#### Master
 
 You can drag and lock the pieces in the same manner as with the [Place Piece](#place-piece) action. The only difference is that you can put up to one piece into each of your unfinished puzzles.
 
@@ -251,7 +252,7 @@ You can drag and lock the pieces in the same manner as with the [Place Piece](#p
 The *Master* action can be used only once per turn, so the button will be disabled if you have already used it.
 "%}
 
-#### <u>End Finishing Touches</u>
+#### End Finishing Touches
 
 During _Finishing Touches_ you can only place pieces into your unfinished puzzles to reduce negative points. If you are satisfied and want to end your _Finishing Touches_ turn, click on the <u>End Finishing Touches</u> button and confirm the action.
 
@@ -261,7 +262,7 @@ The <u>End Finishing Touches</u> button will appear only after the game has reac
 
 ### Completing Puzzles
 
-After a puzzle is completed (all empty cells are filled in), it will be **highlighted** and the text "Choose reward" will appear in the <u>Control Zone</u>. The pieces in the <u>Piece Zone</u> which you _cannot_ take as a reward will be **grayed out**.
+After a puzzle is completed (all empty cells are filled in), it will be **highlighted** and the text "Select reward" will appear in the <u>Control Zone</u>. The pieces in the <u>Piece Zone</u> which you _cannot_ take as a reward will be **grayed out**.
 
 {% include note.html content="
 You can usually only take the piece specified on the puzzle card as the reward. However, if there are no pieces of this type left in the shared reserve, you get to choose from a collection of pieces as specified in the rules.
@@ -273,11 +274,15 @@ To choose a reward, click on the piece you want to take and it will be **highlig
 When you select a reward, its number in the shared reserve will decrease by 1 and appear in red, while the number in your column will increase by 1 and appear in green.
 "%}
 
-After you choose a reward, you will get the points for the puzzle and the pieces used to complete it. It is also removed from you row in the <u>Player Zone</u>.
+After you choose a reward, you will get the points for the puzzle and the pieces used to complete it. It is also removed from your row in the <u>Player Zone</u>.
 
 {% include note.html content="
 If you have used the *Master* action and completed more than one puzzle, you will be prompted to choose a reward for each of them, one at a time.
 "%}
+
+If an AI player finishes a puzzle, the process of it choosing a reward will be visually indicated in the same way as described above.
+
+In the very unlikely event that there are no pieces left in the shared reserve (and therefore there is no possible reward), you will _not_ be prompted to choose a reward. Instead, the puzzle will be highlighted, you will be returned the used pieces and then it will be automatically removed from your row in the <u>Player Zone</u>.
 
 ### Control Zone in Detail
 
