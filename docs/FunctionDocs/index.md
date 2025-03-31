@@ -136,6 +136,8 @@ Contains information about the number of pieces owned by each player and the num
 
 For example, NEAT has 3 `L2` pieces, Karel has 1, Alice has 0 and there are 8 left in the shared reserve.
 
+The pieces the current player (Karel) doesn't have are **grayed out**. For example, the shapes which _aren't_ grayed out on the reference [image](#main-game) are `O1`, `L2`, `I3`, `I4`, because Karel has them in his collection.
+
 {% include tip.html content="
 The name and piece column of the current player are **highlighted**.
 "%}
@@ -193,7 +195,7 @@ Once you click an action button in the <u>Action Zone</u>, it will be **highligh
 
 #### Place Piece
 
-Drag a piece from the <u>Piece Zone</u> to the <u>Player Zone</u> and place it on a puzzle.
+Drag a piece you own from the <u>Piece Zone</u> to the <u>Player Zone</u> and place it on a puzzle.
 
 - If you release the mouse button while the piece isn't over any of your puzzles, it will cancel the action.
 - If you release the piece over one of your puzzles, it will stay where you left it.
