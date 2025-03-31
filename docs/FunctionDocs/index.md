@@ -54,6 +54,7 @@ The <u>Start Screen</u> contains the buttons:
 - **NEW GAME** - takes you to the [<u>New Game</u>](#new-game) screen
 - **USER GUIDE** - opens the [User Guide](../UserDocs/index) in your browser
 - **CREDITS** - takes you to the [<u>Credits</u>](#credits) screen
+- **QUIT** - exits the game
 
 ## Credits
 
@@ -118,16 +119,9 @@ The <u>Main Game</u> screen is subdivided into multiple subsections as seen in t
 Contains the unfinished puzzles of each player.
 
 - There is a row of 4 puzzles / blanks on the right of each player's name.
-- E.g. Karel has 2 unfinished puzzles and 2 empty slots.
+- For example, Karel has 2 unfinished puzzles and 2 empty slots.
 - The first player has the first row, the second player has the second row, etc.
 - The name of the current player (Karel) is **highlighted**.
-
-#### <u>Control Zone</u>
-
-Has two purposes:
-
-- displaying critical information about the game,
-- confirming and cancelling actions.
 
 #### <u>Piece Zone</u>
 
@@ -146,10 +140,6 @@ For example, NEAT has 3 `L2` pieces, Karel has 1, Alice has 0 and there are 8 le
 The name and piece column of the current player are **highlighted**.
 "%}
 
-#### <u>Score Zone</u>
-
-Displays the current score of each player and is located bellow the <u>Piece Zone</u>. In this case, Karel has 7 points, NEAT has 9 and Alice has 14.
-
 #### <u>Puzzle Zone</u>
 
 Consists of the following:
@@ -161,53 +151,78 @@ Consists of the following:
 {% include tip.html content="
 The number on the <u>White Deck Card</u> is white and the number on the <u>Black Deck Card</u> is black."%}
 
-#### <u>Action Zone</u>
+When either of the decks become empty, the corresponding <u>Deck Card</u> will disappear. If it is the black deck, the end of the game will be triggered.
 
-Located above the <u>Puzzle Zone</u> and used for creating actions. It contains:
+#### Action Zones
 
-- The <u>Action Number</u> (in orange), indicating how many actions the current player has left in this turn - 2 in this case.
-- Buttons for using the different actions. From left to right they are:
-  - <u>Take Puzzle</u> - used for taking a puzzle from the <u>PuzzleZone</u>.
-  - <u>Recycle</u> - recycles the black or white column in the <u>Puzzle Zone</u>.
-  - <u>Take Basic Piece</u> - gives the player the `O1` piece from the shared reserve.
-  - <u>Upgrade</u> - changes one piece for another.
-  - <u>Master</u> - parallel place action.
+Located above the <u>Puzzle Zone</u> and <u>Piece Zone</u> and used for creating actions. The <u>Puzzle Action Zone</u> contains:
 
-When the game comes to the Finishing Touches phase, all of these buttons will disappear and be replaced by the <u>End Finishing Touches</u> button.
+- <u>Take Puzzle</u> - used for taking a puzzle from the <u>PuzzleZone</u>.
+- <u>Recycle</u> - recycles the black or white column in the <u>Puzzle Zone</u>.
 
-{% include tip.html content="
-The <u>Action Number</u> changes color depending on the number of actions left for the current player: green (3), orange (2), red (1)."%}
+The <u>Piece Action Zone</u> contains:
+
+- <u>Take Basic Piece</u> - gives the player the `O1` piece from the shared reserve.
+- <u>Upgrade</u> - changes one piece for another.
+- <u>Master</u> - parallel place action.
+
+{% include note.html content="
+Both zones also contain a <u>Confirm</u> button for confirming the actions.
+"%}
+
+When the game comes to the Finishing Touches phase, the contents of the <u>Puzzle Action Zone</u> are replaced by the <u>End Finishing Touches</u> button.
 
 ### Creating Actions
 
-When Alice first enters the <u>Main Game</u> screen, she has no puzzles, so for her first action she decides to take a puzzle from the <u>Puzzle Zone</u>. She clicks on <u>Take Puzzle</u>, selects a puzzle by clicking on it, confirms her selection in the <u>Control Zone</u> and the puzzle appears in her row in the <u>Player Zone</u>.
+When Alice first enters the <u>Main Game</u> screen, she has no puzzles, so for her first action she decides to take a puzzle from the <u>Puzzle Zone</u>. She clicks on <u>Take Puzzle</u>, selects a puzzle by clicking on it, confirms her selection, and the puzzle appears in her row in the <u>Player Zone</u>.
 
-Now she would like to complete the puzzle to get the reward. Thankfully, every player gets two pieces (`O1` and `I2`) at the start of the game. She decides to place the `I2` piece, so she drags it onto the puzzle using her mouse. Then she rotates the piece with the mouse wheel and once she's happy with the position, she clicks to lock it in place. After contemplating for a bit, she changes her mind about the placement, so she drags the piece to a new position, locks it in place and confirms her action in the <u>Control Zone</u>.
+Now she would like to complete the puzzle to get the reward. Thankfully, every player gets two pieces (`O1` and `I2`) at the start of the game. She decides to place the `I2` piece, so she drags it onto the puzzle using her mouse. Then she rotates the piece with the mouse wheel and once she's happy with the position, she clicks to lock it in place. After contemplating for a bit, she changes her mind about the placement, so she drags the piece to a new position, locks it in place and confirms her action.
 
 #### Creating Actions in Detail
 
 The general process of creating an action is as follows:
 
-1. Start dragging a piece from the <u>Piece Zone</u> to use the _Place action_ or click the appropriate button in the <u>Action Zone</u> to use any of the other actions.
-2. The **Cancel** button will appear in the <u>Control Zone</u>, clicking on it will return the game to its state before the action was started.
-3. After a valid action is created, the **Confirm** button will appear in the <u>Control Zone</u>. Clicking on it will confirm the action and the game will be updated accordingly. The number of actions left for the current player decrease by 1. The action can also be confirmed by pressing the **Enter** key on your keyboard.
+1. Start dragging a piece from the <u>Piece Zone</u> to use the _Place action_ or click the appropriate button in the <u>Action Zones</u> to use any of the other actions.
+2. After a valid action is created, the <u>Confirm</u> buttons will be enabled. Clicking on one of them will confirm the action and the game will be updated accordingly. The action can also be confirmed by pressing the **Enter** key on your keyboard.
 
 {% include note.html content="
-The **Cancel** button is visible if and only if an action is being created.<br/>The **Confirm** button is visible if and only if the action is valid.
+The <u>Confirm</u> buttons is enabled if and only if an action is being created  and it is valid. This can be seen e.i. on the *take puzzle* [image](#take-puzzle), where the buttons are enabled.
 "%}
+
+Once you click an action button in the <u>Action Zone</u>, it will be **highlighted**. Clicking on it again will unselect it and cancel the action creation process. Clicking on a different action button is equivalent to pressing the selected button again and then clicking on the new action button.
 
 #### Place Piece
 
-Drag a piece from the <u>Piece Zone</u> to the <u>Player Zone</u> and place it on a puzzle. The mouse button doesn't need to be pressed while dragging. The piece can be rotated using the mouse wheel and flipped by using the right mouse button. Once you aee happy with the placement, you can left click to lock it in place. This can be done only if the placement is valid (the piece doesn't overlap with other pieces and is inside the puzzle). This is visually indicated in the following way. When the piece is dragged, the cells in the puzzle closest to the position of the piece are **highlighted**. It basically shows where would the piece be placed if you locked its position right now. If it would be a valid placement, the highlight is in the color of the piece.
+Drag a piece from the <u>Piece Zone</u> to the <u>Player Zone</u> and place it on a puzzle.
+
+- If you release the mouse button while the piece isn't over any of your puzzles, it will cancel the action.
+- If you release the piece over one of your puzzles, it will stay where you left it.
+
+Once the piece is over a puzzle, you can do the following:
+
+- Rotate it by moving the mouse wheen while hovering over it.
+- Flip it by clicking on it with the right mouse button.
+- Lock it in place by clicking on it with the left mouse button.
+  - This is possible only if the placement of the piece is valid (the piece doesn't overlap with other pieces and is inside the puzzle).
+  - When dragging the piece around, the position where it would be placed if locked right now is **highlighted**.
 
 Once the position of the piece has been locked, it will be **highlighted** to indicate its position. It can then be dragged again and moved to a new place. This can be repeated until the action is _confirmed_.
 
+{% include tip.html content="
+To cancel a *Place Piece* action, simply drag the piece away from your puzzles and release it.
+"%}
+
 #### Take Puzzle
 
-To take a puzzle from the <u>Puzzle zone</u> simply click on it. To take the top puzzle from one of the puzzle decks, just click on the corresponding <u>Deck Card</u>.
-The selected puzzle/card will be highlighter and you can change your mind until you confirm the action.
+Click the <u>Take Puzzle</u> button in the <u>Puzzle Action Zone</u>.
 
-After you confirm the action, the puzzle will be placed on the first empty slop in your row in the <u>Player Zone</u>. If you puzzle row is full (you have 4 unfinished puzzles), the <u>Take Puzzle</u> button will be disabled.
+1. All puzzle cards and the <sup>Deck Cards</sup> will be **grayed out**.
+2. To take a specific puzzle from the <u>Puzzle Zone</u>, simply click on it. To take the top puzzle from one of the puzzle decks, click on the corresponding <u>Deck Card</u>.
+3. The selected puzzle/card will be **highlighted** and you can change your mind until you confirm the action.
+
+![Take Puzzle](images/main-game-take.png)
+
+After you confirm the action, the puzzle will be placed on the first empty slot in your row in the <u>Player Zone</u>. If you puzzle row is full (you have 4 unfinished puzzles), the <u>Take Puzzle</u> button will be disabled.
 
 {% include note.html content="
 If the black deck is empty and the game is coming to an end, you can only take one black puzzle per turn. This means that you will not be able to select a black puzzle if you already took one in the same turn.
@@ -215,7 +230,12 @@ If the black deck is empty and the game is coming to an end, you can only take o
 
 #### Recycle
 
-Chose a row to recycle and then click on the puzzles in the row in the order you want to recycle them. The first puzzle will go to the bottom of the deck first etc. After you have clicked on all the puzzles in the row, you can confirm the action. The puzzles you have clicked on will be **highlighted**. CLicking on a **highlighted** puzzle again will remove it from the selection and shift the recycle order. Once you have clicked on a puzzle of a certain color, you cannot add a puzzle of the other color to the selection.
+Click the <u>Recycle</u> button in the <u>Puzzle Action Zone</u> and choose a row to recycle.
+
+1. All puzzle Cards will be **grayed out**.
+2. Click on the puzzles in the row in the order you want to recycle them. The first puzzle will go to the bottom of the deck first etc.
+3. The puzzles you have clicked on will be **highlighted**. CLicking on a **highlighted** puzzle again will remove it from the selection and shift the recycle order. If there is a **highlighted** white puzzle, you can not add a black puzzle and vice versa.
+4. Once all puzzles of a certain color are selected, you can confirm the action.
 
 {% include tip.html content="
 If you want to recycle the white row, but accidentally click on a black puzzle, you can either unselect it by clicking on it again, or you can cancel the action and start over.
@@ -223,7 +243,7 @@ If you want to recycle the white row, but accidentally click on a black puzzle, 
 
 #### Take Basic Piece
 
-Simply confirm the action to get the `O1` piece. The button will be disabled if there are no `O1` pieces left in the shared reserve.
+Click the <u>Take Basic Piece</u> button in the <u>Piece Action Zone</u> and confirm the action to get the `O1` piece. The button will be disabled if there are no `O1` pieces left in the shared reserve.
 
 #### Upgrade
 
@@ -235,6 +255,8 @@ The process of creating an upgrade action happens in the <u>Piece Zone</u>, is v
 4. If you instead choose to click on one of the pieces you can change the selected piece to, it will be **highlighted** as well, and all the leftover pieces will also be **grayed out**.
 5. If you are happy with the selection, you can confirm the action now.
 6. Otherwise, you can click on the second piece again to unselect it, which will take you back to 2.
+
+![Upgrade Piece](images/main-game-upgrade.png)
 
 {% include tip.html content="
 Once you select a piece to upgrade, it's numer in you column will decrease by 1 and appear in red, while the number in the shared reserve will increase by 1 and appear in green. After you have selected a piece to upgrade to, the number in the shared reserve will decrease by 1 and appear in red and the number in your column will increase by 1 and appear in green.
@@ -284,10 +306,18 @@ If an AI player finishes a puzzle, the process of it choosing a reward will be v
 
 In the very unlikely event that there are no pieces left in the shared reserve (and therefore there is no possible reward), you will _not_ be prompted to choose a reward. Instead, the puzzle will be highlighted, you will be returned the used pieces and then it will be automatically removed from your row in the <u>Player Zone</u>.
 
-### Control Zone in Detail
+### Main Game Pause Menu
 
-## End Screen
+![Main Pause](images/main-game-paused.png)
+
+### Game Ended Screen
+
+![Main ENd](images/main-game-end.png)
 
 ## Final Results
 
-## Pause Menu
+![Final results](images/results.png)
+
+### FInal Results Pause Menu
+
+![Final Results Pause](images/results-paused.png)
