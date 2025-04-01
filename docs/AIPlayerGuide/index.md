@@ -44,7 +44,7 @@ This guide assumes that you are using Visual Studio to implement your AI player.
 
 First, you need to create a new **Class Library** project and add the _Project-L Core_ library as a reference. You can do this in two ways.
 
-<details><summary><b>Downloading the DLL (recommended)</b></summary>
+<details markdown="span"><summary><b>Downloading the DLL (recommended)</b></summary>
 
 You can simply download the _Project-L Core_ library from the [releases](https://github.com/Couleslaw/Project-L/releases) page. If you are using Visual Studio, you can create a new project and add it as a dependency. To do this, follow these steps:
 
@@ -54,7 +54,7 @@ You can simply download the _Project-L Core_ library from the [releases](https:/
 
 </details>
 
-<details><summary><b>Cloning the repository</b></summary>
+<details markdown="span"><summary><b>Cloning the repository</b></summary>
 
 You can also clone the repository, open the project solution in Visual Studio and add your AI PLayer as a new project. First, clone the repository:
 
