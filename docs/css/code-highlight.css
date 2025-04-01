@@ -115,8 +115,8 @@
 }
 
 div.highlighter-rouge code {
-  background: #262a2f;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #2b3744;
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 7px;
   display: block;
   overflow-x: auto;
