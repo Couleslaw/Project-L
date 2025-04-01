@@ -1,13 +1,13 @@
 <link rel='stylesheet' href='../../css/code-highlight.css'/>
 <link rel='stylesheet' href='../../css/markdown-alert.css'/>
 
-# Technical Documentation
+# Library Technical Documentation
 
-The game is played by both human and AI players, but the human players choose actions and interact with the game using a GUI, which isn't the focus of this document. This document only discusses the inner workings of the [Project L Core](../../ProjectLCoreDocs/index) library. The graphical side of things is documented [here](../unity/index).
-As a result we will be mostly focusing on the AI players point of view.
+The game is played by both human and AI players, but the human players choose actions and interact with the game using a GUI, which isn't the focus of this document. This document only discusses the inner workings of the [Project L Core](../../ProjectLCoreDocs/index) library. The Unity side of things is documented [here](../unity/index).
+As a result we will be mostly focusing on the AI player point of view.
 
 {% include important.html content="
-Before reading this document, please make sure that you have read the rules of the game. The [rulebook](../../UserDocs/rulebook.pdf) can be found on the official [Boardcubator](https://www.boardcubator.com/games/project-l/) website. You should know the rules of the **Project L BASE GAME**. This project doesn't implement the solo variant or any of the expansions.
+Before reading this document, please make sure that you have read the rules of the game. The [rulebook](../../UserDocs/rulebook.pdf) can be found on the official [Boardcubator](https://www.boardcubator.com/games/project-l/) website. You should know the rules of the **Project L BASE GAME**.
 "%}
 
 ### Outline

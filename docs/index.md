@@ -1,17 +1,27 @@
-# ProjectL Documentation
+<link rel='stylesheet' href='./css/markdown-alert.css'/>
 
-This is the documentation for a computer version of the **Project L** board game. This project implements the game in Unity and provides an API for training intelligent agents to play the game.
+# Project-L Documentation
+
+This project is a computer version of the [Project L](https://www.boardcubator.com/games/project-l/) board game. It implements the game in Unity and provides an API for training intelligent agents to play it.
+
+{% include note.html content="
+This project implements only the **Base game**. It doesn't implement the solo variant or any of the expansions.
+"%}
 
 ## User Guide
 
-The [user guide](./UserDocs/index) explains the game rules and how to play the game.
+The [user guide](./UserDocs/index) explains the game rules and how to play it.
 
 ## Functional Specification
 
-The [functional specification](./FunctionDocs/index) specifies everything about the user perspective of the Unity implementation of the game.
+The [functional spec](./FunctionDocs/index) details all features and behavior of the game from a user's perspective.
 
 ## Technical Documentation
 
-The [Project-L Core](./ProjectLCoreDocs/index) library contains all the necessary logic elements of the **Project L** game. You might find the documentation useful when training intelligent agents to play the game. The inner workings of the game core are described in detail [here](./TechnicalDocs/core/index). The graphical side of things is discussed [here](./TechnicalDocs/unity/index).
+The Unity implementation of the game relies on a library, which is independent of the Unity engine and is suitable for training AI players. As a result, the documentation is divided into two parts:
 
-A guide on how to create an AI player for the game is provided in the [AI Player Guide](./AIPlayerGuide/index).
+- [Library docs](./TechnicalDocs/core/index) - describes the inner workings of the [Project-L Core](./ProjectLCoreDocs/index.html) library.
+
+- [Unity docs](./TechnicalDocs/unity/index) - describes the Unity implementation of the game.
+
+The [AI Player Guide](./AIPlayerGuide/index) explains how to create your own AI players for the game.

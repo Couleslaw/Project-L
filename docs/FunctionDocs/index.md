@@ -8,7 +8,7 @@ This project is a Unity implementation of the **Project L** board game published
 
 **This spec is not, by any stretch of the imagination, complete.** All of the wording will need to be revised several times before it is finalized. The graphics and layout of the screens is shown here merely to illustrate the underlying functionality. The actual look will be added once the game is finished.
 
-This spec doesn't discuss the technical side of things (how it works). If you are interested in that, please check the [Technical Documentation](../TechnicalDocs/core/index).
+This spec doesn't discuss the technical side of things (how it works). If you are interested in that, please read the [Technical Documentation](../TechnicalDocs/core/index).
 
 ## Scenarios
 
@@ -82,7 +82,7 @@ Karel created his own AI player which uses the NEAT algorithm to decide the next
 
 ![New Game](images/new-game.png)
 
-Karel added his NEAT player to the Json defining available AI players, as specified in the [AI Player Guide](../AIPlayerGuide/index). He wants to test if it works correctly by playing a game against it.
+Karel added his NEAT player to the INI file defining available AI players, as specified in the [AI Player Guide](../AIPlayerGuide/index). He wants to test if it works correctly by playing a game against it.
 
 He clicks on the dropdown menu for the type of the first player, selects "Human" and enters his name. From the dropdown menu for the second player he chooses "NEAT" and come ups with a name for it.
 
@@ -97,7 +97,7 @@ If Alice had a change of heart and wanted to read the credits, she could click o
 The game can can be played by a maximum of 4 players and a minimum of 1 player (it might not be very interesting though). To add a player, Karel needs to select a type from the dropdown menu and add a name.
 
 {% include note.html content="
-The AI players are defined in a Json file, for details see the [AI Player Guide](../AIPlayerGuide/index).
+The AI players are defined in a INI file, for details see the [AI Player Guide](../AIPlayerGuide/index).
 "%}
 
 {% include important.html content="

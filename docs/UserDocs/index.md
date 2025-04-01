@@ -1,1 +1,5 @@
 # User Documentation
+
+{% include warning.html content="
+The documentation is not complete. It will be added once the Unity implementation is complete. In the meantime, you can read the rules of the original game. The [rulebook](./rulebook.pdf) can be found on the official [Boardcubator](https://www.boardcubator.com/games/project-l/) website.
+"%}
