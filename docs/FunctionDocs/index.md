@@ -37,11 +37,23 @@ Screens are referred to by their canonical names, always underlined in this docu
 - [New Game](#new-game)
 - [Main Game](#main-game)
   - [Main Game Zones](#main-game-zones)
+    - [Player Zone](#player-zone)
+    - [Piece Zone](#piece-zone)
+    - [Puzzle Zone](#puzzle-zone)
+    - [Action Zones](#action-zones)
   - [Creating Actions](#creating-actions)
+    - [Place Piece](#place-piece)
+    - [Take Puzzle](#take-puzzle)
+    - [Recycle](#recycle)
+    - [Take Basic Piece](#take-basic-piece)
+    - [Upgrade](#upgrade)
+    - [Master](#master)
+    - [End Finishing Touches](#end-finishing-touches)
   - [Completing Puzzles](#completing-puzzles)
-- [End Screen](#end-screen)
+  - [Main Game Pause Menu](#main-game-pause-menu)
+  - [Game Ended](#game-ended)
 - [Final Results](#final-results)
-- [Pause Menu](#pause-menu)
+  - [Final Results Pause Menu](#final-results-pause-menu)
 
 ## Start Screen
 
@@ -172,7 +184,7 @@ The <u>Piece Action Zone</u> contains:
 Both zones also contain a <u>Confirm</u> button for confirming the actions.
 "%}
 
-When the game comes to the Finishing Touches phase, the contents of the <u>Puzzle Action Zone</u> are replaced by the <u>End Finishing Touches</u> button.
+When the game comes to the Finishing Touches phase, a <u>End Finishing Touches</u> button appears in both of the <u>Action Zones</u>. It replaces all other buttons (including the confirm buttons) which were there originally.
 
 ### Creating Actions
 
@@ -193,26 +205,34 @@ The <u>Confirm</u> buttons is enabled if and only if an action is being created 
 
 Once you click an action button in the <u>Action Zone</u>, it will be **highlighted**. Clicking on it again will unselect it and cancel the action creation process. Clicking on a different action button is equivalent to pressing the selected button again and then clicking on the new action button.
 
+AI player actions are visualized in the same way as human player actions.
+
 #### Place Piece
 
-Drag a piece you own from the <u>Piece Zone</u> to the <u>Player Zone</u> and place it on a puzzle.
+Drag a piece you own from the <u>Piece Zone</u> to the <u>Player Zone</u> and place it on a puzzle. The piece will be **highlighted**.
 
-- If you release the mouse button while the piece isn't over any of your puzzles, it will cancel the action.
-- If you release the piece over one of your puzzles, it will stay where you left it.
+- If you release the mouse button while the piece isn't in your row of the <u>Player Zone</u>, it will cancel the action.
+- Otherwise, it will stay where you left it.
 
-Once the piece is over a puzzle, you can do the following:
+You can do the following with the piece:
 
 - Rotate it by moving the mouse wheen while hovering over it.
 - Flip it by clicking on it with the right mouse button.
-- Lock it in place by clicking on it with the left mouse button.
-  - This is possible only if the placement of the piece is valid (the piece doesn't overlap with other pieces and is inside the puzzle).
-  - When dragging the piece around, the position where it would be placed if locked right now is **highlighted**.
+- <u>Place</u> it into a puzzle by clicking on it with the left mouse button.
+  - This is possible only if the placement of the piece over the puzzle is valid (the piece doesn't overlap with other pieces and is inside the puzzle).
+  - When dragging the piece around, the position where it would be <u>placed</u> is **highlighted** if the placement would be valid.
 
-Once the position of the piece has been locked, it will be **highlighted** to indicate its position. It can then be dragged again and moved to a new place. This can be repeated until the action is _confirmed_.
+When a piece is <u>placed</u>, it can then be dragged again and moved to a different position. This can be repeated until the action is _confirmed_.
 
 {% include tip.html content="
 To cancel a *Place Piece* action, simply drag the piece away from your puzzles and release it.
 "%}
+
+To plan ahead, you can move all the pieces you own from the <u>Piece Zone</u> to the <u>Player Zone</u> and position them on the puzzles as you wish. For example, Karel could use two `O1` pieces, one `L2` piece, one `I3` piece and one `I4` piece. A _place action_ is valid if and only if exactly one of the piece is <u>placed</u>. All other pieces will return to your collection when the action is confirmed.
+
+Dragging pieces away from the <u>Piece Zone</u> decreases the corresponding numbers in your column and the number also turns red. If a number would reach zero, the corresponding piece would become **gray**. If you dismissed a piece, the number would go back up, and the piece would get its color back. If the number reached its original value again, it would stop being red.
+
+When happens if you complete the puzzle is discussed in the [Completing Puzzles](#completing-puzzles) section.
 
 #### Take Puzzle
 
@@ -220,7 +240,7 @@ Click the <u>Take Puzzle</u> button in the <u>Puzzle Action Zone</u>.
 
 1. All puzzle cards and the <sup>Deck Cards</sup> will be **grayed out**.
 2. To take a specific puzzle from the <u>Puzzle Zone</u>, simply click on it. To take the top puzzle from one of the puzzle decks, click on the corresponding <u>Deck Card</u>.
-3. The selected puzzle/card will be **highlighted** and you can change your mind until you confirm the action.
+3. The selected puzzle/card will be **highlighted** and you can change your mind until you confirm the action. Clicking on the same puzzle/card again will unselect it, while clicking on a different puzzle/card will change the selection.
 
 ![Take Puzzle](images/main-game-take.png)
 
@@ -236,7 +256,7 @@ Click the <u>Recycle</u> button in the <u>Puzzle Action Zone</u> and choose a ro
 
 1. All puzzle Cards will be **grayed out**.
 2. Click on the puzzles in the row in the order you want to recycle them. The first puzzle will go to the bottom of the deck first etc.
-3. The puzzles you have clicked on will be **highlighted**. CLicking on a **highlighted** puzzle again will remove it from the selection and shift the recycle order. If there is a **highlighted** white puzzle, you can not add a black puzzle and vice versa.
+3. The puzzles you have clicked on will be **highlighted**. Clicking on a **highlighted** puzzle again will remove it from the selection and shift the recycle order. If there is a **highlighted** white puzzle, you can not add a black puzzle and vice versa.
 4. Once all puzzles of a certain color are selected, you can confirm the action.
 
 {% include tip.html content="
@@ -249,14 +269,7 @@ Click the <u>Take Basic Piece</u> button in the <u>Piece Action Zone</u> and con
 
 #### Upgrade
 
-The process of creating an upgrade action happens in the <u>Piece Zone</u>, is very visual and goes like this:
-
-1. The pieces which you don't own are **grayed out**.
-2. To select a piece to upgrade, click on it. The piece will be **highlighted** and all the pieces which you _cannot_ change it to will be **grayed out**.
-3. If you now click on the selected piece again, it will unselect and you go back to 1.
-4. If you instead choose to click on one of the pieces you can change the selected piece to, it will be **highlighted** as well, and all the leftover pieces will also be **grayed out**.
-5. If you are happy with the selection, you can confirm the action now.
-6. Otherwise, you can click on the second piece again to unselect it, which will take you back to 2.
+Alice wants to finish the puzzle in the right-most spot in her row and she needs just a `L2` piece to do it. She doesn't have one, but she has a `I2` piece, which can be upgraded into it. So she presses the <u>Upgrade</u> button in the <u>Piece Action Zone</u> and selects the `I2` piece in the <u>Piece Zone</u>. The `I2` piece will be **highlighted** and all the pieces which she _cannot_ change it to will be **grayed out**. She then selects the `L2` piece, which highlights it as well and **grays out** all the other pieces. Once she is happy with her selection, she confirms the action. The `I2` piece is removed from her collection and the `L2` piece is added to it. The number of pieces in the shared reserve is updated accordingly.
 
 ![Upgrade Piece](images/main-game-upgrade.png)
 
@@ -264,25 +277,37 @@ The process of creating an upgrade action happens in the <u>Piece Zone</u>, is v
 Once you select a piece to upgrade, it's numer in you column will decrease by 1 and appear in red, while the number in the shared reserve will increase by 1 and appear in green. After you have selected a piece to upgrade to, the number in the shared reserve will decrease by 1 and appear in red and the number in your column will increase by 1 and appear in green.
 "%}
 
+If Alice had a change of heart and decided to upgrade the `I2` piece to a `I3` piece instead, she could have clicked on the selected `L2` piece again to unselect it and go back to the previous state.
+
+Clicking directly the `I2` again would unselect everything and go back to the initial state after pressing the <u>Upgrade</u> button. This is regardless of whether the `I2` piece was already selected or not.
+
 {% include note.html content="
 If you don't have any pieces in your collection, the <u>Upgrade</u> button will be disabled.
 "%}
 
 #### Master
 
-You can drag and lock the pieces in the same manner as with the [Place Piece](#place-piece) action. The only difference is that you can put up to one piece into each of your unfinished puzzles.
+Press the <u>Master</u> button in the <u>Piece Action Zone</u> and position your pieces in the same drag-and-drop manner as with the [Place Piece](#place-piece) action. The only difference is that the _Master action_ is valid if and only if at most one piece is <u>placed</u> in each puzzle.
 
 {% include note.html content="
-The *Master* action can be used only once per turn, so the button will be disabled if you have already used it.
+The *Master* action can be used only once per turn, so the button will be disabled if you have already used it. It will also be disabled if you don't have any pieces in your collection.
 "%}
 
 #### End Finishing Touches
 
-During _Finishing Touches_ you can only place pieces into your unfinished puzzles to reduce negative points. If you are satisfied and want to end your _Finishing Touches_ turn, click on the <u>End Finishing Touches</u> button and confirm the action.
+As the rules say:
+
+> After the final round ends, each player may place any number of pieces from their supply into the puzzles in front of them following the normal rules for the Place action. For each piece placed this way, 1 point is deducted from that player’s final score.
+
+The players don't get any rewards for the puzzles they finish this way and they don't get the used pieces back either. But they will not get the negative points, which are deducted for leaving some puzzles incomplete.
+
+To perform _Finishing touches_, simply place all the pieces you with (and own) into your puzzles in the same manner as with the [Place Piece](#place-piece) action. You can <u>place</u> as many pieces as you want. Once you're happy, end your turn by clicking the <u>End Finishing Touches</u> button in one of the <u>Action Zones</u>.
 
 {% include note.html content="
 The <u>End Finishing Touches</u> button will appear only after the game has reached the *Finishing Touches* phase.
 "%}
+
+After everyone ends their _Finishing touches_, the game transitions to the [<u>Game Ended</u>](#game-ended) screen.
 
 ### Completing Puzzles
 
@@ -292,7 +317,7 @@ After a puzzle is completed (all empty cells are filled in), it will be **highli
 You can usually only take the piece specified on the puzzle card as the reward. However, if there are no pieces of this type left in the shared reserve, you get to choose from a collection of pieces as specified in the rules.
 "%}
 
-To choose a reward, click on the piece you want to take and it will be **highlighted**. If there are multiple options and you want to change your selection, simply click on a different piece. Once you are happy with your choice, click on the **Confirm** button in the <u>Control Zone</u>.
+To choose a reward, click on the piece you want to take and it will be **highlighted**. If there are multiple options and you want to change your selection, simply click on a different piece. Clicking on the same piece again will unselect it. Once you are happy with your choice, click on the **Confirm** button in the <u>Control Zone</u>.
 
 {% include tip.html content="
 When you select a reward, its number in the shared reserve will decrease by 1 and appear in red, while the number in your column will increase by 1 and appear in green.
@@ -304,22 +329,80 @@ After you choose a reward, you will get the points for the puzzle and the pieces
 If you have used the *Master* action and completed more than one puzzle, you will be prompted to choose a reward for each of them, one at a time.
 "%}
 
-If an AI player finishes a puzzle, the process of it choosing a reward will be visually indicated in the same way as described above.
-
 In the very unlikely event that there are no pieces left in the shared reserve (and therefore there is no possible reward), you will _not_ be prompted to choose a reward. Instead, the puzzle will be highlighted, you will be returned the used pieces and then it will be automatically removed from your row in the <u>Player Zone</u>.
 
-### Main Game Pause Menu
+{% include note.html content="
+All the action buttons are disabled while you are selecting a reward.
+"%}
+
+#### Finishing Touches
+
+If a puzzle is completed when the player presses the <u>End Finishing Touches</u> button, it will simply disappear from the <u>Player Zone</u>.
+
+## Main Game Pause Menu
+
+When playing the game, Alice and Karel remember that games usually do something when you press the `Esc` key, and so they try it, all animations stop and the game pauses. They see the following screen:
 
 ![Main Pause](images/main-game-paused.png)
 
-### Game Ended Screen
+Alice noticed that it says that the current player is Karel and has 2 actions left. There was also some message about the game phase, apparently it already was the _Final round_. Karel remained Alice about what they read in the rules:
+
+> When the Black puzzle deck is empty, the end of the game is triggered. Finish the current round and then play one final round. Then perform finishing touches and calculate the final scores.
+
+After playing the game a few times the two of them discovered all of the different messages hidden in the <u>Main Game Pause Menu</u>.
+
+- **Normal** - before the black deck is emptied,
+- **Next round is final** - after it is emptied, but before the final round starts,
+- **Final round** - during the final round,
+- **Finishing touches** - during the finishing touches phase.
+- **Game ended** - if `Esc` is pressed in the [<u>Game Ended</u>](#game-ended) screen.
+
+There are three different buttons:
+
+- **HOME** (top left) - takes you back to the [<u>Start Screen</u>](#start-screen), leaving the game.
+- **RESUME** (bottom left) - takes you back to the [<u>Main Game</u>](#main-game) screen; the same as pressing the `Esc` key again.
+- **SOUND** (top right) - changes sound volume between 0%, 33%, 66% and 100%.
+
+There is also a slider for adjusting the speed of animations. Minimum is `1x`, maximum is `4x` and the tick interval is `1`.
+
+If you want to peek at everyone's score, you can do so by clicking on the closed eye icon left of the _Score_ text. The eye will open and the scores will be shown. Clicking on the eye again will close it and hide the scores. The scores are hidden by default. If you exit the pause screen with the eye open, it will still be open (and score visible) when you come back.
+
+{% include note.html content="
+This might seem like a weird design choice, but its consistent with the rules of the original game, which say the following about public scores:
+
+> If you want to play a more strategic game, play with your Victory Point pile face up, so that everyone can see the points everyone else has scored. This should be agreed by all players before the game starts.
+> "%}
+
+## Game Ended
+
+After Karel, Alice and the NEAT player all perform their _Finishing touches_, they see the following screen:
 
 ![Main ENd](images/main-game-end.png)
 
+Upon clicking the **Calculate Score** button, they are taken to the [<u>Final Results</u>](#final-results) screen.
+
+{% include note.html content="
+Pressing `Esc` in the <u>Game Ended</u> screen will display the same pause menu as in the <u>Main Game</u> screen, i.e. the [<u>Main Game Pause Menu</u>](#main-game-pause-menu).
+"%}
+
 ## Final Results
+
+Alice is eager to see who won, so she clicks on the **Calculate Score** button in the [<u>Game Ended</u>](#game-ended) screen and is taken to the <u>Final Results</u> screen. A fancy animation plays, showing all the puzzles each of the players completed, the pieces they used during finishing touches and the puzzles they failed to complete. The points are added and deducted from the score as the animation plays. However, Alice isn't happy with the result, because she and the NEAT player have the same score, so she doesn't know who won! The crisis is averted when the **Num puzzles** and **Num pieces** rows appear underneath, revealing that Alice has completed 8 puzzles, but NEAT completed only 7. Alice might have not won the game, but she beat Karel's super cool AI player, so she is happy.
+
+{% include note.html content="
+The **Num puzzles** (number of completed puzzles) and **Num pieces** (number of leftover pieces after finishing touches) rows are shown only if the game ended in a tie.
+"%}
+
+The **HOME** button (bottom right) takes Alice and Karel back to the [<u>Start Screen</u>](#start-screen), where they can start a new game.
 
 ![Final results](images/results.png)
 
-### FInal Results Pause Menu
+## Final Results Pause Menu
+
+Alice and Karel finish the next game (they can't stop playing, it's so good), but once they get to the [<u>Final Results</u>](#final-results) screen, they are interrupted by a phone call from Karel's mom. It's already 2 AM and she wants to know if Karel is going to go to bed willingly or if she will need to employ more drastic measures. Karel wants to see the fancy final animation, so he pauses the game (`Esc`) not to miss it, and tells his mom that he will go to bed in a minute. He then resumes the game and the animation continues.
 
 ![Final Results Pause](images/results-paused.png)
+
+{% include note.html content="
+All of the controls are the same as in the [<u>Main Game Pause Menu</u>](#main-game-pause-menu) screen.
+"%}
