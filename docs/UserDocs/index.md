@@ -1,3 +1,5 @@
+<link rel='stylesheet' href='../css/markdown-alert.css'/>
+
 # User Documentation
 
 {% include warning.html content="

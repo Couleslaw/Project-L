@@ -1,3 +1,6 @@
+<link rel='stylesheet' href='../css/markdown-alert.css'/>
+<link rel='stylesheet' href='../css/code-highlight.css'/>
+
 # AI Player Guide
 
 This guide explains how to implement your own AI player for the game.
