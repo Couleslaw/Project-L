@@ -36,6 +36,7 @@ Screens are referred to by their canonical names, always underlined in this docu
 - [Credits](#credits)
 - [New Game](#new-game)
 - [Main Game](#main-game)
+  - [AI Player Initialization Errors](#ai-player-initialization-errors)
   - [Main Game Zones](#main-game-zones)
     - [Player Zone](#player-zone)
     - [Piece Zone](#piece-zone)
@@ -115,6 +116,10 @@ Players are shuffled by default to ensure random order of play. This can be turn
 After Karel is done creating the game for him, Alice and his NEAT algorithm AI player, he clicks on the **Start game** button and is taken to the <u>Main Game</u> screen. After playing for a while, he takes a screenshot of the game to show it to his friends.
 
 ![Main Game](images/main-game.png)
+
+### AI Player Initialization Errors
+
+When the game starts, an initialization method is called for all AI players in the game. If an AI player fails to initialize (an exception is thrown), the game will announce that it cannot continue and will return to the [<u>Start Screen</u>](#start-screen).
 
 ### Main Game Zones
 
@@ -205,7 +210,7 @@ The <u>Confirm</u> buttons is enabled if and only if an action is being created 
 
 Once you click an action button in the <u>Action Zone</u>, it will be **highlighted**. Clicking on it again will unselect it and cancel the action creation process. Clicking on a different action button is equivalent to pressing the selected button again and then clicking on the new action button.
 
-AI player actions are visualized in the same way as human player actions.
+AI player actions are visualized in the same way as human player actions. If an AI player fails to provide a valid action, the game will simply ignore it (skip it).
 
 #### Place Piece
 

@@ -1,7 +1,7 @@
 <link rel='stylesheet' href='../../css/code-highlight.css'/>
 <link rel='stylesheet' href='../../css/markdown-alert.css'/>
 
-# Library Technical Documentation
+# Core Library Documentation
 
 The game is played by both human and AI players, but the human players choose actions and interact with the game using a GUI, which isn't the focus of this document. This document only discusses the inner workings of the [Project L Core](../../ProjectLCoreDocs/index) library. The Unity side of things is documented [here](../unity/index).
 As a result we will be mostly focusing on the AI player point of view.
