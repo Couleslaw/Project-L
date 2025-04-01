@@ -64,9 +64,7 @@ git clone https://github.com/Couleslaw/Project-L.git
 2. Add a new **Class Library** project to the solution. You will implement your AI player here.
 3. Right-click on the project in the Solution Explorer and select **Add** > **Project Reference** and Select `ProjectLCore`.
 
-A disadvantage of this approach is that you will need to clone the entire repository, which is quite large and contains a lot of files you don't need.
-
-An advantage is that you can easily access the source code of the library, including the source code of the example projects we will talk about later.
+The disadvantage of this approach is that you will need to clone the entire repository, which is quite large and contains a lot of files you don't need. The advantage is that you can easily access the source code of the library, including the source code of the example projects we will talk about later.
 
 ### Implement Your AI Player
 
