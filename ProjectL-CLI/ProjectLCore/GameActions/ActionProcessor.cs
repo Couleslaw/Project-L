@@ -189,11 +189,14 @@
         }
 
         /// <summary>
-        /// Adds the tetromino to the puzzle. If the puzzle is finished and the <see cref="GameCore.CurrentGamePhase"/> is not <see cref="GamePhase.FinishingTouches"/>, 
+        /// Adds the tetromino to the puzzle. If this action completes the puzzle and the <see cref="GameCore.CurrentGamePhase"/> is not <see cref="GamePhase.FinishingTouches"/>, 
         /// the player gets a reward and the tetrominos he used to complete the puzzle are returned to him.
-        /// This doesn't happen during <see cref="GamePhase.FinishingTouches"/> and the <see cref="PlaceTetrominoAction"/> costs 1 score.
+        /// This doesn't happen during <see cref="GamePhase.FinishingTouches"/>.
         /// </summary>
         /// <param name="action">The action to process.</param>
+        /// <remarks>
+        ///  Signals <see cref="TurnManager.Signaler.PlayerFinishedPuzzle"/> if this action completes the puzzle.
+        /// </remarks>
         /// <exception cref="InvalidOperationException">The player doesn't have the puzzle specified by the action</exception>
         public void ProcessPlaceTetrominoAction(PlaceTetrominoAction action)
         {
@@ -213,6 +216,7 @@
                 if (puzzle.IsFinished) {
                     _playerState.FinishPuzzleWithId(puzzle.Id);
                 }
+                signaler.PlayerFinishedPuzzle(puzzle, null, null);
                 return;
             }
 
@@ -256,6 +260,8 @@
 
         /// <summary>
         /// Gets the reward for completing a puzzle. If there are multiple options, the player gets to choose.
+        /// If the player fails to choose a valid reward, the first available one is picked.
+        /// Also signals <see cref="TurnManager.Signaler.PlayerFinishedPuzzle"/>.
         /// </summary>
         /// <param name="puzzle">The puzzle the reward is for.</param>
         /// <returns>The reward the player chose or <see langword="null"/> if there are no reward options.</returns>
@@ -269,9 +275,16 @@
                 return null;
             }
             // get reward from player
-            TetrominoShape reward = player.GetRewardAsync(rewardOptions, puzzle.Clone()).Result;
+            TetrominoShape? reward;
+            try {
+                reward = player.GetRewardAsync(rewardOptions, puzzle.Clone()).Result;
+            }
+            catch (Exception) {
+                reward = null;
+            }
+
             // if the chosen reward isn't valid, pick the first one
-            if (!rewardOptions.Contains(reward)) {
+            if (reward is null || !rewardOptions.Contains(reward.Value)) {
                 reward = rewardOptions[0];
             }
 

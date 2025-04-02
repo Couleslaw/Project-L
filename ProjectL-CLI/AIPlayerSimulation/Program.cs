@@ -116,8 +116,10 @@
                 game.ProcessAction(action);
 
                 // check if player completed any puzzles
-                while (game.TryGetUnprocessedFinishedPuzzle(out var finishedPuzzleInfo)) {
-                    PrintFinishedPuzzleInfo(finishedPuzzleInfo, game.CurrentPlayer);
+                if (game.CurrentGamePhase != GamePhase.FinishingTouches) {
+                    while (game.TryGetUnprocessedFinishedPuzzle(out var finishedPuzzleInfo)) {
+                        PrintFinishedPuzzleInfo(finishedPuzzleInfo, game.CurrentPlayer);
+                    }
                 }
             }
 
