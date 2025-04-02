@@ -7,9 +7,9 @@
             Places all the tetrominos specified by <a href="P_ProjectLCore_GameActions_MasterAction_TetrominoPlacements.htm">TetrominoPlacements</a>.
             Each of these placements is treaded like a <a href="T_ProjectLCore_GameActions_PlaceTetrominoAction.htm">PlaceTetrominoAction</a>.
             Also signals <a href="M_ProjectLCore_GameManagers_TurnManager_Signaler_PlayerUsedMasterAction.htm">PlayerUsedMasterAction<span id="LST7C8367ED_1" data-languageSpecificText="cs=()|vb=|cpp=()|nu=()|fs=()"></span></a></td></tr><tr><td><a href="M_ProjectLCore_GameActions_GameActionProcessor_ProcessPlaceTetrominoAction.htm">ProcessPlaceTetrominoAction</a></td><td>
-            Adds the tetromino to the puzzle. If the puzzle is finished and the <a href="P_ProjectLCore_GameLogic_GameCore_CurrentGamePhase.htm">CurrentGamePhase</a> is not <a href="T_ProjectLCore_GameLogic_GamePhase.htm">FinishingTouches</a>, 
+            Adds the tetromino to the puzzle. If this action completes the puzzle and the <a href="P_ProjectLCore_GameLogic_GameCore_CurrentGamePhase.htm">CurrentGamePhase</a> is not <a href="T_ProjectLCore_GameLogic_GamePhase.htm">FinishingTouches</a>, 
             the player gets a reward and the tetrominos he used to complete the puzzle are returned to him.
-            This doesn't happen during <a href="T_ProjectLCore_GameLogic_GamePhase.htm">FinishingTouches</a> and the <a href="T_ProjectLCore_GameActions_PlaceTetrominoAction.htm">PlaceTetrominoAction</a> costs 1 score.
+            This doesn't happen during <a href="T_ProjectLCore_GameLogic_GamePhase.htm">FinishingTouches</a>.
             </td></tr><tr><td><a href="M_ProjectLCore_GameActions_GameActionProcessor_ProcessRecycleAction.htm">ProcessRecycleAction</a></td><td>
             Removes the puzzles from the <a href="P_ProjectLCore_GameLogic_GameCore_GameState.htm">GameState</a> puzzle rows and puts them to the bottom of the deck.
             Then refills the puzzle rows.
