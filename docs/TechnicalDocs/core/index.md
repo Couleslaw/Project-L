@@ -321,7 +321,7 @@ The [Player](../../ProjectLCoreDocs/html/T_ProjectLCore_Players_Player.htm) also
 
 These methods are asynchronous, so that they don't block the main thread and therefore make the game unresponsive. Every AI player inherits from the abstract class [AIPlayerBase](../../ProjectLCoreDocs/html/T_ProjectLCore_Players_AIPlayerBase.htm) and must implement the `GetAction` and `GetReward` methods. The asynchronous methods are implemented in the base class and asynchronously call the synchronous methods.
 
-AI players also have to implement the [Init](../../ProjectLCoreDocs/Help/html/M_ProjectLCore_Players_AIPlayerBase_Init.htm) method which is called by the game engine at the start of the game. The AI player gets information about the number of players in the game and a list of all puzzles in the game. There is also an option to pass a path to a configuration file. This is useful for AI players which need to load some data from a file.
+AI players also have to implement the [Init](../../ProjectLCoreDocs/html/M_ProjectLCore_Players_AIPlayerBase_Init.htm) method which is called by the game engine at the start of the game. The AI player gets information about the number of players in the game and a list of all puzzles in the game. There is also an option to pass a path to a configuration file. This is useful for AI players which need to load some data from a file.
 
 {% include tip.html content="
 The puzzle information might also prove useful. Among the information the player gets when `GetAction` is called, there is a list of finished puzzles for every player. This can be used to deduce which puzzles are still left in the puzzle decks.

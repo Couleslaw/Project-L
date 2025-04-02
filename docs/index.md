@@ -20,8 +20,8 @@ The [functional spec](./FunctionDocs/index) details all features and behavior of
 
 The Unity implementation of the game relies on a library, which is independent of the Unity engine and is suitable for training AI players. As a result, the documentation is divided into two parts.
 
-- [Library docs](./TechnicalDocs/core/index) - describes the inner workings of the [Project-L Core](./ProjectLCoreDocs/index.html) library.
+- [Library docs](./TechnicalDocs/core/index) - describe the inner workings of the [Project-L Core](./ProjectLCoreDocs/index.html) library.
 
-- [Unity docs](./TechnicalDocs/unity/index) - describes the Unity implementation of the game.
+- [Unity docs](./TechnicalDocs/unity/index) - describe the Unity implementation of the game.
 
 The [AI Player Guide](./AIPlayerGuide/index) explains how to create your own AI players for the game.
