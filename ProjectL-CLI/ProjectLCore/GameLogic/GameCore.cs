@@ -163,17 +163,19 @@ namespace ProjectLCore.GameLogic
         }
 
         /// <summary>
-        /// Gets information about the last unprocessed finished puzzle. The return value indicates whether the operation succeeded.
+        /// Gets a <see cref="FinishedPuzzleInfo"/> from the <see cref="GameActionProcessor.FinishedPuzzlesQueue"/> of the given <paramref name="player"/>.
+        /// The return value indicates whether there was something in the queue or not.
         /// </summary>
+        /// <param name="player">The player, who's completed puzzles this method will check.</param>
         /// <param name="finishedPuzzleInfo">Contains information about the last unprocessed finished puzzle if there is one; otherwise <see langword="default"/>.</param>
-        /// <returns><see langword="true"/> if there is a unprocessed finished puzzle; otherwise <see langword="false"/>.</returns>
-        public bool TryGetUnprocessedFinishedPuzzle(out TurnManager.FinishedPuzzleInfo finishedPuzzleInfo)
+        /// <returns><see langword="true"/> if there is an unprocessed finished puzzle; otherwise <see langword="false"/>.</returns>
+        /// <seealso cref="GameActionProcessor.FinishedPuzzlesQueue"/>
+        public bool TryGetNextPuzzleFinishedBy(Player player, out FinishedPuzzleInfo finishedPuzzleInfo)
         {
-            if (_turnManager.FinishedPuzzleQueue.Count > 0) {
-                finishedPuzzleInfo = _turnManager.FinishedPuzzleQueue.Dequeue();
+            if (_actionProcessors[player].FinishedPuzzlesQueue.Count > 0) {
+                finishedPuzzleInfo = _actionProcessors[player].FinishedPuzzlesQueue.Dequeue();
                 return true;
             }
-            bool a = int.TryParse("a", out int result);
             finishedPuzzleInfo = default;
             return false;
         }

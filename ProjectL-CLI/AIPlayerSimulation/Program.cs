@@ -117,7 +117,7 @@
 
                 // check if player completed any puzzles
                 if (game.CurrentGamePhase != GamePhase.FinishingTouches) {
-                    while (game.TryGetUnprocessedFinishedPuzzle(out var finishedPuzzleInfo)) {
+                    while (game.TryGetNextPuzzleFinishedBy(game.CurrentPlayer, out var finishedPuzzleInfo)) {
                         PrintFinishedPuzzleInfo(finishedPuzzleInfo, game.CurrentPlayer);
                     }
                 }
@@ -151,10 +151,9 @@
             Console.WriteLine($"TurnInfo: GamePhase={turnInfo.GamePhase}, LastRound={turnInfo.LastRound}, TookBlackPuzzle={turnInfo.TookBlackPuzzle}, UsedMaster={turnInfo.UsedMasterAction}");
         }
 
-        internal static void PrintFinishedPuzzleInfo(TurnManager.FinishedPuzzleInfo puzzleInfo, Player currentPlayer) 
+        internal static void PrintFinishedPuzzleInfo(FinishedPuzzleInfo puzzleInfo, Player currentPlayer)
         {
             Console.WriteLine($"{currentPlayer.Name} completed puzzle with ID={puzzleInfo.Puzzle.Id}");
-
             Console.WriteLine($"   Returned pieces: {GetUsedTetrominos()}");
             Console.WriteLine($"   Reward: {puzzleInfo.SelectedReward}");
             Console.WriteLine($"   Points: {puzzleInfo.Puzzle.RewardScore}");

@@ -84,6 +84,16 @@
 
         #endregion
 
+        #region Properties
+
+        /// <summary>
+        /// When a <see cref="Puzzle"/> is finished with a <see cref="PlaceTetrominoAction"/>, information about the finished puzzle is added to this queue.
+        /// </summary>
+        /// <seealso cref="GameCore.TryGetNextPuzzleFinishedBy(Player, out FinishedPuzzleInfo)"/>
+        public Queue<FinishedPuzzleInfo> FinishedPuzzlesQueue { get; } = new();
+
+        #endregion
+
         #region Methods
 
         /// <summary>
@@ -195,7 +205,7 @@
         /// </summary>
         /// <param name="action">The action to process.</param>
         /// <remarks>
-        ///  Signals <see cref="TurnManager.Signaler.PlayerFinishedPuzzle"/> if this action completes the puzzle.
+        ///  If this action completes the puzzle, information about it is added to the <see cref="FinishedPuzzlesQueue"/>.
         /// </remarks>
         /// <exception cref="InvalidOperationException">The player doesn't have the puzzle specified by the action</exception>
         public void ProcessPlaceTetrominoAction(PlaceTetrominoAction action)
@@ -216,7 +226,7 @@
                 if (puzzle.IsFinished) {
                     _playerState.FinishPuzzleWithId(puzzle.Id);
                 }
-                signaler.PlayerFinishedPuzzle(puzzle, null, null);
+                AddFinishedPuzzleInfoToQueue(puzzle, null, null);
                 return;
             }
 
@@ -261,7 +271,7 @@
         /// <summary>
         /// Gets the reward for completing a puzzle. If there are multiple options, the player gets to choose.
         /// If the player fails to choose a valid reward, the first available one is picked.
-        /// Also signals <see cref="TurnManager.Signaler.PlayerFinishedPuzzle"/>.
+        /// Also adds information about the puzzle to the <see cref="FinishedPuzzlesQueue"/>.
         /// </summary>
         /// <param name="puzzle">The puzzle the reward is for.</param>
         /// <returns>The reward the player chose or <see langword="null"/> if there are no reward options.</returns>
@@ -271,7 +281,7 @@
 
             // if there are no reward options, the player doesn't get anything
             if (rewardOptions.Count == 0) {
-                signaler.PlayerFinishedPuzzle(puzzle, rewardOptions, null);
+                AddFinishedPuzzleInfoToQueue(puzzle, rewardOptions, null);
                 return null;
             }
             // get reward from player
@@ -288,8 +298,13 @@
                 reward = rewardOptions[0];
             }
 
-            signaler.PlayerFinishedPuzzle(puzzle, rewardOptions, reward);
+            AddFinishedPuzzleInfoToQueue(puzzle, rewardOptions, reward);
             return reward;
+        }
+
+        private void AddFinishedPuzzleInfoToQueue(Puzzle puzzle, List<TetrominoShape>? rewardOptions, TetrominoShape? selectedReward)
+        {
+            FinishedPuzzlesQueue.Enqueue(new FinishedPuzzleInfo(player.Id, puzzle, rewardOptions, selectedReward));
         }
 
         #endregion

@@ -293,7 +293,7 @@ The validity of an action in the current game context can be checked using an [A
 For more details about verification results see the [VerificationFailure](../../ProjectLCoreDocs/html/T_ProjectLCore_GameActions_Verification_VerificationFailure.htm) abstract class and its derived classes, which can be found in the action verification [namespace](../../ProjectLCoreDocs/html/N_ProjectLCore_GameActions_Verification.htm). The derived classes contain the information about the reason why the action is invalid. This can be used by the AI player (and its programmer) to debug its decision making process.
 "%}
 
-After a successful verification, the action can be processed using the [GameActionProcessor](../../ProjectLCoreDocs/html/T_ProjectLCore_GameActions_GameActionProcessor.htm), which implements the `IActionProcessor` interface and modifies the `GameState` and `PlayerState` objects accordingly.
+After a successful verification, the action can be processed using the [GameActionProcessor](../../ProjectLCoreDocs/html/T_ProjectLCore_GameActions_GameActionProcessor.htm), which implements the `IActionProcessor` interface and modifies the `GameState` and `PlayerState` objects accordingly. It also has a queue for storing information about completed puzzles.
 
 {% include important.html content="
 The `GameActionProcessor` doesn't check action validity, so it should only be called after a successful verification. It is the responsibility of the caller to ensure that the action is valid.
@@ -302,11 +302,14 @@ The `GameActionProcessor` doesn't check action validity, so it should only be ca
 A `GameActionProcessor` needs to be created for every player.
 
 {% include note.html content="
- If an action processor should be universal (remember all player states), then it would need a way to identify the correct player from the given action. So either the action would need to contain the ID of the player, or the action processor would need to have a reference to some other object which could tell it who the current player is. <br/>Neither of these solutions are elegant in my opinion, so I chose to create a separate action processor for each player.
+If an action processor would be universal (remember all player states), then it would need a way to identify the correct player from the given action. So either the action would need to contain the ID of the player, or the action processor would need to have a reference to some other object which could tell it who the current player is. <br/>Neither of these solutions are elegant in my opinion, so I chose to create a separate action processor for each player.
 "%}
 
-If a puzzle is completed by a `PlaceTetrominoAction`, the player needs to be rewarded. The `GameActionProcessor` will get a list of all possible rewards (usually only one) from the [RewardManager](../../ProjectLCoreDocs/html/T_ProjectLCore_GameManagers_RewardManager.htm), and the player will be prompted to choose one by calling the `Player.GetRewardAsync` method. Subsequently, a [FinishedPuzzleInfo](../../ProjectLCoreDocs/html/T_ProjectLCore_GameManagers_TurnManager_FinishedPuzzleInfo.htm) object containing information about the possible rewards and the selected reward will be passed outside of the `GameActionProcessor` using the [TurnManager.Signaler](../../ProjectLCoreDocs/html/T_ProjectLCore_GameManagers_TurnManager_Signaler.htm) of this processor.
-The `TurnManager` contains a queue of `FinishedPuzzleInfos` and the user can process them how he pleases or ignore them entirely. They aren't needed for the logic of the game but might be useful for logging or other similar purposes.
+If a `PlaceTetrominoAction` completes a puzzle, the player needs to be rewarded. The `GameActionProcessor` will get a list of all possible rewards (usually only one) from the [RewardManager](../../ProjectLCoreDocs/html/T_ProjectLCore_GameManagers_RewardManager.htm), and the player will be prompted to choose one by calling the `Player.GetRewardAsync` method. Subsequently, a [FinishedPuzzleInfo](../../ProjectLCoreDocs/html/T_ProjectLCore_GamePieces_FinishedPuzzleInfo.htm) object containing information about the possible rewards and the selected reward will be added to the [FinishedPuzzlesQueue](../../ProjectLCoreDocs/html/P_ProjectLCore_GameActions_GameActionProcessor_FinishedPuzzlesQueue.htm).
+
+{% include note.html content="
+The `GameActionProcessor.FinishedPuzzlesQueue` of a player contains information about puzzles the player finished. Users of the library can process them how they please or ignore them entirely. They aren't needed for the logic of the game but might be useful for debugging or other similar purposes.
+"%}
 
 ## Humans vs AI Players (solution)
 
