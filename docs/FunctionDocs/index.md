@@ -255,10 +255,10 @@ If the black deck is empty and the game is coming to an end, you can only take o
 
 #### Recycle
 
-Click the <u>Recycle</u> button in the <u>Puzzle Action Zone</u> and choose a row to recycle.
+Click the <u>Recycle</u> button in the <u>Puzzle Action Zone</u> and choose a column (white/black) to recycle.
 
 1. All puzzle Cards will be **grayed out**.
-2. Click on the puzzles in the row in the order you want to recycle them. The first puzzle will go to the bottom of the deck first etc.
+2. Click on the puzzles in the column in the order you want to recycle them. The first puzzle will go to the bottom of the deck first etc.
 3. The puzzles you have clicked on will be **highlighted**. Clicking on a **highlighted** puzzle again will remove it from the selection and shift the recycle order. If there is a **highlighted** white puzzle, you can not add a black puzzle and vice versa.
 4. Once all puzzles of a certain color are selected, you can confirm the action.
 
