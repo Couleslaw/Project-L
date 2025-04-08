@@ -6,8 +6,6 @@
 
 This project is a Unity implementation of the **Project L** board game published by [Boardcubator](https://boardcubator.com/). It is a strategy game designed for 2-4 players, in which the players solve puzzles and collect tetrominos. You can either play against your friends or you can create your own AI players and play against them. Or both!
 
-**This spec is not, by any stretch of the imagination, complete.** All of the wording will need to be revised several times before it is finalized. The graphics and layout of the screens is shown here merely to illustrate the underlying functionality. The actual look will be added once the game is finished.
-
 This spec doesn't discuss the technical side of things (how it works). If you are interested in that, please read the [Technical Documentation](../TechnicalDocs/core/index).
 
 ## Scenarios
@@ -189,7 +187,7 @@ The <u>Piece Action Zone</u> contains:
 Both zones also contain a <u>Confirm</u> button for confirming the actions.
 "%}
 
-When the game comes to the Finishing Touches phase, a <u>End Finishing Touches</u> button appears in both of the <u>Action Zones</u>. It replaces all other buttons (including the confirm buttons) which were there originally.
+When the game comes to the Finishing Touches phase, the <u>End Finishing Touches</u> buttons appear in both of the <u>Action Zones</u>. They replace all other buttons (including the confirm buttons) which were there originally.
 
 ### Creating Actions
 
@@ -279,7 +277,7 @@ Alice wants to finish the puzzle in the right-most spot in her row and she needs
 ![Upgrade Piece](images/main-game-upgrade.png)
 
 {% include tip.html content="
-Once you select a piece to upgrade, it's numer in you column will decrease by 1 and appear in red, while the number in the shared reserve will increase by 1 and appear in green. After you have selected a piece to upgrade to, the number in the shared reserve will decrease by 1 and appear in red and the number in your column will increase by 1 and appear in green.
+Once you select a piece to upgrade, it's number in you column will decrease by 1 and appear in red, while the number in the shared reserve will increase by 1 and appear in green. After you have selected a piece to upgrade to, the number in the shared reserve will decrease by 1 and appear in red and the number in your column will increase by 1 and appear in green.
 "%}
 
 If Alice had a change of heart and decided to upgrade the `I2` piece to a `I3` piece instead, she could have clicked on the selected `L2` piece again to unselect it and go back to the previous state.
@@ -368,7 +366,7 @@ There are three different buttons:
 - **RESUME** (bottom left) - takes you back to the [<u>Main Game</u>](#main-game) screen; the same as pressing the `Esc` key again.
 - **SOUND** (top right) - changes sound volume between 0%, 33%, 66% and 100%.
 
-There is also a slider for adjusting the speed of animations. Minimum is `1x`, maximum is `4x` and the tick interval is `1`.
+There is also a slider for adjusting the speed of animations of AI players and the end game animation (see [Final Results](#final-results)). Minimum is `1x`, maximum is `4x` and the tick interval is `1`.
 
 If you want to peek at everyone's score, you can do so by clicking on the closed eye icon left of the _Score_ text. The eye will open and the scores will be shown. Clicking on the eye again will close it and hide the scores. The scores are hidden by default. If you exit the pause screen with the eye open, it will still be open (and score visible) when you come back.
 
