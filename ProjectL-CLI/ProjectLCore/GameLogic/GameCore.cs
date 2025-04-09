@@ -89,7 +89,7 @@ namespace ProjectLCore.GameLogic
         #region Methods
 
         /// <summary>
-        /// Initializes the game by giving every player a <see cref="TetrominoShape.O1"/> and <see cref="TetrominoShape.I2"/> tetromino from the shared reserve.\
+        /// Initializes the game by giving every player a <see cref="TetrominoShape.O1"/> and <see cref="TetrominoShape.I2"/> tetromino from the shared reserve.
         /// And filling the black and white puzzle rows with puzzles from the decks.
         /// </summary>
         public void InitializeGame()

@@ -95,7 +95,7 @@ The project also contains the `puzzles.txt` file, which contains a list of all p
 Select the **Release** configuration and build your project. You will find the DLL in the `bin/Release` folder. Then add your player to the `aiplayers.ini` file as explained in the [overview](#overview).
 
 {% include note.html content="
-The game will look through the DLL for a non-abstract class that inherits from the `AIPlayerBase` class. Your class must be public and have a public constructor with no parameters. If no such class is found, the player will not appear in the list of available players. If for some weird reason there are multiple such classes, the first one found will be used.
+The game will look through the DLL for a (public) non-abstract class that inherits from the `AIPlayerBase` class. If no such class is found, the player will not appear in the list of available players. If for some weird reason there are multiple such classes, the first one found will be used.
 "%}
 
 ### What Could Go Wrong?

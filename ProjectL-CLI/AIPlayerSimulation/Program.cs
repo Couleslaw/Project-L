@@ -1,6 +1,5 @@
 ﻿namespace AIPlayerSimulation
 {
-    using AIPlayerExample;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameActions.Verification;
     using ProjectLCore.GameLogic;
@@ -18,6 +17,10 @@
 
         internal const uint FirstPlayerId = 0;
 
+        internal const string PuzzleFilePath = "puzzles.txt";
+
+        internal const string AIPlayerFilePath = "aiplayers.ini";
+
         #endregion
 
         #region Fields
@@ -25,8 +28,6 @@
         internal readonly static string LargeSeparator = new String('X', 110);
 
         internal readonly static string SmallSeparator = new String('-', 95);
-
-        internal static readonly string[] PlayerNames = { "Alice", "Bob", "Charlie", "David" };
 
         internal static int RoundCount = 0;
 
@@ -41,25 +42,45 @@
         internal static void Main(string[] args)
         {
             // get program parameters
-            var simParams = SimulationParams.GetSimulationParamsFromStdIn();
+            var simParams = ParamParser.GetSimulationParamsFromStdIn();
             IsInteractive = simParams.IsInteractive;
             ShouldClearConsole = simParams.ShouldClearConsole;
 
             // initialize a new game
             Console.Clear();
-            Console.WriteLine("Loading game state from file...");
-            var gameState = GameState.CreateFromFile("puzzles.txt", simParams.NumInitialTetrominos, simParams.NumWhitePuzzles, simParams.NumBlackPuzzles);
+            Console.WriteLine("Loading game state from file...\n");
+
+            GameState? gameState = LoadGameStateFromFile(PuzzleFilePath, simParams);
+            if (gameState == null) {
+                Console.WriteLine("Failed to load game state from file. Press 'Enter' to exit game.");
+                Console.ReadLine();
+                return;
+            }
 
             // create players
-            Console.WriteLine("Initializing players...");
-            Player[] players = new Player[simParams.NumPlayers];
-            for (int i = 0; i < simParams.NumPlayers; i++) {
-                players[i] = new SimpleAIPlayer() { Name = PlayerNames[i] };
-                ((SimpleAIPlayer)players[i]).InitAsync(players.Length, gameState.GetAllPuzzlesInGame());
+            List<Player>? players = LoadPlayers(simParams);
+            if (players == null) {
+                return;
+            }
+
+            // initialize players
+            foreach (Player player in players) {
+                if (player is AIPlayerBase aiPlayer) {
+                    Task initTask = aiPlayer.InitAsync(players.Count, gameState.GetAllPuzzlesInGame());
+                    // handle possible exception
+                    initTask.ContinueWith(t => {
+                        if (t.Exception != null) {
+                            Console.WriteLine($"Initialization of player {player.Name} failed: {t.Exception.InnerException?.Message}");
+                            Console.WriteLine("Press 'Enter' to exit game");
+                            Console.ReadLine();
+                            Environment.Exit(1);
+                        }
+                    });
+                }
             }
 
             // create game core
-            Console.WriteLine("Creating a GameCore object and initializing game...");
+            Console.WriteLine("\nInitializing game...");
             var game = new GameCore(gameState, players, shufflePlayers: false);
             game.InitializeGame();
             Console.WriteLine("Done! Starting game...\n");
@@ -129,6 +150,29 @@
             PrintFinalResults(results, game);
         }
 
+        internal static GameState? LoadGameStateFromFile(string filePath, SimulationParams simParams)
+        {
+            try {
+                return GameState.CreateFromFile("puzzles.txt", simParams.NumInitialTetrominos, simParams.NumWhitePuzzles, simParams.NumBlackPuzzles);
+            }
+            catch (Exception e) {
+                return null;
+            }
+        }
+
+        internal static List<Player>? LoadPlayers(SimulationParams simParams)
+        {
+            try {
+                return ParamParser.GetPlayersFromStdIn(simParams.NumPlayers, AIPlayerFilePath);
+            }
+            catch (Exception e) {
+                Console.WriteLine($"Failed to create players: {e.Message}");
+                Console.WriteLine("Press 'Enter' to exit game");
+                Console.ReadLine();
+                return null;
+            }
+        }
+
         internal static void PrintGameScreenSeparator()
         {
             if (ShouldClearConsole) {
@@ -141,7 +185,6 @@
 
         internal static void PrintTurnInfo(Player currentPlayer, TurnInfo turnInfo)
         {
-
             // check if new round
             if (currentPlayer.Id == FirstPlayerId && turnInfo.NumActionsLeft == TurnManager.NumActionsInTurn - 1) {
                 RoundCount++;

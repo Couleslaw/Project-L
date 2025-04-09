@@ -1,7 +1,7 @@
-all: ProjectLCore/bin/Release/net8.0/ProjectLCore.dll AIPlayerExample/bin/Release/net8.0/AIPlayerExample.dll ProjectLCoreDocs/Help AIPlayerExampleDocs/Help
+all: ProjectLCore/bin/Release/net8.0/ProjectLCore.dll AIPlayerExample/bin/Release/net8.0/AIPlayerExample.dll ProjectLCoreDocs/Help AIPlayerExampleDocs/Help AIPlayerSimulation/AIPlayerDLLs/AIPlayerExample.dll
 
 clean:
-	rm -rf ProjectLCore/bin AIPlayerExample/bin ProjectLCoreDocs/Help AIPlayerExampleDocs/Help
+	rm -rf ProjectLCore/bin AIPlayerExample/bin ProjectLCoreDocs/Help AIPlayerExampleDocs/Help AIPlayerSimulation/AIPlayerDLLs/AIPlayerExample.dll
 
 ProjectLCore/bin/Release/net8.0/ProjectLCore.dll: ProjectLCore/ProjectLCore.csproj
 	dotnet build -c Release ProjectLCore/ProjectLCore.csproj
@@ -14,3 +14,7 @@ ProjectLCoreDocs/Help: ProjectLCoreDocs/ProjectLCoreDocs.shfbproj ProjectLCore/b
 
 AIPlayerExampleDocs/Help: AIPlayerExampleDocs/AIPlayerExampleDocs.shfbproj ProjectLCore/bin/Release/net8.0/ProjectLCore.dll AIPlayerExample/bin/Release/net8.0/AIPlayerExample.dll
 	msbuild.exe AIPlayerExampleDocs/AIPlayerExampleDocs.shfbproj
+
+AIPlayerSimulation/AIPlayerDLLs/AIPlayerExample.dll: AIPlayerExample/bin/Release/net8.0/AIPlayerExample.dll
+	mkdir -p AIPlayerSimulation/AIPlayerDLLs
+	cp AIPlayerExample/bin/Release/net8.0/AIPlayerExample.dll AIPlayerSimulation/AIPlayerDLLs

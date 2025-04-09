@@ -19,7 +19,7 @@ namespace ProjectLCore.Players
         #region Constructors
 
         /// <summary>
-        /// Sets the default player name to "Player {<see cref="Id"/>}".
+        /// Initializes a new instance of the <see cref="Player"/> class and sets the player name to "Player {<see cref="Id"/>}".
         /// </summary>
         public Player()
         {
@@ -38,7 +38,7 @@ namespace ProjectLCore.Players
         /// <summary>
         /// The name of the player.
         /// </summary>
-        public virtual string Name { get; init; }
+        public string Name { get; set; }
 
         #endregion
 

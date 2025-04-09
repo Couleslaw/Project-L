@@ -1,21 +1,35 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\AIPlayerExample\AIPlayerExample.csproj" />
-    <ProjectReference Include="..\ProjectLCore\ProjectLCore.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="ini-parser-netstandard" Version="2.5.3" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="puzzles.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\AIPlayerExample\AIPlayerExample.csproj" />
+		<ProjectReference Include="..\ProjectLCore\ProjectLCore.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="aiplayers.ini">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="puzzles.txt">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<Content Include="AIPlayerDLLs\**">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="AIPlayerDLLs\" />
+	</ItemGroup>
 
 </Project>
