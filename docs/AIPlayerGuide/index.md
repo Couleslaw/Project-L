@@ -21,9 +21,9 @@ Then export your player as a DLL and add a section containing information about 
 
 ```ini
 [My_AIPlayer]
-dll_path = "path/to/your/dll/AwesomeAI.dll"
-name = "Awesome"
-init_path = "path/to/your/init/file/or/folder" ; optional
+dll_path = path/to/your/dll/AwesomeAI.dll
+name = Awesome
+init_path = path/to/your/init/file/or/folder ; optional
 ```
 
 The section name can be anything, its just for your reference. The properties are:
