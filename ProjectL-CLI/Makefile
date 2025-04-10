@@ -15,6 +15,3 @@ ProjectLCoreDocs/Help: ProjectLCoreDocs/ProjectLCoreDocs.shfbproj ProjectLCore/b
 AIPlayerExampleDocs/Help: AIPlayerExampleDocs/AIPlayerExampleDocs.shfbproj ProjectLCore/bin/Release/net8.0/ProjectLCore.dll AIPlayerExample/bin/Release/net8.0/AIPlayerExample.dll
 	msbuild.exe AIPlayerExampleDocs/AIPlayerExampleDocs.shfbproj
 
-AIPlayerSimulation/AIPlayerDLLs/AIPlayerExample.dll: AIPlayerExample/bin/Release/net8.0/AIPlayerExample.dll
-	mkdir -p AIPlayerSimulation/AIPlayerDLLs
-	cp AIPlayerExample/bin/Release/net8.0/AIPlayerExample.dll AIPlayerSimulation/AIPlayerDLLs

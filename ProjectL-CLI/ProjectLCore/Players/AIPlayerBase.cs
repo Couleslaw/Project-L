@@ -23,11 +23,12 @@
         #region Methods
 
         /// <summary>
-        /// Asynchronously passes the parameters to <see cref="Init"/> and initializes the player. This function should be called once at the beginning of the game.
+        /// Asynchronously passes the parameters to <see cref="Init"/> and initializes the player. This method should be called once at the beginning of the game.
         /// </summary>
         /// <param name="numPlayers">The number of players in the game.</param>
         /// <param name="allPuzzles">All the puzzles in the game.</param>
         /// <param name="filePath">The path to a file where the player might be storing some information.</param>
+        /// <returns>Task object. Can be used to handle exceptions which might have been thrown while executing this method.</returns>
         public async Task InitAsync(int numPlayers, List<Puzzle> allPuzzles, string? filePath = null)
         {
             await Task.Run(() => Init(numPlayers, allPuzzles, filePath));
