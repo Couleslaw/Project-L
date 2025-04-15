@@ -62,7 +62,7 @@
             }
 
             // list available AI players
-            Console.WriteLine("Available AI players:");
+            Console.WriteLine("\nAvailable AI players:");
             for (int i = 0; i < playerTypes.Count; i++) {
                 Console.WriteLine($"{i + 1}: {playerTypes[i].Item2}");
             }

@@ -35,6 +35,8 @@
 
         internal static bool ShouldClearConsole = true;
 
+        internal static bool ExitingGame = false;
+
         #endregion
 
         #region Methods
@@ -52,8 +54,6 @@
 
             GameState? gameState = LoadGameStateFromFile(PuzzleFilePath, simParams);
             if (gameState == null) {
-                Console.WriteLine("Failed to load game state from file. Press 'Enter' to exit game.");
-                Console.ReadLine();
                 return;
             }
 
@@ -64,16 +64,14 @@
             }
 
             // initialize players
+            Console.WriteLine("Initializing players...\n");
             foreach (Player player in players) {
                 if (player is AIPlayerBase aiPlayer) {
                     Task initTask = aiPlayer.InitAsync(players.Count, gameState.GetAllPuzzlesInGame());
                     // handle possible exception
                     initTask.ContinueWith(t => {
                         if (t.Exception != null) {
-                            Console.WriteLine($"Initialization of player {player.Name} failed: {t.Exception.InnerException?.Message}");
-                            Console.WriteLine("Press 'Enter' to exit game");
-                            Console.ReadLine();
-                            Environment.Exit(1);
+                            ExitGame($"Initialization of player {player.Name} failed: {t.Exception.InnerException?.Message}");
                         }
                     });
                 }
@@ -150,12 +148,25 @@
             PrintFinalResults(results, game);
         }
 
+        internal static void ExitGame(string message="")
+        {
+            if (ExitingGame == true)
+                return;
+            ExitingGame = true;
+
+            Console.WriteLine(message);
+            Console.WriteLine("Press 'Enter' to exit game");
+            Console.ReadLine();
+            Environment.Exit(0);
+        }
+
         internal static GameState? LoadGameStateFromFile(string filePath, SimulationParams simParams)
         {
             try {
                 return GameState.CreateFromFile("puzzles.txt", simParams.NumInitialTetrominos, simParams.NumWhitePuzzles, simParams.NumBlackPuzzles);
             }
             catch (Exception e) {
+                ExitGame("Failed to load game state from file: " + e.Message);
                 return null;
             }
         }
@@ -166,9 +177,7 @@
                 return ParamParser.GetPlayersFromStdIn(simParams.NumPlayers, AIPlayerFilePath);
             }
             catch (Exception e) {
-                Console.WriteLine($"Failed to create players: {e.Message}");
-                Console.WriteLine("Press 'Enter' to exit game");
-                Console.ReadLine();
+                ExitGame($"Failed to create players: {e.Message}");
                 return null;
             }
         }
@@ -190,7 +199,7 @@
                 RoundCount++;
             }
             // print turn info
-            Console.WriteLine($"Round: {RoundCount}, Current player: {currentPlayer.Name}, Action: {3 - turnInfo.NumActionsLeft}");
+            Console.WriteLine($"Round: {RoundCount}, Current player: {currentPlayer.Name} ({currentPlayer.GetType().Name}), Action: {3 - turnInfo.NumActionsLeft}");
             Console.WriteLine($"TurnInfo: GamePhase={turnInfo.GamePhase}, LastRound={turnInfo.LastRound}, TookBlackPuzzle={turnInfo.TookBlackPuzzle}, UsedMaster={turnInfo.UsedMasterAction}");
         }
 
@@ -200,8 +209,13 @@
             Console.WriteLine($"   Returned pieces: {GetUsedTetrominos()}");
             Console.WriteLine($"   Reward: {puzzleInfo.SelectedReward}");
             Console.WriteLine($"   Points: {puzzleInfo.Puzzle.RewardScore}");
-            Console.WriteLine("\nPress 'Enter' to continue.");
-            Console.ReadLine();
+            if (IsInteractive) {
+                Console.WriteLine("\nPress 'Enter' to continue.");
+                Console.ReadLine();
+                if (ExitingGame) {
+                    Environment.Exit(0);
+                }
+            }
 
             string GetUsedTetrominos()
             {
@@ -244,10 +258,13 @@
 
         internal static void PrintPlayerProvidedNoAction(Player player)
         {
-            Console.WriteLine($"{player.Name} failed to provide a action. Skipping action...");
+            Console.WriteLine($"{player.Name} failed to provide an action. Skipping action...");
             if (IsInteractive) {
                 Console.WriteLine("Press 'Enter' to continue.");
                 Console.ReadLine();
+                if (ExitingGame) {
+                    Environment.Exit(0);
+                }
             }
         }
 
@@ -258,6 +275,9 @@
             if (IsInteractive) {
                 Console.WriteLine("Press 'Enter' to continue.");
                 Console.ReadLine();
+                if (ExitingGame) {
+                    Environment.Exit(0);
+                }
             }
         }
 
@@ -267,6 +287,9 @@
             if (IsInteractive) {
                 Console.WriteLine("Press 'Enter' to process action.");
                 Console.ReadLine();
+                if (ExitingGame) {
+                    Environment.Exit(0);
+                }
             }
         }
 
@@ -281,8 +304,7 @@
             }
             Console.WriteLine(SmallSeparator);
 
-            Console.WriteLine("\n The game is finished. Press 'Enter' to exit.");
-            Console.ReadLine();
+            ExitGame();
         }
 
         #endregion
