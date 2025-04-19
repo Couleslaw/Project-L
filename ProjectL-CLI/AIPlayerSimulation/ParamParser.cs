@@ -5,6 +5,7 @@
     using ProjectLCore.GameLogic;
     using ProjectLCore.Players;
     using System.Reflection;
+    using System.Runtime.Versioning;
 
     internal class SimulationParams
     {
@@ -157,8 +158,14 @@
                 }
 
                 try {
-                    // Load the DLL and find the type
+                    // Load the DLL
                     Assembly assembly = Assembly.LoadFrom(dllPath);
+
+                    if (! TargetsNetStandard21(assembly)) {
+                        continue;
+                    }
+
+                    // find the player type
                     Type? playerType = assembly.GetTypes().FirstOrDefault(t => !t.IsAbstract && typeof(AIPlayerBase).IsAssignableFrom(t));
 
                     if (playerType != null) {
@@ -177,6 +184,31 @@
             }
 
             return playerTypes;
+        }
+
+        /// <summary>
+        /// Checks if the given assembly targets .NET Standard 2.1.
+        /// </summary>
+        /// <param name="assembly">The assembly to check.</param>
+        /// <returns><see langword="true"/> if the assembly targets .NET Standard 2.1, <see langword="false"/> otherwise.</returns>
+        public static bool TargetsNetStandard21(Assembly assembly)
+        {
+            var targetFrameworkAttribute = assembly.GetCustomAttribute<TargetFrameworkAttribute>();
+
+            // if target framework attribute not found --> can not confirm
+            if (targetFrameworkAttribute == null) {
+                Console.WriteLine($"Warning: TargetFrameworkAttribute not found on assembly '{assembly.FullName}'. Cannot verify target framework. Skipping...");
+                return false;
+            }
+
+            const string netStandard21Tfm = ".NETStandard,Version=v2.1";
+            bool result = string.Equals(targetFrameworkAttribute.FrameworkName, netStandard21Tfm, StringComparison.OrdinalIgnoreCase);
+
+            if (!result) {
+                Console.WriteLine($"Assembly '{assembly.FullName}' targets '{targetFrameworkAttribute.FrameworkName}', expected '{netStandard21Tfm}'. Skipping...");
+            }
+
+            return result;
         }
 
         #endregion

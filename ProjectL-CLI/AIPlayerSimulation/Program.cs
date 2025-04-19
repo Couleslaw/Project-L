@@ -113,13 +113,8 @@
                 try {
                     action = game.CurrentPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier).Result;
                 }
-                catch (Exception) {
-                    action = null;
-                }
-
-                // check if the player provided a action
-                if (action == null) {
-                    PrintPlayerProvidedNoAction(game.CurrentPlayer);
+                catch (Exception e) {
+                    PrintPlayerProvidedNoAction(game.CurrentPlayer, e.Message);
                     continue;
                 }
 
@@ -256,9 +251,9 @@
             Console.WriteLine();
         }
 
-        internal static void PrintPlayerProvidedNoAction(Player player)
+        internal static void PrintPlayerProvidedNoAction(Player player, string message)
         {
-            Console.WriteLine($"{player.Name} failed to provide an action. Skipping action...");
+            Console.WriteLine($"{player.Name} failed to provide an action with error: {message}.\nSkipping action...");
             if (IsInteractive) {
                 Console.WriteLine("Press 'Enter' to continue.");
                 Console.ReadLine();
