@@ -21,12 +21,11 @@
         #region Methods
 
         /// <summary>
-        /// Heuristic function to estimate distances between two nodes. For IDA* to work properly, it needs to be admissible (optimistic), meaning <c>heuristic(a,b) &lt;= distance(a,b)</c>.
+        /// Heuristic function to estimate distances between this node an the <paramref name="other"/> node. For IDA* to work properly, it needs to be admissible (optimistic), meaning <c>heuristic(a,b) &lt;= distance(a,b)</c>.
         /// </summary>
-        /// <param name="start">The start node.</param>
-        /// <param name="goal">The goal node.</param>
+        /// <param name="other">The node to estimate the distance to.</param>
         /// <returns>The estimated distance between the nodes.</returns>
-        public static abstract int Heuristic(TSelf start, TSelf goal);
+        public int Heuristic(TSelf other);
 
         /// <summary>
         /// Gets the edges incident with this node. The entire graph doesn't need to be stored in memory but it can be dynamically generated instead.
@@ -84,7 +83,7 @@
         /// </returns>
         public static Tuple<List<IEdge<T>>?, int> IterativeDeepeningAStar<T>(T start, T goal, int maxDepth = -1) where T : INode<T>
         {
-            int bound = T.Heuristic(start, goal);
+            int bound = start.Heuristic(goal);
             var path = new List<IEdge<T>>();
             while (true) {
                 var result = Search(start, goal, 0, bound, path);
@@ -122,7 +121,7 @@
         /// </returns>
         private static int Search<T>(T node, T goal, int g, int bound, List<IEdge<T>> path) where T : INode<T>
         {
-            int f = g + T.Heuristic(node, goal);
+            int f = g + node.Heuristic(goal);
             if (f > bound) {
                 return f; // Cut off; return the new bound
             }

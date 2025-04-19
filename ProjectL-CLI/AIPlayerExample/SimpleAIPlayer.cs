@@ -282,33 +282,63 @@
         /// </returns>
         private Queue<IAction> GetStrategy(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, int maxDepth = -1)
         {
-            if (_currentPuzzle is null) {
-                // choose puzzle
-                var res = ChoosePuzzle(gameInfo, myInfo, maxDepth);
-                // if there are no puzzles left --> do nothing
-                if (res is null) {
-                    return new([new DoNothingAction()]);
+            var strategy = new Queue<IAction>();
+
+            // if we already have a puzzle to solve
+            if (_currentPuzzle is not null) {
+                // else find a solution to current puzzle
+                var solution = SolvePuzzleWithIDAStar(_currentPuzzle, gameInfo.NumTetrominosLeft, myInfo.NumTetrominosOwned, maxDepth).Item1;
+                if (solution is null) {
+                    strategy.Enqueue(new DoNothingAction());
+                    return strategy;
                 }
-                // else: take the puzzle and solve it
-                var strategy = new Queue<IAction>();
-                TakePuzzleAction takePuzzleAction = new(TakePuzzleAction.Options.Normal, res.Item1.Id);
-                strategy.Enqueue(takePuzzleAction);
-                foreach (var action in res.Item2) {
-                    strategy.Enqueue(action);
-                }
+
+                return new(solution);
+            }
+
+            // choose puzzle
+            var res = ChoosePuzzle(gameInfo, myInfo, maxDepth);
+            // if there are no puzzles left --> do nothing
+            if (res is null) {
+                strategy.Enqueue(new DoNothingAction());
                 return strategy;
             }
-
-            // find a solution to current puzzle
-            var solution = SolvePuzzleWithIDAStar(_currentPuzzle, gameInfo.NumTetrominosLeft, myInfo.NumTetrominosOwned, maxDepth).Item1;
-            if (solution is null) {
-                return new([new DoNothingAction()]);
+            // else: take the puzzle and solve it
+            TakePuzzleAction takePuzzleAction = new(TakePuzzleAction.Options.Normal, res.Item1.Id);
+            strategy.Enqueue(takePuzzleAction);
+            foreach (var action in res.Item2) {
+                strategy.Enqueue(action);
             }
-
-            return new(solution);
+            return strategy;
         }
 
         #endregion
+
+        /// <summary>
+        /// Represents the information about a puzzle needed to determine how advantageous would be to take and solve it.
+        /// </summary>
+        private readonly struct PuzzleSolutionInfo
+        {
+            #region Constructors
+            public PuzzleSolutionInfo(Puzzle puzzle, List<IAction> solution, int numSteps)
+            {
+                Puzzle = puzzle;
+                Solution = solution;
+                NumSteps = numSteps;
+            }
+
+            #endregion
+
+            #region Properties
+
+            public Puzzle Puzzle { get; }
+
+            public List<IAction> Solution { get; }
+
+            public int NumSteps { get; }
+
+            #endregion
+        }
 
         /// <summary>
         /// Defines a method for comparing <see cref="PuzzleSolutionInfo"/> objects.
@@ -331,10 +361,5 @@
 
             #endregion
         }
-
-        /// <summary>
-        /// Represents the information about a puzzle needed to determine how advantageous would be to take and solve it.
-        /// </summary>
-        private record struct PuzzleSolutionInfo(Puzzle Puzzle, List<IAction> Solution, int NumSteps);
     }
 }

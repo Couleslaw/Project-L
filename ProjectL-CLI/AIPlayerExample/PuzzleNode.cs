@@ -11,19 +11,39 @@
     /// <summary>
     /// Represents a puzzle being solved by a player.
     /// </summary>
-    /// <param name="puzzle">The puzzle being solved.</param>
-    /// <param name="puzzleId">The ID of the puzzle being solved.</param>
-    /// <param name="numTetrominosLeft">The number of tetrominos left in the shared reserve for each <see cref="TetrominoShape"/>.</param>
-    /// <param name="numTetrominosOwned">The number of tetrominos owned by the player for each <see cref="TetrominoShape"/>.</param>
-    /// <param name="finishingTouches"><see langword="true"/> if <see cref="GameCore.CurrentGamePhase"/> is <see cref="GamePhase.FinishingTouches"/> else <see langword="false"/>.</param>
-    internal class PuzzleNode(BinaryImage puzzle, uint puzzleId, IReadOnlyList<int> numTetrominosLeft, IReadOnlyList<int> numTetrominosOwned, bool finishingTouches) : INode<PuzzleNode>
+    internal class PuzzleNode : INode<PuzzleNode>
     {
         #region Fields
 
         // capture puzzle and numTetrominosOwned for heuristic (its static)
-        private readonly BinaryImage _puzzle = puzzle;
+        private readonly BinaryImage _puzzle;
 
-        private readonly IReadOnlyList<int> _numTetrominosOwned = numTetrominosOwned;
+        private readonly IReadOnlyList<int> _numTetrominosLeft;
+
+        private readonly IReadOnlyList<int> _numTetrominosOwned;
+
+        private readonly bool _finishingTouches;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PuzzleNode"/> class.
+        /// </summary>
+        /// <param name="puzzle">The puzzle being solved.</param>
+        /// <param name="puzzleId">The ID of the puzzle being solved.</param>
+        /// <param name="numTetrominosLeft">The number of tetrominos left in the shared reserve for each <see cref="TetrominoShape"/>.</param>
+        /// <param name="numTetrominosOwned">The number of tetrominos owned by the player for each <see cref="TetrominoShape"/>.</param>
+        /// <param name="finishingTouches"><see langword="true"/> if <see cref="GameCore.CurrentGamePhase"/> is <see cref="GamePhase.FinishingTouches"/> else <see langword="false"/>.</param>
+        public PuzzleNode(BinaryImage puzzle, uint puzzleId, IReadOnlyList<int> numTetrominosLeft, IReadOnlyList<int> numTetrominosOwned, bool finishingTouches)
+        {
+            _puzzle = puzzle;
+            PuzzleId = puzzleId;
+            _numTetrominosOwned = numTetrominosOwned;
+            _numTetrominosLeft = numTetrominosLeft;
+            _finishingTouches = finishingTouches;
+        }
 
         #endregion
 
@@ -32,7 +52,7 @@
         /// <summary>
         /// Represents a puzzle that has been completed.
         /// </summary>
-        public static PuzzleNode FinishedPuzzle => new(BinaryImage.FullImage, 0, [], [], false);
+        public static PuzzleNode FinishedPuzzle => new(BinaryImage.FullImage, 0, Array.Empty<int>(), Array.Empty<int>(), false);
 
         /// <summary>
         /// The ID of the node. Unique for each puzzle configuration.
@@ -42,30 +62,29 @@
         /// <summary>
         /// The ID of the puzzle represented by this node.
         /// </summary>
-        public uint PuzzleId => puzzleId;
+        public uint PuzzleId { get; }
 
         #endregion
 
         #region Methods
 
         /// <summary>
-        /// Heuristic function to estimate distances between two <see cref="PuzzleNode"/> nodes.
+        /// Heuristic function to estimate distances between this node an the <paramref name="other"/> node.
+        /// <param name="other">The node to estimate the distance to.</param>
         /// </summary>
-        /// <param name="start">The start node.</param>
-        /// <param name="goal">The goal node.</param>
         /// <returns>
-        /// An optimistic estimate of the distance between the nodes.
+        /// The estimated distance between the nodes.
         /// </returns>
-        public static int Heuristic(PuzzleNode start, PuzzleNode goal)
+        public int Heuristic(PuzzleNode other)
         {
             // how many tetrominos we need to place to finish the puzzle
             // we also might need to take some tetrominos from the bank
             // simplify the problem --> we just need to fill in X cells and tetromino of level L can fill in L cells
 
-            int numCellsToFillIn = goal._puzzle.CountFilledCells() - start._puzzle.CountFilledCells();
+            int numCellsToFillIn = other._puzzle.CountFilledCells() - _puzzle.CountFilledCells();
             int[] numShapesOfLevelOwned = new int[TetrominoManager.MaxLevel + 1];
             for (int i = 0; i < TetrominoManager.NumShapes; i++) {
-                numShapesOfLevelOwned[TetrominoManager.GetLevelOf((TetrominoShape)i)] += start._numTetrominosOwned[i];
+                numShapesOfLevelOwned[TetrominoManager.GetLevelOf((TetrominoShape)i)] += _numTetrominosOwned[i];
             }
 
             // put in the largest shapes we can
@@ -135,7 +154,7 @@
         {
             // foreach tetromino shape
             for (int i = 0; i < TetrominoManager.NumShapes; i++) {
-                var newNumTetrominosLeft = numTetrominosLeft.ToArray();
+                var newNumTetrominosLeft = _numTetrominosLeft.ToArray();
                 var newNumTetrominosOwned = _numTetrominosOwned.ToArray();
 
                 // if we have the shape --> try placing it in all possible positions
@@ -143,19 +162,20 @@
                     newNumTetrominosOwned[i]--;
 
                     foreach (var placement in GetAllValidPlacements(_puzzle, (TetrominoShape)i)) {
-                        var newPuzzleNode = new PuzzleNode(_puzzle | placement.Position, puzzleId, numTetrominosLeft, newNumTetrominosOwned, finishingTouches);
-                        yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, [placement]);
+                        var newPuzzleNode = new PuzzleNode(_puzzle | placement.Position, PuzzleId, _numTetrominosLeft, newNumTetrominosOwned, _finishingTouches);
+                        var action = new List<IAction>() { placement };
+                        yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, action);
                     }
                     continue;
                 }
 
                 // if FinishingTouches --> can only used the shapes we own --> continue
-                if (finishingTouches) {
+                if (_finishingTouches) {
                     continue;
                 }
 
                 // if there are no tetrominos of this shape left --> continue
-                if (numTetrominosLeft[i] == 0) {
+                if (_numTetrominosLeft[i] == 0) {
                     continue;
                 }
 
@@ -164,8 +184,9 @@
                     newNumTetrominosLeft[i]--;
 
                     foreach (var placement in GetAllValidPlacements(_puzzle, (TetrominoShape)i)) {
-                        var newPuzzleNode = new PuzzleNode(_puzzle | placement.Position, puzzleId, newNumTetrominosLeft, _numTetrominosOwned, finishingTouches);
-                        yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, [new TakeBasicTetrominoAction(), placement]);
+                        var newPuzzleNode = new PuzzleNode(_puzzle | placement.Position, PuzzleId, newNumTetrominosLeft, _numTetrominosOwned, _finishingTouches);
+                        var actions = new List<IAction>() { new TakeBasicTetrominoAction(), placement };
+                        yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, actions);
                     }
                     continue;
                 }
@@ -188,7 +209,7 @@
                 }
 
                 foreach (var placement in GetAllValidPlacements(_puzzle, (TetrominoShape)i)) {
-                    var newPuzzleNode = new PuzzleNode(_puzzle | placement.Position, puzzleId, newNumTetrominosLeft, _numTetrominosOwned, finishingTouches);
+                    var newPuzzleNode = new PuzzleNode(_puzzle | placement.Position, PuzzleId, newNumTetrominosLeft, _numTetrominosOwned, _finishingTouches);
                     yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, new List<IAction>(upgradePath) { placement });
                 }
             }
@@ -231,25 +252,22 @@
                 }
             }
 
-            List<TetrominoAction> strategy;
+            List<TetrominoAction> strategy = new();
 
             // if I have no tetrominos
             if (closestShape == null) {
                 // if there are no level1 tetrominos left --> we cant do anything
-                if (numTetrominosLeft[(int)TetrominoShape.O1] == 0)
+                if (_numTetrominosLeft[(int)TetrominoShape.O1] == 0)
                     return null;
 
                 // otherwise take a level1 tetromino and then upgrade it
                 closestShape = TetrominoShape.O1;
-                strategy = [new TakeBasicTetrominoAction()];
-            }
-            else {
-                strategy = [];
+                strategy.Add(new TakeBasicTetrominoAction());
             }
 
             // use IDA* to find the path
-            var start = new ShapeNode(closestShape.Value, numTetrominosLeft);
-            var goal = new ShapeNode(shape, []);
+            var start = new ShapeNode(closestShape.Value, _numTetrominosLeft);
+            var goal = new ShapeNode(shape, Array.Empty<int>());
             var path = IDAStar.IterativeDeepeningAStar(start, goal).Item1;
 
             // if there is no path --> return null
