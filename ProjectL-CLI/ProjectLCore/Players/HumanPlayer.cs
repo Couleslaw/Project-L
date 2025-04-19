@@ -37,7 +37,7 @@
         public void SetReward(TetrominoShape reward) => _getRewardCompletionSource.SetResult(reward);
 
         /// <summary>
-        /// Creates a new <see cref="TaskCompletionSource"/> for <see cref="IAction"/> and asynchronously waits until it is set by calling the <see cref="SetAction"/> method.
+        /// Creates a new <see cref="TaskCompletionSource{IAction}"/> for <see cref="IAction"/> and asynchronously waits until it is set by calling the <see cref="SetAction"/> method.
         /// </summary>
         /// <param name="gameInfo">Information about the shared resources.</param>
         /// <param name="playerInfos">Information about the resources of the players.</param>
@@ -53,7 +53,7 @@
         }
 
         /// <summary>
-        /// Creates a new <see cref="TaskCompletionSource"/> for <see cref="TetrominoShape"/> and asynchronously waits until it is set by calling the <see cref="SetReward"/> method.
+        /// Creates a new <see cref="TaskCompletionSource{IAction}"/> for <see cref="TetrominoShape"/> and asynchronously waits until it is set by calling the <see cref="SetReward"/> method.
         /// Note that the player doesn't get the current game context here.
         /// This is because this function will be called right after he completes a puzzle and therefore he knows the current game state from the last <see cref="GetActionAsync" /> call.
         /// </summary>

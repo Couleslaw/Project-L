@@ -2,9 +2,11 @@ namespace ProjectLCore.GameLogic
 {
     using ProjectLCore.GameManagers;
     using ProjectLCore.GamePieces;
-    using System.ComponentModel.Design;
-    using System.Runtime.InteropServices;
     using System.Text;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.IO;
+    using System;
 
     /// <summary>
     /// Builder for the <see cref="GameState"/> class.
@@ -168,7 +170,7 @@ namespace ProjectLCore.GameLogic
         #region Properties
 
         /// <summary> Contains the number of tetrominos left in the shared reserve for each shape.  </summary>
-        public int[] NumTetrominosLeft { get; init; } = new int[TetrominoManager.NumShapes];
+        public int[] NumTetrominosLeft { get; } = new int[TetrominoManager.NumShapes];
 
         /// <summary> The number of puzzles left in the white deck. </summary>
         public int NumWhitePuzzlesLeft => _whitePuzzlesDeck.Count;
@@ -406,25 +408,41 @@ namespace ProjectLCore.GameLogic
         /// <summary>
         /// Provides information about about the game while preventing modification of the original data.
         /// </summary>
-        /// <param name="gameState">The game state that will be wrapped.</param>
-        public class GameInfo(GameState gameState)
+        public class GameInfo
         {
-            #region Fields
+            #region Constructors
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="GameInfo"/> class.
+            /// </summary>
+            /// <param name="gameState">The game state that will be wrapped.</param>
+            public GameInfo(GameState gameState)
+            {
+                NumWhitePuzzlesLeft = gameState.NumWhitePuzzlesLeft;
+                NumBlackPuzzlesLeft = gameState.NumBlackPuzzlesLeft;
+                AvailableWhitePuzzles = gameState.GetAvailableWhitePuzzles().Select(p => p.Clone()).ToArray();
+                AvailableBlackPuzzles = gameState.GetAvailableBlackPuzzles().Select(p => p.Clone()).ToArray();
+                NumTetrominosLeft = Array.AsReadOnly(gameState.NumTetrominosLeft);
+            }
+
+            #endregion
+
+            #region Properties
 
             /// <summary> The number of puzzles left in the white deck.  </summary>
-            public int NumWhitePuzzlesLeft = gameState.NumWhitePuzzlesLeft;
+            public int NumWhitePuzzlesLeft { get; }
 
             /// <summary> The number of puzzles left in the black deck.  </summary>
-            public int NumBlackPuzzlesLeft = gameState.NumBlackPuzzlesLeft;
+            public int NumBlackPuzzlesLeft { get; }
 
             /// <summary> The puzzles in the white row. </summary>
-            public Puzzle[] AvailableWhitePuzzles = gameState.GetAvailableWhitePuzzles().Select(p => p.Clone()).ToArray();
+            public Puzzle[] AvailableWhitePuzzles { get; }
 
             /// <summary> The puzzles in the black row. </summary>
-            public Puzzle[] AvailableBlackPuzzles = gameState.GetAvailableBlackPuzzles().Select(p => p.Clone()).ToArray();
+            public Puzzle[] AvailableBlackPuzzles { get; }
 
             /// <summary> The number of tetrominos of each shape left in the shared reserve. </summary>
-            public IReadOnlyList<int> NumTetrominosLeft = gameState.NumTetrominosLeft.AsReadOnly();
+            public IReadOnlyList<int> NumTetrominosLeft { get; }
 
             #endregion
 

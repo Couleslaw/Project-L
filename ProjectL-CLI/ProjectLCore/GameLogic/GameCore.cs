@@ -5,6 +5,9 @@ namespace ProjectLCore.GameLogic
     using ProjectLCore.GameManagers;
     using ProjectLCore.GamePieces;
     using ProjectLCore.Players;
+    using System.Collections.Generic;
+    using System;
+    using System.Linq;
 
     /// <summary>
     /// Contains all the information about a game of <b>Project L</b>.

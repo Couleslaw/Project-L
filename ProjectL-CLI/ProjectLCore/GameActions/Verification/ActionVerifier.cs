@@ -10,14 +10,38 @@
     /// <summary>
     /// Verifies the validity of actions made by a player in the context of the current game state.
     /// </summary>
-    /// <param name="gameInfo">Information about the current state of the game.</param>
-    /// <param name="playerInfo">Information about the tetrominos and puzzles owned by the player who makes the actions.</param>
-    /// <param name="turnInfo">Information about the current turn.</param>
     /// <seealso cref="IAction"/>
     /// <seealso cref="VerificationResult"/>
     /// <seealso cref="GameActionProcessor"/>
-    public class ActionVerifier(GameState.GameInfo gameInfo, PlayerState.PlayerInfo playerInfo, TurnInfo turnInfo)
+    public class ActionVerifier
     {
+        #region Fields
+
+        private readonly GameState.GameInfo _gameInfo;
+
+        private readonly PlayerState.PlayerInfo _playerInfo;
+
+        private readonly TurnInfo _turnInfo;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ActionVerifier"/> class.
+        /// </summary>
+        /// <param name="gameInfo">Information about the current state of the game.</param>
+        /// <param name="playerInfo">Information about the tetrominos and puzzles owned by the player who makes the actions.</param>
+        /// <param name="turnInfo">Information about the current turn.</param>
+        public ActionVerifier(GameState.GameInfo gameInfo, PlayerState.PlayerInfo playerInfo, TurnInfo turnInfo)
+        {
+            _gameInfo = gameInfo;
+            _playerInfo = playerInfo;
+            _turnInfo = turnInfo;
+        }
+
+        #endregion
+
         #region Methods
 
         /// <summary> Verifies the given <see cref="IAction"/>. </summary>
@@ -29,7 +53,7 @@
         public VerificationResult Verify(IAction action)
         {
             // if FinishingTouches --> only EndFinishingTouchesAction and PlaceAction are allowed
-            if (turnInfo.GamePhase == GamePhase.FinishingTouches) {
+            if (_turnInfo.GamePhase == GamePhase.FinishingTouches) {
                 if (action is not EndFinishingTouchesAction && action is not PlaceTetrominoAction) {
                     return new InvalidActionDuringFinishingTouchesFail(action.GetType());
                 }
@@ -58,10 +82,10 @@
         /// </returns>
         private VerificationResult VerifyEndFinishingTouchesAction(EndFinishingTouchesAction action)
         {
-            if (turnInfo.GamePhase == GamePhase.FinishingTouches) {
+            if (_turnInfo.GamePhase == GamePhase.FinishingTouches) {
                 return new VerificationSuccess();
             }
-            return new InvalidEndFinishingTouchesActionUseFail(turnInfo.GamePhase);
+            return new InvalidEndFinishingTouchesActionUseFail(_turnInfo.GamePhase);
         }
 
         /// <summary>Verifies the given <see cref="TakePuzzleAction"/>.</summary>
@@ -79,12 +103,12 @@
         {
             switch (action.Option) {
                 case TakePuzzleAction.Options.TopWhite: {
-                    return gameInfo.NumWhitePuzzlesLeft == 0
+                    return _gameInfo.NumWhitePuzzlesLeft == 0
                         ? new PuzzleDeckIsEmptyFail(TakePuzzleAction.Options.TopWhite)
                         : new VerificationSuccess();
                 }
                 case TakePuzzleAction.Options.TopBlack: {
-                    return gameInfo.NumBlackPuzzlesLeft == 0
+                    return _gameInfo.NumBlackPuzzlesLeft == 0
                         ? new PuzzleDeckIsEmptyFail(TakePuzzleAction.Options.TopBlack)
                         : new VerificationSuccess();
                 }
@@ -93,10 +117,10 @@
                         return new PuzzleIdIsNullFail();
 
                     // find the puzzle
-                    foreach (Puzzle puzzle in gameInfo.AvailableWhitePuzzles.Concat(gameInfo.AvailableBlackPuzzles)) {
+                    foreach (Puzzle puzzle in _gameInfo.AvailableWhitePuzzles.Concat(_gameInfo.AvailableBlackPuzzles)) {
                         if (puzzle.Id == action.PuzzleId) {
                             // if EndOfTheGame is triggered a player can take only 1 black puzzle per turn
-                            if (turnInfo.GamePhase == GamePhase.EndOfTheGame && turnInfo.TookBlackPuzzle && puzzle.IsBlack) {
+                            if (_turnInfo.GamePhase == GamePhase.EndOfTheGame && _turnInfo.TookBlackPuzzle && puzzle.IsBlack) {
                                 return new PlayerAlreadyTookBlackPuzzleInEndOfTheGameFail();
                             }
                             return new VerificationSuccess();
@@ -126,26 +150,26 @@
         {
             // if recycle white puzzles --> check white puzzle count
             if (action.Option == RecycleAction.Options.White) {
-                if (gameInfo.AvailableWhitePuzzles.Length == 0) {
+                if (_gameInfo.AvailableWhitePuzzles.Length == 0) {
                     return new EmptyRowRecycleFail(RecycleAction.Options.White);
                 }
-                if (gameInfo.AvailableWhitePuzzles.Length != action.Order.Count) {
-                    return new NumberOfRecycledPuzzlesMismatchFail(gameInfo.AvailableWhitePuzzles.Length, action.Order.Count, RecycleAction.Options.White);
+                if (_gameInfo.AvailableWhitePuzzles.Length != action.Order.Count) {
+                    return new NumberOfRecycledPuzzlesMismatchFail(_gameInfo.AvailableWhitePuzzles.Length, action.Order.Count, RecycleAction.Options.White);
                 }
             }
 
             // if recycle black puzzles --> check black puzzle count
             if (action.Option == RecycleAction.Options.Black) {
-                if (gameInfo.AvailableBlackPuzzles.Length == 0) {
+                if (_gameInfo.AvailableBlackPuzzles.Length == 0) {
                     return new EmptyRowRecycleFail(RecycleAction.Options.Black);
                 }
-                if (gameInfo.AvailableBlackPuzzles.Length != action.Order.Count) {
-                    return new NumberOfRecycledPuzzlesMismatchFail(gameInfo.AvailableBlackPuzzles.Length, action.Order.Count, RecycleAction.Options.Black);
+                if (_gameInfo.AvailableBlackPuzzles.Length != action.Order.Count) {
+                    return new NumberOfRecycledPuzzlesMismatchFail(_gameInfo.AvailableBlackPuzzles.Length, action.Order.Count, RecycleAction.Options.Black);
                 }
             }
 
             // check if all puzzles are in the correct row
-            var puzzlesToCheck = action.Option == RecycleAction.Options.White ? gameInfo.AvailableWhitePuzzles : gameInfo.AvailableBlackPuzzles;
+            var puzzlesToCheck = action.Option == RecycleAction.Options.White ? _gameInfo.AvailableWhitePuzzles : _gameInfo.AvailableBlackPuzzles;
             foreach (Puzzle puzzle in puzzlesToCheck) {
                 if (!action.Order.Contains(puzzle.Id)) {
                     return new PuzzleNotInRowFail(puzzle.Id, action.Option);
@@ -165,7 +189,7 @@
         /// </returns>
         private VerificationResult VerifyTakeBasicTetrominoAction(TakeBasicTetrominoAction action)
         {
-            if (gameInfo.NumTetrominosLeft[(int)TetrominoShape.O1] == 0) {
+            if (_gameInfo.NumTetrominosLeft[(int)TetrominoShape.O1] == 0) {
                 return new BasicTetrominoNotInSharedReserveFail();
             }
             return new VerificationSuccess();
@@ -188,11 +212,11 @@
                 return new InvalidTetrominoChangeFail(action.OldTetromino, action.NewTetromino);
             }
             // check if the player has the old tetromino
-            if (playerInfo.NumTetrominosOwned[(int)action.OldTetromino] == 0) {
+            if (_playerInfo.NumTetrominosOwned[(int)action.OldTetromino] == 0) {
                 return new TetrominoNotInPersonalSupplyFail(action.OldTetromino);
             }
             // check if the player can trade the old tetromino for the new one
-            var validChanges = RewardManager.GetUpgradeOptions(gameInfo.NumTetrominosLeft, action.OldTetromino);
+            var validChanges = RewardManager.GetUpgradeOptions(_gameInfo.NumTetrominosLeft, action.OldTetromino);
             if (!validChanges.Contains(action.NewTetromino)) {
                 return new InvalidTetrominoChangeFail(action.OldTetromino, action.NewTetromino);
             }
@@ -216,7 +240,7 @@
         private VerificationResult VerifyPlaceTetrominoAction(PlaceTetrominoAction action)
         {
             // check if player has the tetromino
-            if (playerInfo.NumTetrominosOwned[(int)action.Shape] == 0) {
+            if (_playerInfo.NumTetrominosOwned[(int)action.Shape] == 0) {
                 return new TetrominoNotInPersonalSupplyFail(action.Shape);
             }
             // check if the submitted configuration is valid for the shape
@@ -225,7 +249,7 @@
             }
             // check if the player has the puzzle
             Puzzle? puzzle = null;
-            foreach (Puzzle p in playerInfo.UnfinishedPuzzles) {
+            foreach (Puzzle p in _playerInfo.UnfinishedPuzzles) {
                 if (p.Id == action.PuzzleId) {
                     puzzle = p;
                     break;
@@ -259,7 +283,7 @@
         private VerificationResult VerifyMasterAction(MasterAction action)
         {
             // check if master action was already used
-            if (turnInfo.UsedMasterAction) {
+            if (_turnInfo.UsedMasterAction) {
                 return new MasterActionAlreadyUsedFail();
             }
             // each placement must be to a different puzzle
@@ -276,8 +300,8 @@
                 usedTetrominos[(int)placement.Shape]++;
             }
             for (int i = 0; i < TetrominoManager.NumShapes; i++) {
-                if (playerInfo.NumTetrominosOwned[i] < usedTetrominos[i]) {
-                    return new MasterActionNotEnoughTetrominosFail((TetrominoShape)i, playerInfo.NumTetrominosOwned[i], usedTetrominos[i]);
+                if (_playerInfo.NumTetrominosOwned[i] < usedTetrominos[i]) {
+                    return new MasterActionNotEnoughTetrominosFail((TetrominoShape)i, _playerInfo.NumTetrominosOwned[i], usedTetrominos[i]);
                 }
             }
 

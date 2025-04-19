@@ -4,6 +4,8 @@ namespace ProjectLCore.Players
     using ProjectLCore.GameActions.Verification;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Represents a player in the game.

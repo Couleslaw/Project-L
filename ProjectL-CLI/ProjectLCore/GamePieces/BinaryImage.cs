@@ -2,6 +2,7 @@ namespace ProjectLCore.GamePieces
 {
     using System.Diagnostics.CodeAnalysis;
     using System.Text;
+    using System;
 
     /// <summary>
     /// Represents a 5x5 binary image. The image is stored as an integer, where each bit represents a cell in the image.

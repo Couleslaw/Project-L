@@ -2,6 +2,8 @@
 {
     using ProjectLCore.GamePieces;
     using System.IO;
+    using System;
+    using System.Linq;
 
     /// <summary>
     /// Reads puzzles from a file.
@@ -13,7 +15,6 @@
     /// </list>
     /// The puzzle color and puzzle number together uniquely identify the file in which the puzzle image is stored.
     /// </summary>
-    /// <param name="path">The path to the puzzle configuration file.</param>
     /// <remarks>
     /// The order of the lines doesn't matter and there can be an arbitrary number of lines not starting with a special character scattered throughout the puzzle definition.
     /// This however isn't recommended as it makes the file harder to read for humans.
@@ -29,7 +30,7 @@
     /// </code>
     /// This example encodes a black puzzle with number 13, reward of 5 points and <c>O1</c> tetromino.
     /// </example>
-    public class PuzzleParser(string path) : IDisposable
+    public class PuzzleParser : IDisposable
     {
         #region Constants
 
@@ -40,9 +41,26 @@
 
         #region Fields
 
-        private readonly char[] _specialChars = ['I', 'R', 'P'];
+        private readonly char[] _specialChars = { 'I', 'R', 'P' };
 
-        private StreamReader _reader = new(path);
+        private readonly StreamReader _reader;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PuzzleParser"/> class.
+        /// </summary>
+        /// <param name="path">The path to the puzzle configuration file.</param>
+        /// <exception cref="ArgumentException">The path cannot be null or empty.</exception>"
+        public PuzzleParser(string path)
+        {
+            if (string.IsNullOrEmpty(path)) {
+                throw new ArgumentException("Path cannot be null or empty.", nameof(path));
+            }
+            _reader = new StreamReader(path);
+        }
 
         #endregion
 
@@ -110,14 +128,10 @@
                     ParseLine(line, firstChar);
                 }
                 catch (Exception e) {
-                    throw new InvalidPuzzleException($"Invalid puzzle configuration file on line {lineNum}: {e.Message}") {
-                        IsBlack = isBlack,
-                        PuzzleNumber = puzzleNum,
-                        Score = score,
-                        Tetromino = tetromino,
-                        CurrentImage = currentImage,
-                        NumPuzzleLinesRead = numPuzzleLinesRead,
-                    };
+                    throw new InvalidPuzzleException(
+                        $"Invalid puzzle configuration file on line {lineNum}: {e.Message}",
+                        isBlack, puzzleNum, score, tetromino, currentImage, numPuzzleLinesRead
+                    );
                 }
             }
 
@@ -284,41 +298,64 @@
     /// <summary>
     /// Represents an error that occurred while parsing a puzzle.
     /// </summary>
-    /// <param name="message">The message that describes the error.</param>
     /// <seealso cref="System.Exception"/>
-    internal class InvalidPuzzleException(string message) : Exception(message)
+    internal class InvalidPuzzleException : Exception
     {
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvalidPuzzleException"/> class.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        /// <param name="isBlack">Specifies the color of the puzzle.</param>
+        /// <param name="puzzleNumber">The puzzle number.</param>
+        /// <param name="score">The puzzle reward score.</param>
+        /// <param name="tetromino">The puzzle reward tetromino.</param>
+        /// <param name="currentImage">The image part that was parsed so far.</param>
+        /// <param name="numPuzzleLinesRead">The number of image coding lines (starting with <c>P</c>) read so far.</param>
+        public InvalidPuzzleException(string message, bool? isBlack, uint? puzzleNumber, int? score, TetrominoShape? tetromino, int currentImage, int numPuzzleLinesRead) : base(message)
+        {
+            IsBlack = isBlack;
+            PuzzleNumber = puzzleNumber;
+            Score = score;
+            Tetromino = tetromino;
+            CurrentImage = currentImage;
+            NumPuzzleLinesRead = numPuzzleLinesRead;
+        }
+
+        #endregion
+
         #region Properties
 
         /// <summary>
         /// <see langword="null"/> if the puzzle color was not parsed. Otherwise <see langword="true"/> if the puzzle is black, <see langword="false"/> if it is white.
         /// </summary>
-        public bool? IsBlack { get; init; } = null;
+        public bool? IsBlack { get; }
 
         /// <summary>
         /// <see langword="null"/> if the puzzle number was not parsed. Otherwise the puzzle number.
         /// </summary>
-        public uint? PuzzleNumber { get; init; } = null;
+        public uint? PuzzleNumber { get; }
 
         /// <summary>
         /// <see langword="null"/> if the score reward was not parsed. Otherwise the score reward.
         /// </summary>
-        public int? Score { get; init; } = null;
+        public int? Score { get; }
 
         /// <summary>
         /// <see langword="null"/> if the tetromino reward was not parsed. Otherwise the tetromino reward.
         /// </summary>
-        public TetrominoShape? Tetromino { get; init; } = null;
+        public TetrominoShape? Tetromino { get; }
 
         /// <summary>
         /// The image part that was parsed so far.
         /// </summary>
-        public int CurrentImage { get; init; } = 0;
+        public int CurrentImage { get; }
 
         /// <summary>
         /// The number of image coding lines (starting with <c>P</c>) read so far.
         /// </summary>
-        public int NumPuzzleLinesRead { get; init; } = 0;
+        public int NumPuzzleLinesRead { get; }
 
         #endregion
     }

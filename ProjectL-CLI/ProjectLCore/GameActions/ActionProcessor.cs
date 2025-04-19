@@ -6,6 +6,7 @@
     using ProjectLCore.GamePieces;
     using ProjectLCore.Players;
     using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// An interface for processing actions using the visitor pattern.
@@ -68,19 +69,41 @@
     /// The class is responsible for updating the game state based on the player's actions.
     /// It isn't responsible for verifying the actions. The actions should be verified by an <see cref="ActionVerifier"/> before being processed.
     /// </summary>
-    /// <param name="game">The current game.</param>
-    /// <param name="player">The player this processor is for.</param>
-    /// <param name="signaler">A <see cref="TurnManager.Signaler"/> for sending signals when processing actions.</param>
     /// <seealso cref="ActionVerifier"/>
     /// <seealso cref="IAction"/>
     /// <seealso cref="IActionProcessor" />
-    public class GameActionProcessor(GameCore game, Player player, TurnManager.Signaler signaler) : IActionProcessor
+    public class GameActionProcessor : IActionProcessor
     {
         #region Fields
 
-        private readonly GameState _gameState = game.GameState;
+        private readonly GameCore _game;
 
-        private readonly PlayerState _playerState = game.PlayerStates[player];
+        private readonly GameState _gameState;
+
+        private readonly Player _player;
+
+        private readonly PlayerState _playerState;
+
+        private readonly TurnManager.Signaler _signaler;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GameActionProcessor"/> class.
+        /// </summary>
+        /// <param name="game">The current game.</param>
+        /// <param name="player">The player this processor is for.</param>
+        /// <param name="signaler">A <see cref="TurnManager.Signaler"/> for sending signals when processing actions.</param>
+        public GameActionProcessor(GameCore game, Player player, TurnManager.Signaler signaler)
+        {
+            _game = game;
+            _gameState = game.GameState;
+            _player = player;
+            _playerState = game.PlayerStates[player];
+            _signaler = signaler;
+        }
 
         #endregion
 
@@ -102,7 +125,7 @@
         /// <param name="action">The action to process.</param>
         public void ProcessEndFinishingTouchesAction(EndFinishingTouchesAction action)
         {
-            signaler.PlayerEndedFinishingTouches();
+            _signaler.PlayerEndedFinishingTouches();
         }
 
         /// <summary>
@@ -142,12 +165,12 @@
 
             // signal if the player took a black puzzle
             if (puzzle.IsBlack) {
-                signaler.PlayerTookBlackPuzzle();
+                _signaler.PlayerTookBlackPuzzle();
             }
 
             // signal if the black deck is empty
             if (_gameState.NumBlackPuzzlesLeft == 0) {
-                signaler.BlackDeckIsEmpty();
+                _signaler.BlackDeckIsEmpty();
             }
 
             // add the puzzle to the player's state
@@ -221,7 +244,7 @@
             _playerState.RemoveTetromino(action.Shape);
 
             // handle FinishingTouches separately
-            if (game.CurrentGamePhase == GamePhase.FinishingTouches) {
+            if (_game.CurrentGamePhase == GamePhase.FinishingTouches) {
                 _playerState.Score -= 1;
                 if (puzzle.IsFinished) {
                     _playerState.FinishPuzzleWithId(puzzle.Id);
@@ -261,7 +284,7 @@
         /// <param name="action">The action to process.</param>
         public void ProcessMasterAction(MasterAction action)
         {
-            signaler.PlayerUsedMasterAction();
+            _signaler.PlayerUsedMasterAction();
 
             foreach (var placement in action.TetrominoPlacements) {
                 ProcessPlaceTetrominoAction(placement);
@@ -277,7 +300,7 @@
         /// <returns>The reward the player chose or <see langword="null"/> if there are no reward options.</returns>
         private TetrominoShape? GetPuzzleReward(Puzzle puzzle)
         {
-            var rewardOptions = RewardManager.GetRewardOptions(_gameState.NumTetrominosLeft, puzzle.RewardTetromino);
+            List<TetrominoShape> rewardOptions = RewardManager.GetRewardOptions(_gameState.NumTetrominosLeft, puzzle.RewardTetromino);
 
             // if there are no reward options, the player doesn't get anything
             if (rewardOptions.Count == 0) {
@@ -287,7 +310,7 @@
             // get reward from player
             TetrominoShape? reward;
             try {
-                reward = player.GetRewardAsync(rewardOptions, puzzle.Clone()).Result;
+                reward = _player.GetRewardAsync(rewardOptions, puzzle.Clone()).Result;
             }
             catch (Exception) {
                 reward = null;
@@ -304,7 +327,7 @@
 
         private void AddFinishedPuzzleInfoToQueue(Puzzle puzzle, List<TetrominoShape>? rewardOptions, TetrominoShape? selectedReward)
         {
-            FinishedPuzzlesQueue.Enqueue(new FinishedPuzzleInfo(player.Id, puzzle, rewardOptions, selectedReward));
+            FinishedPuzzlesQueue.Enqueue(new FinishedPuzzleInfo(_player.Id, puzzle, rewardOptions, selectedReward));
         }
 
         #endregion

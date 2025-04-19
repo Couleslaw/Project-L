@@ -6,9 +6,8 @@
     /// <summary>
     /// Takes care of the order in which the players take turns, the current game phase and information about the current turn.
     /// </summary>
-    /// <param name="playerIds">The IDs of the players in the game.</param>
     /// <seealso cref="TurnManager.Signaler"/>
-    public class TurnManager(uint[] playerIds)
+    public class TurnManager
     {
         #region Constants
 
@@ -21,16 +20,30 @@
 
         #region Fields
 
-        private readonly int _numPlayers = playerIds.Length;
+        private readonly int _numPlayers;
 
-        private readonly uint[] _playersIds = playerIds;
+        private readonly uint[] _playersIds;
 
         private int _currentPlayersIndex = 0;
 
         /// <summary>
         /// Internal representation if the current turn.
         /// </summary>
-        private TurnInfo _turnInfo = new(NumActionsLeft: NumActionsInTurn, GamePhase.Normal, UsedMasterAction: false, TookBlackPuzzle: false, LastRound: false);
+        private TurnInfo _turnInfo = new(NumActionsInTurn, GamePhase.Normal, usedMasterAction: false, tookBlackPuzzle: false, lastRound: false);
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TurnManager"/> class.
+        /// </summary>
+        /// <param name="playerIds">The IDs of the players in the game.</param>
+        public TurnManager(uint[] playerIds)
+        {
+            _playersIds = playerIds;
+            _numPlayers = playerIds.Length;
+        }
 
         #endregion
 
@@ -111,12 +124,30 @@
         #endregion
 
         /// <summary>
-        /// Signal a <see cref="TurnManager"/> about the events that happened during the turn.
+        /// Signals a <see cref="TurnManager"/> about the events that happened during the turn.
         /// </summary>
-        /// <param name="turnManager">The <see cref="TurnManager"/> to send signals to.</param>
         /// <seealso cref="TurnManager"/>
-        public class Signaler(TurnManager turnManager)
+        public class Signaler
         {
+            #region Fields
+
+            private readonly TurnManager _turnManager;
+
+            #endregion
+
+            #region Constructors
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Signaler"/> class.
+            /// </summary>
+            /// <param name="turnManager">The <see cref="TurnManager"/> to send signals to.</param>
+            public Signaler(TurnManager turnManager)
+            {
+                _turnManager = turnManager;
+            }
+
+            #endregion
+
             #region Methods
 
             /// <summary>
@@ -125,7 +156,7 @@
             /// </summary>
             public void PlayerTookBlackPuzzle()
             {
-                turnManager._turnInfo.TookBlackPuzzle = true;
+                _turnManager._turnInfo.TookBlackPuzzle = true;
             }
 
             /// <summary>
@@ -134,8 +165,8 @@
             /// </summary>
             public void BlackDeckIsEmpty()
             {
-                if (turnManager._turnInfo.GamePhase == GamePhase.Normal) {
-                    turnManager._turnInfo.GamePhase = GamePhase.EndOfTheGame;
+                if (_turnManager._turnInfo.GamePhase == GamePhase.Normal) {
+                    _turnManager._turnInfo.GamePhase = GamePhase.EndOfTheGame;
                 }
             }
 
@@ -145,7 +176,7 @@
             /// </summary>
             public void PlayerUsedMasterAction()
             {
-                turnManager._turnInfo.UsedMasterAction = true;
+                _turnManager._turnInfo.UsedMasterAction = true;
             }
 
             /// <summary>
@@ -154,9 +185,9 @@
             /// </summary>
             public void PlayerEndedFinishingTouches()
             {
-                turnManager.SetNextPlayer();
-                if (turnManager._currentPlayersIndex == 0) {
-                    turnManager._turnInfo.GamePhase = GamePhase.Finished;
+                _turnManager.SetNextPlayer();
+                if (_turnManager._currentPlayersIndex == 0) {
+                    _turnManager._turnInfo.GamePhase = GamePhase.Finished;
                 }
             }
 

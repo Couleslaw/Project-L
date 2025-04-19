@@ -4,6 +4,10 @@ namespace ProjectLCore.GameLogic
     using ProjectLCore.GamePieces;
     using ProjectLCore.Players;
     using System.Text;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.IO;
 
     /// <summary>
     /// Represents the resources and progress of a single <see cref="Player"/>.
@@ -14,10 +18,9 @@ namespace ProjectLCore.GameLogic
     ///     <item>Puzzles he has completed.</item>
     ///   </list>
     /// </summary>
-    /// <param name="playerId">The unique identifier of the player.</param>
     /// <seealso cref="PlayerInfo"/>
     /// <seealso cref="GameState"/>
-    public class PlayerState(uint playerId) : IComparable<PlayerState>, IEquatable<PlayerState>
+    public class PlayerState : IComparable<PlayerState>, IEquatable<PlayerState>
     {
         #region Constants
 
@@ -28,7 +31,7 @@ namespace ProjectLCore.GameLogic
 
         #region Fields
 
-        private readonly Puzzle?[] _puzzles = [null, null, null, null];
+        private readonly Puzzle?[] _puzzles = { null, null, null, null };
 
         /// <summary> Contains the number of tetrominos owned by the player for each shape. </summary>
         private int[] _numTetrominosOwned = new int[TetrominoManager.NumShapes];
@@ -38,10 +41,23 @@ namespace ProjectLCore.GameLogic
 
         #endregion
 
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerState"/> class.
+        /// </summary>
+        /// <param name="playerId">The unique identifier of the player.</param>
+        public PlayerState(uint playerId)
+        {
+            PlayerId = playerId;
+        }
+
+        #endregion
+
         #region Properties
 
         /// <summary> Unique identifier of the player. </summary>
-        public uint PlayerId { get; init; } = playerId;
+        public uint PlayerId { get; }
 
         /// <summary> Current score of the player. </summary>
         public int Score { get; set; } = 0;
@@ -229,27 +245,43 @@ namespace ProjectLCore.GameLogic
         /// <summary>
         /// Provides information about about a <see cref="PlayerState"/> while preventing modification of the original data.
         /// </summary>
-        /// <param name="playerState">The player state that will be wrapped.</param>
         /// <seealso cref="PlayerState"/>
         /// <seealso cref="Player"/>
-        public class PlayerInfo(PlayerState playerState)
+        public class PlayerInfo
         {
-            #region Fields
+            #region Constructors
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="PlayerInfo"/> class.
+            /// </summary>
+            /// <param name="playerState">The player state that will be wrapped.</param>
+            public PlayerInfo(PlayerState playerState)
+            {
+                PlayerId = playerState.PlayerId;
+                Score = playerState.Score;
+                NumTetrominosOwned = Array.AsReadOnly(playerState._numTetrominosOwned);
+                UnfinishedPuzzles = playerState.GetUnfinishedPuzzles().Select(p => p.Clone()).ToArray();
+                FinishedPuzzlesIds = playerState._finishedPuzzleIds.AsReadOnly();
+            }
+
+            #endregion
+
+            #region Properties
 
             /// <summary> The unique identifier of the player. </summary>
-            public uint PlayerId = playerState.PlayerId;
+            public uint PlayerId { get; }
 
             /// <summary> The current score of the player. </summary>
-            public int Score = playerState.Score;
+            public int Score { get; }
 
             /// <summary> The number of tetrominos owned by the player for each shape. </summary>
-            public IReadOnlyList<int> NumTetrominosOwned = playerState._numTetrominosOwned.AsReadOnly();
+            public IReadOnlyList<int> NumTetrominosOwned { get; }
 
             /// <summary> The puzzles that the player is currently working on. </summary>
-            public Puzzle[] UnfinishedPuzzles = playerState.GetUnfinishedPuzzles().Select(p => p.Clone()).ToArray();
+            public Puzzle[] UnfinishedPuzzles { get; }
 
             /// <summary> The Ids of the puzzles that the player has already completed. </summary>
-            public IReadOnlyList<uint> FinishedPuzzlesIds = playerState._finishedPuzzleIds.AsReadOnly();
+            public IReadOnlyList<uint> FinishedPuzzlesIds { get; }
 
             #endregion
 

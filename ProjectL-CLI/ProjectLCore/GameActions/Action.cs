@@ -1,10 +1,11 @@
 ﻿namespace ProjectLCore.GameActions
 {
+    using ProjectLCore.GameActions.Verification;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
-    using ProjectLCore.GameActions.Verification;
     using System.Text;
-
+    using System.IO;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Represents an action that a player can take during their turn. Together with <see cref="IActionProcessor" /> it implements the visitor pattern.
@@ -76,11 +77,24 @@
     /// Represents the action of taking a puzzle.
     /// Players can take puzzles from the top of the white deck, top of the black deck or a specific puzzle in one of the rows.
     /// </summary>
-    /// <param name="option">From where the player wants to take the puzzle.</param>
-    /// <param name="puzzleId">The ID of the specific puzzle to take, if <paramref name="option"/> is <see cref="TakePuzzleAction.Options.Normal"/>. Should be null otherwise.</param>
     /// <seealso cref="IAction" />
-    public class TakePuzzleAction(TakePuzzleAction.Options option, uint? puzzleId = null) : IAction
+    public class TakePuzzleAction : IAction
     {
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TakePuzzleAction"/> class.
+        /// </summary>
+        /// <param name="option">From where the player wants to take the puzzle.</param>
+        /// <param name="puzzleId">The ID of the specific puzzle to take, if <paramref name="option"/> is <see cref="TakePuzzleAction.Options.Normal"/>. Should be null otherwise.</param>
+        public TakePuzzleAction(Options option, uint? puzzleId = null)
+        {
+            Option = option;
+            PuzzleId = puzzleId;
+        }
+
+        #endregion
+
         /// <summary>
         /// Possible options for taking a puzzle.
         /// </summary>
@@ -99,13 +113,13 @@
         /// <summary>
         /// From where the player wants to take the puzzle.
         /// </summary>
-        public Options Option => option;
+        public Options Option { get; }
 
         /// <summary>
         /// The ID of the specific puzzle to take, if <see cref="Option"/> is <see cref="Options.Normal"/>.
         /// Should be null otherwise.
         /// </summary>
-        public uint? PuzzleId => puzzleId;
+        public uint? PuzzleId { get; }
 
         #endregion
 
@@ -144,11 +158,24 @@
     /// Represents the action of recycling puzzles.
     /// The player chooses a row to recycle. The puzzles from the row will be put to the bottom of the deck in the order specified by the player. The puzzle row is then refilled.
     /// </summary>
-    /// <param name="order">The order in which the puzzles will be put to the bottom of the deck. Smaller index means that the puzzle will be recycled earlier.</param>
-    /// <param name="option">The color of the row to recycle.</param>
     /// <seealso cref="IAction" />
-    public class RecycleAction(List<uint> order, RecycleAction.Options option) : IAction
+    public class RecycleAction : IAction
     {
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RecycleAction"/> class.
+        /// </summary>
+        /// <param name="order">The order in which the puzzles will be put to the bottom of the deck. Smaller index means that the puzzle will be recycled earlier.</param>
+        /// <param name="option">The color of the row to recycle.</param>
+        public RecycleAction(List<uint> order, Options option)
+        {
+            Order = order.AsReadOnly();
+            Option = option;
+        }
+
+        #endregion
+
         /// <summary>
         /// Player can choose to recycle the white or the black row.
         /// </summary>
@@ -165,13 +192,13 @@
         /// <summary>
         /// The color of the row to recycle.
         /// </summary>
-        public Options Option => option;
+        public Options Option { get; }
 
         /// <summary>
         /// Return the order in which the puzzles will be put to the bottom of the deck.
         /// Smaller index means that the puzzle will be recycled earlier.
         /// </summary>
-        public IReadOnlyList<uint> Order { get; } = order.AsReadOnly();
+        public IReadOnlyList<uint> Order { get; }
 
         #endregion
 
@@ -208,8 +235,12 @@
     /// <seealso cref="IAction" />
     public abstract class TetrominoAction : IAction
     {
+        #region Methods
+
         /// <inheritdoc/>
         public abstract void Accept(IActionProcessor visitor);
+
+        #endregion
     }
 
     /// <summary>
@@ -239,22 +270,35 @@
     /// <summary>
     /// Represents the action of changing a tetromino for a different one.
     /// </summary>
-    /// <param name="oldTetromino">The tetromino the player is returning to the shared reserve.</param>
-    /// <param name="newTetromino">The tetromino the player is taking from the shared reserve.</param>
     /// <seealso cref="IAction"/>
-    public class ChangeTetrominoAction(TetrominoShape oldTetromino, TetrominoShape newTetromino) : TetrominoAction
+    public class ChangeTetrominoAction : TetrominoAction
     {
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChangeTetrominoAction"/> class.
+        /// </summary>
+        /// <param name="oldTetromino">The tetromino the player is returning to the shared reserve.</param>
+        /// <param name="newTetromino">The tetromino the player is taking from the shared reserve.</param>
+        public ChangeTetrominoAction(TetrominoShape oldTetromino, TetrominoShape newTetromino)
+        {
+            OldTetromino = oldTetromino;
+            NewTetromino = newTetromino;
+        }
+
+        #endregion
+
         #region Properties
 
         /// <summary>
         /// The tetromino the player is returning to the shared reserve.
         /// </summary>
-        public TetrominoShape OldTetromino => oldTetromino;
+        public TetrominoShape OldTetromino { get; }
 
         /// <summary>
         /// The tetromino the player is taking from the shared reserve.
         /// </summary>
-        public TetrominoShape NewTetromino => newTetromino;
+        public TetrominoShape NewTetromino { get; }
 
         #endregion
 
@@ -279,28 +323,42 @@
     /// <summary>
     /// Represents the action of placing a tetromino on a puzzle.
     /// </summary>
-    /// <param name="puzzleId">The ID of the puzzle on which the player wants to place the tetromino.</param>
-    /// <param name="shape">The shape of the tetromino the player wants to place.</param>
-    /// <param name="position">The position on the puzzle where the player wants to place the tetromino.</param>
     /// <seealso cref="IAction" />
-    public class PlaceTetrominoAction(uint puzzleId, TetrominoShape shape, BinaryImage position) : IAction
+    public class PlaceTetrominoAction : IAction
     {
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlaceTetrominoAction"/> class.
+        /// </summary>
+        /// <param name="puzzleId">The ID of the puzzle on which the player wants to place the tetromino.</param>
+        /// <param name="shape">The shape of the tetromino the player wants to place.</param>
+        /// <param name="position">The position on the puzzle where the player wants to place the tetromino.</param>
+        public PlaceTetrominoAction(uint puzzleId, TetrominoShape shape, BinaryImage position)
+        {
+            PuzzleId = puzzleId;
+            Shape = shape;
+            Position = position;
+        }
+
+        #endregion
+
         #region Properties
 
         /// <summary>
         /// The ID of the puzzle on which the player wants to place the tetromino.
         /// </summary>
-        public uint PuzzleId => puzzleId;
+        public uint PuzzleId { get; }
 
         /// <summary>
         /// The shape of the tetromino the player wants to place.
         /// </summary>
-        public TetrominoShape Shape => shape;
+        public TetrominoShape Shape { get; }
 
         /// <summary>
         /// The position on the puzzle where the player wants to place the tetromino.
         /// </summary>
-        public BinaryImage Position => position;
+        public BinaryImage Position { get; }
 
         #endregion
 
@@ -310,15 +368,15 @@
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            var imageReader = new StringReader(position.ToString());
-            StringBuilder action = new($"{nameof(PlaceTetrominoAction)}: Place shape {shape} on puzzle with ID={puzzleId} on position\n");
+            var imageReader = new StringReader(Position.ToString());
+            StringBuilder action = new($"{nameof(PlaceTetrominoAction)}: Place shape {Shape} on puzzle with ID={PuzzleId} on position\n");
             for (int lineNum = 0; lineNum < 5; lineNum++) {
                 action.Append("  ").Append(imageReader.ReadLine()).Append("   ");
                 if (lineNum == 1) {
-                    action.Append($"Shape: {shape}");
+                    action.Append($"Shape: {Shape}");
                 }
                 if (lineNum == 2) {
-                    action.Append($"ID: {puzzleId}");
+                    action.Append($"ID: {PuzzleId}");
                 }
                 action.AppendLine();
             }
@@ -340,16 +398,28 @@
     /// <summary>
     /// Represents the use of the Master Action.
     /// </summary>
-    /// <param name="tetrominoPlacements">The tetrominos placed with the Master Action.</param>
     /// <seealso cref="IAction" />
-    public class MasterAction(List<PlaceTetrominoAction> tetrominoPlacements) : IAction
+    public class MasterAction : IAction
     {
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MasterAction"/> class.
+        /// </summary>
+        /// <param name="tetrominoPlacements">The tetrominos placed with the Master Action.</param>
+        public MasterAction(List<PlaceTetrominoAction> tetrominoPlacements)
+        {
+            TetrominoPlacements = tetrominoPlacements.AsReadOnly();
+        }
+
+        #endregion
+
         #region Properties
 
         /// <summary>
         /// The tetrominos placed with the Master Action.
         /// </summary>
-        public IReadOnlyList<PlaceTetrominoAction> TetrominoPlacements { get; } = tetrominoPlacements.AsReadOnly();
+        public IReadOnlyList<PlaceTetrominoAction> TetrominoPlacements { get; }
 
         #endregion
 
