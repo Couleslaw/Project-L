@@ -70,8 +70,8 @@
 
         /// <summary>
         /// Heuristic function to estimate distances between this node an the <paramref name="other"/> node.
-        /// <param name="other">The node to estimate the distance to.</param>
         /// </summary>
+        /// <param name="other">The node to estimate the distance to.</param>
         /// <returns>
         /// The estimated distance between the nodes.
         /// </returns>

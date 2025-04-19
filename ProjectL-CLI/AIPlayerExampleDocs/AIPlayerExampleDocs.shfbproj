@@ -51,8 +51,8 @@
     <VisibleItems>Internals, Protected, ProtectedInternalAsProtected, NonBrowsable</VisibleItems>
     <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, AutoDocumentDispose</MissingTags>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\AIPlayerExample\bin\Release\net8.0\AIPlayerExample.xml" xmlns="" />
-      <DocumentationSource sourceFile="..\AIPlayerExample\bin\Release\net8.0\AIPlayerExample.dll" xmlns="" />
+      <DocumentationSource sourceFile="..\AIPlayerExample\bin\Release\netstandard2.1\AIPlayerExample.dll" />
+      <DocumentationSource sourceFile="..\AIPlayerExample\bin\Release\netstandard2.1\AIPlayerExample.xml" />
     </DocumentationSources>
     <PlugInConfigurations>
       <PlugInConfig id="Additional Reference Links" enabled="True">

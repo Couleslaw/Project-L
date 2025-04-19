@@ -31,8 +31,8 @@
       <Argument Key="maxVersionParts" Value="" xmlns="" />
     </TransformComponentArguments>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\ProjectLCore\bin\Release\net8.0\ProjectLCore.xml" xmlns="" />
-      <DocumentationSource sourceFile="..\ProjectLCore\bin\Release\net8.0\ProjectLCore.dll" xmlns="" />
+      <DocumentationSource sourceFile="..\ProjectLCore\bin\Release\netstandard2.1\ProjectLCore.dll" />
+      <DocumentationSource sourceFile="..\ProjectLCore\bin\Release\netstandard2.1\ProjectLCore.xml" />
     </DocumentationSources>
     <HelpFileFormat>Website</HelpFileFormat>
     <SyntaxFilters>C#</SyntaxFilters>
