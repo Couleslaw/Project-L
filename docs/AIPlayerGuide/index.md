@@ -57,8 +57,8 @@ First, you need to create a new **Class Library** project that targets **.NET St
 1. Create a new **Class Library** project in Visual Studio
    - **Important:** Look for a template description similar to "A project for creating a class library that targets .NET or .NET Standard". **Avoid** templates explicitly named "Class Library (.NET Framework)".
 2. Name your project (e.g., `MyAwesomeAI`).
-3. On the "Additional information" screen, you **must** select **`.NET Standard 2.1`** from the `Framework` dropdown menu.
-   - _If `.NET Standard 2.1` is not listed:_ You may need to install the necessary .NET SDKs. Installing the [.NET Core 3.1 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/3.1) or any newer SDK (like [.NET 6 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) or later) should provide the required targeting packs. After installation, restart Visual Studio and try creating the project again.
+3. On the "Additional information" screen, you **must** select **.NET Standard 2.1**
+   - _If **.NET Standard 2.1** is not listed:_ You may need to install the necessary .NET SDKs. Installing the [.NET Core 3.1 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/3.1) or any newer SDK (like [.NET 9 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)) should provide the required targeting packs. After installation, restart Visual Studio and try creating the project again.
 
 #### Verifying/Modifying Target Framework and Settings (After Creation)
 
@@ -66,7 +66,7 @@ If you need to check or change the target framework after the project is created
 
 ```xml
 <PropertyGroup>
-	<OutputType>Library</OutputType>
+    <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.1</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <LangVersion>8.0</LangVersion>
@@ -94,7 +94,7 @@ Now, add the _Project-L Core_ library reference using one of the following metho
     git clone https://github.com/Couleslaw/Project-L.git
     ```
 2.  Open the `ProjectL-CLI/ProjectLCore.sln` file in Visual Studio.
-3.  Add your newly created **Class Library** project to this solution (`File > Add > Existing Project...`) or create it directly within the solution.
+3.  Add your newly created **Class Library** project to this solution (**File** > **Add** > **Existing Project**) or create it directly within the solution.
 4.  Right-click on the project in the Solution Explorer and select **Add** > **Project Reference** and Select `ProjectLCore`.
 
 ### Implement Your AI Player
@@ -135,7 +135,7 @@ Before adding your player to the game, it is a good idea to test it in the `AIPl
 
 The game might fail to list your player if the DLL could not be loaded. Common reasons include:
 
-- **Incorrect Target Framework:** The DLL was not compiled targeting **`.NET Standard 2.1`**.
+- **Incorrect Target Framework:** The DLL was not compiled targeting **.NET Standard 2.1**.
 - **Missing Dependencies:** Your DLL depends on other libraries that are not available to the game.
 - **Corrupted DLL:** The DLL file is incomplete or corrupted.
 - **Duplicate Assembly Name:** The assembly name of your DLL conflicts with another loaded assembly. You can change the assemble name in the project properties in Visual Studio.
