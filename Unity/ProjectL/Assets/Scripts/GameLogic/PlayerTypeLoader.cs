@@ -61,7 +61,7 @@ public static class PlayerTypeLoader
 
     #region Properties
 
-    public static IReadOnlyList<LoadedPlayerTypeInfo> AvailablePlayerTypes => _availablePlayerTypes;
+    public static IReadOnlyList<LoadedPlayerTypeInfo> AvailableAIPlayerInfos => _availablePlayerTypes;
 
     #endregion
 

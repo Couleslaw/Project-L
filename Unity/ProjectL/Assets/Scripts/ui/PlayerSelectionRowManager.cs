@@ -4,84 +4,72 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using ProjectLCore.Players;
+using UnityEngine.UI;
 #nullable enable
 
 public class PlayerSelectionRowManager : MonoBehaviour
 {
     [SerializeField] private TMP_Dropdown? playerTypeDropdown;
     [SerializeField] private TMP_InputField? playerNameInput;
+    [SerializeField] private Button? resetButton;
 
-    public Type? SelectedPlayerType { get; private set; }
-    public bool IsValidSelection { get; private set; }
-    private IReadOnlyList<LoadedPlayerTypeInfo>? _availablePlayerTypes = null;
-    private string _namePlaceholder = "Enter name...";
+    public LoadedPlayerTypeInfo? SelectedPlayerType { get; private set; }
+    public string SelectedPlayerName => playerNameInput!.text.Trim();
+    private List<LoadedPlayerTypeInfo> _availablePlayerInfos = new() { new LoadedPlayerTypeInfo(typeof(HumanPlayer), "Human", null) };
+    private const string _namePlaceholder = "Enter name...";
 
     void Start()
     {
-        if (playerTypeDropdown == null || playerNameInput == null) {
-            Debug.LogError("Dropdown or input field is not assigned in the inspector.");
+        if (playerTypeDropdown == null || playerNameInput == null || resetButton == null) {
+            Debug.LogError("Dropdown, input field or reset button is not assigned in the inspector.");
             return;
         }
-        // set no placeholder for input field
-        playerNameInput.placeholder.GetComponent<TextMeshProUGUI>().text = String.Empty;
-
-        // handle dropdown selection
-        _availablePlayerTypes = PlayerTypeLoader.AvailablePlayerTypes;
+        // initialize dropdown selection
+        _availablePlayerInfos.AddRange(PlayerTypeLoader.AvailableAIPlayerInfos);
         PopulateDropdown();
         playerTypeDropdown.onValueChanged.AddListener(HandleDropdownSelection);
+
+        // reset player type --> blank state
+        ResetToBlankSelection();
+        resetButton.onClick.AddListener(ResetToBlankSelection);
+        playerNameInput.onValueChanged.AddListener(OnInputFieldChanged);
     }
 
     void PopulateDropdown()
     {
-        if (playerTypeDropdown == null || _availablePlayerTypes == null) {
-            Debug.LogError("Dropdown or available player types are not set.");
-            return;
-        }
-
         // clear existing options
-        playerTypeDropdown.ClearOptions();
+        playerTypeDropdown!.ClearOptions();
 
-        // first add a blank option (default) and human player
-        var options = new List<TMP_Dropdown.OptionData> { new(string.Empty) , new("Human") };
-        // add AI players
-        options.AddRange(_availablePlayerTypes.Select(info => new TMP_Dropdown.OptionData(info.DisplayName)));
-        playerTypeDropdown.AddOptions(options);
+        // add possible player options
+        playerTypeDropdown.AddOptions(_availablePlayerInfos.Select(info => info.DisplayName).ToList());
     }
 
     void HandleDropdownSelection(int index)
     {
-        if (playerNameInput == null) {
-            Debug.LogError("Input field is not set.");
-            return;
-        }
-        if (_availablePlayerTypes == null) {
-            Debug.LogError("Available player types list is null");
-            return;
-        }
-        // Index 0 is the placeholder ("nothing selected")
-        if (index == 0) {
+        // check if index is valid
+        if (index < 0 || index >= _availablePlayerInfos.Count) {
+            Debug.LogWarning($"Invalid dropdown index mapping. Index: {index}.");
             SelectedPlayerType = null;
         }
-        else if (index == 1) {
-            // Human player
-            SelectedPlayerType = typeof(HumanPlayer);
-        }
         else {
-            // Adjust index to match the 'availablePlayerTypes' list (which doesn't have the placeholder)
-            int actualPlayerIndex = index - 2;
-
-            if (actualPlayerIndex < 0 || actualPlayerIndex >= _availablePlayerTypes.Count) {
-                Debug.LogWarning($"Invalid dropdown index mapping. Index: {index}, Calculated Player Index: {actualPlayerIndex}");
-                SelectedPlayerType = null;
-            }
-            else {
-                SelectedPlayerType = _availablePlayerTypes[actualPlayerIndex].PlayerType;
-                Debug.Log($"Dropdown selection changed. Name: {_availablePlayerTypes[actualPlayerIndex].DisplayName}");
-            }
+            SelectedPlayerType = _availablePlayerInfos[index];
+            Debug.Log($"Dropdown selection changed. Name: {_availablePlayerInfos[index].DisplayName}");
         }
 
         // set input field placeholder if a player is selected
-        playerNameInput.placeholder.GetComponent<TextMeshProUGUI>().text = (SelectedPlayerType != null) ? _namePlaceholder : String.Empty;
+        playerNameInput!.placeholder.GetComponent<TextMeshProUGUI>().text = (SelectedPlayerType != null) ? _namePlaceholder : String.Empty;
+
+        ToggleResetButtonVisibility();
+    }
+
+    public void ToggleResetButtonVisibility()
+    {
+        resetButton!.interactable = !IsEmpty(); // enable reset button if selection is not empty
+    }
+
+    public void OnInputFieldChanged(string value)
+    {
+        ToggleResetButtonVisibility();
     }
 
     /// <summary>
@@ -89,23 +77,31 @@ public class PlayerSelectionRowManager : MonoBehaviour
     /// </summary>
     public void ResetToBlankSelection()
     {
-        if (playerTypeDropdown == null || playerNameInput == null) {
-            Debug.LogError("Dropdown or input field is not set.");
-            return;
-        }
         // reset dropdown menu
-        playerTypeDropdown.SetValueWithoutNotify(0);
-        // playerTypeDropdown.RefreshShownValue();
+        playerTypeDropdown!.SetValueWithoutNotify(-1);
+        SelectedPlayerType = null;
 
         // set player name to blank
-        playerNameInput.text = String.Empty;
+        playerNameInput!.text = String.Empty;
         playerNameInput.placeholder.GetComponent<TextMeshProUGUI>().text = String.Empty;
+
+        // disable reset button
+        ToggleResetButtonVisibility();
     }
 
-    // Example: Call this from a Button press or other event
-    public void OnResetSelectionPress()
+    public bool IsEmpty() => SelectedPlayerType == null && string.IsNullOrEmpty(SelectedPlayerName);
+    
+    public bool IsValid()
     {
-        Debug.Log("Resetting dropdown selection...");
-        ResetToBlankSelection();
+        // empty selection
+        if (IsEmpty()) {
+            return true;
+        }
+        // fully initialized selection
+        if (SelectedPlayerType != null && !string.IsNullOrEmpty(SelectedPlayerName)) {
+            return true;
+        }
+        // invalid selection
+        return false;
     }
 }

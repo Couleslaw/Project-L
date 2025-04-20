@@ -2,6 +2,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using ProjectLCore.GameLogic;
+using System.Collections.Generic;
+using NUnit.Framework;
+using ProjectLCore.Players;
+using System.Runtime.CompilerServices;
 
 #nullable enable
 
@@ -18,6 +22,9 @@ public class GameCreationManager : MonoBehaviour
 
     [SerializeField]
     private Toggle? shuffleCheckbox;
+
+    [SerializeField]
+    private List<PlayerSelectionRowManager>? playerSelectionRows;
 
     void Start()
     {
@@ -60,5 +67,71 @@ public class GameCreationManager : MonoBehaviour
             return;
         }
         GameStartParams.ShufflePlayers = shuffleCheckbox.isOn;
+    }
+
+    private bool IsPlayerSelectionNonEmpty()
+    {
+        // at least one player must be selected
+        foreach (var row in playerSelectionRows!) {
+            if (!row.IsEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private bool IsPlayerSelectionValid()
+    {
+        // check if all players are valid
+        foreach (var row in playerSelectionRows!) {
+            if (!row.IsValid()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private bool ArePlayerNamesUnique()
+    {
+        // check if all player names are unique
+        HashSet<string> playerNames = new HashSet<string>();
+        foreach (var row in playerSelectionRows!) {
+            if (!row.IsEmpty()) {
+                string playerName = row.SelectedPlayerName;
+                if (playerNames.Contains(playerName)) {
+                    return false;
+                }
+                playerNames.Add(playerName);
+            }
+        }
+
+        return true;
+    }
+
+    public void OnClickStartGame()
+    {
+        if (!IsPlayerSelectionNonEmpty()) {
+            Debug.LogWarning("No players selected.");
+            return;
+        }
+
+        if (!IsPlayerSelectionValid()) {
+            Debug.LogWarning("Invalid player selection.");
+            return;
+        }
+
+        if (!ArePlayerNamesUnique()) {
+            Debug.LogWarning("Player names must be unique.");
+            return;
+        }
+
+        // populate GameStartParams with selected players and load GameScene
+        foreach (var row in playerSelectionRows!) {
+            if (!row.IsEmpty()) {
+                GameStartParams.Players.Add(new(row.SelectedPlayerName, row.SelectedPlayerType!.Value));
+            }
+        }
+
+        GameObject.FindAnyObjectByType<SceneTransitions>()?.LoadGame();
     }
 }
