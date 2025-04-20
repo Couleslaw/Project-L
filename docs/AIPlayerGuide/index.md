@@ -144,7 +144,7 @@ If your player _is_ listed but fails during startup, the `Init` method likely th
 
 #### Invalid Actions
 
-When your player fails to provide a valid action, or the `GetAction` method throws an exception, the game acts as if it returned a `DoNothingAction`.
+When your player fails to provide a valid action, or the `GetAction` method throws an exception, the game acts as if it returned the [DoNothingAction](https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/T_ProjectLCore_GameActions_DoNothingAction.htm). If it fails to provide a valid action during the finishes touches phase, the game will act as if it returned the [EndFinishesTouchesAction](https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/T_ProjectLCore_GameActions_EndFinishingTouchesAction.htm).
 
 #### Invalid Rewards
 
