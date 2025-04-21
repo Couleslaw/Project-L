@@ -11,14 +11,15 @@ using UnityEngine.EventSystems;
      Youtube : https://youtube.com/hamza-herbou
    ------------------------------------------------- */
 
-namespace EasyUI{
-    public enum LogPosition{ Top, Bottom }
+namespace EasyUI
+{
+    public enum LogPosition { Top, Bottom }
 
     public class Logger : MonoBehaviour
     {
         [SerializeField] LogPosition position = LogPosition.Top;
-        [Range(200f, 800f)] [SerializeField] private float height = 300f;
-        [Range(20f,50f)] [SerializeField] private float iconWidth = 40f;
+        [Range(200f, 800f)][SerializeField] private float height = 300f;
+        [Range(20f, 50f)][SerializeField] private float iconWidth = 40f;
         [SerializeField] private Sprite? spriteOpenIcon;
         [SerializeField] private Sprite? spriteCloseIcon;
         [Space(50f)]
@@ -42,17 +43,35 @@ namespace EasyUI{
             "#ff6666"  // Red
         };
 
-        private void OnEnable() {
+        public static Logger? Instance { get; private set; } = null;
+
+        public static void ClearLog()
+        {
+            if (Instance != null) {
+                Instance.uiLogText!.text = string.Empty;
+            }
+        }
+
+        private void OnEnable()
+        {
             Application.logMessageReceived += LogCallback;
             uiToggleButton!.onClick.AddListener(ToggleLogUI);
         }
 
-        private void Awake() {
+        private void Awake()
+        {
+            // Singleton pattern
+            if (Instance != null && Instance != this) {
+                Destroy(this.transform.root.gameObject);
+            }
+
+            Instance = this;
+            DontDestroyOnLoad(this.transform.root.gameObject);
+
             if (FindObjectsByType<EventSystem>(FindObjectsSortMode.None).Length == 0) {
                 uiEventSystem!.SetActive(true);
             }
 
-                
             uiContentVerticalLayoutGroup = transform.GetChild(0).GetComponent<VerticalLayoutGroup>();
             uiScrollRectTransform = uiScrollRect!.GetComponent<RectTransform>();
             uiToggleButtonImage = uiToggleButton!.GetComponent<Image>();
@@ -62,27 +81,30 @@ namespace EasyUI{
             ToggleLogUI();
         }
 
-        private void ScrollDown(){
+        private void ScrollDown()
+        {
             uiScrollRect!.verticalNormalizedPosition = 0f;
         }
 
         private void LogCallback(string message, string stackTrace, LogType type)
         {
             //logTypeIndex => normal:0 , warning:1 , error:2
-            int logTypeIndex = (type==LogType.Log)?0:(type==LogType.Warning)?1:2;
+            int logTypeIndex = (type == LogType.Log) ? 0 : (type == LogType.Warning) ? 1 : 2;
             uiLogText!.text += $"<sprite={logTypeIndex}><color={colors[logTypeIndex]}> {message}</color>\n\n";
             ScrollDown();
         }
 
-        private void ToggleLogUI(){
+        private void ToggleLogUI()
+        {
             isOpen = !isOpen;
             if (isOpen)
                 SetupUI(new Vector2(1f, height), spriteCloseIcon!);
             else
-                SetupUI(Vector2.one*iconWidth, spriteOpenIcon!);
+                SetupUI(Vector2.one * iconWidth, spriteOpenIcon!);
         }
 
-        private void SetupUI(Vector2 size, Sprite icon){
+        private void SetupUI(Vector2 size, Sprite icon)
+        {
             uiScrollRect!.enabled = isOpen;
             uiViewport!.SetActive(isOpen);
             uiScrollBar!.SetActive(isOpen);
@@ -91,11 +113,12 @@ namespace EasyUI{
             uiScrollRectTransform!.sizeDelta = size;
             uiToggleButtonImage!.sprite = icon;
             uiToggleButtonRectTransform!.sizeDelta = 0.7f * iconWidth * Vector2.one;
-            uiToggleButtonRectTransform.anchoredPosition = - Vector2.one * iconWidth / 2f;
+            uiToggleButtonRectTransform.anchoredPosition = -Vector2.one * iconWidth / 2f;
         }
 
-        private void OnValidate() {
-            if (uiContentVerticalLayoutGroup != null){
+        private void OnValidate()
+        {
+            if (uiContentVerticalLayoutGroup != null) {
                 if (position == LogPosition.Top)
                     uiContentVerticalLayoutGroup.childAlignment = TextAnchor.UpperRight;
                 else
@@ -104,9 +127,17 @@ namespace EasyUI{
         }
 
 
-        private void OnDisable() {
-            Application.logMessageReceived += LogCallback;
+        private void OnDisable()
+        {
+            // singleton consistency
+            if (this.gameObject == null) {
+                return;
+            }
+            // hide the log UI
+            Application.logMessageReceived -= LogCallback;
             uiToggleButton!.onClick.RemoveListener(ToggleLogUI);
+            isOpen = true;
+            ToggleLogUI();
         }
     }
 }

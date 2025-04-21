@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using EasyUI;
 
 #nullable enable
 
@@ -18,10 +19,19 @@ public class SceneTransitions : MonoBehaviour
         }
     }
 
+    private void DisableLogger()
+    {
+        // Disable the logger if it exists
+        if (EasyUI.Logger.Instance != null) {
+            EasyUI.Logger.Instance.gameObject.SetActive(false);
+        }
+    }
+
     public void LoadMainMenu()
     {
         // Load the main menu scene
         StartCoroutine(FadeOutAndLoadScene("MainMenu"));
+        DisableLogger();
     }
 
     public void LoadPlayerSelection()

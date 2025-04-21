@@ -7,6 +7,7 @@ using NUnit.Framework;
 using ProjectLCore.Players;
 using System.Runtime.CompilerServices;
 using System.Collections;
+using EasyUI;
 
 #nullable enable
 
@@ -18,6 +19,7 @@ public class GameCreationManager : MonoBehaviour
     [SerializeField] private Button? startGameButton;
     [SerializeField] private Toggle? shuffleCheckbox;
     [SerializeField] private TextMeshProUGUI? errorTextBox;
+    [SerializeField] private GameObject? loggerPrefab;
 
     [Header("Fade Settings")]
     [SerializeField] private float errorVisibleDuration = 1.0f;
@@ -28,6 +30,14 @@ public class GameCreationManager : MonoBehaviour
 
     private Coroutine? _activeErrorCoroutine = null;
     private SoundManager? _soundManager;
+
+    private void Awake()
+    {
+        if (EasyUI.Logger.Instance == null)
+            Instantiate(loggerPrefab);
+        else
+            EasyUI.Logger.Instance.gameObject.SetActive(true);
+    }
 
     void Start()
     {

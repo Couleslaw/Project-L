@@ -39,12 +39,17 @@ public class PlayerSelectionRowManager : MonoBehaviour
         // reset player type --> blank state
         ResetToBlankSelection();
         resetButton.onClick.AddListener(ResetToBlankSelection);
-        // play sound if sound manager is available
-        if (_soundManager != null) {
-            resetButton.onClick.AddListener(_soundManager.PlayButtonClickSound);
-        }
+        resetButton.onClick.AddListener(PlayClickSound);
+
         playerNameInput.onValueChanged.AddListener(OnInputFieldChanged);
         playerNameInput.onEndEdit.AddListener(OnInputFieldEndEdit);
+    }
+
+    public void PlayClickSound()
+    {
+        if (_soundManager != null) {
+            _soundManager.PlayButtonClickSound();
+        }
     }
 
     void PopulateDropdown()
@@ -56,13 +61,13 @@ public class PlayerSelectionRowManager : MonoBehaviour
         playerTypeDropdown.AddOptions(_availablePlayerInfos.Select(info => info.DisplayName).ToList());
     }
 
+    public void SetPlayerDropdownPlaceholder(bool empty)
+    {
+        playerTypeDropdown!.placeholder.GetComponent<TextMeshProUGUI>().text = empty ? String.Empty : _typePlaceholder;
+    }
+
     void HandleDropdownSelection(int index)
     {
-        // play sound if sound manager is available
-        if (_soundManager != null) {
-            _soundManager.PlayButtonClickSound();
-        }
-
         // check if index is valid
         if (index < 0 || index >= _availablePlayerInfos.Count) {
             Debug.LogWarning($"Invalid dropdown index mapping. Index: {index}.");
@@ -92,7 +97,7 @@ public class PlayerSelectionRowManager : MonoBehaviour
             _trimmedInput = false;
 
         // if input is not empty, set dropdown selection placeholder to "select type"
-        playerTypeDropdown!.placeholder.GetComponent<TextMeshProUGUI>().text = string.IsNullOrEmpty(value) ? String.Empty : _typePlaceholder;
+        SetPlayerDropdownPlaceholder(empty: string.IsNullOrEmpty(value));
         ToggleResetButtonVisibility();
     }
 

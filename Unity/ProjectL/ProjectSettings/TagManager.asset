@@ -43,5 +43,11 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Logger
+    uniqueID: 1838612409
+    locked: 0
+  - name: Fade
+    uniqueID: 3401287211
+    locked: 0
   m_RenderingLayers:
   - Default
