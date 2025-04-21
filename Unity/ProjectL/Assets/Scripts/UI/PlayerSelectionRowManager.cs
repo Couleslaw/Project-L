@@ -44,6 +44,7 @@ public class PlayerSelectionRowManager : MonoBehaviour
             resetButton.onClick.AddListener(_soundManager.PlayButtonClickSound);
         }
         playerNameInput.onValueChanged.AddListener(OnInputFieldChanged);
+        playerNameInput.onEndEdit.AddListener(OnInputFieldEndEdit);
     }
 
     void PopulateDropdown()
@@ -85,12 +86,24 @@ public class PlayerSelectionRowManager : MonoBehaviour
     public void OnInputFieldChanged(string value)
     {
         // play sound if sound manager is available
-        if (_soundManager != null) {
+        if (_soundManager != null && !_trimmedInput) 
             _soundManager.PlayInputLineSound();
-        }
+        if (_trimmedInput) 
+            _trimmedInput = false;
+
         // if input is not empty, set dropdown selection placeholder to "select type"
         playerTypeDropdown!.placeholder.GetComponent<TextMeshProUGUI>().text = string.IsNullOrEmpty(value) ? String.Empty : _typePlaceholder;
         ToggleResetButtonVisibility();
+    }
+
+    private bool _trimmedInput = false;
+    public void OnInputFieldEndEdit(string value)
+    {
+        // trip text in input field
+        if (playerNameInput!.text != value.Trim()) {
+            playerNameInput.text = value;
+            _trimmedInput = true;
+        }
     }
 
     /// <summary>
