@@ -6,29 +6,31 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using ProjectLCore.Players;
 using System.Runtime.CompilerServices;
+using System.Collections;
 
 #nullable enable
 
 public class GameCreationManager : MonoBehaviour
 {
-    [SerializeField]
-    private Slider? numPiecesSlider;
+    [Header("UI Elements")]
+    [SerializeField] private Slider? numPiecesSlider;
+    [SerializeField] private TextMeshProUGUI? numPiecesText;
+    [SerializeField] private Button? startGameButton;
+    [SerializeField] private Toggle? shuffleCheckbox;
+    [SerializeField] private TextMeshProUGUI? errorTextBox;
 
-    [SerializeField]
-    private TextMeshProUGUI? numPiecesText;
+    [Header("Fade Settings")]
+    [SerializeField] private float errorVisibleDuration = 1.0f;
+    [SerializeField] private float errorFadeOutDuration = 1.0f;
 
-    [SerializeField]
-    private Button? startGameButton;
+    [Header("Player Selection")]
+    [SerializeField] private List<PlayerSelectionRowManager>? playerSelectionRows;
 
-    [SerializeField]
-    private Toggle? shuffleCheckbox;
-
-    [SerializeField]
-    private List<PlayerSelectionRowManager>? playerSelectionRows;
+    private Coroutine? _activeErrorCoroutine = null;
 
     void Start()
     {
-        if (numPiecesSlider == null || numPiecesText == null || startGameButton == null || shuffleCheckbox == null) {
+        if (numPiecesSlider == null || numPiecesText == null || startGameButton == null || shuffleCheckbox == null || errorTextBox == null) {
             Debug.LogError("One or more UI components are not assigned in the inspector.");
             return;
         }
@@ -41,6 +43,9 @@ public class GameCreationManager : MonoBehaviour
         numPiecesSlider.minValue = GameState.MinNumInitialTetrominos;
         numPiecesSlider.value = GameStartParams.NumInitialTetrominosDefault;
         numPiecesText.text = numPiecesSlider.value.ToString();
+
+        // make error text box invisible
+        errorTextBox.alpha = 0f;
     }
 
     /// <summary>
@@ -90,7 +95,7 @@ public class GameCreationManager : MonoBehaviour
         }
         return true;
     }
-    
+
     private bool ArePlayerNamesUnique()
     {
         // check if all player names are unique
@@ -110,28 +115,81 @@ public class GameCreationManager : MonoBehaviour
 
     public void OnClickStartGame()
     {
-        if (!IsPlayerSelectionNonEmpty()) {
-            Debug.LogWarning("No players selected.");
-            return;
-        }
+        // check if player selection is valid
+        string? errorMessage = null;
+        if (!IsPlayerSelectionNonEmpty())
+            errorMessage = "No players selected";
+        else if (!IsPlayerSelectionValid())
+            errorMessage = "Invalid player selection";
+        else if (!ArePlayerNamesUnique())
+            errorMessage = "Player names must be unique";
 
-        if (!IsPlayerSelectionValid()) {
-            Debug.LogWarning("Invalid player selection.");
-            return;
-        }
-
-        if (!ArePlayerNamesUnique()) {
-            Debug.LogWarning("Player names must be unique.");
+        // handle error message
+        if (errorMessage != null) {
+            Debug.LogWarning(errorMessage);
+            ShowError(errorMessage); // Show the error message on screen
             return;
         }
 
         // populate GameStartParams with selected players and load GameScene
+        GameStartParams.Players.Clear();
         foreach (var row in playerSelectionRows!) {
             if (!row.IsEmpty()) {
+                // last check if player reference is valid, should not happen
+                if (row.SelectedPlayerType == null || string.IsNullOrEmpty(row.SelectedPlayerName)) {
+                    Debug.LogError($"Error while selecting player: Player {row.SelectedPlayerName}, Type {row.SelectedPlayerType?.DisplayName}");
+                    ShowError($"Internal error");
+                    return;
+                }
                 GameStartParams.Players.Add(new(row.SelectedPlayerName, row.SelectedPlayerType!.Value));
             }
         }
 
         GameObject.FindAnyObjectByType<SceneTransitions>()?.LoadGame();
+    }
+
+    /// <summary>
+    /// Displays an error message and starts the fade-out coroutine.
+    /// </summary>
+    /// <param name="message">The error message to display.</param>
+    private void ShowError(string message)
+    {
+        if (errorTextBox == null)
+            return; // Safety check
+
+        // Stop any previous fade coroutine if it's running
+        if (_activeErrorCoroutine != null) {
+            StopCoroutine(_activeErrorCoroutine);
+        }
+
+        // Start the new fade coroutine
+        _activeErrorCoroutine = StartCoroutine(ShowAndFadeErrorCoroutine(message));
+    }
+
+    /// <summary>
+    /// Coroutine to display a message, wait, and then fade it out.
+    /// </summary>
+    /// <param name="message">The message to display.</param>
+    private IEnumerator ShowAndFadeErrorCoroutine(string message)
+    {
+        if (errorTextBox == null)
+            yield break; // Should not happen
+
+        // 1. Set text and make fully visible
+        errorTextBox.text = message;
+        errorTextBox.alpha = 1f;
+
+        // 2. Wait for the visible duration
+        yield return new WaitForSeconds(errorVisibleDuration);
+
+        // 3. Fade out
+        float elapsedTime = 0f;
+        while (elapsedTime < errorFadeOutDuration) {
+            elapsedTime += Time.deltaTime;
+            errorTextBox.alpha = Mathf.Lerp(1f, 0f, elapsedTime / errorFadeOutDuration);
+            yield return null; // Wait for the next frame
+        }
+
+        _activeErrorCoroutine = null; // Mark coroutine as finished
     }
 }

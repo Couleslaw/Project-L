@@ -17,6 +17,7 @@ public class PlayerSelectionRowManager : MonoBehaviour
     public string SelectedPlayerName => playerNameInput!.text.Trim();
     private List<LoadedPlayerTypeInfo> _availablePlayerInfos = new() { new LoadedPlayerTypeInfo(typeof(HumanPlayer), "Human", null) };
     private const string _namePlaceholder = "Enter name...";
+    private const string _typePlaceholder = "Select type";
 
     void Start()
     {
@@ -53,7 +54,6 @@ public class PlayerSelectionRowManager : MonoBehaviour
         }
         else {
             SelectedPlayerType = _availablePlayerInfos[index];
-            Debug.Log($"Dropdown selection changed. Name: {_availablePlayerInfos[index].DisplayName}");
         }
 
         // set input field placeholder if a player is selected
@@ -69,6 +69,8 @@ public class PlayerSelectionRowManager : MonoBehaviour
 
     public void OnInputFieldChanged(string value)
     {
+        // if input is not empty, set dropdown selection placeholder to "select type"
+        playerTypeDropdown!.placeholder.GetComponent<TextMeshProUGUI>().text = string.IsNullOrEmpty(value) ? String.Empty : _typePlaceholder;
         ToggleResetButtonVisibility();
     }
 
@@ -90,7 +92,7 @@ public class PlayerSelectionRowManager : MonoBehaviour
     }
 
     public bool IsEmpty() => SelectedPlayerType == null && string.IsNullOrEmpty(SelectedPlayerName);
-    
+
     public bool IsValid()
     {
         // empty selection

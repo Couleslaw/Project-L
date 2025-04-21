@@ -108,9 +108,11 @@ public static class PlayerTypeLoader
         try {
             // Check if the file already exists
             if (File.Exists(filePath)) {
-                Debug.Log($"EnsureFileExists: File found: {filePath}");
+                Debug.Log($"File found: {filePath}");
                 return true;
             }
+
+            Debug.LogWarning($"File not found: {filePath}");
 
             // File doesn't exist, ensure the directory exists
             string directoryPath = Path.GetDirectoryName(filePath);
@@ -119,13 +121,13 @@ public static class PlayerTypeLoader
                 if (!Directory.Exists(directoryPath)) {
                     // Create the directory (and any parent directories)
                     Directory.CreateDirectory(directoryPath);
-                    Debug.Log($"EnsureFileExists: Created directory: {directoryPath}");
+                    Debug.Log($"Created directory: {directoryPath}");
                 }
             }
 
             // Create the empty file
             using FileStream fs = File.Create(filePath);
-            Debug.Log($"EnsureFileExists: Created empty file at: {filePath}");
+            Debug.Log($"Created empty file at: {filePath}");
             return true;
 
         }
@@ -183,7 +185,7 @@ public static class PlayerTypeLoader
             string? name = keyCol["name"];
             string? initPath = keyCol["init_path"];
             if (dllPath is null || name is null) {
-                Debug.LogWarning($"Invalid section in ini file: {section.SectionName}");
+                Debug.LogWarning($"Invalid section in aiplayers.ini file: {section.SectionName}");
                 continue;
             }
 
@@ -216,13 +218,13 @@ public static class PlayerTypeLoader
             }
             // --- Exception Handling ---
             catch (FileNotFoundException fnfEx) {
-                Debug.LogWarning($"Error loading assembly from '{dllPath}' (File Not Found): {fnfEx.Message}");
+                Debug.LogError($"Error loading assembly from '{dllPath}' (File Not Found): {fnfEx.Message}");
             }
             catch (BadImageFormatException bifEx) {
-                Debug.LogWarning($"Error loading assembly from '{dllPath}' (Bad Image Format): {bifEx.Message}");
+                Debug.LogError($"Error loading assembly from '{dllPath}' (Bad Image Format): {bifEx.Message}");
             }
             catch (Exception ex) {
-                Debug.LogWarning($"Generic error loading assembly from '{dllPath}': {ex.GetType().Name} - {ex.Message}");
+                Debug.LogError($"Generic error loading assembly from '{dllPath}': {ex.GetType().Name} - {ex.Message}");
             }
         }
 
