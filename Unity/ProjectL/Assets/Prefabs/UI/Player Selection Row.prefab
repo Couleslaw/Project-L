@@ -984,7 +984,7 @@ MonoBehaviour:
   m_fontSizeBase: 35
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 20
+  m_fontSizeMin: 32
   m_fontSizeMax: 35
   m_fontStyle: 0
   m_HorizontalAlignment: 1
@@ -1986,7 +1986,7 @@ MonoBehaviour:
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 30
+  m_fontSizeMin: 32
   m_fontSizeMax: 35
   m_fontStyle: 0
   m_HorizontalAlignment: 1

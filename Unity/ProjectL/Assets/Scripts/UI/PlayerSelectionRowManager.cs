@@ -19,12 +19,18 @@ public class PlayerSelectionRowManager : MonoBehaviour
     private const string _namePlaceholder = "Enter name...";
     private const string _typePlaceholder = "Select type";
 
+    private SoundManager? _soundManager;
+
     void Start()
     {
         if (playerTypeDropdown == null || playerNameInput == null || resetButton == null) {
             Debug.LogError("Dropdown, input field or reset button is not assigned in the inspector.");
             return;
         }
+
+        // try to find the sound manager
+        _soundManager = GameObject.FindAnyObjectByType<SoundManager>();
+
         // initialize dropdown selection
         _availablePlayerInfos.AddRange(PlayerTypeLoader.AvailableAIPlayerInfos);
         PopulateDropdown();
@@ -33,6 +39,10 @@ public class PlayerSelectionRowManager : MonoBehaviour
         // reset player type --> blank state
         ResetToBlankSelection();
         resetButton.onClick.AddListener(ResetToBlankSelection);
+        // play sound if sound manager is available
+        if (_soundManager != null) {
+            resetButton.onClick.AddListener(_soundManager.PlayButtonClickSound);
+        }
         playerNameInput.onValueChanged.AddListener(OnInputFieldChanged);
     }
 
@@ -47,6 +57,11 @@ public class PlayerSelectionRowManager : MonoBehaviour
 
     void HandleDropdownSelection(int index)
     {
+        // play sound if sound manager is available
+        if (_soundManager != null) {
+            _soundManager.PlayButtonClickSound();
+        }
+
         // check if index is valid
         if (index < 0 || index >= _availablePlayerInfos.Count) {
             Debug.LogWarning($"Invalid dropdown index mapping. Index: {index}.");
@@ -69,6 +84,10 @@ public class PlayerSelectionRowManager : MonoBehaviour
 
     public void OnInputFieldChanged(string value)
     {
+        // play sound if sound manager is available
+        if (_soundManager != null) {
+            _soundManager.PlayInputLineSound();
+        }
         // if input is not empty, set dropdown selection placeholder to "select type"
         playerTypeDropdown!.placeholder.GetComponent<TextMeshProUGUI>().text = string.IsNullOrEmpty(value) ? String.Empty : _typePlaceholder;
         ToggleResetButtonVisibility();

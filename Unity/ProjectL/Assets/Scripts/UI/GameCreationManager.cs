@@ -27,6 +27,7 @@ public class GameCreationManager : MonoBehaviour
     [SerializeField] private List<PlayerSelectionRowManager>? playerSelectionRows;
 
     private Coroutine? _activeErrorCoroutine = null;
+    private SoundManager? _soundManager;
 
     void Start()
     {
@@ -34,6 +35,9 @@ public class GameCreationManager : MonoBehaviour
             Debug.LogError("One or more UI components are not assigned in the inspector.");
             return;
         }
+
+        // try to find the sound manager
+        _soundManager = GameObject.FindAnyObjectByType<SoundManager>();
 
         GameStartParams.Reset();
         // Set the initial state of the shuffle players checkbox
@@ -126,10 +130,15 @@ public class GameCreationManager : MonoBehaviour
 
         // handle error message
         if (errorMessage != null) {
+            // play error sound
+            _soundManager?.PlayErrorSound();
             Debug.LogWarning(errorMessage);
             ShowError(errorMessage); // Show the error message on screen
             return;
         }
+
+        // play button sound
+        _soundManager?.PlayButtonClickSound();
 
         // populate GameStartParams with selected players and load GameScene
         GameStartParams.Players.Clear();
