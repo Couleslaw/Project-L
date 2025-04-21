@@ -9,6 +9,8 @@ using System.Reflection;
 using System.Runtime.Versioning;
 using UnityEngine;
 
+#nullable enable
+
 public struct LoadedPlayerTypeInfo
 {
     #region Constructors
@@ -36,6 +38,7 @@ public struct LoadedPlayerTypeInfo
 #nullable enable
 public static class PlayerTypeLoader
 {
+    private const string _iniFileName = "aiplayers.ini";
     #region Fields
 
     private static List<LoadedPlayerTypeInfo> _availablePlayerTypes = new();
@@ -47,7 +50,7 @@ public static class PlayerTypeLoader
     static PlayerTypeLoader()
     {
         // Load the available player types from the ini file
-        string iniFilePath = Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "aiplayers.ini"));
+        string iniFilePath = GetAbsolutePath(_iniFileName);
         // Ensure the ini file exists
         if (!EnsureFileExists(iniFilePath)) {
             Debug.LogError($"Failed to ensure the ini file exists at {iniFilePath}");
@@ -146,7 +149,7 @@ public static class PlayerTypeLoader
     /// </summary>
     /// <param name="path">The path.</param>
     /// <returns>The absolute version of the given path.</returns>
-    private static string GetAbsolutePath(string path)
+    public static string GetAbsolutePath(string path)
     {
         // Path is already absolute
         if (Path.IsPathRooted(path)) {

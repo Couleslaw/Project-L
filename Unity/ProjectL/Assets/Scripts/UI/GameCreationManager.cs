@@ -160,10 +160,11 @@ public class GameCreationManager : MonoBehaviour
                     ShowError($"Internal error");
                     return;
                 }
-                GameStartParams.Players.Add(new(row.SelectedPlayerName, row.SelectedPlayerType!.Value));
+                GameStartParams.Players.Add(row.SelectedPlayerName, row.SelectedPlayerType!.Value);
             }
         }
 
+        // load the game scene
         GameObject.FindAnyObjectByType<SceneTransitions>()?.LoadGame();
     }
 

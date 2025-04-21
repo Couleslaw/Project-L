@@ -9,7 +9,7 @@ public static class GameStartParams
     public const bool ShufflePlayersDefault = true;
     public static int NumInitialTetrominos { get; set; } = NumInitialTetrominosDefault;
     public static bool ShufflePlayers { get; set; } = ShufflePlayersDefault;
-    public static List<(string, LoadedPlayerTypeInfo)> Players { get; set; } = new();
+    public static Dictionary<string, LoadedPlayerTypeInfo> Players { get; set; } = new();
 
     public static void Reset()
     {
