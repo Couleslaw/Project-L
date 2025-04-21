@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using ProjectLCore.Players;
 using UnityEngine.UI;
+using System.Collections;
 #nullable enable
 
 public class PlayerSelectionRowManager : MonoBehaviour
@@ -20,6 +21,8 @@ public class PlayerSelectionRowManager : MonoBehaviour
     private const string _typePlaceholder = "Select type";
 
     private SoundManager? _soundManager;
+
+    private bool _isDropdownListOpen = false;
 
     void Start()
     {
@@ -61,10 +64,75 @@ public class PlayerSelectionRowManager : MonoBehaviour
         playerTypeDropdown.AddOptions(_availablePlayerInfos.Select(info => info.DisplayName).ToList());
     }
 
-    public void SetPlayerDropdownPlaceholder(bool empty)
+    public void SetPlayerDropdownPlaceholder()
     {
-        playerTypeDropdown!.placeholder.GetComponent<TextMeshProUGUI>().text = empty ? String.Empty : _typePlaceholder;
+        playerTypeDropdown!.placeholder.GetComponent<TextMeshProUGUI>().text = _typePlaceholder;
     }
+
+    public void UpdatePlayerDropdownPlaceholder()
+    {
+        string placeholderText = string.IsNullOrEmpty(playerNameInput!.text) ? String.Empty : _typePlaceholder;
+        playerTypeDropdown!.placeholder.GetComponent<TextMeshProUGUI>().text = placeholderText;
+    }
+
+    public void OnDropdownClick()
+    {
+        _isDropdownListOpen = true;
+        SetPlayerDropdownPlaceholder();
+    }
+    public void OnDropdownCancel()
+    {
+        _isDropdownListOpen = false;
+        UpdatePlayerDropdownPlaceholder();
+    }
+    public void OnDropdownSubmit()
+    {
+        _isDropdownListOpen = false;
+        UpdatePlayerDropdownPlaceholder();
+    }
+
+    public void OnDropdownDeselect()
+    {
+        Debug.Log("Dropdown deselected.");
+
+        StartCoroutine(WaitForDropdownListToClose(1f));
+    }
+
+    IEnumerator WaitForDropdownListToClose(float waitTime)
+    {
+        // wait for maximum of waitTime seconds or until playerTypeDropdown!.gameObject.transform.Find("Dropdown List")?.gameObject is null
+
+        float elapsedTime = 0f;
+        while (elapsedTime < waitTime) {
+            GameObject? dropdownList = playerTypeDropdown!.gameObject.transform.Find("Dropdown List")?.gameObject;
+            if (dropdownList == null || dropdownList.activeSelf == false) {
+                _isDropdownListOpen = false; // dropdown list is closed
+                UpdatePlayerDropdownPlaceholder();
+                break;
+            }
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+    }
+
+    public void OnDropdownEnter()
+    {
+        if (!_isDropdownListOpen)
+            SetPlayerDropdownPlaceholder();
+    }
+
+    public void OnDropdownExit()
+    {
+        if (!_isDropdownListOpen)
+            UpdatePlayerDropdownPlaceholder();
+    }
+
+    public void UpdateInputLinePlaceholder()
+    {
+        playerNameInput!.placeholder.GetComponent<TextMeshProUGUI>().text = (SelectedPlayerType != null) ? _namePlaceholder : String.Empty;
+    }
+
 
     void HandleDropdownSelection(int index)
     {
@@ -77,9 +145,7 @@ public class PlayerSelectionRowManager : MonoBehaviour
             SelectedPlayerType = _availablePlayerInfos[index];
         }
 
-        // set input field placeholder if a player is selected
-        playerNameInput!.placeholder.GetComponent<TextMeshProUGUI>().text = (SelectedPlayerType != null) ? _namePlaceholder : String.Empty;
-
+        UpdateInputLinePlaceholder();
         ToggleResetButtonVisibility();
     }
 
@@ -91,13 +157,13 @@ public class PlayerSelectionRowManager : MonoBehaviour
     public void OnInputFieldChanged(string value)
     {
         // play sound if sound manager is available
-        if (_soundManager != null && !_trimmedInput) 
+        if (_soundManager != null && !_trimmedInput)
             _soundManager.PlayInputLineSound();
-        if (_trimmedInput) 
+        if (_trimmedInput)
             _trimmedInput = false;
 
         // if input is not empty, set dropdown selection placeholder to "select type"
-        SetPlayerDropdownPlaceholder(empty: string.IsNullOrEmpty(value));
+        UpdatePlayerDropdownPlaceholder();
         ToggleResetButtonVisibility();
     }
 
@@ -106,9 +172,10 @@ public class PlayerSelectionRowManager : MonoBehaviour
     {
         // trip text in input field
         if (playerNameInput!.text != value.Trim()) {
-            playerNameInput.text = value;
+            playerNameInput.text = value.Trim();
             _trimmedInput = true;
         }
+        UpdatePlayerDropdownPlaceholder();
     }
 
     /// <summary>
