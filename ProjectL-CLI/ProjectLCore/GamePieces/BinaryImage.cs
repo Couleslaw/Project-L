@@ -75,6 +75,38 @@ namespace ProjectLCore.GamePieces
         }
 
         /// <summary>
+        /// Gets the cell at the specified index: image[i,j] is equivalent to image[i * 5 + j].
+        /// </summary>
+        /// <param name="index">Linear index.</param>
+        /// <returns><see langword="true"/> if the cell is filled, else <see langword="false"/>.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public bool this[int index] {
+            get {
+                if (index < 0 || index >= 25) {
+                    throw new ArgumentOutOfRangeException();
+                }
+                return (_image >> index & 1) == 1;
+            }
+        }
+
+        /// <summary>
+        /// Gets the cell at the specified position.
+        /// </summary>
+        /// <param name="i">Row index.</param>
+        /// <param name="j">Column index.</param>
+        /// <returns><see langword="true"/> if the cell is filled, else <see langword="false"/>.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public bool this[int i, int j] {
+            get {
+                if (i < 0 || i >= 5 || j < 0 || j >= 5) {
+                    throw new ArgumentOutOfRangeException();
+                }
+                return this[i * 5 + j];
+            }
+        }
+
+
+        /// <summary>
         /// Indicates whether the current <see cref="BinaryImage"/> is equal to another <see cref="BinaryImage"/>.
         /// Two images are equal if all of their cells are the same.
         /// </summary>

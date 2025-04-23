@@ -20,7 +20,7 @@
         /// <summary>
         /// Contains information about the number of tetrominos of each shape used on the puzzle.
         /// </summary>
-        private int[] _usedTetrominos = new int[TetrominoManager.NumShapes];
+        protected int[] _usedTetrominos = new int[TetrominoManager.NumShapes];
 
         #endregion
 
@@ -108,7 +108,7 @@
         /// </summary>
         /// <param name="tetromino">The shape of the tetromino.</param>
         /// <param name="position">The position of the tetromino.</param>
-        public void AddTetromino(TetrominoShape tetromino, BinaryImage position)
+        public virtual void AddTetromino(TetrominoShape tetromino, BinaryImage position)
         {
             _usedTetrominos[(int)tetromino]++;
             Image |= position;
@@ -131,9 +131,9 @@
         /// Clones this instance.
         /// </summary>
         /// <returns>A deep copy of this instance.</returns>
-        public Puzzle Clone()
+        public virtual Puzzle Clone()
         {
-            Puzzle clone = new(Image, RewardScore, RewardTetromino, IsBlack, _puzzleNumber);
+            Puzzle clone = (Puzzle)MemberwiseClone();
             clone._usedTetrominos = _usedTetrominos.ToArray(); // copy array
             return clone;
         }
