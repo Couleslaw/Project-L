@@ -81,7 +81,7 @@ public class SceneTransitions : MonoBehaviour
     }
 
     /// <summary>
-    /// Faces out the screen, if the current scene contains the Fade prefab. Loads the specified scene after.
+    /// Fades out the screen, if the current scene contains the Fade prefab. Loads the specified scene after.
     /// </summary>
     /// <param name="sceneName">Name of the scene to load.</param>
     /// <returns>Coroutine.</returns>

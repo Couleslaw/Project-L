@@ -92,7 +92,7 @@ public class PlayerSelectionRowManager : MonoBehaviour
     {
         _isDropdownListOpen = true;
         SetPlayerDropdownPlaceholder();
-        PlayClickSound();
+        _soundManager?.PlayButtonClickSound();
     }
 
     /// <summary>
@@ -204,10 +204,13 @@ public class PlayerSelectionRowManager : MonoBehaviour
     {
         UpdateUI();
 
-        if (_soundManager != null && !_trimmedInputFieldContent)
-            _soundManager.PlayInputLineSound();
-        if (_trimmedInputFieldContent)
+        // don't play sound if the change was caused by trimming the value
+        if (!_trimmedInputFieldContent) {
+            _soundManager?.PlayInputLineSound();
+        }
+        else {
             _trimmedInputFieldContent = false;
+        }
     }
 
     /// <summary>
@@ -231,16 +234,7 @@ public class PlayerSelectionRowManager : MonoBehaviour
     public void OnResetButtonClick()
     {
         ResetToBlankSelection();
-        PlayClickSound();
-    }
-
-    /// <summary>
-    /// Plays the click sound if the sound manager is available.
-    /// </summary>
-    private void PlayClickSound()
-    {
-        if (_soundManager != null)
-            _soundManager.PlayButtonClickSound();
+        _soundManager?.PlayButtonClickSound();
     }
 
     /// <summary>
@@ -350,7 +344,7 @@ public class PlayerSelectionRowManager : MonoBehaviour
 
             // if dropdown list is closed
             if (dropdownList == null || dropdownList.activeSelf == false) {
-                _isDropdownListOpen = false; 
+                _isDropdownListOpen = false;
                 method.Invoke();
                 break;
             }

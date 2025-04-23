@@ -1924,7 +1924,7 @@ GameObject:
   - component: {fileID: 8069550162774417170}
   - component: {fileID: 1993079805918964826}
   m_Layer: 5
-  m_Name: Player Selection Row
+  m_Name: PlayerSelectionRow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
