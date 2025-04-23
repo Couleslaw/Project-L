@@ -62,6 +62,15 @@
             _reader = new StreamReader(path);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PuzzleParser"/> class.
+        /// </summary>
+        /// <param name="stream">The stream to parse the puzzles from.</param>
+        public PuzzleParser(Stream stream)
+        {
+            _reader = new StreamReader(stream);
+        }
+
         #endregion
 
         #region Methods

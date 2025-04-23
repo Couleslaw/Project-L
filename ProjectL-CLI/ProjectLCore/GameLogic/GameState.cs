@@ -190,16 +190,41 @@ namespace ProjectLCore.GameLogic
         /// <param name="numWhitePuzzles">The resulting <see cref="GameState"/> will contain <paramref name="numWhitePuzzles"/> random puzzles from the file. This number can exceed the number of puzzles in the file. Should be at least <see cref="NumPuzzlesInRow"/>.</param>
         /// <param name="numBlackPuzzles">The resulting <see cref="GameState"/> will contain <paramref name="numBlackPuzzles"/> random puzzles from the file. This number can exceed the number of puzzles in the file. Should be at least <see cref="NumPuzzlesInRow"/> + 1.</param>
         /// <returns>Initialized <see cref="GameState"/>.</returns>
-        /// <seealso cref="GameStateBuilder"/>"
+        /// <seealso cref="GameStateBuilder">       
         /// <seealso cref="PuzzleParser"/>
         public static GameState CreateFromFile(string puzzlesFilePath, int numInitialTetrominos = 15, int numWhitePuzzles = int.MaxValue, int numBlackPuzzles = int.MaxValue)
+        {
+            if (string.IsNullOrWhiteSpace(puzzlesFilePath)) {
+                throw new ArgumentException("The file path cannot be null or empty.", nameof(puzzlesFilePath));
+            }
+
+            try {
+                using FileStream fileStream = new FileStream(puzzlesFilePath, FileMode.Open, FileAccess.Read);
+                return CreateFromStream(fileStream, numInitialTetrominos, numWhitePuzzles, numBlackPuzzles);
+            }
+            catch (Exception ex) {
+                throw new IOException($"Failed to create a stream from the file at path: {puzzlesFilePath}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GameState"/> class from a stream containing puzzles.
+        /// </summary>
+        /// <param name="puzzleStream">Stream to read the puzzles from.</param>
+        /// <param name="numInitialTetrominos">The number initial tetrominos.</param>
+        /// <param name="numWhitePuzzles">The resulting <see cref="GameState"/> will contain <paramref name="numWhitePuzzles"/> random puzzles from the stream. This number can exceed the number of puzzles in the stream. Should be at least <see cref="NumPuzzlesInRow"/>.</param>
+        /// <param name="numBlackPuzzles">The resulting <see cref="GameState"/> will contain <paramref name="numBlackPuzzles"/> random puzzles from the stream. This number can exceed the number of puzzles in the stream. Should be at least <see cref="NumPuzzlesInRow"/> + 1.</param>
+        /// <returns>Initialized <see cref="GameState"/>.</returns>
+        /// <seealso cref="GameStateBuilder"/>"
+        /// <seealso cref="PuzzleParser"/>
+        public static GameState CreateFromStream(Stream puzzleStream, int numInitialTetrominos = 15, int numWhitePuzzles = int.MaxValue, int numBlackPuzzles = int.MaxValue)
         {
             // parse the puzzles
             PuzzleParser? puzzleParser = null;
             List<Puzzle> whitePuzzles = new();
             List<Puzzle> blackPuzzles = new();
-            try {
-                puzzleParser = new PuzzleParser(puzzlesFilePath);
+
+            using (puzzleParser = new PuzzleParser(puzzleStream)) {
                 while (true) {
                     Puzzle? puzzle = puzzleParser.GetNextPuzzle();
                     if (puzzle is null) {
@@ -213,9 +238,6 @@ namespace ProjectLCore.GameLogic
                         whitePuzzles.Add(puzzle);
                     }
                 }
-            }
-            finally {
-                puzzleParser?.Dispose();
             }
 
             // create the game state by picking random puzzles
