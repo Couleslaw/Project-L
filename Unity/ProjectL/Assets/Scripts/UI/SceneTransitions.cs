@@ -1,17 +1,68 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using EasyUI;
 
 #nullable enable
 
+/// <summary>
+/// Manages transitioning between different scenes.
+/// </summary>
 public class SceneTransitions : MonoBehaviour
 {
+    #region Fields
+
     private Image? fadeImage;
     private Animator? fadeAnimator;
 
+    #endregion
+
+    #region Methods
+
+    /// <summary>
+    /// Loads the main menu scene with a fade-out effect. Also disables the logger if it exists.
+    /// </summary>
+    public void LoadMainMenu()
+    {
+        StartCoroutine(FadeOutAndLoadScene("MainMenu"));
+        DisableLogger();
+    }
+
+    /// <summary>
+    /// Loads the player selection scene with a fade-out effect.
+    /// </summary>
+    public void LoadPlayerSelection()
+    {
+        StartCoroutine(FadeOutAndLoadScene("PlayerSelection"));
+    }
+
+    /// <summary>
+    /// Loads the game scene with a fade-out effect.
+    /// </summary>
+    public void LoadGame()
+    {
+        StartCoroutine(FadeOutAndLoadScene("Game"));
+    }
+
+    /// <summary>
+    /// Quits the game.
+    /// </summary>
+    public void QuitGame()
+    {
+        Application.Quit();
+        Debug.Log("Game exited");
+    }
+
+    /// <summary>
+    /// Opens https://couleslaw.github.io/Project-L/UserDocs/ in the default web browser.
+    /// </summary>
+    public void OpenUserGuide()
+    {
+        Application.OpenURL("https://couleslaw.github.io/Project-L/UserDocs/");
+    }
+
     private void Start()
     {
+        // try to find the fade object in the scene for fade effects
         GameObject? fadeObject = GameObject.FindGameObjectWithTag("Fade");
         if (fadeObject) {
             fadeImage = fadeObject.GetComponent<Image>();
@@ -19,46 +70,21 @@ public class SceneTransitions : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Disables the logger if it exists.
+    /// </summary>
     private void DisableLogger()
     {
-        // Disable the logger if it exists
         if (EasyUI.Logger.Instance != null) {
             EasyUI.Logger.Instance.gameObject.SetActive(false);
         }
     }
 
-    public void LoadMainMenu()
-    {
-        // Load the main menu scene
-        StartCoroutine(FadeOutAndLoadScene("MainMenu"));
-        DisableLogger();
-    }
-
-    public void LoadPlayerSelection()
-    {
-        // Load the game scene
-        StartCoroutine(FadeOutAndLoadScene("PlayerSelection"));
-    }
-
-    public void LoadGame()
-    {
-        // Load the game scene
-        StartCoroutine(FadeOutAndLoadScene("Game"));
-    }
-
-    public void QuitGame()
-    {
-        // Exit the game
-        Application.Quit();
-        Debug.Log("Game exited");
-    }
-
-    public void OpenUserGuide()
-    {
-        // Open https://couleslaw.github.io/Project-L/UserDocs/ in the default web browser
-        Application.OpenURL("https://couleslaw.github.io/Project-L/UserDocs/");
-    }
-
+    /// <summary>
+    /// Faces out the screen, if the current scene contains the Fade prefab. Loads the specified scene after.
+    /// </summary>
+    /// <param name="sceneName">Name of the scene to load.</param>
+    /// <returns>Coroutine.</returns>
     private IEnumerator FadeOutAndLoadScene(string sceneName)
     {
         if (fadeImage != null && fadeAnimator != null) {
@@ -67,4 +93,6 @@ public class SceneTransitions : MonoBehaviour
         }
         UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
     }
+
+    #endregion
 }

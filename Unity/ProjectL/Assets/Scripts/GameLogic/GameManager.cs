@@ -1,22 +1,28 @@
-using UnityEngine;
 using ProjectLCore.GameLogic;
 using ProjectLCore.Players;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using UnityEditor.U2D.Aseprite;
-using static UnityEditor.Experimental.GraphView.GraphView;
+using UnityEngine;
 
 #nullable enable
-
 public class GameManager : MonoBehaviour
 {
+    #region Constants
 
     private const string _puzzleFilePath = "puzzles.txt";
 
+    #endregion
+
+    #region Fields
+
     private readonly GameCore? _game;
 
-    void Start()
+    #endregion
+
+    #region Methods
+
+    internal void Start()
     {
         PrepareGame();
     }
@@ -38,7 +44,6 @@ public class GameManager : MonoBehaviour
 
         // initialize players
         InitializeAIPlayers(players, gameState);
-
     }
 
     private GameState? LoadGameState()
@@ -101,4 +106,6 @@ public class GameManager : MonoBehaviour
     {
         Debug.LogError("ENDING: " + error);
     }
+
+    #endregion
 }

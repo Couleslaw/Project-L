@@ -768,7 +768,7 @@ GameObject:
   - component: {fileID: 7426718012101837196}
   - component: {fileID: 6590785985936538016}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Reset Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -877,7 +877,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1993079805918964826}
         m_TargetAssemblyTypeName: PlayerSelectionRowManager, Assembly-CSharp
-        m_MethodName: OnResetSelectionPress
+        m_MethodName: OnResetButtonClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1289,7 +1289,7 @@ GameObject:
   - component: {fileID: 8570421995807313697}
   - component: {fileID: 313865523901124945}
   - component: {fileID: 563474654478072298}
-  - component: {fileID: 6118229107050147699}
+  - component: {fileID: 8917103713494149369}
   m_Layer: 5
   m_Name: Player Name Input
   m_TagString: Untagged
@@ -1416,16 +1416,52 @@ MonoBehaviour:
   m_CharacterLimit: 20
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1993079805918964826}
+        m_TargetAssemblyTypeName: PlayerSelectionRowManager, Assembly-CSharp
+        m_MethodName: OnInputFieldEndEdit
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnSubmit:
     m_PersistentCalls:
       m_Calls: []
   m_OnSelect:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1993079805918964826}
+        m_TargetAssemblyTypeName: PlayerSelectionRowManager, Assembly-CSharp
+        m_MethodName: OnInputFieldSelect
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnDeselect:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1993079805918964826}
+        m_TargetAssemblyTypeName: PlayerSelectionRowManager, Assembly-CSharp
+        m_MethodName: OnInputFieldDeselect
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnTextSelection:
     m_PersistentCalls:
       m_Calls: []
@@ -1434,7 +1470,19 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1993079805918964826}
+        m_TargetAssemblyTypeName: PlayerSelectionRowManager, Assembly-CSharp
+        m_MethodName: OnInputFieldChanged
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnTouchScreenKeyboardStatusChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1456,7 +1504,7 @@ MonoBehaviour:
   isAlert: 0
   m_InputValidator: {fileID: 0}
   m_ShouldActivateOnSelect: 1
---- !u!114 &6118229107050147699
+--- !u!114 &8917103713494149369
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1468,7 +1516,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Delegates: []
+  m_Delegates:
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1993079805918964826}
+          m_TargetAssemblyTypeName: PlayerSelectionRowManager, Assembly-CSharp
+          m_MethodName: OnInputFieldEnter
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1993079805918964826}
+          m_TargetAssemblyTypeName: PlayerSelectionRowManager, Assembly-CSharp
+          m_MethodName: OnInputFieldExit
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &5750968860962549148
 GameObject:
   m_ObjectHideFlags: 0
@@ -2215,7 +2295,19 @@ MonoBehaviour:
       m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1993079805918964826}
+        m_TargetAssemblyTypeName: PlayerSelectionRowManager, Assembly-CSharp
+        m_MethodName: OnDropdownValueChanged
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_AlphaFadeSpeed: 0.15
 --- !u!114 &4955475991761296949
 MonoBehaviour:
@@ -2234,18 +2326,6 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1993079805918964826}
-          m_TargetAssemblyTypeName: PlayerSelectionRowManager, Assembly-CSharp
-          m_MethodName: PlayClickSound
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
         - m_Target: {fileID: 1993079805918964826}
           m_TargetAssemblyTypeName: PlayerSelectionRowManager, Assembly-CSharp
           m_MethodName: OnDropdownClick

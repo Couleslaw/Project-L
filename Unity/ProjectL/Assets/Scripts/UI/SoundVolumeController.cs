@@ -3,21 +3,93 @@ using UnityEngine.UI;
 
 #nullable enable
 
+/// <summary>
+/// Manages the SoundControls prefab. Cycles through volume levels upon sound button click and updates its icon accordingly.
+/// </summary>
 public class SoundVolumeController : MonoBehaviour
 {
-    // this scripts manages the sound control button
+    #region Constants
 
-    [SerializeField] Sprite[] soundIcons = new Sprite[4];  // icons for the button
+    /// <summary>
+    /// Name of the <see cref="PlayerPrefs"> entry for sound volume.
+    /// </summary>
+    private const string soundVolumePlayerPrefsName = "soundVolumeIndex";
 
-    int currentIconIndex;  // 0 = lowest volume, 3 = highest volume
-    const string soundVolumePlayerPrefsName = "soundVolumeIndex";
+    #endregion
+
+    #region Fields
+
+    /// <summary>
+    /// Icons for the sound volume button, one for each volume level. Lower index = lower volume.
+    /// </summary>
+    [SerializeField] private Sprite[] soundIcons = new Sprite[4];
+
+    private int _currentIconIndex;
 
     private Button? _soundControlButton;
+
     private Image? _soundVolumeImage;
+
     private SoundManager? _soundManager;
 
-    void Start()
+    #endregion
+
+    #region Methods
+
+    /// <summary>
+    /// Handles clicks on the sound volume button.
+    /// </summary>
+    public void OnSoundButtonClick()
     {
+        // get index of the new icon
+        _currentIconIndex = (_currentIconIndex + 1) % soundIcons.Length;
+
+        // save the index to <see cref"="PlayerPref> 
+        SavePreferences();
+
+        // update the displayed icon and adjust volume
+        UpdateVolume();
+
+        // play button click sound 
+        if (_soundManager != null)
+            _soundManager.PlayButtonClickSound();
+    }
+
+    /// <summary>
+    /// Saves the current sound index to <see cref="PlayerPrefs"> .
+    /// </summary>
+    private void SavePreferences()
+    {
+        PlayerPrefs.SetInt(soundVolumePlayerPrefsName, _currentIconIndex);
+    }
+
+    /// <summary>
+    /// Loads the sound index from <see cref="PlayerPrefs"> .
+    /// </summary>
+    private void LoadPreference()
+    {
+        _currentIconIndex = PlayerPrefs.GetInt(soundVolumePlayerPrefsName);
+    }
+
+    /// <summary>
+    /// Updates the volume level and sound button icon.
+    /// </summary>
+    private void UpdateVolume()
+    {
+        if (_soundVolumeImage == null) {
+            Debug.LogWarning("Sound Volume image is not assigned");
+            return;
+        }
+
+        // update icon
+        _soundVolumeImage.sprite = soundIcons[_currentIconIndex];
+        // update volume
+        AudioListener.volume = (float)_currentIconIndex / (soundIcons.Length - 1);
+    }
+
+    private void Start()
+    {
+        // get button and and its image components
         _soundControlButton = GetComponent<Button>();
         _soundVolumeImage = GetComponent<Image>();
         if (_soundControlButton == null || _soundVolumeImage == null) {
@@ -25,49 +97,21 @@ public class SoundVolumeController : MonoBehaviour
             return;
         }
 
+        // add listener to the button
+        _soundControlButton.onClick.AddListener(OnSoundButtonClick);
+
+        // try to find the sound manager
         _soundManager = GameObject.FindAnyObjectByType<SoundManager>();
 
-        _soundControlButton.onClick.AddListener(OnButtonPress);
         // sets the max volume if player preferences aren't set
         if (!PlayerPrefs.HasKey(soundVolumePlayerPrefsName)) {
             PlayerPrefs.SetInt(soundVolumePlayerPrefsName, soundIcons.Length - 1);
         }
 
+        // initialize the sound volume
         LoadPreference();
         UpdateVolume();
     }
 
-    void SavePreferences()
-    {
-        // saves the index to player preferences
-        PlayerPrefs.SetInt(soundVolumePlayerPrefsName, currentIconIndex);
-    }
-
-    void LoadPreference()
-    {
-        // loads the index from player preferences
-        currentIconIndex = PlayerPrefs.GetInt(soundVolumePlayerPrefsName);
-    }
-
-    void UpdateVolume()
-    {
-        if (_soundVolumeImage == null) {
-            Debug.LogWarning("Sound Volume image is not assigned");
-            return;
-        }
-
-        _soundVolumeImage.sprite = soundIcons[currentIconIndex];
-        // volume(0) = 0, volume(soundIcons.Length - 1) = 1
-        AudioListener.volume = currentIconIndex / (float)(soundIcons.Length - 1);
-    }
-
-    public void OnButtonPress()
-    {
-        // button presses cycle through the volume levels
-        currentIconIndex = (currentIconIndex + 1) % soundIcons.Length;
-        SavePreferences();
-        UpdateVolume();
-        if (_soundManager != null)
-            _soundManager.PlayButtonClickSound();
-    }
+    #endregion
 }

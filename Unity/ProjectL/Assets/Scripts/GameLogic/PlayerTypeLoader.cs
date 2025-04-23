@@ -11,10 +11,19 @@ using UnityEngine;
 
 #nullable enable
 
-public struct LoadedPlayerTypeInfo
+/// <summary>
+/// Represents information about a loaded player type.
+/// </summary>
+public readonly struct LoadedPlayerTypeInfo
 {
     #region Constructors
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LoadedPlayerTypeInfo"/> struct.
+    /// </summary>
+    /// <param name="type">The type of the player (Human or some kind of AI).</param>
+    /// <param name="name">The display name of the player type.</param>
+    /// <param name="initPath">The initialization path for the player, if any.</param>
     public LoadedPlayerTypeInfo(Type type, string name, string? initPath)
     {
         PlayerType = type;
@@ -26,34 +35,59 @@ public struct LoadedPlayerTypeInfo
 
     #region Properties
 
+    /// <summary>
+    /// The type of the player.
+    /// </summary>
     public Type PlayerType { get; }
 
+    /// <summary>
+    /// The display name of the player type.
+    /// </summary>
     public string DisplayName { get; }
 
+    /// <summary>
+    /// The initialization path for the player, if any.
+    /// </summary>
     public string? InitPath { get; }
 
     #endregion
 }
 
-#nullable enable
+/// <summary>
+/// Provides functionality to load player types from an INI file.
+/// </summary>
 public static class PlayerTypeLoader
 {
+    #region Constants
+
+    /// <summary>
+    /// The name of the INI file containing player type information.
+    /// </summary>
     private const string _iniFileName = "aiplayers.ini";
+
+    #endregion
+
     #region Fields
 
-    private static List<LoadedPlayerTypeInfo> _availablePlayerTypes = new();
+    /// <summary>
+    /// A list of available player types loaded from the INI file.
+    /// </summary>
+    private static readonly List<LoadedPlayerTypeInfo> _availablePlayerTypes = new();
 
     #endregion
 
     #region Constructors
 
+    /// <summary>
+    /// Class constructor to load player types from the INI file and prepare <see cref="AvailableAIPlayerInfos"/>.
+    /// </summary>
     static PlayerTypeLoader()
     {
-        // Load the available player types from the ini file
+        // Load the available player types from the INI file
         string iniFilePath = GetAbsolutePath(_iniFileName);
-        // Ensure the ini file exists
+        // Ensure the INI file exists
         if (!EnsureFileExists(iniFilePath)) {
-            Debug.LogError($"Failed to ensure the ini file exists at {iniFilePath}");
+            Debug.LogError($"Failed to ensure the INI file exists at {iniFilePath}");
             return;
         }
         Debug.Log($"Loading player types from {iniFilePath}");
@@ -64,6 +98,9 @@ public static class PlayerTypeLoader
 
     #region Properties
 
+    /// <summary>
+    /// Gets a read-only list of available AI player information. This value is initialized only once when the class is loaded.
+    /// </summary>
     public static IReadOnlyList<LoadedPlayerTypeInfo> AvailableAIPlayerInfos => _availablePlayerTypes;
 
     #endregion
@@ -74,12 +111,12 @@ public static class PlayerTypeLoader
     /// Checks if the given assembly targets .NET Standard 2.1.
     /// </summary>
     /// <param name="assembly">The assembly to check.</param>
-    /// <returns><see langword="true"/> if the assembly targets .NET Standard 2.1, <see langword="false"/> otherwise.</returns>
+    /// <returns><see langword="true"/> if the assembly targets .NET Standard 2.1; otherwise, <see langword="false"/>.</returns>
     public static bool TargetsNetStandard21(Assembly assembly)
     {
         var targetFrameworkAttribute = assembly.GetCustomAttribute<TargetFrameworkAttribute>();
 
-        // if target framework attribute not found --> can not confirm
+        // If target framework attribute not found --> cannot confirm
         if (targetFrameworkAttribute == null) {
             Debug.LogWarning($"TargetFrameworkAttribute not found on assembly '{assembly.FullName}'. Cannot verify target framework. Skipping...");
             return false;
@@ -96,15 +133,14 @@ public static class PlayerTypeLoader
     }
 
     /// <summary>
-    /// Checks if a file exists at the specified path. If not, it attempts
-    /// to create an empty file, including creating any necessary directories.
+    /// Checks if a file exists at the specified path. If not, it attempts to create an empty file, including creating any necessary directories.
     /// </summary>
     /// <param name="filePath">The full path to the file.</param>
-    /// <returns><see langword="true"/> if the file exists or was successfully created, <see langword="false"/> otherwise.</returns>
+    /// <returns><see langword="true"/> if the file exists or was successfully created; otherwise, <see langword="false"/>.</returns>
     public static bool EnsureFileExists(string filePath)
     {
         if (string.IsNullOrEmpty(filePath)) {
-            Debug.LogWarning("EnsureFileExists: File path cannot be null or empty.");
+            Debug.LogWarning("File path cannot be null or empty.");
             return false;
         }
 
@@ -161,7 +197,7 @@ public static class PlayerTypeLoader
     }
 
     /// <summary>
-    /// Loads all available AI player types from the ini file. The sections of the ini file have the following format:
+    /// Loads all available AI player types from the INI file. The sections of the INI file have the following format:
     /// <code language="none">
     /// [My_AIPlayer]
     /// dll_path = "path/to/your/dll/AwesomeAI.dll"
@@ -173,7 +209,7 @@ public static class PlayerTypeLoader
     /// If for some weird reason there are multiple such classes in a single DLL, the first one found will be used.
     /// </remark>
     /// </summary>
-    /// <param name="iniFilePath">Path to the ini file.</param>
+    /// <param name="iniFilePath">Path to the INI file.</param>
     /// <returns>List of all available AI player types and their names.</returns>
     private static List<LoadedPlayerTypeInfo> GetAvailablePlayerTypes(string iniFilePath)
     {
@@ -181,43 +217,47 @@ public static class PlayerTypeLoader
         IniData data = parser.ReadFile(iniFilePath);
         List<LoadedPlayerTypeInfo> playerTypes = new();
 
-        // go through each section in the ini file
+        // Go through each section in the INI file
         foreach (SectionData section in data.Sections) {
             KeyDataCollection keyCol = section.Keys;
             string? dllPath = keyCol["dll_path"];
             string? name = keyCol["name"];
             string? initPath = keyCol["init_path"];
+
+            // If the section is invalid
             if (dllPath is null || name is null) {
                 Debug.LogWarning($"Invalid section in aiplayers.ini file: {section.SectionName}");
                 continue;
             }
 
-            // get the absolute paths
+            // Get absolute paths to the dll and initialization file
             dllPath = GetAbsolutePath(dllPath);
             if (initPath is not null) {
                 initPath = GetAbsolutePath(initPath);
             }
 
+            // Load the DLL and check if it contains an AI player
             try {
-                // Load the DLL
                 Assembly assembly = Assembly.LoadFrom(dllPath);
 
+                // Ensure that the DLL targets .NET Standard 2.1 - needed to work properly inside of Unity
                 if (!TargetsNetStandard21(assembly)) {
                     continue;
                 }
 
-                // find the player type
+                // Try to find the player type
                 Type? playerType = assembly.GetTypes().FirstOrDefault(t => !t.IsAbstract && typeof(AIPlayerBase).IsAssignableFrom(t));
 
-                // if everything went well...
-                if (playerType != null) {
-                    // Add the player type to the list and load the assembly
-                    playerTypes.Add(new(playerType, name, initPath));
-                    Debug.Log($"Successfully loaded the player from entry '{section.SectionName}' - ({playerType.Name})");
-                }
-                else {
+                // If the assembly donesn't contain a valid player type
+                if (playerType == null) {
                     Debug.LogWarning($"No valid AIPlayerBase class found in {dllPath}");
+                    continue;
                 }
+
+                // Add info about the player to the list of available AI players
+                playerTypes.Add(new(playerType, name, initPath));
+                Debug.Log($"Successfully loaded the player from entry '{section.SectionName}' - ({playerType.Name})");
+
             }
             // --- Exception Handling ---
             catch (FileNotFoundException fnfEx) {
