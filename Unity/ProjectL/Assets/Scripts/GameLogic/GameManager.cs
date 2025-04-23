@@ -16,34 +16,57 @@ public class GameManager : MonoBehaviour
 
     #region Fields
 
-    private readonly GameCore? _game;
+    [Header("UI Elements")]
+    [SerializeField] private GameObject? errorMessagePrefab;
+    [SerializeField] private GameObject? loggerPrefab;
+
+
+    private GameCore? _game;
+    private bool _gameEndedWithError = false;
 
     #endregion
 
     #region Methods
 
-    internal void Start()
+    private void Awake()
     {
-        PrepareGame();
+        // create a logger instance if it doesn't exist
+        if (EasyUI.Logger.Instance == null)
+            Instantiate(loggerPrefab);
+        else
+            EasyUI.Logger.Instance.gameObject.SetActive(true);
+    }
+    private void Start()
+    {
+        // create game core
+        _game = CreateGameCore();
+        if (_game == null)
+            return;
+
+        // initialize players
+        InitializeAIPlayers(_game.Players, _game.GameState);
     }
 
-    private void PrepareGame()
+    /// <summary>
+    /// Tries to load the puzzles and create players. If successful, it returns a new <see cref="GameCore"/> instance.
+    /// </summary>
+    /// <returns></returns>
+    private GameCore? CreateGameCore()
     {
         GameState? gameState = LoadGameState();
         if (gameState == null) {
-            return;
+            return null;
         }
         Debug.Log("Game state loaded successfully.");
 
         // create players
         List<Player>? players = LoadPlayers();
         if (players == null) {
-            return;
+            return null;
         }
         Debug.Log("Players created successfully.");
 
-        // initialize players
-        InitializeAIPlayers(players, gameState);
+        return new GameCore(gameState, players, GameStartParams.ShufflePlayers);
     }
 
     private GameState? LoadGameState()
@@ -80,19 +103,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void InitializeAIPlayers(List<Player> players, GameState gameState)
+    private void InitializeAIPlayers(Player[] players, GameState gameState)
     {
         foreach (Player player in players) {
             if (player is AIPlayerBase aiPlayer) {
                 string? initPath = GameStartParams.Players[player.Name].InitPath;
-                Task initTask = aiPlayer.InitAsync(players.Count, gameState.GetAllPuzzlesInGame(), initPath);
+                Task initTask = aiPlayer.InitAsync(players.Length, gameState.GetAllPuzzlesInGame(), initPath);
                 Debug.Log($"Initializing AI player {player.Name}. Init file: {initPath}");
 
                 // handle possible exception
                 initTask.ContinueWith(t => {
                     if (t.Exception != null) {
                         Debug.LogError($"Initialization of player {player.Name} failed: {t.Exception.InnerException?.Message}");
-                        EndGameWithError("Failed to initialize AI player.");
+                        EndGameWithError($"Failed to initialize AI player {player.Name}.");
                     }
                     else {
                         Debug.Log($"AI player {player.Name} initialized successfully.");
@@ -104,7 +127,17 @@ public class GameManager : MonoBehaviour
 
     private void EndGameWithError(string error)
     {
-        Debug.LogError("ENDING: " + error);
+        if (_gameEndedWithError)
+            return;
+        _gameEndedWithError = true;
+
+        Debug.LogError("Fatal error: " + error);
+        if (errorMessagePrefab != null) {
+            Instantiate(errorMessagePrefab);
+        }
+        else {
+            Debug.LogError("Error message prefab is not set.");
+        }
     }
 
     #endregion

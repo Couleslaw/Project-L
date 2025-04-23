@@ -14,14 +14,13 @@
   - [x] shuffle players checkbox
 - [x] add UI sounds
 - [ ] update the _AI Player Guide_
-- [ ] finalize docstrings
 
 ### Start creating main game screen
 
 - [ ] initialize the game from data from Game Creation
   - [x] load puzzles and initialize players
-  - [ ] create GameCore object
-  - [ ] add error message box for invalid initialization
+  - [x] create GameCore object
+  - [x] add error message box for invalid initialization
     - [ ] compile fail init AI player to netstandard2.1 and test
 - [ ] crete basic game loop with AI players for testing
   - [ ] decide how to agregate data for final results screen

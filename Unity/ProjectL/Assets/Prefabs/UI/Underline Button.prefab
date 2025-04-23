@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3638974421542951458}
   - component: {fileID: 2281691556721619005}
   m_Layer: 5
-  m_Name: UnderlineButton
+  m_Name: Underline Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
