@@ -21,7 +21,7 @@ public static class GameEndStats
     public static void AddFinishedPuzzle(Player player, Puzzle puzzle)
     {
         if (!PlayerGameEndStats.ContainsKey(player)) {
-            PlayerGameEndStats[player] = new GameEndInfo();
+            PlayerGameEndStats.Add(player, new GameEndInfo());
         }
         PlayerGameEndStats[player].FinishedPuzzles.Add(puzzle);
     }
@@ -29,7 +29,7 @@ public static class GameEndStats
     public static void AddUnfinishedPuzzle(Player player, Puzzle puzzle)
     {
         if (!PlayerGameEndStats.ContainsKey(player)) {
-            PlayerGameEndStats[player] = new GameEndInfo();
+            PlayerGameEndStats.Add(player, new GameEndInfo());
         }
         PlayerGameEndStats[player].UnfinishedPuzzles.Add(puzzle);
     }
@@ -37,12 +37,12 @@ public static class GameEndStats
     public static void AddFinishingTouchTetromino(Player player, TetrominoShape tetromino)
     {
         if (!PlayerGameEndStats.ContainsKey(player)) {
-            PlayerGameEndStats[player] = new GameEndInfo();
+            PlayerGameEndStats.Add(player, new GameEndInfo());
         }
         PlayerGameEndStats[player].FinishingTouchesTetrominos.Add(tetromino);
     }
 
-    public struct GameEndInfo
+    public class GameEndInfo
     {
         public List<Puzzle> FinishedPuzzles;
         public List<Puzzle> UnfinishedPuzzles;

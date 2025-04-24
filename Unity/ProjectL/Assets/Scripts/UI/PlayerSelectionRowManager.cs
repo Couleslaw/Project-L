@@ -96,18 +96,19 @@ public class PlayerSelectionRowManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Handles the dropdown cancel event.
+    /// Handles the dropdown item click event.
     /// </summary>
-    public void OnDropdownCancel()
+    public void OnDropdownItemClick()
     {
         _isDropdownListOpen = false;
         UpdatePlayerDropdownPlaceholder();
+        _soundManager?.PlayButtonClickSound();
     }
 
     /// <summary>
-    /// Handles the dropdown submit event.
+    /// Handles the dropdown cancel event.
     /// </summary>
-    public void OnDropdownSubmit()
+    public void OnDropdownCancel()
     {
         _isDropdownListOpen = false;
         UpdatePlayerDropdownPlaceholder();
@@ -291,6 +292,7 @@ public class PlayerSelectionRowManager : MonoBehaviour
     {
         // reset player type
         playerTypeDropdown!.SetValueWithoutNotify(-1);
+        _isDropdownListOpen = false;
         PlayerType = null;
 
         // reset player name

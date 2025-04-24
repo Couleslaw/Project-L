@@ -13,6 +13,9 @@ using System.Text;
 using Unity.VisualScripting;
 using System.IO;
 using System.Resources;
+using TMPro;
+using static ProjectLCore.GameLogic.GameState;
+using static ProjectLCore.GameLogic.PlayerState;
 
 #nullable enable
 public class GameManager : MonoBehaviour
@@ -30,6 +33,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject? errorMessageBoxPrefab;
     [SerializeField] private GameObject? gameEndedBoxPrefab;
 
+    [Header("Text game")]
+    [SerializeField] private TextBasedGame? textGame;
 
     private GameCore? _game;
     private bool _gameEndedWithError = false;
@@ -52,6 +57,7 @@ public class GameManager : MonoBehaviour
         _game = CreateGameCore();
         if (_game == null)
             return;
+        _game.InitializeGame();
 
         // initialize players
         if (!_gameEndedWithError) {
@@ -61,7 +67,12 @@ public class GameManager : MonoBehaviour
         // game loop
         if (!_gameEndedWithError) {
             GameEndStats.Clear();
-            await GameLoopAsync();
+            if (textGame != null) {
+                await textGame.GameLoopAsync(_game);
+            }
+            else {
+                Debug.LogError("Text game is not assigned.");
+            }
         }
 
         // prepare final results
@@ -133,7 +144,7 @@ public class GameManager : MonoBehaviour
         if (gameState == null) {
             return null;
         }
-        Debug.Log("Game state loaded successfully.");
+        Debug.Log($"Game state loaded successfully. Number of puzzles: {gameState.GetAllPuzzlesInGame().Count}");
 
         // create players
         List<Player>? players = LoadPlayers();
@@ -355,3 +366,4 @@ public class GameManager : MonoBehaviour
 
     #endregion
 }
+
