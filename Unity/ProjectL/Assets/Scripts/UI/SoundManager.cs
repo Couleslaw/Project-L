@@ -19,25 +19,25 @@ public class SoundManager : MonoBehaviour
     #region Fields
 
     [Header("Sound Effects")]
-
     [SerializeField] private AudioSource? buttonPressSound;
-
     [SerializeField] private AudioSource? inputLineSound;
-
     [SerializeField] private AudioSource? sliderSound;
-
     [SerializeField] private AudioSource? errorSound;
 
     #endregion
 
     #region Methods
 
+    /// <summary> Plays the button click sound effect.  </summary>
     public void PlayButtonClickSound() => PlaySoundEffect(buttonPressSound);
 
+    /// <summary> Plays the input line sound effect.  </summary>
     public void PlayInputLineSound() => PlaySoundEffect(inputLineSound);
 
+    /// <summary> Plays the slider sound effect.  </summary>
     public void PlaySliderSound() => PlaySoundEffect(sliderSound);
 
+    /// <summary> Plays the error sound effect.  </summary>
     public void PlayErrorSound() => PlaySoundEffect(errorSound);
 
 

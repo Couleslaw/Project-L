@@ -12,6 +12,7 @@ using ProjectLCore.GamePieces;
 using System.Text;
 using Unity.VisualScripting;
 using System.IO;
+using System.Resources;
 
 #nullable enable
 public class GameManager : MonoBehaviour
@@ -25,15 +26,13 @@ public class GameManager : MonoBehaviour
     #region Fields
 
     [Header("UI Elements")]
-    [SerializeField] private GameObject? errorMessagePrefab;
     [SerializeField] private GameObject? loggerPrefab;
+    [SerializeField] private GameObject? errorMessageBoxPrefab;
+    [SerializeField] private GameObject? gameEndedBoxPrefab;
 
 
     private GameCore? _game;
     private bool _gameEndedWithError = false;
-
-    private Dictionary<Player, List<Puzzle>> CompletedPuzzles = new();
-    private Dictionary<Player, List<TetrominoShape>> FinishingTouchesTetrominos = new();
 
     #endregion
 
@@ -54,18 +53,22 @@ public class GameManager : MonoBehaviour
         if (_game == null)
             return;
 
-        // initialize player stats dictionaries
-        foreach (var player in _game.Players) {
-            CompletedPuzzles[player] = new List<Puzzle>();
-            FinishingTouchesTetrominos[player] = new List<TetrominoShape>();
+        // initialize players
+        if (!_gameEndedWithError) {
+            await InitializeAIPlayersAsync(_game.Players, _game.GameState);
         }
 
-        // initialize players
-        await InitializeAIPlayersAsync(_game.Players, _game.GameState);
+        // game loop
+        if (!_gameEndedWithError) {
+            GameEndStats.Clear();
+            await GameLoopAsync();
+        }
 
-        await GameLoopAsync();
-
-        // TODO: final results
+        // prepare final results
+        if (!_gameEndedWithError) {
+            PrepareGameEndStats();
+            GoToFinalResultsScreen();
+        }
     }
 
     private GameState? LoadGameState()
@@ -181,11 +184,40 @@ public class GameManager : MonoBehaviour
         _gameEndedWithError = true;
 
         Debug.LogError("Fatal error: " + error);
-        if (errorMessagePrefab != null) {
-            Instantiate(errorMessagePrefab);
+        if (errorMessageBoxPrefab != null) {
+            Instantiate(errorMessageBoxPrefab);
         }
         else {
             Debug.LogError("Error message prefab is not set.");
+        }
+    }
+
+    private void PrepareGameEndStats()
+    {
+        if (_game == null) {
+            Debug.LogError("GameCore is null. Cannot prepare end game stats.");
+            return; // safety check
+        }
+        
+        // add final results
+        GameEndStats.FinalResults = _game.GetFinalResults();
+
+        // add info about unfinished puzzles
+        foreach (Player player in _game.Players) {
+            var state = _game.PlayerStates[player];
+            foreach (Puzzle puzzle in state.GetUnfinishedPuzzles()) {
+                GameEndStats.AddUnfinishedPuzzle(player, puzzle);
+            }
+        }
+    }
+
+    private void GoToFinalResultsScreen()
+    {
+        if (gameEndedBoxPrefab != null) {
+            Instantiate(gameEndedBoxPrefab);
+        }
+        else {
+            Debug.LogError("Game ended box prefab is not set.");
         }
     }
 
@@ -193,8 +225,11 @@ public class GameManager : MonoBehaviour
     private async Task GameLoopAsync()
     {
         if (_game == null) {
+            Debug.LogError("GameCore is null. Cannot start game loop.");
             return; // safety check
         }
+
+        Debug.Log("Starting game loop.");
 
         while (true) {
             TurnInfo turnInfo = _game.GetNextTurnInfo();
@@ -247,13 +282,13 @@ public class GameManager : MonoBehaviour
             if (_game.CurrentGamePhase != GamePhase.FinishingTouches) {
                 while (_game.TryGetNextPuzzleFinishedBy(_game.CurrentPlayer, out var finishedPuzzleInfo)) {
                     LogPlayerFinishedPuzzle(finishedPuzzleInfo);
-                    CompletedPuzzles[_game.CurrentPlayer].Add(finishedPuzzleInfo.Puzzle);
+                    GameEndStats.AddFinishedPuzzle(_game.CurrentPlayer, finishedPuzzleInfo.Puzzle);
                 }
             }
 
             // if finishing touches --> log used tetrominos
             if (_game.CurrentGamePhase == GamePhase.FinishingTouches && action is PlaceTetrominoAction a) {
-                FinishingTouchesTetrominos[_game.CurrentPlayer].Add(a.Shape);
+                GameEndStats.AddFinishingTouchTetromino(_game.CurrentPlayer, a.Shape);
             }
         }
     }

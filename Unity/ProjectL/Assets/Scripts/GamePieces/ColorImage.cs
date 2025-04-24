@@ -77,12 +77,12 @@ public struct ColorImage
         /// <summary>
         /// Predefined color representing an empty state.
         /// </summary>
-        public static Color Empty { get; } = new Color(-1);
+        public static Color Empty { get; } = new Color(int.MinValue);
 
         /// <summary>
         /// Predefined color representing a filled state.
         /// </summary>
-        public static Color Fill { get; } = new Color(0);
+        public static Color Fill { get; } = new Color(int.MaxValue);
 
         #endregion
 

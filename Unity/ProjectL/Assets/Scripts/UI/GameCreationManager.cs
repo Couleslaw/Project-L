@@ -32,6 +32,7 @@ public class GameCreationManager : MonoBehaviour
     private Coroutine? _activeErrorCoroutine = null;
 
     private SoundManager? _soundManager;
+    private SceneTransitions? _sceneTransitions;
 
     #endregion
 
@@ -104,7 +105,7 @@ public class GameCreationManager : MonoBehaviour
         }
 
         // load the game scene
-        GameObject.FindAnyObjectByType<SceneTransitions>()?.LoadGame();
+        _sceneTransitions?.LoadGame();
     }
 
     private void Awake()
@@ -126,6 +127,9 @@ public class GameCreationManager : MonoBehaviour
 
         // try to find the sound manager
         _soundManager = GameObject.FindAnyObjectByType<SoundManager>();
+
+        // get transitions
+        _sceneTransitions = gameObject.transform.GetComponent<SceneTransitions>();
 
         // reset the start parameters
         GameStartParams.Reset();

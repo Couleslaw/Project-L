@@ -5,24 +5,24 @@ using UnityEngine;
 /// <summary>
 /// Manages the ErrorMessageBox prefab.
 /// </summary>
-public class ErrorMessageBox : MonoBehaviour
+public class GameEndedBox : MonoBehaviour
 {
     private SoundManager? _soundManager;
     private SceneTransitions? _sceneTransitions;
+
     void Start()
     {
-        // play error sound
+        // try to find the sound manager
         _soundManager = GameObject.FindAnyObjectByType<SoundManager>();
-        _soundManager?.PlayErrorSound();
 
         // get transitions
         _sceneTransitions = gameObject.transform.GetComponent<SceneTransitions>();
     }
 
-    public void OnMainMenuButtonClick()
+    public void OnCalculateScoreButtonClick()
     {
         // load the main menu
         _soundManager?.PlayButtonClickSound();
-        _sceneTransitions?.LoadMainMenu();
+        _sceneTransitions?.LoadFinalResults();
     }
 }

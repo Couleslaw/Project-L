@@ -43,6 +43,11 @@ public class SceneTransitions : MonoBehaviour
         StartCoroutine(FadeOutAndLoadScene("Game"));
     }
 
+    public void LoadFinalResults()
+    {
+        StartCoroutine(FadeOutAndLoadScene("FinalResults"));
+    }
+
     /// <summary>
     /// Quits the game.
     /// </summary>
