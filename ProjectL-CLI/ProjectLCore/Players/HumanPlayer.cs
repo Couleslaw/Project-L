@@ -5,6 +5,7 @@
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -43,12 +44,13 @@
         /// <param name="playerInfos">Information about the resources of the players.</param>
         /// <param name="turnInfo">Information about the current turn.</param>
         /// <param name="verifier">Verifier for verifying the validity of actions in the current game context.</param>
+        /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
         /// <returns>
         /// The action the player wants to take.
         /// </returns>
-        public override async Task<IAction> GetActionAsync(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, TurnInfo turnInfo, ActionVerifier verifier)
+        public override async Task<IAction> GetActionAsync(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, TurnInfo turnInfo, ActionVerifier verifier, CancellationToken cancellationToken = default)
         {
-            _getActionCompletionSource = new();
+            _getActionCompletionSource = new(cancellationToken);
             return await _getActionCompletionSource.Task;
         }
 
@@ -59,12 +61,13 @@
         /// </summary>
         /// <param name="rewardOptions">The reward options.</param>
         /// <param name="puzzle">The puzzle that was completed.</param>
+        /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
         /// <returns>
         /// The shape the player wants to take.
         /// </returns>
-        public override async Task<TetrominoShape> GetRewardAsync(List<TetrominoShape> rewardOptions, Puzzle puzzle)
+        public override async Task<TetrominoShape> GetRewardAsync(List<TetrominoShape> rewardOptions, Puzzle puzzle, CancellationToken cancellationToken = default)
         {
-            _getRewardCompletionSource = new();
+            _getRewardCompletionSource = new(cancellationToken);
             return await _getRewardCompletionSource.Task;
         }
 

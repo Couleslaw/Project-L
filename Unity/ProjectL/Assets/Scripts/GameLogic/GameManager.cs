@@ -248,7 +248,7 @@ public class GameManager : MonoBehaviour
                 string? initPath = GameStartParams.Players[player.Name].InitPath;
                 Debug.Log($"Initializing AI player {player.Name}. Init file: {initPath}");
 
-                Task initTask = aiPlayer.InitAsync(players.Length, gameState.GetAllPuzzlesInGame(), initPath)
+                Task initTask = aiPlayer.InitAsync(players.Length, gameState.GetAllPuzzlesInGame(), initPath, destroyCancellationToken)
                     .ContinueWith(t => {
                         if (t.Exception != null) {
                             Debug.LogError($"Initialization of player {player.Name} failed: {t.Exception.InnerException?.Message}");
@@ -257,8 +257,7 @@ public class GameManager : MonoBehaviour
                         else {
                             Debug.Log($"AI player {player.Name} initialized successfully.");
                         }
-                    });
-
+                    }, destroyCancellationToken);
                 initializationTasks.Add(initTask);
             }
         }
@@ -334,7 +333,7 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("Starting game loop.");
 
-        while (true) {
+        while (!destroyCancellationToken.IsCancellationRequested) {
             TurnInfo turnInfo = _game.GetNextTurnInfo();
 
             // check if game ended
@@ -353,7 +352,7 @@ public class GameManager : MonoBehaviour
             // get action from player
             IAction? action;
             try {
-                action = await _game.CurrentPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier);
+                action = await _game.CurrentPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier, destroyCancellationToken);
                 if (action == null) {
                     LogPlayerGetActionReturnedNull();
                 }

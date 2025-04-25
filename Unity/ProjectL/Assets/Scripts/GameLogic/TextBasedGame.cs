@@ -59,7 +59,7 @@ public class TextBasedGame : MonoBehaviour
         Debug.Log("Starting game loop.");
         GameTextView.Clear();   
 
-        while (true) {
+        while (!destroyCancellationToken.IsCancellationRequested) {
             TurnInfo turnInfo = game.GetNextTurnInfo();
 
             // check if game ended
@@ -82,7 +82,7 @@ public class TextBasedGame : MonoBehaviour
             // get action from player
             IAction? action;
             try {
-                action = await game.CurrentPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier);
+                action = await game.CurrentPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier, destroyCancellationToken);
             }
             catch (Exception e) {
                 action = null;
@@ -124,7 +124,7 @@ public class TextBasedGame : MonoBehaviour
 
             // await for continue button click
             while (!_shouldContinue) {
-                await Task.Delay(100);
+                await Awaitable.WaitForSecondsAsync(0.1f, destroyCancellationToken);
             }
             _shouldContinue = false;
             GameTextView.Clear();

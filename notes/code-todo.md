@@ -17,14 +17,14 @@
 
 ### Start creating main game screen
 
-- [ ] initialize the game from data from Game Creation
+- [x] initialize the game from data from Game Creation
   - [x] load puzzles and initialize players
   - [x] create GameCore object
   - [x] add error message box for invalid initialization
     - [ ] compile fail init AI player to netstandard2.1 and test - rename the old one to TargetErrorExample
 - [x] crete basic game loop with AI players for testing
   - [x] decide how to agregate data for final results screen
-- [ ] add game screen pause menu
+- [x] add game screen pause menu
 
 ### Create final screen
 
@@ -35,7 +35,6 @@
   - [ ] show NumPuzzles and NumPieces if results are ambiguous
   - [ ] show final results
   - [ ] show home button
-- [ ] add final screen pause menu
-- [ ] finalize docstrings
+- [x] add final screen pause menu
 
 ### Create main game screen

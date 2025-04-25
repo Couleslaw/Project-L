@@ -6,6 +6,7 @@
     using ProjectLCore.GamePieces;
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -28,10 +29,11 @@
         /// <param name="numPlayers">The number of players in the game.</param>
         /// <param name="allPuzzles">All the puzzles in the game.</param>
         /// <param name="filePath">The path to a file where the player might be storing some information.</param>
+        /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
         /// <returns>Task object. Can be used to handle exceptions which might have been thrown while executing this method.</returns>
-        public async Task InitAsync(int numPlayers, List<Puzzle> allPuzzles, string? filePath = null)
+        public async Task InitAsync(int numPlayers, List<Puzzle> allPuzzles, string? filePath = null, CancellationToken cancellationToken = default)
         {
-            await Task.Run(() => Init(numPlayers, allPuzzles, filePath));
+            await Task.Run(() => Init(numPlayers, allPuzzles, filePath), cancellationToken);
             _isInitialized = true;
         }
 
@@ -39,21 +41,22 @@
         /// Asynchronously passes the parameters to <see cref="GetAction"/> and returns a <see cref="Task"/> containing the result.
         /// </summary>
         /// <remarks>
-        /// This methods waits for initialization of the AI player. It will not return until <see cref="InitAsync(int, List{Puzzle}, string?)"/> is called and finished running.
+        /// This methods waits for initialization of the AI player. It will not return until <see cref="InitAsync"/> is called and finished running.
         /// </remarks>
         /// <param name="gameInfo">Information about the shared resources.</param>
         /// <param name="playerInfos">Information about the resources of the players.</param>
         /// <param name="turnInfo">Information about the current turn.</param>
         /// <param name="verifier">Verifier for verifying the validity of actions in the current game context.</param>
+        /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
         /// <returns>
         /// The action the player wants to take.
         /// </returns>
         /// <exception cref="System.ArgumentException"><see cref="PlayerState"/> matching this player's <see cref="Player.Id"/> not found in <paramref name="playerInfos"/>.</exception>
-        public override sealed async Task<IAction> GetActionAsync(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, TurnInfo turnInfo, ActionVerifier verifier)
+        public override sealed async Task<IAction> GetActionAsync(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, TurnInfo turnInfo, ActionVerifier verifier, CancellationToken cancellationToken = default)
         {
             // check if the player has been initialized
             if (!_isInitialized) {
-                await WaitUntil(() => _isInitialized);
+                await WaitUntil(() => _isInitialized, cancellationToken: cancellationToken);
             }
 
             // extract the state of THIS player and the OTHER players from playerInfos
@@ -72,7 +75,7 @@
             }
 
             // call the method that implements the AI algorithm
-            return await Task.Run(() => GetAction(gameInfo, myState, enemyStates, turnInfo, verifier));
+            return await Task.Run(() => GetAction(gameInfo, myState, enemyStates, turnInfo, verifier), cancellationToken);
         }
 
         /// <summary>
@@ -82,17 +85,18 @@
         /// </summary>
         /// <param name="rewardOptions">The reward options.</param>
         /// <param name="puzzle">The puzzle that was completed.</param>
+        /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
         /// <returns>
         /// The tetromino the player wants to take.
         /// </returns>
-        public override sealed async Task<TetrominoShape> GetRewardAsync(List<TetrominoShape> rewardOptions, Puzzle puzzle)
+        public override sealed async Task<TetrominoShape> GetRewardAsync(List<TetrominoShape> rewardOptions, Puzzle puzzle, CancellationToken cancellationToken = default)
         {
             // if there is only 1 reward option, return it immediately
             if (rewardOptions.Count == 1) {
                 return rewardOptions[0];
             }
             // otherwise call the method that implements the AI algorithm
-            return await Task.Run(() => GetReward(rewardOptions, puzzle));
+            return await Task.Run(() => GetReward(rewardOptions, puzzle), cancellationToken);
         }
 
         /// <summary>
@@ -129,15 +133,16 @@
         /// <param name="condition">The break condition.</param>
         /// <param name="frequency">The frequency at which the condition will be checked, in milliseconds.</param>
         /// <param name="timeout">The timeout in milliseconds.</param>
-        private static async Task WaitUntil(Func<bool> condition, int frequency = 25, int timeout = -1)
+        /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+        private static async Task WaitUntil(Func<bool> condition, int frequency = 25, int timeout = -1, CancellationToken cancellationToken = default)
         {
             var waitTask = Task.Run(async () => {
                 while (!condition()) {
-                    await Task.Delay(frequency);
+                    await Task.Delay(frequency, cancellationToken);
                 }
-            });
+            }, cancellationToken);
 
-            if (waitTask != await Task.WhenAny(waitTask, Task.Delay(timeout))) {
+            if (waitTask != await Task.WhenAny(waitTask, Task.Delay(timeout, cancellationToken))) {
                 throw new TimeoutException();
             }
         }
