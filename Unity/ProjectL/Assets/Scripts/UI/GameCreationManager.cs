@@ -30,7 +30,6 @@ public class GameCreationManager : MonoBehaviour
     [SerializeField] private List<PlayerSelectionRowManager>? playerSelectionRows;
 
     private Coroutine? _activeErrorCoroutine = null;
-
     private SoundManager? _soundManager;
     private SceneTransitions? _sceneTransitions;
 
@@ -55,6 +54,7 @@ public class GameCreationManager : MonoBehaviour
     /// <summary>
     /// Toggles the shuffle players setting.
     /// </summary>
+    /// <param name="shuffle"> <see langword="true"/> to shuffle players; otherwise, <see langword="false"/>.</param>
     public void OnShuffleToggled(bool shuffle)
     {
         _soundManager?.PlayButtonClickSound();

@@ -1,21 +1,22 @@
 using System;
+using System.Globalization;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Threading.Tasks;
-using System.Globalization;
-using ProjectLCore.GameLogic;
 
 #nullable enable
 
+/// <summary>
+/// Manages the PauseMenu prefab.
+/// </summary>
 public class PauseMenuManager : MonoBehaviour
 {
+    #region Fields
+
     [Header("Content Size Fitters")]
     [SerializeField] private RectTransform? panelRectTransform;
     [SerializeField] private RectTransform? outerScoreRectTransform;
     [SerializeField] private RectTransform? innerScoreRectTransform;
-
 
     [Header("Turn Info")]
     [SerializeField] private TextMeshProUGUI? currentPlayerLabel;
@@ -37,6 +38,13 @@ public class PauseMenuManager : MonoBehaviour
     private SoundManager? _soundManager;
     private CanvasGroup? _canvasGroup;
 
+    #endregion
+
+    #region Methods
+
+    /// <summary>
+    /// Shows the pause menu.
+    /// </summary>
     public void ShowPauseMenu()
     {
         if (_canvasGroup == null) {
@@ -48,6 +56,9 @@ public class PauseMenuManager : MonoBehaviour
         _canvasGroup.blocksRaycasts = true;
     }
 
+    /// <summary>
+    /// Hides the pause menu.
+    /// </summary>
     public void HidePauseMenu()
     {
         if (_canvasGroup == null) {
@@ -58,6 +69,9 @@ public class PauseMenuManager : MonoBehaviour
         _canvasGroup.blocksRaycasts = false;
     }
 
+    /// <summary>
+    /// Handles the click event for the "Home" button. Transitions to the main menu scene.
+    /// </summary>
     public void OnHomeButtonClick()
     {
         _soundManager?.PlayButtonClickSound();
@@ -66,21 +80,29 @@ public class PauseMenuManager : MonoBehaviour
         _pauseLogic?.Resume();
     }
 
-    public void OnBackButtonClick()
+    /// <summary>
+    /// Handles the click event for the "Back" button. Resumes the game.
+    /// </summary>
+    public void OnResumeButtonClick()
     {
         _soundManager?.PlayButtonClickSound();
         _pauseLogic?.Resume();
     }
 
+    /// <summary>
+    /// Handles the click event for the "Score" checkbox. Toggles the visibility of the score labels.
+    /// </summary>
+    /// <param name="showScore"> <see langword="true"/> to show the score labels; otherwise, <see langword="false"/>.</param>
     public void OnScoreToggleClick(bool showScore)
     {
+        // safety check
         if (scoreNamesLabel == null || scoreValuesLabel == null) {
             Debug.LogError("PauseMenuManager: One or more required ScoreInfo UI elements are not assigned.");
             return;
         }
 
+        // use alpha to show / hide the labels
         if (showScore) {
-            // set alpha to 1
             scoreNamesLabel.alpha = 1f;
             scoreValuesLabel.alpha = 1f;
         }
@@ -90,6 +112,10 @@ public class PauseMenuManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Handles the value change event for the animation speed slider. Stores the new value in PlayerPrefs and updates the displayed value.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public void OnAnimationSpeedSliderValueChanged(Single value)
     {
         // save value to PlayerPrefs
@@ -104,16 +130,19 @@ public class PauseMenuManager : MonoBehaviour
         animationSpeedSliderValueLabel.text = value.ToString(CultureInfo.InvariantCulture) + "×";
     }
 
+    /// <summary>
+    /// Updates information displayed in the pause menu.
+    /// </summary>
     private void UpdateUI()
     {
-        // safety check
-        if (currentPlayerLabel == null || actionsLeftLabel == null || gamePhaseLabel == null || scoreNamesLabel == null || scoreValuesLabel == null) {
-            Debug.LogError("PauseMenuManager: One or more required TurnInfo UI elements are not assigned.");
+        // GameManager will be null in final results scene
+        if (_gameManager == null) {
             return;
         }
 
-        // GameManager will be null in final results scene
-        if (_gameManager == null) {
+        // safety check
+        if (currentPlayerLabel == null || actionsLeftLabel == null || gamePhaseLabel == null || scoreNamesLabel == null || scoreValuesLabel == null) {
+            Debug.LogError("PauseMenuManager: One or more required TurnInfo UI elements are not assigned.");
             return;
         }
 
@@ -136,43 +165,13 @@ public class PauseMenuManager : MonoBehaviour
         }
     }
 
-    private void Awake()
-    {
-        // check if all required components are assigned
-        if (currentPlayerLabel == null || actionsLeftLabel == null || gamePhaseLabel == null) {
-            Debug.LogError("PauseMenuManager: One or more required TurnInfo UI elements are not assigned.");
-            return;
-        }
-        if (scoreToggle == null || scoreNamesLabel == null || scoreValuesLabel == null) {
-            Debug.LogError("PauseMenuManager: One or more required ScoreInfo UI elements are not assigned.");
-            return;
-        }
-        if (animationSpeedSliderValueLabel == null) {
-            Debug.LogError("PauseMenuManager: AnimationSpeedSliderValueLabel is not assigned.");
-            return;
-        }
-
-
-        _gameManager = GameObject.FindAnyObjectByType<GameManager>();
-
-        _sceneTransitions = transform.GetComponent<SceneTransitions>();
-        if (_sceneTransitions == null) {
-            Debug.Log("PauseMenuManager: SceneTransitions not found");
-        }
-
-        _pauseLogic = GameObject.FindAnyObjectByType<PauseLogic>();
-        if (_pauseLogic == null) {
-            Debug.LogError("PauseMenuManager: PauseLogic not found");
-        }
-        _canvasGroup = GetComponent<CanvasGroup>();
-
-        // try to find SoundManager
-        _soundManager = GameObject.FindAnyObjectByType<SoundManager>();
-    }
-
-
+    /// <summary>
+    /// Adjusts the size of the panel to fit the content (the number of players is variable).
+    /// This methods needs to be called when the GameObject is created. Otherwise the panel will flash as it adjust for the first time.
+    /// </summary>
     private void AdjustPanelSize()
     {
+        // safety check
         if (scoreValuesLabel == null || scoreNamesLabel == null) {
             Debug.LogError("PauseMenuManager: One or more required ScoreInfo UI elements are not assigned.");
             return;
@@ -182,8 +181,9 @@ public class PauseMenuManager : MonoBehaviour
             return;
         }
 
+        // put text with <num players> lines into the score labels
+        // this will ensure that their size will not change when the real values are assigned
         int numPlayers = GameStartParams.Players.Count;
-
         string text = "";
         for (int i = 0; i < numPlayers; i++) {
             text += "0\n";
@@ -191,30 +191,66 @@ public class PauseMenuManager : MonoBehaviour
         scoreValuesLabel.text = text;
         scoreNamesLabel.text = text;
 
-        // set the size of the panel to fit the content
+        // force adjust size of the panel to fit the content
         LayoutRebuilder.ForceRebuildLayoutImmediate(innerScoreRectTransform);
         LayoutRebuilder.ForceRebuildLayoutImmediate(outerScoreRectTransform);
         LayoutRebuilder.ForceRebuildLayoutImmediate(panelRectTransform);
     }
 
+    private void Awake()
+    {
+        // check if all required components are assigned
+        if (outerScoreRectTransform == null || innerScoreRectTransform == null || panelRectTransform == null) {
+            Debug.LogError("PauseMenuManager: One or more required RectTransforms are not assigned.");
+            return;
+        }
+        if (currentPlayerLabel == null || actionsLeftLabel == null || gamePhaseLabel == null) {
+            Debug.LogError("PauseMenuManager: One or more required TurnInfo UI elements are not assigned.");
+            return;
+        }
+        if (scoreToggle == null || scoreNamesLabel == null || scoreValuesLabel == null) {
+            Debug.LogError("PauseMenuManager: One or more required ScoreInfo UI elements are not assigned.");
+            return;
+        }
+        if (animationSpeedSliderValueLabel == null || animationSpeedSlider == null) {
+            Debug.LogError("PauseMenuManager: One or more required Slider UI elements are not assigned.");
+            return;
+        }
+
+        // try to find GameManager
+        _gameManager = GameObject.FindAnyObjectByType<GameManager>();
+
+        // try to find SoundManager
+        _soundManager = GameObject.FindAnyObjectByType<SoundManager>();
+
+        // get scene transitions
+        _sceneTransitions = transform.GetComponent<SceneTransitions>();
+        if (_sceneTransitions == null) {
+            Debug.Log("PauseMenuManager: SceneTransitions not found");
+        }
+
+        // find pause logic --> needed for the Resume button
+        _pauseLogic = GameObject.FindAnyObjectByType<PauseLogic>();
+        if (_pauseLogic == null) {
+            Debug.LogError("PauseMenuManager: PauseLogic not found");
+        }
+
+        // needed to show / hide the pause menu GameObject
+        _canvasGroup = GetComponent<CanvasGroup>();
+    }
+
     private void Start()
     {
-        // hide score by default
-        if (scoreToggle == null) {
-            return;
-        }
-        scoreToggle.isOn = false;
-
-        // load animation speed from player prefs
-        if (animationSpeedSlider == null) {
+        // safety check
+        if (scoreToggle == null || animationSpeedSlider == null) {
             return;
         }
 
-        // set animation speed
+        scoreToggle.isOn = false; // hide score info by default
         animationSpeedSlider.value = AnimationSpeedManager.AnimationSpeed;
-
         AdjustPanelSize();
-
-        HidePauseMenu();
+        HidePauseMenu(); // hide the pause menu by default
     }
+
+    #endregion
 }

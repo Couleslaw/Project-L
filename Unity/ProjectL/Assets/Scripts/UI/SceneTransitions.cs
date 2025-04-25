@@ -20,7 +20,7 @@ public class SceneTransitions : MonoBehaviour
     #region Methods
 
     /// <summary>
-    /// Loads the main menu scene with a fade-out effect. Also disables the logger if it exists.
+    /// Loads the main menu scene. Also disables the logger if it exists.
     /// </summary>
     public async void LoadMainMenuAsync()
     {
@@ -29,7 +29,7 @@ public class SceneTransitions : MonoBehaviour
     }
 
     /// <summary>
-    /// Loads the player selection scene with a fade-out effect.
+    /// Loads the player selection scene. Also clears the logger.
     /// </summary>
     public async void LoadPlayerSelectionAsync()
     {
@@ -38,13 +38,16 @@ public class SceneTransitions : MonoBehaviour
     }
 
     /// <summary>
-    /// Loads the game scene with a fade-out effect.
+    /// Loads the game scene with.
     /// </summary>
     public async void LoadGameAsync()
     {
         await FadeOutAndLoadSceneAsync("Game");
     }
 
+    /// <summary>
+    /// Loads the final results scene.
+    /// </summary>
     public async void LoadFinalResultsAsync()
     {
         await FadeOutAndLoadSceneAsync("FinalResults");

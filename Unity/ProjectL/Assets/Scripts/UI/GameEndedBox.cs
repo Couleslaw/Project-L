@@ -7,17 +7,15 @@ using UnityEngine;
 /// </summary>
 public class GameEndedBox : MonoBehaviour
 {
+    #region Fields
+
     private SoundManager? _soundManager;
+
     private SceneTransitions? _sceneTransitions;
 
-    private void Start()
-    {
-        // try to find the sound manager
-        _soundManager = GameObject.FindAnyObjectByType<SoundManager>();
+    #endregion
 
-        // get transitions
-        _sceneTransitions = gameObject.transform.GetComponent<SceneTransitions>();
-    }
+    #region Methods
 
     /// <summary>
     /// Handles the click event for the "Calculate score" button.
@@ -28,4 +26,15 @@ public class GameEndedBox : MonoBehaviour
         _soundManager?.PlayButtonClickSound();
         _sceneTransitions?.LoadFinalResultsAsync();
     }
+
+    private void Start()
+    {
+        // try to find the sound manager
+        _soundManager = GameObject.FindAnyObjectByType<SoundManager>();
+
+        // get transitions
+        _sceneTransitions = gameObject.transform.GetComponent<SceneTransitions>();
+    }
+
+    #endregion
 }

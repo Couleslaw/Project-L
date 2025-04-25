@@ -7,18 +7,15 @@ using UnityEngine;
 /// </summary>
 public class ErrorMessageBox : MonoBehaviour
 {
-    private SoundManager? _soundManager;
-    private SceneTransitions? _sceneTransitions;
-    
-    private void Start()
-    {
-        // play error sound
-        _soundManager = GameObject.FindAnyObjectByType<SoundManager>();
-        _soundManager?.PlayErrorSound();
+    #region Fields
 
-        // get transitions
-        _sceneTransitions = gameObject.transform.GetComponent<SceneTransitions>();
-    }
+    private SoundManager? _soundManager;
+
+    private SceneTransitions? _sceneTransitions;
+
+    #endregion
+
+    #region Methods
 
     /// <summary>
     /// Handles the click event for the "Main Menu" button.
@@ -29,4 +26,16 @@ public class ErrorMessageBox : MonoBehaviour
         _soundManager?.PlayButtonClickSound();
         _sceneTransitions?.LoadMainMenuAsync();
     }
+
+    private void Start()
+    {
+        // play error sound
+        _soundManager = GameObject.FindAnyObjectByType<SoundManager>();
+        _soundManager?.PlayErrorSound();
+
+        // get transitions
+        _sceneTransitions = gameObject.transform.GetComponent<SceneTransitions>();
+    }
+
+    #endregion
 }

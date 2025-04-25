@@ -72,7 +72,7 @@
         public TetrominoShape RewardTetromino { get; }
 
         /// <summary>
-        /// A binary image representing the puzzle.
+        /// A <see cref="BinaryImage"/> representing the puzzle.
         /// Specifies which cells of the puzzle need to be filled in.
         /// </summary>
         public BinaryImage Image { get; private set; }

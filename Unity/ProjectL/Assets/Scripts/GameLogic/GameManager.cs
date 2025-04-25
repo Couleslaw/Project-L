@@ -1,22 +1,15 @@
-using ProjectLCore.GameActions.Verification;
 using ProjectLCore.GameActions;
+using ProjectLCore.GameActions.Verification;
 using ProjectLCore.GameLogic;
-using ProjectLCore.Players;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using UnityEngine;
 using ProjectLCore.GameManagers;
 using ProjectLCore.GamePieces;
-using System.Text;
-using Unity.VisualScripting;
+using ProjectLCore.Players;
+using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Resources;
-using TMPro;
-using static ProjectLCore.GameLogic.GameState;
-using static ProjectLCore.GameLogic.PlayerState;
-using NUnit.Framework;
+using System.Text;
+using System.Threading.Tasks;
+using UnityEngine;
 
 #nullable enable
 public class GameManager : MonoBehaviour
@@ -38,11 +31,75 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextBasedGame? textGame;
 
     private GameCore? _game;
+
     private bool _gameEndedWithError = false;
 
     #endregion
 
     #region Methods
+
+    /// <summary>
+    /// Retrieves the current scores of all players in the game.
+    /// </summary>
+    /// <returns>
+    /// A dictionary where the key is the player's name and the value is their score; 
+    /// or <see langword="null"/> if the game is not initialized.
+    /// </returns>
+    public Dictionary<string, int>? GetPlayerScores()
+    {
+        if (_game == null) {
+            return null;
+        }
+
+        var scores = new Dictionary<string, int>();
+        foreach (var player in _game.Players) {
+            scores[player.Name] = _game.PlayerStates[player].Score;
+        }
+
+        return scores;
+    }
+
+    /// <summary>
+    /// Gets the name of the current player.
+    /// </summary>
+    /// <returns>
+    /// The name of the current player, or <see langword="null"/> if the game is not initialized.
+    /// </returns>
+    public string? GetCurrentPlayerName()
+    {
+        if (_game == null) {
+            return null;
+        }
+        return _game.CurrentPlayer.Name;
+    }
+
+    /// <summary>
+    /// Retrieves the number of actions left for the current player in their turn.
+    /// </summary>
+    /// <returns>
+    /// The number of actions left, or <see langword="null"/> if the game is not initialized.
+    /// </returns>
+    public int? GetCurrentPlayerActionsLeft()
+    {
+        if (_game == null) {
+            return null;
+        }
+        return _game.CurrentTurn.NumActionsLeft;
+    }
+
+    /// <summary>
+    /// Gets the current phase of the game.
+    /// </summary>
+    /// <returns>
+    /// The current game phase, or <see langword="null"/> if the game is not initialized.
+    /// </returns>
+    public GamePhase? GetCurrentGamePhase()
+    {
+        if (_game == null) {
+            return null;
+        }
+        return _game.CurrentGamePhase;
+    }
 
     private void Awake()
     {
@@ -52,12 +109,18 @@ public class GameManager : MonoBehaviour
         else
             EasyUI.Logger.Instance.gameObject.SetActive(true);
     }
+
     private async void Start()
     {
         // create game core
         _game = CreateGameCore();
-        if (_game == null)
+
+        // if error occurred --> end
+        if (_game == null) {
             return;
+        }
+
+        // initialize game
         _game.InitializeGame();
 
         // initialize players
@@ -76,22 +139,29 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // prepare final results
+        // final results
         if (!_gameEndedWithError) {
             PrepareGameEndStats();
             GoToFinalResultsScreen();
         }
     }
 
+    /// <summary>
+    /// Tries to load puzzles from the Resources folder and create a <see cref="GameState"/> instance.
+    /// </summary>
+    /// <returns>A <see cref="GameState"/> instance if successful; otherwise <see langword="null"/>.</returns>
     private GameState? LoadGameState()
     {
+        // read the puzzles file
         string? puzzleFileText = Resources.Load<TextAsset>(_puzzleFilePath)?.text;
 
+        // check if it contains any text
         if (string.IsNullOrEmpty(puzzleFileText)) {
             EndGameWithError($"Puzzles file is empty.");
             return null;
         }
 
+        // try to parse the puzzles and create a game state
         try {
             Stream stream = GenerateStreamFromString(puzzleFileText);
             return GameState.CreateFromStream(stream, GameStartParams.NumInitialTetrominos);
@@ -112,12 +182,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Tries to create players based on the player types specified in the game creation scene.
+    /// </summary>
+    /// <returns>A list of instantiated players if successful; otherwise <see langword="null"/>.</returns>
     private List<Player>? LoadPlayers()
     {
+        // check if player selection happened
         if (GameStartParams.Players.Count == 0) {
             EndGameWithError("No players selected.");
             return null;
         }
+
+        // try to create players
         try {
             List<Player> players = new();
 
@@ -134,20 +211,20 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
     /// <summary>
-    /// Tries to load the puzzles and create players. If successful, it returns a new <see cref="GameCore"/> instance.
+    /// Tries to load the puzzles and create players.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>A <see cref="GameCore"/> instance if successful; otherwise <see langword="null"/>.</returns>
     private GameCore? CreateGameCore()
     {
+        // try to load puzzles
         GameState? gameState = LoadGameState();
         if (gameState == null) {
             return null;
         }
         Debug.Log($"Game state loaded successfully. Number of puzzles: {gameState.GetAllPuzzlesInGame().Count}");
 
-        // create players
+        // try to create players
         List<Player>? players = LoadPlayers();
         if (players == null) {
             return null;
@@ -157,7 +234,11 @@ public class GameManager : MonoBehaviour
         return new GameCore(gameState, players, GameStartParams.ShufflePlayers);
     }
 
-
+    /// <summary>
+    /// Asynchronously initializes all AI players by calling their <see cref="AIPlayerBase.InitAsync(int, List{Puzzle}, string?)"/> method.
+    /// </summary>
+    /// <param name="players">List of players to initialize.</param>
+    /// <param name="gameState">The game state.</param>
     private async Task InitializeAIPlayersAsync(Player[] players, GameState gameState)
     {
         List<Task> initializationTasks = new();
@@ -186,7 +267,8 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Creates a ErrorMessageBox and logs the error message.
+    /// Creates a ErrorMessageBox and logs the error message. The box has a button to go back to the main menu.
+    /// Also disables the pause logic.
     /// </summary>
     /// <param name="error"></param>
     private void EndGameWithError(string error)
@@ -194,6 +276,8 @@ public class GameManager : MonoBehaviour
         if (_gameEndedWithError)
             return;
         _gameEndedWithError = true;
+
+        PauseLogic.CanBePaused = false;
 
         Debug.LogError("Fatal error: " + error);
         if (errorMessageBoxPrefab != null) {
@@ -204,6 +288,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Prepares the <see cref="GameEndStats"/> by adding final results and unfinished puzzles.
+    /// </summary>
     private void PrepareGameEndStats()
     {
         if (_game == null) {
@@ -223,8 +310,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Creates the GameEndedBox, which has a button to go to the final results screen.
+    /// Also disables the pause logic.
+    /// </summary>
     private void GoToFinalResultsScreen()
     {
+        PauseLogic.CanBePaused = false;
         if (gameEndedBoxPrefab != null) {
             Instantiate(gameEndedBoxPrefab);
         }
@@ -232,7 +324,6 @@ public class GameManager : MonoBehaviour
             Debug.LogError("Game ended box prefab is not set.");
         }
     }
-
 
     private async Task GameLoopAsync()
     {
@@ -303,6 +394,13 @@ public class GameManager : MonoBehaviour
                 GameEndStats.AddFinishingTouchTetromino(_game.CurrentPlayer, a.Shape);
             }
         }
+
+        IAction GetDefaultAction()
+        {
+            return (_game?.CurrentGamePhase == GamePhase.FinishingTouches)
+                        ? new EndFinishingTouchesAction()
+                        : new DoNothingAction();
+        }
     }
 
     private void LogPlayerGetActionThrownException(string message)
@@ -317,27 +415,22 @@ public class GameManager : MonoBehaviour
 
     private void LogPlayerProvidedInvalidAction(IAction action, VerificationFailure fail)
     {
-        Console.WriteLine($"{_game?.CurrentPlayer.Name} provided an invalid {action}\nVerification result:\n{fail.GetType()}: {fail.Message}\n");
-    }
-
-    private IAction GetDefaultAction()
-    {
-        return (_game?.CurrentGamePhase == GamePhase.FinishingTouches)
-                    ? new EndFinishingTouchesAction()
-                    : new DoNothingAction();
+        Debug.LogWarning($"{_game?.CurrentPlayer.Name} provided an invalid {action}\nVerification result:\n{fail.GetType()}: {fail.Message}\n");
     }
 
     private void LogDefaultFunctionAssignment(IAction action)
     {
-        Console.WriteLine($"{_game?.CurrentPlayer.Name} provided no action. Defaulting to {action}");
+        Debug.Log($"{_game?.CurrentPlayer.Name} provided no action. Defaulting to {action}");
     }
 
     private void LogPlayerFinishedPuzzle(FinishedPuzzleInfo puzzleInfo)
     {
-        Console.WriteLine($"{_game?.CurrentPlayer.Name} completed puzzle with ID={puzzleInfo.Puzzle.Id}");
-        Console.WriteLine($"   Returned pieces: {GetUsedTetrominos()}");
-        Console.WriteLine($"   Reward: {puzzleInfo.SelectedReward}");
-        Console.WriteLine($"   Points: {puzzleInfo.Puzzle.RewardScore}");
+        var logText = new StringBuilder();
+        logText.AppendLine($"{_game?.CurrentPlayer.Name} completed puzzle with ID={puzzleInfo.Puzzle.Id}");
+        logText.AppendLine($"   Returned pieces: {GetUsedTetrominos()}");
+        logText.AppendLine($"   Reward: {puzzleInfo.SelectedReward}");
+        logText.AppendLine($"   Points: {puzzleInfo.Puzzle.RewardScore}");
+        Debug.Log(logText.ToString());
 
         string GetUsedTetrominos()
         {
@@ -364,43 +457,5 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public Dictionary<string, int>? GetPlayerScores()
-    {
-        if (_game == null) {
-            return null;
-        }
-
-        var scores = new Dictionary<string, int>();
-        foreach (var player in _game.Players) {
-            scores[player.Name] = _game.PlayerStates[player].Score;
-        }
-
-        return scores;
-    }
-
-    public string? GetCurrentPlayerName()
-    {
-        if (_game == null) {
-            return null;
-        }
-        return _game.CurrentPlayer.Name;
-    }
-
-    public int? GetCurrentPlayerActionsLeft()
-    {
-        if (_game == null) {
-            return null;
-        }
-        return _game.CurrentTurn.NumActionsLeft;
-    }
-
-    public GamePhase? GetCurrentGamePhase()
-    {
-        if (_game == null) {
-            return null;
-        }
-        return _game.CurrentGamePhase;
-    }
     #endregion
 }
-
