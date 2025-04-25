@@ -75,9 +75,8 @@ public class PauseMenuManager : MonoBehaviour
     public void OnHomeButtonClick()
     {
         _soundManager?.PlayButtonClickSound();
-        // call the function is separate thread
-        _sceneTransitions?.LoadMainMenuAsync();
         _pauseLogic?.Resume();
+        _sceneTransitions?.LoadMainMenuAsync();
     }
 
     /// <summary>
@@ -101,6 +100,8 @@ public class PauseMenuManager : MonoBehaviour
             return;
         }
 
+        _soundManager?.PlayButtonClickSound();
+
         // use alpha to show / hide the labels
         if (showScore) {
             scoreNamesLabel.alpha = 1f;
@@ -118,6 +119,9 @@ public class PauseMenuManager : MonoBehaviour
     /// <param name="value">The value.</param>
     public void OnAnimationSpeedSliderValueChanged(Single value)
     {
+        // play sound
+        _soundManager?.PlaySliderSound();
+
         // save value to PlayerPrefs
         PlayerPrefs.SetFloat(AnimationSpeedManager.AnimationSpeedPlayerPrefKey, value);
 

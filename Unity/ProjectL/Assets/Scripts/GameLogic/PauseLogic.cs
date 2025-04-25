@@ -39,7 +39,6 @@ public class PauseLogic : MonoBehaviour
             return;
 
         IsPaused = true;
-        AudioListener.pause = true;
         _pauseMenuManager?.ShowPauseMenu();
         Time.timeScale = 0f;
     }
@@ -50,7 +49,6 @@ public class PauseLogic : MonoBehaviour
     public void Resume()
     {
         IsPaused = false;
-        AudioListener.pause = false;
         _pauseMenuManager?.HidePauseMenu();
         Time.timeScale = 1f;
     }

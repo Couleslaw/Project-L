@@ -33,6 +33,7 @@ public class ErrorMessageBox : MonoBehaviour
     /// </summary>
     public void OnOpenLogButtonClick()
     {
+        _soundManager?.PlayButtonClickSound();
         EasyUI.Logger.Instance?.ToggleLogUI();
     }
 

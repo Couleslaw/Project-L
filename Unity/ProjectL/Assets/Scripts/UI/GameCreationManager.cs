@@ -49,6 +49,7 @@ public class GameCreationManager : MonoBehaviour
         int num = (int)numPiecesSlider.value;
         GameStartParams.NumInitialTetrominos = num;
         numPiecesText.text = num.ToString();
+        _soundManager?.PlaySliderSound();
     }
 
     /// <summary>
