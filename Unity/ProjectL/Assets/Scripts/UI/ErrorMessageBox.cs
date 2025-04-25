@@ -1,4 +1,5 @@
 using UnityEngine;
+using EasyUI;
 
 #nullable enable
 
@@ -18,13 +19,21 @@ public class ErrorMessageBox : MonoBehaviour
     #region Methods
 
     /// <summary>
-    /// Handles the click event for the "Main Menu" button.
+    /// Handles the click event for the "Main Menu" button. Returns to main menu.
     /// </summary>
     public void OnMainMenuButtonClick()
     {
         // load the main menu
         _soundManager?.PlayButtonClickSound();
         _sceneTransitions?.LoadMainMenuAsync();
+    }
+
+    /// <summary>
+    /// Handles the click event for the "Open log" button. Opens the logger UI.
+    /// </summary>
+    public void OnOpenLogButtonClick()
+    {
+        EasyUI.Logger.Instance?.ToggleLogUI();
     }
 
     private void Start()

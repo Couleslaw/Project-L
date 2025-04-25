@@ -98,7 +98,7 @@ namespace EasyUI
             ScrollDown();
         }
 
-        private void ToggleLogUI()
+        public void ToggleLogUI()
         {
             isOpen = !isOpen;
             if (isOpen)
