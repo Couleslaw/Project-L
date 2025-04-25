@@ -21,9 +21,10 @@
   - [x] load puzzles and initialize players
   - [x] create GameCore object
   - [x] add error message box for invalid initialization
-    - [ ] compile fail init AI player to netstandard2.1 and test
-- [ ] crete basic game loop with AI players for testing
-  - [ ] decide how to agregate data for final results screen
+    - [ ] compile fail init AI player to netstandard2.1 and test - rename the old one to TargetErrorExample
+- [x] crete basic game loop with AI players for testing
+  - [x] decide how to agregate data for final results screen
+- [ ] add game screen pause menu
 
 ### Create final screen
 

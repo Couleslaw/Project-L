@@ -29,7 +29,8 @@
         /// <summary>
         /// Internal representation if the current turn.
         /// </summary>
-        private TurnInfo _turnInfo = new(NumActionsInTurn, GamePhase.Normal, usedMasterAction: false, tookBlackPuzzle: false, lastRound: false);
+        /// <remarks>Initialized to <see cref="NumActionsInTurn"/> + 1. The first time <see cref="NextTurn"/> will be called, it will be decremented.</remarks>
+        private TurnInfo _turnInfo = new(NumActionsInTurn + 1, GamePhase.Normal, usedMasterAction: false, tookBlackPuzzle: false, lastRound: false);
 
         #endregion
 
@@ -73,7 +74,7 @@
                 return _turnInfo;
             }
 
-            if (_turnInfo.NumActionsLeft > 0) {
+            if (_turnInfo.NumActionsLeft > 1) {
                 _turnInfo.NumActionsLeft--;
                 return _turnInfo;
             }
@@ -99,7 +100,7 @@
         private void SetNextPlayer()
         {
             _currentPlayersIndex = (_currentPlayersIndex + 1) % _numPlayers;
-            _turnInfo.NumActionsLeft = NumActionsInTurn - 1;
+            _turnInfo.NumActionsLeft = NumActionsInTurn;
             _turnInfo.UsedMasterAction = false;
             _turnInfo.TookBlackPuzzle = false;
         }

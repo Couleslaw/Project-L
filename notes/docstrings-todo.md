@@ -1,6 +1,7 @@
-### Finalized docstrings
+## Finalized docstrings
 
-- GameManager
+#### Game Creation screen
+
 - GameStartParams
 - PlayerTypeLoader
 - GameCreationManager
@@ -9,3 +10,8 @@
 - SceneTransitions
 - SoundManager
 - SoundVolumeController
+
+#### Main game screen
+
+- ColorImage
+- PuzzleSpritesLoader

@@ -190,11 +190,12 @@
         internal static void PrintTurnInfo(Player currentPlayer, TurnInfo turnInfo)
         {
             // check if new round
-            if (currentPlayer.Id == FirstPlayerId && turnInfo.NumActionsLeft == TurnManager.NumActionsInTurn - 1) {
+            if (currentPlayer.Id == FirstPlayerId && turnInfo.NumActionsLeft == TurnManager.NumActionsInTurn) {
                 RoundCount++;
             }
             // print turn info
-            Console.WriteLine($"Round: {RoundCount}, Current player: {currentPlayer.Name} ({currentPlayer.GetType().Name}), Action: {3 - turnInfo.NumActionsLeft}");
+            int actionNum = TurnManager.NumActionsInTurn - turnInfo.NumActionsLeft + 1;
+            Console.WriteLine($"Round: {RoundCount}, Current player: {currentPlayer.Name} ({currentPlayer.GetType().Name}), Action: {actionNum}");
             Console.WriteLine($"TurnInfo: GamePhase={turnInfo.GamePhase}, LastRound={turnInfo.LastRound}, TookBlackPuzzle={turnInfo.TookBlackPuzzle}, UsedMaster={turnInfo.UsedMasterAction}");
         }
 

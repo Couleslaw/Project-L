@@ -72,8 +72,12 @@ namespace ProjectLCore.GameLogic
 
         #region Properties
 
+
+        /// <summary> Information about the current turn. </summary>
+        public TurnInfo CurrentTurn { get; private set; }
+
         /// <summary> The current <see cref="GamePhase"/>. </summary>
-        public GamePhase CurrentGamePhase { get; private set; } = GamePhase.Normal;
+        public GamePhase CurrentGamePhase => CurrentTurn.GamePhase;
 
         /// <summary> The player who's turn it currently is. </summary>
         public Player CurrentPlayer { get; private set; }
@@ -159,10 +163,9 @@ namespace ProjectLCore.GameLogic
         /// <seealso cref="TurnManager.NextTurn"/>
         public TurnInfo GetNextTurnInfo()
         {
-            TurnInfo info = _turnManager.NextTurn();
-            CurrentGamePhase = info.GamePhase;
+            CurrentTurn = _turnManager.NextTurn();
             CurrentPlayer = GetPlayerWithId(_turnManager.CurrentPlayerId);
-            return info;
+            return CurrentTurn;
         }
 
         /// <summary>
