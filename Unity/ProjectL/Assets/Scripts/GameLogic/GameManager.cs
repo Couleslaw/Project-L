@@ -16,6 +16,7 @@ using System.Resources;
 using TMPro;
 using static ProjectLCore.GameLogic.GameState;
 using static ProjectLCore.GameLogic.PlayerState;
+using NUnit.Framework;
 
 #nullable enable
 public class GameManager : MonoBehaviour
@@ -209,7 +210,7 @@ public class GameManager : MonoBehaviour
             Debug.LogError("GameCore is null. Cannot prepare end game stats.");
             return; // safety check
         }
-        
+
         // add final results
         GameEndStats.FinalResults = _game.GetFinalResults();
 
@@ -363,7 +364,43 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public Dictionary<string, int>? GetPlayerScores()
+    {
+        if (_game == null) {
+            return null;
+        }
 
+        var scores = new Dictionary<string, int>();
+        foreach (var player in _game.Players) {
+            scores[player.Name] = _game.PlayerStates[player].Score;
+        }
+
+        return scores;
+    }
+
+    public string? GetCurrentPlayerName()
+    {
+        if (_game == null) {
+            return null;
+        }
+        return _game.CurrentPlayer.Name;
+    }
+
+    public int? GetCurrentPlayerActionsLeft()
+    {
+        if (_game == null) {
+            return null;
+        }
+        return _game.CurrentTurn.NumActionsLeft;
+    }
+
+    public GamePhase? GetCurrentGamePhase()
+    {
+        if (_game == null) {
+            return null;
+        }
+        return _game.CurrentGamePhase;
+    }
     #endregion
 }
 

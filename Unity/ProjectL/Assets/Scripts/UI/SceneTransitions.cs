@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,31 +22,32 @@ public class SceneTransitions : MonoBehaviour
     /// <summary>
     /// Loads the main menu scene with a fade-out effect. Also disables the logger if it exists.
     /// </summary>
-    public void LoadMainMenu()
+    public async void LoadMainMenuAsync()
     {
-        StartCoroutine(FadeOutAndLoadScene("MainMenu"));
         DisableLogger();
+        await FadeOutAndLoadSceneAsync("MainMenu");
     }
 
     /// <summary>
     /// Loads the player selection scene with a fade-out effect.
     /// </summary>
-    public void LoadPlayerSelection()
+    public async void LoadPlayerSelectionAsync()
     {
-        StartCoroutine(FadeOutAndLoadScene("PlayerSelection"));
+        EasyUI.Logger.ClearLog();
+        await FadeOutAndLoadSceneAsync("PlayerSelection");
     }
 
     /// <summary>
     /// Loads the game scene with a fade-out effect.
     /// </summary>
-    public void LoadGame()
+    public async void LoadGameAsync()
     {
-        StartCoroutine(FadeOutAndLoadScene("Game"));
+        await FadeOutAndLoadSceneAsync("Game");
     }
 
-    public void LoadFinalResults()
+    public async void LoadFinalResultsAsync()
     {
-        StartCoroutine(FadeOutAndLoadScene("FinalResults"));
+        await FadeOutAndLoadSceneAsync("FinalResults");
     }
 
     /// <summary>
@@ -89,12 +91,14 @@ public class SceneTransitions : MonoBehaviour
     /// Fades out the screen, if the current scene contains the Fade prefab. Loads the specified scene after.
     /// </summary>
     /// <param name="sceneName">Name of the scene to load.</param>
-    /// <returns>Coroutine.</returns>
-    private IEnumerator FadeOutAndLoadScene(string sceneName)
+    /// <returns>Task object.</returns>
+    private async Task FadeOutAndLoadSceneAsync(string sceneName)
     {
         if (fadeImage != null && fadeAnimator != null) {
             fadeAnimator.SetBool("Fade", true);
-            yield return new WaitUntil(() => fadeImage.color.a == 1);
+            while (fadeImage.color.a != 1) {
+                await Task.Yield();
+            }
         }
         UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
     }

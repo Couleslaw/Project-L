@@ -9,7 +9,8 @@ public class ErrorMessageBox : MonoBehaviour
 {
     private SoundManager? _soundManager;
     private SceneTransitions? _sceneTransitions;
-    void Start()
+    
+    private void Start()
     {
         // play error sound
         _soundManager = GameObject.FindAnyObjectByType<SoundManager>();
@@ -19,10 +20,13 @@ public class ErrorMessageBox : MonoBehaviour
         _sceneTransitions = gameObject.transform.GetComponent<SceneTransitions>();
     }
 
+    /// <summary>
+    /// Handles the click event for the "Main Menu" button.
+    /// </summary>
     public void OnMainMenuButtonClick()
     {
         // load the main menu
         _soundManager?.PlayButtonClickSound();
-        _sceneTransitions?.LoadMainMenu();
+        _sceneTransitions?.LoadMainMenuAsync();
     }
 }

@@ -10,7 +10,7 @@ public class GameEndedBox : MonoBehaviour
     private SoundManager? _soundManager;
     private SceneTransitions? _sceneTransitions;
 
-    void Start()
+    private void Start()
     {
         // try to find the sound manager
         _soundManager = GameObject.FindAnyObjectByType<SoundManager>();
@@ -19,10 +19,13 @@ public class GameEndedBox : MonoBehaviour
         _sceneTransitions = gameObject.transform.GetComponent<SceneTransitions>();
     }
 
+    /// <summary>
+    /// Handles the click event for the "Calculate score" button.
+    /// </summary>
     public void OnCalculateScoreButtonClick()
     {
         // load the main menu
         _soundManager?.PlayButtonClickSound();
-        _sceneTransitions?.LoadFinalResults();
+        _sceneTransitions?.LoadFinalResultsAsync();
     }
 }

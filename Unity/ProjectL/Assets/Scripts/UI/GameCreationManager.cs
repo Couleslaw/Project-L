@@ -55,19 +55,27 @@ public class GameCreationManager : MonoBehaviour
     /// <summary>
     /// Toggles the shuffle players setting.
     /// </summary>
-    public void OnShuffleToggled()
+    public void OnShuffleToggled(bool shuffle)
     {
-        if (shuffleCheckbox == null) {
-            Debug.LogError("Shuffle checkbox is not assigned.");
-            return;
-        }
-        GameStartParams.ShufflePlayers = shuffleCheckbox.isOn;
+        _soundManager?.PlayButtonClickSound();
+        GameStartParams.ShufflePlayers = shuffle;
     }
 
     /// <summary>
+    /// Handles the back button click event. Loads the main menu scene.
+    /// </summary>
+    public void OnBackButtonClick()
+    {
+        _soundManager?.PlayButtonClickSound();
+        _sceneTransitions?.LoadMainMenuAsync();
+    }
+
+
+    /// <summary>
+    /// Handles the start game button click event.
     /// Starts the game if the player selection is valid. Otherwise shows an error message.
     /// </summary>
-    public void OnClickStartGame()
+    public void OnStartGameButtonClick()
     {
         // check if player selection is valid
         string? errorMessage = null;
@@ -105,7 +113,7 @@ public class GameCreationManager : MonoBehaviour
         }
 
         // load the game scene
-        _sceneTransitions?.LoadGame();
+        _sceneTransitions?.LoadGameAsync();
     }
 
     private void Awake()
