@@ -124,7 +124,13 @@ public class TextBasedGame : MonoBehaviour
 
             // await for continue button click
             while (!_shouldContinue) {
-                await Awaitable.WaitForSecondsAsync(0.1f, destroyCancellationToken);
+                try {
+                    await Awaitable.WaitForSecondsAsync(0.1f, destroyCancellationToken);
+                }
+                catch (OperationCanceledException) {
+                    Debug.Log("Game loop cancelled.");
+                    return;
+                }
             }
             _shouldContinue = false;
             GameTextView.Clear();
