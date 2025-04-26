@@ -101,10 +101,13 @@ namespace EasyUI
         public void ToggleLogUI()
         {
             isOpen = !isOpen;
-            if (isOpen)
+            if (isOpen) {
                 SetupUI(new Vector2(1f, height), spriteCloseIcon!);
-            else
+                ScrollDown();
+            }
+            else {
                 SetupUI(Vector2.one * iconWidth, spriteOpenIcon!);
+            }
         }
 
         private void SetupUI(Vector2 size, Sprite icon)

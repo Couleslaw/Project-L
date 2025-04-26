@@ -262,13 +262,13 @@ public static class PlayerTypeLoader
             }
             // --- Exception Handling ---
             catch (FileNotFoundException fnfEx) {
-                Debug.LogError($"Error loading assembly from '{dllPath}' (File Not Found): {fnfEx.Message}");
+                Debug.LogWarning($"Error loading assembly from '{dllPath}' (File Not Found): {fnfEx.Message}");
             }
             catch (BadImageFormatException bifEx) {
-                Debug.LogError($"Error loading assembly from '{dllPath}' (Bad Image Format): {bifEx.Message}");
+                Debug.LogWarning($"Error loading assembly from '{dllPath}' (Bad Image Format): {bifEx.Message}");
             }
             catch (Exception ex) {
-                Debug.LogError($"Generic error loading assembly from '{dllPath}': {ex.GetType().Name} - {ex.Message}");
+                Debug.LogWarning($"Generic error loading assembly from '{dllPath}': {ex.GetType().Name} - {ex.Message}");
             }
         }
 
