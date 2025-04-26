@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class FinalAnimationManager : MonoBehaviour
+public class PlayerStatsColumnManager : MonoBehaviour
 {
     void Start()
     {
