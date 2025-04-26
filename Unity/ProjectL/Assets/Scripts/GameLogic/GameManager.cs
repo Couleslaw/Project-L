@@ -163,8 +163,11 @@ public class GameManager : MonoBehaviour
 
         // try to parse the puzzles and create a game state
         try {
-            Stream stream = GenerateStreamFromString(puzzleFileText);
-            return GameState.CreateFromStream(stream, GameStartParams.NumInitialTetrominos);
+            return GameState.CreateFromStream(
+                puzzleStream: GenerateStreamFromString(puzzleFileText),
+                numInitialTetrominos: GameStartParams.NumInitialTetrominos, 
+                numBlackPuzzles: GameStartParams.NumBlackPuzzles
+                );
         }
         catch (Exception e) {
             EndGameWithError($"Failed to load game state. {e.Message}");

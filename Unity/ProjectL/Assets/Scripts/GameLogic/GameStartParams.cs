@@ -19,6 +19,14 @@ public static class GameStartParams
 
     #endregion
 
+    #region Fields
+
+    private static readonly Dictionary<int, int> _numPlayersToNumBlackPuzzles = new Dictionary<int, int>() {
+        {1, 10}, {2, 12}, {3, 14}, {4, 16}
+    };
+
+    #endregion
+
     #region Properties
 
     /// <summary>
@@ -36,6 +44,15 @@ public static class GameStartParams
     /// Note that this implies that all player names must be unique.
     /// </summary>
     public static Dictionary<string, LoadedPlayerTypeInfo> Players { get; set; } = new();
+
+    public static int NumBlackPuzzles {
+        get {
+            if (_numPlayersToNumBlackPuzzles.ContainsKey(Players.Count))
+                return _numPlayersToNumBlackPuzzles[Players.Count];
+            else
+                return 0;
+        }
+    }
 
     #endregion
 
