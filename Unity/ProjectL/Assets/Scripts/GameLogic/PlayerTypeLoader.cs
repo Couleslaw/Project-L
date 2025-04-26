@@ -108,11 +108,11 @@ public static class PlayerTypeLoader
     #region Methods
 
     /// <summary>
-    /// Checks if the given assembly targets .NET Standard 2.1.
+    /// Checks if the given assembly targets .NET Standard 2.0 or 2.1.
     /// </summary>
     /// <param name="assembly">The assembly to check.</param>
-    /// <returns><see langword="true"/> if the assembly targets .NET Standard 2.1; otherwise, <see langword="false"/>.</returns>
-    public static bool TargetsNetStandard21(Assembly assembly)
+    /// <returns><see langword="true"/> if the assembly targets .NET Standard 2.0 or 2.1; otherwise, <see langword="false"/>.</returns>
+    public static bool TargetsNetStandard2(Assembly assembly)
     {
         var targetFrameworkAttribute = assembly.GetCustomAttribute<TargetFrameworkAttribute>();
 
@@ -123,10 +123,11 @@ public static class PlayerTypeLoader
         }
 
         const string netStandard21Tfm = ".NETStandard,Version=v2.1";
-        bool result = string.Equals(targetFrameworkAttribute.FrameworkName, netStandard21Tfm, StringComparison.OrdinalIgnoreCase);
-
+        const string netStandard20Tfm = ".NETStandard,Version=v2.0";
+        bool result = string.Equals(targetFrameworkAttribute.FrameworkName, netStandard20Tfm, StringComparison.OrdinalIgnoreCase) ||
+                      string.Equals(targetFrameworkAttribute.FrameworkName, netStandard21Tfm, StringComparison.OrdinalIgnoreCase);
         if (!result) {
-            Debug.LogWarning($"Assembly '{assembly.FullName}' targets '{targetFrameworkAttribute.FrameworkName}', expected '{netStandard21Tfm}'. Skipping...");
+            Debug.LogWarning($"Assembly '{assembly.FullName}' targets '{targetFrameworkAttribute.FrameworkName}', expected '{netStandard20Tfm}' or {netStandard21Tfm}. Skipping...");
         }
 
         return result;
@@ -241,7 +242,7 @@ public static class PlayerTypeLoader
                 Assembly assembly = Assembly.LoadFrom(dllPath);
 
                 // Ensure that the DLL targets .NET Standard 2.1 - needed to work properly inside of Unity
-                if (!TargetsNetStandard21(assembly)) {
+                if (!TargetsNetStandard2(assembly)) {
                     continue;
                 }
 

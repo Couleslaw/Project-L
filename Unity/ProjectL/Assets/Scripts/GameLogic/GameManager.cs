@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 #nullable enable
@@ -31,8 +32,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextBasedGame? textGame;
 
     private GameCore? _game;
-
-    private bool _gameEndedWithError = false;
 
     #endregion
 
@@ -108,6 +107,14 @@ public class GameManager : MonoBehaviour
             Instantiate(loggerPrefab);
         else
             EasyUI.Logger.Instance.gameObject.SetActive(true);
+
+        // setup error message box
+        if (errorMessageBoxPrefab != null) {
+            ErrorGameEnd.Setup(errorMessageBoxPrefab);
+        }
+        else {
+            Debug.LogError("Error message box prefab is not set.");
+        }
     }
 
     private async void Start()
@@ -124,25 +131,22 @@ public class GameManager : MonoBehaviour
         _game.InitializeGame();
 
         // initialize players
-        if (!_gameEndedWithError) {
-            await InitializeAIPlayersAsync(_game.Players, _game.GameState);
-        }
+        InitializeAIPlayersAsync(_game.Players, _game.GameState);
 
         // game loop
-        if (!_gameEndedWithError) {
-            GameEndStats.Clear();
-            if (textGame != null) {
-                await textGame.GameLoopAsync(_game);
-            }
-            else {
-                Debug.LogError("Text game is not assigned.");
-            }
-        }
+        GameEndStats.Clear();
+        await textGame!.GameLoopAsync(_game);
+
 
         // final results
-        if (!_gameEndedWithError) {
-            PrepareGameEndStats();
-            GoToFinalResultsScreen();
+        PrepareGameEndStats();
+        GoToFinalResultsScreen();
+    }
+
+    private void Update()
+    {
+        if (ErrorGameEnd.ShouldEndGameWithError && !ErrorGameEnd.EndedGameWithError) {
+            ErrorGameEnd.EndGameWithError();
         }
     }
 
@@ -152,12 +156,16 @@ public class GameManager : MonoBehaviour
     /// <returns>A <see cref="GameState"/> instance if successful; otherwise <see langword="null"/>.</returns>
     private GameState? LoadGameState()
     {
+        if (ErrorGameEnd.ShouldEndGameWithError) {
+            return null;
+        }
+
         // read the puzzles file
         string? puzzleFileText = Resources.Load<TextAsset>(_puzzleFilePath)?.text;
 
         // check if it contains any text
         if (string.IsNullOrEmpty(puzzleFileText)) {
-            EndGameWithError($"Puzzles file is empty.");
+            ErrorGameEnd.FatalErrorOccurred($"Puzzles file is empty.");
             return null;
         }
 
@@ -165,12 +173,12 @@ public class GameManager : MonoBehaviour
         try {
             return GameState.CreateFromStream(
                 puzzleStream: GenerateStreamFromString(puzzleFileText),
-                numInitialTetrominos: GameStartParams.NumInitialTetrominos, 
+                numInitialTetrominos: GameStartParams.NumInitialTetrominos,
                 numBlackPuzzles: GameStartParams.NumBlackPuzzles
                 );
         }
         catch (Exception e) {
-            EndGameWithError($"Failed to load game state. {e.Message}");
+            ErrorGameEnd.FatalErrorOccurred($"Failed to load game state. {e.Message}");
             return null;
         }
 
@@ -191,9 +199,13 @@ public class GameManager : MonoBehaviour
     /// <returns>A list of instantiated players if successful; otherwise <see langword="null"/>.</returns>
     private List<Player>? LoadPlayers()
     {
+        if (ErrorGameEnd.ShouldEndGameWithError) {
+            return null;
+        }
+
         // check if player selection happened
         if (GameStartParams.Players.Count == 0) {
-            EndGameWithError("No players selected.");
+            ErrorGameEnd.FatalErrorOccurred("No players selected.");
             return null;
         }
 
@@ -209,7 +221,7 @@ public class GameManager : MonoBehaviour
             return players;
         }
         catch (Exception e) {
-            EndGameWithError($"Failed to create players: {e.Message}");
+            ErrorGameEnd.FatalErrorOccurred($"Failed to create players: {e.Message}");
             return null;
         }
     }
@@ -242,51 +254,29 @@ public class GameManager : MonoBehaviour
     /// </summary>
     /// <param name="players">List of players to initialize.</param>
     /// <param name="gameState">The game state.</param>
-    private async Task InitializeAIPlayersAsync(Player[] players, GameState gameState)
+    private void InitializeAIPlayersAsync(Player[] players, GameState gameState)
     {
-        List<Task> initializationTasks = new();
+        if (ErrorGameEnd.ShouldEndGameWithError) {
+            return;
+        }
 
         foreach (Player player in players) {
             if (player is AIPlayerBase aiPlayer) {
                 string? initPath = GameStartParams.Players[player.Name].InitPath;
                 Debug.Log($"Initializing AI player {player.Name}. Init file: {initPath}");
 
-                Task initTask = aiPlayer.InitAsync(players.Length, gameState.GetAllPuzzlesInGame(), initPath, destroyCancellationToken)
+                aiPlayer.InitAsync(players.Length, gameState.GetAllPuzzlesInGame(), initPath, destroyCancellationToken)
                     .ContinueWith(t => {
                         if (t.Exception != null) {
-                            Debug.LogError($"Initialization of player {player.Name} failed: {t.Exception.InnerException?.Message}");
-                            EndGameWithError($"Failed to initialize AI player {player.Name}.");
+                            ErrorGameEnd.FatalErrorOccurred($"Initialization of player {player.Name} failed: {t.Exception.InnerException?.Message}");
                         }
                         else {
                             Debug.Log($"AI player {player.Name} initialized successfully.");
                         }
-                    }, destroyCancellationToken);
-                initializationTasks.Add(initTask);
+                    },
+                    destroyCancellationToken
+                );
             }
-        }
-
-        await Task.WhenAll(initializationTasks);
-    }
-
-    /// <summary>
-    /// Creates a ErrorMessageBox and logs the error message. The box has a button to go back to the main menu.
-    /// Also disables the pause logic.
-    /// </summary>
-    /// <param name="error"></param>
-    private void EndGameWithError(string error)
-    {
-        if (_gameEndedWithError)
-            return;
-        _gameEndedWithError = true;
-
-        PauseLogic.CanBePaused = false;
-
-        Debug.LogError("Fatal error: " + error);
-        if (errorMessageBoxPrefab != null) {
-            Instantiate(errorMessageBoxPrefab);
-        }
-        else {
-            Debug.LogError("Error message prefab is not set.");
         }
     }
 
@@ -295,6 +285,10 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void PrepareGameEndStats()
     {
+        if (ErrorGameEnd.ShouldEndGameWithError) {
+            return;
+        }
+
         if (_game == null) {
             Debug.LogError("GameCore is null. Cannot prepare end game stats.");
             return; // safety check
@@ -318,6 +312,10 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void GoToFinalResultsScreen()
     {
+        if (ErrorGameEnd.ShouldEndGameWithError) {
+            return;
+        }
+
         PauseLogic.CanBePaused = false;
         if (gameEndedBoxPrefab != null) {
             Instantiate(gameEndedBoxPrefab);
@@ -336,7 +334,7 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("Starting game loop.");
 
-        while (!destroyCancellationToken.IsCancellationRequested) {
+        while (!destroyCancellationToken.IsCancellationRequested && !ErrorGameEnd.ShouldEndGameWithError) {
             TurnInfo turnInfo = _game.GetNextTurnInfo();
 
             // check if game ended
@@ -460,4 +458,48 @@ public class GameManager : MonoBehaviour
     }
 
     #endregion
+
+    private static class ErrorGameEnd
+    {
+        public static bool ShouldEndGameWithError { get; private set; } = false;
+        public static bool EndedGameWithError { get; private set; } = false;
+        private static string _message { get; set; } = "Game ended with error.";
+
+        private static GameObject? _errorMessageBoxPrefab;
+
+        public static void Setup(GameObject errorMessageBoxPrefab)
+        {
+            _message = "Game ended with error.";
+            ShouldEndGameWithError = false;
+            EndedGameWithError = false;
+            _errorMessageBoxPrefab = errorMessageBoxPrefab;
+        }
+
+        public static void FatalErrorOccurred(string message)
+        {
+            if (ShouldEndGameWithError) {
+                return;
+            }
+            ShouldEndGameWithError = true;
+            _message = message;
+        }
+
+        /// <summary>
+        /// Instantiates the error message box prefab. This method needs to be called from the main thread.
+        /// </summary>
+        public static void EndGameWithError()
+        {
+            if (EndedGameWithError) {
+                return;
+            }
+            EndedGameWithError = true;
+            PauseLogic.CanBePaused = false;
+
+            Debug.LogError("Fatal error: " + _message);
+            if (_errorMessageBoxPrefab == null)
+                Debug.LogError("Error message prefab is not set.");
+            else
+                Instantiate(_errorMessageBoxPrefab);
+        }
+    }
 }
