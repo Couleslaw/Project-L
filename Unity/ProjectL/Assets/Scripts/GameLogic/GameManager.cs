@@ -7,6 +7,7 @@ using ProjectLCore.Players;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEditor.PackageManager;
@@ -17,7 +18,6 @@ public class GameManager : MonoBehaviour
 {
     #region Constants
 
-    private const string _puzzleFilePath = "puzzles";
 
     #endregion
 
@@ -161,11 +161,8 @@ public class GameManager : MonoBehaviour
         }
 
         // read the puzzles file
-        string? puzzleFileText = Resources.Load<TextAsset>(_puzzleFilePath)?.text;
-
-        // check if it contains any text
-        if (string.IsNullOrEmpty(puzzleFileText)) {
-            ErrorGameEnd.FatalErrorOccurred($"Puzzles file is empty.");
+        if (!ResourcesLoader.TryReadPuzzleFile(out string puzzleFileText)) {
+            ErrorGameEnd.FatalErrorOccurred("Failed to load puzzles file.");
             return null;
         }
 
@@ -296,6 +293,12 @@ public class GameManager : MonoBehaviour
 
         // add final results
         GameEndStats.FinalResults = _game.GetFinalResults();
+
+        // add info about leftover tetrominos
+        foreach (Player player in _game.Players) {
+            var info = _game.PlayerStates[player].GetPlayerInfo();
+            GameEndStats.SetNumLeftoverTetrominos(player, info.NumTetrominosOwned.Sum());
+        }
 
         // add info about unfinished puzzles
         foreach (Player player in _game.Players) {

@@ -13,9 +13,9 @@
         #region Fields
 
         /// <summary>
-        /// The order number of this puzzle. The file containing the graphics for this puzzle should have the name <c>color-number.png</c> where color is <c>black</c> or <c>white</c> and number is <see cref="_puzzleNumber"/>.
+        /// The order number of this puzzle. The file containing the graphics for this puzzle should have the name <c>color-number.png</c> where color is <c>black</c> or <c>white</c> and number is <see cref="PuzzleNumber"/>.
         /// </summary>
-        private readonly uint _puzzleNumber;
+        public uint PuzzleNumber { get; }
 
         /// <summary>
         /// Contains information about the number of tetrominos of each shape used on the puzzle.
@@ -36,7 +36,7 @@
         /// <param name="puzzleNumber">The order number of this puzzle. The file containing the graphics for this puzzle should have the name <c>color-number.png</c> where color is <c>black</c> or <c>white</c> and number is <paramref name="puzzleNumber"/>.</param>
         public Puzzle(BinaryImage image, int rewardScore, TetrominoShape rewardTetromino, bool isBlack, uint puzzleNumber)
         {
-            _puzzleNumber = puzzleNumber;
+            PuzzleNumber = puzzleNumber;
             IsBlack = isBlack;
             RewardScore = rewardScore;
             RewardTetromino = rewardTetromino;
@@ -154,7 +154,7 @@
 
             public static uint GetId(Puzzle puzzle)
             {
-                Tuple<bool, uint> key = new(puzzle.IsBlack, puzzle._puzzleNumber);
+                Tuple<bool, uint> key = new(puzzle.IsBlack, puzzle.PuzzleNumber);
                 if (!_puzzleToId.ContainsKey(key)) {
                     _puzzleToId[key] = _idCounter++;
                 }

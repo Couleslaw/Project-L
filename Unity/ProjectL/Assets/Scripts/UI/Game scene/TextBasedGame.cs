@@ -123,15 +123,15 @@ public class TextBasedGame : MonoBehaviour
             }
 
             // await for continue button click
-            while (!_shouldContinue) {
-                try {
-                    await Awaitable.WaitForSecondsAsync(0.1f, destroyCancellationToken);
-                }
-                catch (OperationCanceledException) {
-                    Debug.Log("Game loop cancelled.");
-                    return;
-                }
-            }
+            //while (!_shouldContinue) {
+            //    try {
+            //        await Awaitable.WaitForSecondsAsync(0.1f, destroyCancellationToken);
+            //    }
+            //    catch (OperationCanceledException) {
+            //        Debug.Log("Game loop cancelled.");
+            //        return;
+            //    }
+            //}
             _shouldContinue = false;
             GameTextView.Clear();
         }

@@ -31,6 +31,18 @@ public static class GameEndStats
     }
 
     /// <summary>
+    /// Sets the number of leftover tetrominos for the specified player.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="numLeftoverTetrominos">The number of leftover tetrominos.</param>
+    public static void SetNumLeftoverTetrominos(Player player, int numLeftoverTetrominos)
+    {
+        if (!PlayerGameEndStats.ContainsKey(player)) {
+            PlayerGameEndStats.Add(player, new GameEndInfo(numLeftoverTetrominos: numLeftoverTetrominos));
+        }
+    }
+
+    /// <summary>
     /// Adds a finished puzzle to the specified player's info.
     /// </summary>
     /// <param name="player">The player who finished the puzzle.</param>
@@ -90,16 +102,23 @@ public static class GameEndStats
         public List<TetrominoShape> FinishingTouchesTetrominos;
 
         /// <summary>
+        /// The number of leftover tetrominos that the player has at the end of the game.
+        /// </summary>
+        public int NumLeftoverTetrominos;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="GameEndInfo"/> class.
         /// </summary>
         /// <param name="finishedPuzzles">Optional list of finished puzzles.</param>
         /// <param name="unfinishedPuzzles">Optional list of unfinished puzzles.</param>
         /// <param name="finishingTouchesTetrominos">Optional list of finishing touches tetrominos.</param>
-        public GameEndInfo(List<Puzzle>? finishedPuzzles = null, List<Puzzle>? unfinishedPuzzles = null, List<TetrominoShape>? finishingTouchesTetrominos = null)
+        /// <param name="numLeftoverTetrominos">Optional number of leftover tetrominos.</param>
+        public GameEndInfo(List<Puzzle>? finishedPuzzles = null, List<Puzzle>? unfinishedPuzzles = null, List<TetrominoShape>? finishingTouchesTetrominos = null, int numLeftoverTetrominos = 0)
         {
             FinishedPuzzles = finishedPuzzles ?? new List<Puzzle>();
             UnfinishedPuzzles = unfinishedPuzzles ?? new List<Puzzle>();
             FinishingTouchesTetrominos = finishingTouchesTetrominos ?? new List<TetrominoShape>();
+            NumLeftoverTetrominos = numLeftoverTetrominos;
         }
     }
 }
