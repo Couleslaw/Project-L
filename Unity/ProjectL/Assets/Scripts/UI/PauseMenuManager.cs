@@ -38,6 +38,9 @@ public class PauseMenuManager : MonoBehaviour
     private SoundManager? _soundManager;
     private CanvasGroup? _canvasGroup;
 
+    private const int _animationSliderMinValue = 10;
+    private const int _animationSliderMaxValue = 40;
+
     #endregion
 
     #region Methods
@@ -115,12 +118,16 @@ public class PauseMenuManager : MonoBehaviour
 
     /// <summary>
     /// Handles the value change event for the animation speed slider. Stores the new value in PlayerPrefs and updates the displayed value.
+    /// Values on the slider range from <see cref="_animationSliderMinValue"/> (10) to <see cref="_animationSliderMaxValue"/> (40), which is then converted to a speed factor of 1.0 to 4.0.
     /// </summary>
     /// <param name="value">The value.</param>
     public void OnAnimationSpeedSliderValueChanged(Single value)
     {
         // play sound
         _soundManager?.PlaySliderSound();
+
+        // convert 37 -> 3.7
+        value = value / 10f;
 
         // save value to PlayerPrefs
         PlayerPrefs.SetFloat(AnimationSpeedManager.AnimationSpeedPlayerPrefKey, value);
@@ -130,7 +137,6 @@ public class PauseMenuManager : MonoBehaviour
             return;  // safety check
         }
 
-        value = AnimationSpeedManager.CalculateAdjustedAnimationSpeed(value);
         animationSpeedSliderValueLabel.text = value.ToString(CultureInfo.InvariantCulture) + "×";
     }
 
@@ -224,9 +230,6 @@ public class PauseMenuManager : MonoBehaviour
         // try to find GameManager
         _gameManager = GameObject.FindAnyObjectByType<GameManager>();
 
-        // try to find SoundManager
-        _soundManager = GameObject.FindAnyObjectByType<SoundManager>();
-
         // get scene transitions
         _sceneTransitions = transform.GetComponent<SceneTransitions>();
         if (_sceneTransitions == null) {
@@ -250,10 +253,22 @@ public class PauseMenuManager : MonoBehaviour
             return;
         }
 
-        scoreToggle.isOn = false; // hide score info by default
-        animationSpeedSlider.value = AnimationSpeedManager.AnimationSpeed;
+        // hide score info by default
+        scoreToggle.isOn = false;
+
+        // setup animation speed slider
+        animationSpeedSlider.minValue = _animationSliderMinValue;
+        animationSpeedSlider.maxValue = _animationSliderMaxValue;
+        animationSpeedSlider.value = Mathf.Round(AnimationSpeedManager.AnimationSpeed * 10f);
+
+        // make sure that the panel had correct size
         AdjustPanelSize();
-        HidePauseMenu(); // hide the pause menu by default
+
+        // hide the pause menu by default
+        HidePauseMenu(); 
+
+        // try to find SoundManager - at the end, sounds should not play during initialization
+        _soundManager = GameObject.FindAnyObjectByType<SoundManager>();
     }
 
     #endregion

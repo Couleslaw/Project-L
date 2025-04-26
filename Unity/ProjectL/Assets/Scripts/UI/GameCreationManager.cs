@@ -33,6 +33,9 @@ public class GameCreationManager : MonoBehaviour
     private SoundManager? _soundManager;
     private SceneTransitions? _sceneTransitions;
 
+    private const int _sliderMultiplier = 5;
+    private const int _maxNumInitialTetrominos = 30;
+
     #endregion
 
     #region Methods
@@ -46,7 +49,7 @@ public class GameCreationManager : MonoBehaviour
             Debug.LogError("Slider or text component is not assigned.");
             return;
         }
-        int num = (int)numPiecesSlider.value;
+        int num = (int)numPiecesSlider.value * _sliderMultiplier;
         GameStartParams.NumInitialTetrominos = num;
         numPiecesText.text = num.ToString();
         _soundManager?.PlaySliderSound();
@@ -134,9 +137,6 @@ public class GameCreationManager : MonoBehaviour
             return;
         }
 
-        // try to find the sound manager
-        _soundManager = GameObject.FindAnyObjectByType<SoundManager>();
-
         // get transitions
         _sceneTransitions = gameObject.transform.GetComponent<SceneTransitions>();
 
@@ -147,12 +147,25 @@ public class GameCreationManager : MonoBehaviour
         shuffleCheckbox.isOn = GameStartParams.ShufflePlayersDefault;
 
         // Set the initial state of num pieces slider
-        numPiecesSlider.minValue = GameState.MinNumInitialTetrominos;
-        numPiecesSlider.value = GameStartParams.NumInitialTetrominosDefault;
-        numPiecesText.text = numPiecesSlider.value.ToString();
+        SetUpSlider();
 
         // make error text box invisible
         errorTextBox.alpha = 0f;
+
+        // try to find the sound manager
+        _soundManager = GameObject.FindAnyObjectByType<SoundManager>();
+    }
+
+    private void SetUpSlider()
+    {
+        if (numPiecesSlider == null || numPiecesText == null) {
+            Debug.LogError("Slider or text component is not assigned.");
+            return;
+        }
+
+        numPiecesSlider.minValue = GameState.MinNumInitialTetrominos / _sliderMultiplier;
+        numPiecesSlider.maxValue = _maxNumInitialTetrominos / _sliderMultiplier;
+        numPiecesSlider.value = GameStartParams.NumInitialTetrominosDefault / _sliderMultiplier;
     }
 
     /// <summary>

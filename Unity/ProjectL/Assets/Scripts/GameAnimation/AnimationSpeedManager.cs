@@ -13,8 +13,6 @@ public class AnimationSpeedManager : MonoBehaviour
     /// <summary>
     /// The animation speed slider's display value will be adjusted to the nearest multiple of this value.
     /// </summary>
-    public const float AnimationSpeedStep = 0.1f;
-
     private const float _animationSpeedDefault = 1f;
 
     #endregion
@@ -29,16 +27,6 @@ public class AnimationSpeedManager : MonoBehaviour
     #endregion
 
     #region Methods
-
-    /// <summary>
-    /// Calculates the closest (integer) multiple of <see cref="AnimationSpeedStep"/>.
-    /// </summary>
-    /// <param name="value">The value to adjust.</param>
-    /// <returns>The adjusted value.</returns>
-    public static float CalculateAdjustedAnimationSpeed(Single value)
-    {
-        return Mathf.Round(value / AnimationSpeedStep) * AnimationSpeedStep;
-    }
 
     private void Awake()
     {
