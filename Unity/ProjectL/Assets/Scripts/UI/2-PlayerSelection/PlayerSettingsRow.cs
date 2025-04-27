@@ -10,9 +10,8 @@ namespace ProjectL.UI.PlayerSelection
     using TMPro;
     using UnityEngine;
     using UnityEngine.UI;
-    using ProjectL.UI.Sound;
-    using ProjectL.GameData;
-    using ProjectL.Utils;
+    using ProjectL.UI;
+    using ProjectL.DataManagement;
 
     /// <summary>
     /// Manages the PlayerSelectionRow prefab, symbolizing one row in the Game Creation screen.

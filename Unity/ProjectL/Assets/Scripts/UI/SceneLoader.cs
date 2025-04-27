@@ -1,11 +1,10 @@
 #nullable enable
 
-namespace ProjectL.Utils
+namespace ProjectL.UI
 {
     using System.Threading.Tasks;
     using UnityEngine;
     using UnityEngine.SceneManagement;
-    using ProjectL.UI.PauseMenu;
 
 
     /// <summary>

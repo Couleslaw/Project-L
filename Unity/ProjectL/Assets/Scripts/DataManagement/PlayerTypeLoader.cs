@@ -1,7 +1,7 @@
 #nullable enable
 
 
-namespace ProjectL.Utils
+namespace ProjectL.DataManagement
 {
     using IniParser;
     using IniParser.Model;
@@ -13,7 +13,6 @@ namespace ProjectL.Utils
     using System.Reflection;
     using System.Runtime.Versioning;
     using UnityEngine;
-    using ProjectL.GameData;
 
 
     /// <summary>

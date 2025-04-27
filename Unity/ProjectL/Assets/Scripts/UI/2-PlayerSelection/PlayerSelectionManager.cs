@@ -9,9 +9,8 @@ namespace ProjectL.UI.PlayerSelection
     using TMPro;
     using UnityEngine;
     using UnityEngine.UI;
-    using ProjectL.UI.Sound;
-    using ProjectL.GameData;
-    using ProjectL.Utils;
+    using ProjectL.UI;
+    using ProjectL.DataManagement;
 
 
     /// <summary>

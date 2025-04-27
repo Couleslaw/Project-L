@@ -6,7 +6,7 @@ namespace ProjectL.UI.FinalResults
     using System.Threading.Tasks;
     using TMPro;
     using UnityEngine;
-    using ProjectL.GameData;
+    using ProjectL.DataManagement;
 
     public class ScoreDetailsColumn : MonoBehaviour
     {

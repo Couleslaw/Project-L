@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace ProjectL.UI.Sound
+namespace ProjectL.UI
 {
     using UnityEngine;
     using UnityEngine.UI;

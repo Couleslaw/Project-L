@@ -9,9 +9,8 @@ namespace ProjectL.UI.FinalResults
     using TMPro;
     using UnityEngine;
     using UnityEngine.UI;
-    using ProjectL.UI.Sound;
-    using ProjectL.Utils;
-    using ProjectL.GameData;
+    using ProjectL.UI;
+    using ProjectL.DataManagement;
 
     public class FinalAnimationManager : MonoBehaviour
     {

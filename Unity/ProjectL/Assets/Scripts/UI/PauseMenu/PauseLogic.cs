@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace ProjectL.UI.PauseMenu
+namespace ProjectL.UI
 {
     using System;
     using UnityEngine;

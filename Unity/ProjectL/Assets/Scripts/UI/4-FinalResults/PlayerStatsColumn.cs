@@ -3,8 +3,7 @@
 namespace ProjectL.UI.FinalResults
 {
     using ProjectLCore.GamePieces;
-    using ProjectL.GameData;
-    using ProjectL.Utils;
+    using ProjectL.DataManagement;
     using System.Threading;
     using System.Threading.Tasks;
     using TMPro;

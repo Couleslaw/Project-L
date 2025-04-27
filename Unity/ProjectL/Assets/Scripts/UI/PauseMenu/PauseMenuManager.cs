@@ -1,15 +1,13 @@
 #nullable enable
 
-namespace ProjectL.UI.PauseMenu
+namespace ProjectL.UI
 {
     using System;
     using System.Globalization;
     using TMPro;
     using UnityEngine;
     using UnityEngine.UI;
-    using ProjectL.UI.Sound;
-    using ProjectL.GameData;
-    using ProjectL.Utils;
+    using ProjectL.DataManagement;
 
     /// <summary>
     /// Manages the PauseMenu prefab.

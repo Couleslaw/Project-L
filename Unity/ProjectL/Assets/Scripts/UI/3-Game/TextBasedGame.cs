@@ -8,7 +8,7 @@ namespace ProjectL.UI.GameScene
     using ProjectLCore.GameManagers;
     using ProjectLCore.GamePieces;
     using ProjectLCore.Players;
-    using ProjectL.GameData;
+    using ProjectL.DataManagement;
     using System;
     using System.Text;
     using System.Threading.Tasks;

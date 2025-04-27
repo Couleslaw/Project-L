@@ -14,9 +14,8 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using ProjectL.UI.GameScene;
-using ProjectL.UI.PauseMenu;
-using ProjectL.GameData;
-using ProjectL.Utils;
+using ProjectL.UI;
+using ProjectL.DataManagement;
 
 public class GameManager : MonoBehaviour
 {

@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace ProjectL.GameData
+namespace ProjectL.DataManagement
 {
     using ProjectLCore.GamePieces;
     using ProjectLCore.Players;

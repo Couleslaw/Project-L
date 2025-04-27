@@ -1,8 +1,7 @@
 namespace ProjectL.UI.MainMenu
 {
     using UnityEngine;
-    using ProjectL.UI.Sound;
-    using ProjectL.Utils;
+    using ProjectL.UI;
 
     /// <summary>
     /// Manages the "Main Menu" scene.

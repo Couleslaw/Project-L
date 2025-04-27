@@ -1,4 +1,4 @@
-namespace ProjectL.Utils
+namespace ProjectL.DataManagement
 {
     using UnityEngine;
 
