@@ -1,4 +1,4 @@
-## Unity game roadmap
+## TODO
 
 - [x] create a new Unity project
 - [x] add start screen and credits
@@ -13,7 +13,6 @@
   - [x] num pieces slider
   - [x] shuffle players checkbox
 - [x] add UI sounds
-- [ ] update the _AI Player Guide_
 
 ### Start creating main game screen
 
@@ -38,3 +37,18 @@
 - [x] add final screen pause menu
 
 ### Create main game screen
+
+- [ ] create game layout
+  - [ ] puzzle container
+    - [ ] puzzle action zone
+    - [ ] puzzle zone
+  - [ ] player zone
+    - [ ] create player row prefab
+      - [ ] background which highlights when current player
+  - [ ] player action zone
+    - [ ] player action zone
+    - [ ] player zone
+      - [ ] create player column prefab
+- [ ] add action buttons logic
+- [ ] add logic for human actions
+- [ ] add animation for AI actions
