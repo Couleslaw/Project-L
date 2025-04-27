@@ -23,6 +23,7 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioSource? inputLineSound;
     [SerializeField] private AudioSource? sliderSound;
     [SerializeField] private AudioSource? errorSound;
+    [SerializeField] private AudioSource? tapSoundEffect;
 
     #endregion
 
@@ -39,6 +40,9 @@ public class SoundManager : MonoBehaviour
 
     /// <summary> Plays the error sound effect.  </summary>
     public void PlayErrorSound() => PlaySoundEffect(errorSound);
+
+    /// <summary> Plays the tap sound effect.  </summary>
+    public void PlayTapSoundEffect() => PlaySoundEffect(tapSoundEffect);
 
 
     /// <summary>

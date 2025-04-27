@@ -259,7 +259,7 @@ public class PauseMenuManager : MonoBehaviour
         // setup animation speed slider
         animationSpeedSlider.minValue = _animationSliderMinValue;
         animationSpeedSlider.maxValue = _animationSliderMaxValue;
-        animationSpeedSlider.value = Mathf.Round(AnimationSpeedManager.AnimationSpeed * 10f);
+        animationSpeedSlider.value = Mathf.Round(PlayerPrefs.GetFloat(AnimationSpeedManager.AnimationSpeedPlayerPrefKey) * 10f);
 
         // make sure that the panel had correct size
         AdjustPanelSize();

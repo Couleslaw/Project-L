@@ -13,4 +13,4 @@ Intutivne setActive(false) / setActive(true), ale vynika problem. Ruzny pocet hr
 
 ## Specification notes
 
-- max player name length: 15 characters
+- max player name length: 16 characters

@@ -9,6 +9,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// A Simple AI player that chooses the best puzzle to solve and then solves it using IDA*.
@@ -38,6 +39,7 @@
         /// <param name="filePath">The path to a file where the player might be storing some information.</param>
         protected override void Init(int numPlayers, List<Puzzle> allPuzzles, string? filePath)
         {
+            // do nothing
         }
 
         /// <summary>
@@ -247,13 +249,18 @@
 
             // choose the best puzzle
             List<PuzzleSolutionInfo> solutionInfos = new();
-            foreach (Puzzle puzzle in possiblePuzzles) {
+            object lockObject = new();
+
+            Parallel.ForEach(possiblePuzzles, puzzle => {
                 var solution = SolvePuzzleWithIDAStar(puzzle, gameInfo.NumTetrominosLeft, myInfo.NumTetrominosOwned, maxDepth);
                 // if puzzle has a solution --> add it to the list
                 if (solution.Item1 is not null) {
-                    solutionInfos.Add(new(puzzle, solution.Item1, solution.Item1.Count));
+                    var solutionInfo = new PuzzleSolutionInfo(puzzle, solution.Item1, solution.Item1.Count);
+                    lock (lockObject) {
+                        solutionInfos.Add(solutionInfo);
+                    }
                 }
-            }
+            });
 
             // if there are no puzzles with a solution --> return null
             if (solutionInfos.Count == 0) {

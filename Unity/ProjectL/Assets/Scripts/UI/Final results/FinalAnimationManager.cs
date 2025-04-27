@@ -17,6 +17,7 @@ public class FinalAnimationManager : MonoBehaviour
     [Header("Player Columns")]
     [SerializeField] private Transform? playerColumnsParent;
     [SerializeField] private PlayerStatsColumn? playerStatsColumnPrefab;
+    [SerializeField] private CanvasGroup? playerStatsPanel;
 
     [Header("Detail Columns")]
     [SerializeField] private Transform? detailsColumnsParent;
@@ -28,6 +29,9 @@ public class FinalAnimationManager : MonoBehaviour
 
     private List<PlayerStatsColumn> playerStatsColumns = new();
     private List<ScoreDetailsColumn> detailsColumns = new();
+
+    public const float AnimationDelay = 2f;
+
 
     private void Awake()
     {
@@ -58,30 +62,64 @@ public class FinalAnimationManager : MonoBehaviour
 
     private async void Start()
     {
+        // hide everything
         HideDividerLine();
         HideDetailsPanel();
+        HidePlayerStatsPanel();
         SetupFinalResultsPanel();
-        
 
-        // animate each player column
+        // show player stats labels
+        await Awaitable.WaitForSecondsAsync(AnimationDelay * AnimationSpeedManager.AnimationSpeed);
+        ShowPlayerStatsPanel();
+        _soundManager?.PlayTapSoundEffect();
+        await Awaitable.WaitForSecondsAsync(AnimationDelay * AnimationSpeedManager.AnimationSpeed);
+
+        // animate player stats
+        var tasks = new List<Task>();
         foreach (var playerColumn in playerStatsColumns) {
-            await playerColumn.AnimateAsync();
+            tasks.Add(playerColumn.AnimateStartAsync());
         }
+        await Task.WhenAll(tasks);
+
+        // animate completed puzzles
+        tasks.Clear();
+        foreach (var playerColumn in playerStatsColumns) {
+            tasks.Add(playerColumn.AnimateCompletedAsync());
+        }
+        await Task.WhenAll(tasks);
+
+        // animate tetrominos
+        tasks.Clear();
+        foreach (var playerColumn in playerStatsColumns) {
+            tasks.Add(playerColumn.AnimateTetrominosAsync());
+        }
+        await Task.WhenAll(tasks);
+
+        // animate incomplete puzzles
+        tasks.Clear();
+        foreach (var playerColumn in playerStatsColumns) {
+            tasks.Add(playerColumn.AnimateIncompleteAsync());
+        }
+        await Task.WhenAll(tasks);
 
         // if two players have the same score, show the detail columns
         if (!AreAllScoresDifferent()) {
             ShowDividerLine();
+            _soundManager?.PlayTapSoundEffect();
+            await Awaitable.WaitForSecondsAsync(AnimationDelay * AnimationSpeedManager.AnimationSpeed);
             ShowDetailsPanel();
+            _soundManager?.PlayTapSoundEffect();
+            await Awaitable.WaitForSecondsAsync(AnimationDelay * AnimationSpeedManager.AnimationSpeed);
 
             // animate all columns at once
-            var tasks = new List<Task>();
+            tasks.Clear();
             foreach (var detailsColumn in detailsColumns) {
                 tasks.Add(detailsColumn.AnimateAsync());
             }
             await Task.WhenAll(tasks);
         }
 
-        ShowFinalResultsPanel();
+        await AnimateFinalResultsPanelAsync();
     }
 
     private bool AreAllScoresDifferent()
@@ -93,10 +131,25 @@ public class FinalAnimationManager : MonoBehaviour
         return scores.Count == playerStatsColumns.Count;
     }
 
+    private void HidePlayerStatsPanel()
+    {
+        if (playerStatsPanel == null) {
+            return;
+        }
+        playerStatsPanel!.alpha = 0;
+    }
+
+    private void ShowPlayerStatsPanel()
+    {
+        if (playerStatsPanel == null) {
+            return;
+        }
+        playerStatsPanel!.alpha = 1;
+    }
+
     private void SetupFinalResultsPanel()
     {
         if (homeButton == null || finalResultsText == null || finalResultsPanel == null) {
-            Debug.LogError("One or more Final Results Panel UI elements are not assigned in the inspector.");
             return;
         }
 
@@ -116,22 +169,51 @@ public class FinalAnimationManager : MonoBehaviour
         finalResultsPanel.alpha = 0;
     }
 
-    private void ShowFinalResultsPanel()
+    private async Task AnimateFinalResultsPanelAsync()
     {
-        homeButton!.interactable = true;
-        finalResultsPanel!.alpha = 1;
+        if (finalResultsPanel == null || homeButton == null) {
+            return;
+        }
+
+        finalResultsPanel.alpha = 1;
+        _soundManager?.PlayTapSoundEffect();
+        await Awaitable.WaitForSecondsAsync(AnimationDelay * AnimationSpeedManager.AnimationSpeed);
+        homeButton.interactable = true;
+        _soundManager?.PlayTapSoundEffect();
     }
 
 
-    private void HideDividerLine() => dividerLine!.color = new Color(dividerLine.color.r, dividerLine.color.g, dividerLine.color.b, 0);
+    private void HideDividerLine()
+    {
+        if (dividerLine == null) {
+            return;
+        }
+        dividerLine!.color = new Color(dividerLine.color.r, dividerLine.color.g, dividerLine.color.b, 0);
+    }
 
-    private void ShowDividerLine() => dividerLine!.color = new Color(dividerLine.color.r, dividerLine.color.g, dividerLine.color.b, 1);
+    private void ShowDividerLine()
+    {
+        if (dividerLine == null) {
+            return;
+        }
+        dividerLine!.color = new Color(dividerLine.color.r, dividerLine.color.g, dividerLine.color.b, 1);
+    }
 
-    private void HideDetailsPanel() => detailsPanel!.alpha = 0;
+    private void HideDetailsPanel()
+    {
+        if (detailsPanel == null) {
+            return;
+        }
+        detailsPanel!.alpha = 0;
+    }
 
-    private void ShowDetailsPanel() => detailsPanel!.alpha = 1;
-
-
+    private void ShowDetailsPanel()
+    {
+        if (detailsPanel == null) {
+            return;
+        }
+        detailsPanel!.alpha = 1;
+    }
 
     public void OnHomeButtonClick()
     {

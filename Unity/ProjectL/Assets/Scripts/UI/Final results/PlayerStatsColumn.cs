@@ -25,6 +25,8 @@ public class PlayerStatsColumn : MonoBehaviour
 
     private GameEndStats.GameEndInfo? _gameEndInfo;
 
+    private SoundManager? _soundManager;
+
     #endregion
 
     #region Properties
@@ -37,43 +39,70 @@ public class PlayerStatsColumn : MonoBehaviour
 
     public void Setup(Player player, GameEndStats.GameEndInfo gameEndInfo)
     {
-        // set player name
-        playerNameLabel!.text = player.Name;
+        if (playerNameLabel == null || playerScoreLabel == null) {
+            return;
+        }
+        playerNameLabel.text = player.Name;
+        playerScoreLabel.text = "0";
         _gameEndInfo = gameEndInfo;
     }
 
-    public async Task AnimateAsync()
+    public async Task AnimateStartAsync()
     {
-        ShowColumn();
+        if (_gameEndInfo == null) {
+            return;
+        }
 
-        foreach (var puzzle in _gameEndInfo!.FinishedPuzzles) {
-            HideCompletedPuzzle();
-            await Task.Delay(100);
+        ShowColumn();
+        _soundManager!.PlayTapSoundEffect();
+        await Awaitable.WaitForSecondsAsync(FinalAnimationManager.AnimationDelay * AnimationSpeedManager.AnimationSpeed);
+        ShowScoreLabel();
+        _soundManager!.PlayTapSoundEffect();
+        await Awaitable.WaitForSecondsAsync(FinalAnimationManager.AnimationDelay * AnimationSpeedManager.AnimationSpeed);
+    }
+
+    public async Task AnimateCompletedAsync()
+    {
+        if (_gameEndInfo == null) {
+            return;
+        }
+
+        foreach (var puzzle in _gameEndInfo.FinishedPuzzles) {
             ShowCompletedPuzzle();
             SetCompletedPuzzleSprite(puzzle);
+            _soundManager!.PlayTapSoundEffect();
             UpdateScore(puzzle.RewardScore);
-            await Task.Delay(1000);
-            
+            await Awaitable.WaitForSecondsAsync(FinalAnimationManager.AnimationDelay * AnimationSpeedManager.AnimationSpeed);
+        }
+    }
+
+    public async Task AnimateTetrominosAsync()
+    {
+        if (_gameEndInfo == null) {
+            return;
         }
 
-        // show finishing touches tetrominos
         foreach (var tetromino in _gameEndInfo.FinishingTouchesTetrominos) {
-            HideFinishingTouches();
-            await Task.Delay(100);
             ShowFinishingTouches();
             SetTetrominoSprite(tetromino);
+            _soundManager!.PlayTapSoundEffect();
             UpdateScore(-1);
-            await Task.Delay(1000);
+            await Awaitable.WaitForSecondsAsync(FinalAnimationManager.AnimationDelay * AnimationSpeedManager.AnimationSpeed);
         }
+    }
 
-        // show incomplete puzzles
+    public async Task AnimateIncompleteAsync()
+    {
+        if (_gameEndInfo == null) {
+            return;
+        }
+        
         foreach (var puzzle in _gameEndInfo.UnfinishedPuzzles) {
-            HideIncompletePuzzles();
-            await Task.Delay(100);
             ShowIncompletePuzzles();
             SetIncompletePuzzleSprite(puzzle);
-            UpdateScore(-puzzle.RewardScore);
-            await Task.Delay(1000);
+            _soundManager!.PlayTapSoundEffect();
+            UpdateScore(puzzle.RewardScore);
+            await Awaitable.WaitForSecondsAsync(FinalAnimationManager.AnimationDelay * AnimationSpeedManager.AnimationSpeed);
         }
     }
 
@@ -85,30 +114,41 @@ public class PlayerStatsColumn : MonoBehaviour
             return;
         }
         _canvasGroup = GetComponent<CanvasGroup>();
+        _soundManager = FindAnyObjectByType<SoundManager>();
 
         HideColumn();
         HideCompletedPuzzle();
         HideIncompletePuzzles();
+        HideScoreLabel();
         HideFinishingTouches();
     }
 
     private void UpdateScore(int delta)
     {
+        if (playerScoreLabel == null) {
+            return;
+        }
         Score += delta;
-        playerScoreLabel!.text = Score.ToString();
+        playerScoreLabel.text = Score.ToString();
     }
 
     private void SetTetrominoSprite(TetrominoShape tetromino)
     {
+        if (tetrominoImage == null) {
+            return;
+        }
         if (ResourcesLoader.TryGetTetrominoSprite(tetromino, out Sprite? sprite)) {
-            tetrominoImage!.sprite = sprite!;
+            tetrominoImage.sprite = sprite!;
         }
     }
 
     private void SetPuzzleSprite(Image? puzzleImage, Puzzle puzzle)
     {
+        if (puzzleImage == null) {
+            return;
+        }
         if (ResourcesLoader.TryGetPuzzleSprite(puzzle, PuzzleSpriteType.BorderBright, out Sprite? sprite)) {
-            puzzleImage!.sprite = sprite!;
+            puzzleImage.sprite = sprite!;
         }
     }
 
@@ -116,16 +156,79 @@ public class PlayerStatsColumn : MonoBehaviour
 
     private void SetIncompletePuzzleSprite(Puzzle puzzle) => SetPuzzleSprite(incompletePuzzleImage, puzzle);
 
-    private void HideColumn() => _canvasGroup!.alpha = 0;
-    private void ShowColumn() => _canvasGroup!.alpha = 1;
+    private void HideColumn()
+    {
+        if (_canvasGroup == null) {
+            return;
+        }
+        _canvasGroup.alpha = 0;
+    }
+    private void ShowColumn()
+    {
+        if (_canvasGroup == null) {
+            return;
+        }
+        _canvasGroup.alpha = 1;
+    }
 
-    private void HideCompletedPuzzle() => completedPuzzleImage!.color = Color.black;
-    private void HideIncompletePuzzles() => incompletePuzzleImage!.color = Color.black;
-    private void HideFinishingTouches() => tetrominoImage!.color = Color.black;
+    private void HideCompletedPuzzle()
+    {
+        if (completedPuzzleImage == null) {
+            return;
+        }
+        completedPuzzleImage.color = Color.black;
+    }
+    private void HideIncompletePuzzles()
+    {
+        if (incompletePuzzleImage == null) {
+            return;
+        }
+        incompletePuzzleImage.color = Color.black;
+    }
+    private void HideFinishingTouches()
+    {
+        if (tetrominoImage == null) {
+            return;
+        }
+        tetrominoImage.color = Color.black;
+    }
 
-    private void ShowCompletedPuzzle() => completedPuzzleImage!.color = Color.white;
-    private void ShowIncompletePuzzles() => incompletePuzzleImage!.color = Color.white;
-    private void ShowFinishingTouches() => tetrominoImage!.color = Color.white;
+    private void ShowCompletedPuzzle()
+    {
+        if (completedPuzzleImage == null) {
+            return;
+        }
+        completedPuzzleImage.color = Color.white;
+    }
+    private void ShowIncompletePuzzles()
+    {
+        if (incompletePuzzleImage == null) {
+            return;
+        }
+        incompletePuzzleImage.color = Color.white;
+    }
+    private void ShowFinishingTouches()
+    {
+        if (tetrominoImage == null) {
+            return;
+        }
+        tetrominoImage.color = Color.white;
+    }
+    private void HideScoreLabel()
+    {
+        if (playerScoreLabel == null) {
+            return;
+        }
+        playerScoreLabel.color = Color.black;
+    }
+
+    private void ShowScoreLabel()
+    {
+        if (playerScoreLabel == null) {
+            return;
+        }
+        playerScoreLabel.color = Color.white;
+    }
 
 
     #endregion

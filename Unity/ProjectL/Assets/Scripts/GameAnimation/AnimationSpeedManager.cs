@@ -22,7 +22,7 @@ public class AnimationSpeedManager : MonoBehaviour
     /// <summary>
     /// Multiplier for the animation speed.
     /// </summary>
-    public static float AnimationSpeed => PlayerPrefs.GetFloat(AnimationSpeedPlayerPrefKey);
+    public static float AnimationSpeed => 1f / PlayerPrefs.GetFloat(AnimationSpeedPlayerPrefKey);
 
     #endregion
 

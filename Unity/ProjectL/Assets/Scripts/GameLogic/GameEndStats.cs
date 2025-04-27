@@ -38,8 +38,9 @@ public static class GameEndStats
     public static void SetNumLeftoverTetrominos(Player player, int numLeftoverTetrominos)
     {
         if (!PlayerGameEndStats.ContainsKey(player)) {
-            PlayerGameEndStats.Add(player, new GameEndInfo(numLeftoverTetrominos: numLeftoverTetrominos));
+            PlayerGameEndStats.Add(player, new GameEndInfo());
         }
+        PlayerGameEndStats[player].NumLeftoverTetrominos = numLeftoverTetrominos;
     }
 
     /// <summary>
