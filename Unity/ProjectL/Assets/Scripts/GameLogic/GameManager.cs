@@ -1,3 +1,5 @@
+#nullable enable
+
 using ProjectLCore.GameActions;
 using ProjectLCore.GameActions.Verification;
 using ProjectLCore.GameLogic;
@@ -10,17 +12,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UnityEditor.PackageManager;
 using UnityEngine;
+using ProjectL.UI.GameScene;
+using ProjectL.UI.PauseMenu;
+using ProjectL.GameData;
+using ProjectL.Utils;
 
-#nullable enable
 public class GameManager : MonoBehaviour
 {
-    #region Constants
-
-
-    #endregion
-
     #region Fields
 
     [Header("UI Elements")]
@@ -37,84 +36,21 @@ public class GameManager : MonoBehaviour
 
     #region Methods
 
-    /// <summary>
-    /// Retrieves the current scores of all players in the game.
-    /// </summary>
-    /// <returns>
-    /// A dictionary where the key is the player's name and the value is their score; 
-    /// or <see langword="null"/> if the game is not initialized.
-    /// </returns>
-    public Dictionary<string, int>? GetPlayerScores()
-    {
-        if (_game == null) {
-            return null;
-        }
-
-        var scores = new Dictionary<string, int>();
-        foreach (var player in _game.Players) {
-            scores[player.Name] = _game.PlayerStates[player].Score;
-        }
-
-        return scores;
-    }
-
-    /// <summary>
-    /// Gets the name of the current player.
-    /// </summary>
-    /// <returns>
-    /// The name of the current player, or <see langword="null"/> if the game is not initialized.
-    /// </returns>
-    public string? GetCurrentPlayerName()
-    {
-        if (_game == null) {
-            return null;
-        }
-        return _game.CurrentPlayer.Name;
-    }
-
-    /// <summary>
-    /// Retrieves the number of actions left for the current player in their turn.
-    /// </summary>
-    /// <returns>
-    /// The number of actions left, or <see langword="null"/> if the game is not initialized.
-    /// </returns>
-    public int? GetCurrentPlayerActionsLeft()
-    {
-        if (_game == null) {
-            return null;
-        }
-        return _game.CurrentTurn.NumActionsLeft;
-    }
-
-    /// <summary>
-    /// Gets the current phase of the game.
-    /// </summary>
-    /// <returns>
-    /// The current game phase, or <see langword="null"/> if the game is not initialized.
-    /// </returns>
-    public GamePhase? GetCurrentGamePhase()
-    {
-        if (_game == null) {
-            return null;
-        }
-        return _game.CurrentGamePhase;
-    }
-
     private void Awake()
     {
+        // check that all components are assigned
+        if (loggerPrefab == null || errorMessageBoxPrefab == null || gameEndedBoxPrefab == null) {
+            Debug.LogError("GameManager: One or more required UI elements are not assigned.");
+            return;
+        }
+
         // create a logger instance if it doesn't exist
         if (EasyUI.Logger.Instance == null)
             Instantiate(loggerPrefab);
         else
             EasyUI.Logger.Instance.gameObject.SetActive(true);
 
-        // setup error message box
-        if (errorMessageBoxPrefab != null) {
-            ErrorGameEnd.Setup(errorMessageBoxPrefab);
-        }
-        else {
-            Debug.LogError("Error message box prefab is not set.");
-        }
+        GameErrorHandler.Setup(errorMessageBoxPrefab);
     }
 
     private async void Start()
@@ -129,14 +65,14 @@ public class GameManager : MonoBehaviour
 
         // initialize game
         _game.InitializeGame();
+        RuntimeGameInfo.RegisterGame(_game);
 
         // initialize players
         InitializeAIPlayersAsync(_game.Players, _game.GameState);
 
         // game loop
-        GameEndStats.Clear();
+        GameSummary.Clear();
         await textGame!.GameLoopAsync(_game);
-
 
         // final results
         PrepareGameEndStats();
@@ -145,9 +81,14 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (ErrorGameEnd.ShouldEndGameWithError && !ErrorGameEnd.EndedGameWithError) {
-            ErrorGameEnd.EndGameWithError();
+        if (GameErrorHandler.ShouldEndGameWithError && !GameErrorHandler.EndedGameWithError) {
+            GameErrorHandler.EndGameWithError();
         }
+    }
+
+    private void OnDestroy()
+    {
+        RuntimeGameInfo.UnregisterGame();
     }
 
     /// <summary>
@@ -156,13 +97,13 @@ public class GameManager : MonoBehaviour
     /// <returns>A <see cref="GameState"/> instance if successful; otherwise <see langword="null"/>.</returns>
     private GameState? LoadGameState()
     {
-        if (ErrorGameEnd.ShouldEndGameWithError) {
+        if (GameErrorHandler.ShouldEndGameWithError) {
             return null;
         }
 
         // read the puzzles file
         if (!ResourcesLoader.TryReadPuzzleFile(out string puzzleFileText)) {
-            ErrorGameEnd.FatalErrorOccurred("Failed to load puzzles file.");
+            GameErrorHandler.FatalErrorOccurred("Failed to load puzzles file.");
             return null;
         }
 
@@ -170,12 +111,12 @@ public class GameManager : MonoBehaviour
         try {
             return GameState.CreateFromStream(
                 puzzleStream: GenerateStreamFromString(puzzleFileText),
-                numInitialTetrominos: GameStartParams.NumInitialTetrominos,
-                numBlackPuzzles: GameStartParams.NumBlackPuzzles
+                numInitialTetrominos: GameSettings.NumInitialTetrominos,
+                numBlackPuzzles: GameSettings.NumBlackPuzzles
                 );
         }
         catch (Exception e) {
-            ErrorGameEnd.FatalErrorOccurred($"Failed to load game state. {e.Message}");
+            GameErrorHandler.FatalErrorOccurred($"Failed to load game state. {e.Message}");
             return null;
         }
 
@@ -196,13 +137,13 @@ public class GameManager : MonoBehaviour
     /// <returns>A list of instantiated players if successful; otherwise <see langword="null"/>.</returns>
     private List<Player>? LoadPlayers()
     {
-        if (ErrorGameEnd.ShouldEndGameWithError) {
+        if (GameErrorHandler.ShouldEndGameWithError) {
             return null;
         }
 
         // check if player selection happened
-        if (GameStartParams.Players.Count == 0) {
-            ErrorGameEnd.FatalErrorOccurred("No players selected.");
+        if (GameSettings.Players.Count == 0) {
+            GameErrorHandler.FatalErrorOccurred("No players selected.");
             return null;
         }
 
@@ -210,7 +151,7 @@ public class GameManager : MonoBehaviour
         try {
             List<Player> players = new();
 
-            foreach (var playerInfo in GameStartParams.Players) {
+            foreach (var playerInfo in GameSettings.Players) {
                 Player player = (Activator.CreateInstance(playerInfo.Value.PlayerType) as Player)!;
                 player.Name = playerInfo.Key;
                 players.Add(player);
@@ -218,7 +159,7 @@ public class GameManager : MonoBehaviour
             return players;
         }
         catch (Exception e) {
-            ErrorGameEnd.FatalErrorOccurred($"Failed to create players: {e.Message}");
+            GameErrorHandler.FatalErrorOccurred($"Failed to create players: {e.Message}");
             return null;
         }
     }
@@ -243,7 +184,7 @@ public class GameManager : MonoBehaviour
         }
         Debug.Log("Players created successfully.");
 
-        return new GameCore(gameState, players, GameStartParams.ShufflePlayers);
+        return new GameCore(gameState, players, GameSettings.ShufflePlayers);
     }
 
     /// <summary>
@@ -253,19 +194,19 @@ public class GameManager : MonoBehaviour
     /// <param name="gameState">The game state.</param>
     private void InitializeAIPlayersAsync(Player[] players, GameState gameState)
     {
-        if (ErrorGameEnd.ShouldEndGameWithError) {
+        if (GameErrorHandler.ShouldEndGameWithError) {
             return;
         }
 
         foreach (Player player in players) {
             if (player is AIPlayerBase aiPlayer) {
-                string? initPath = GameStartParams.Players[player.Name].InitPath;
+                string? initPath = GameSettings.Players[player.Name].InitPath;
                 Debug.Log($"Initializing AI player {player.Name}. Init file: {initPath}");
 
                 aiPlayer.InitAsync(players.Length, gameState.GetAllPuzzlesInGame(), initPath, destroyCancellationToken)
                     .ContinueWith(t => {
                         if (t.Exception != null) {
-                            ErrorGameEnd.FatalErrorOccurred($"Initialization of player {player.Name} failed: {t.Exception.InnerException?.Message}");
+                            GameErrorHandler.FatalErrorOccurred($"Initialization of player {player.Name} failed: {t.Exception.InnerException?.Message}");
                         }
                         else {
                             Debug.Log($"AI player {player.Name} initialized successfully.");
@@ -278,11 +219,11 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Prepares the <see cref="GameEndStats"/> by adding final results and unfinished puzzles.
+    /// Prepares the <see cref="GameSummary"/> by adding final results and unfinished puzzles.
     /// </summary>
     private void PrepareGameEndStats()
     {
-        if (ErrorGameEnd.ShouldEndGameWithError) {
+        if (GameErrorHandler.ShouldEndGameWithError) {
             return;
         }
 
@@ -292,19 +233,19 @@ public class GameManager : MonoBehaviour
         }
 
         // add final results
-        GameEndStats.FinalResults = _game.GetFinalResults();
+        GameSummary.FinalResults = _game.GetFinalResults();
 
         // add info about leftover tetrominos
         foreach (Player player in _game.Players) {
             var info = _game.PlayerStates[player].GetPlayerInfo();
-            GameEndStats.SetNumLeftoverTetrominos(player, info.NumTetrominosOwned.Sum());
+            GameSummary.SetNumLeftoverTetrominos(player, info.NumTetrominosOwned.Sum());
         }
 
         // add info about unfinished puzzles
         foreach (Player player in _game.Players) {
             var state = _game.PlayerStates[player];
             foreach (Puzzle puzzle in state.GetUnfinishedPuzzles()) {
-                GameEndStats.AddUnfinishedPuzzle(player, puzzle);
+                GameSummary.AddUnfinishedPuzzle(player, puzzle);
             }
         }
     }
@@ -315,17 +256,17 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void GoToFinalResultsScreen()
     {
-        if (ErrorGameEnd.ShouldEndGameWithError) {
+        if (gameEndedBoxPrefab == null) {
+            return;  // safety check
+        }
+
+        // if game ended with error, we aren't going to final results
+        if (GameErrorHandler.ShouldEndGameWithError) {
             return;
         }
 
+        Instantiate(gameEndedBoxPrefab);
         PauseLogic.CanBePaused = false;
-        if (gameEndedBoxPrefab != null) {
-            Instantiate(gameEndedBoxPrefab);
-        }
-        else {
-            Debug.LogError("Game ended box prefab is not set.");
-        }
     }
 
     private async Task GameLoopAsync()
@@ -337,12 +278,12 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("Starting game loop.");
 
-        while (!destroyCancellationToken.IsCancellationRequested && !ErrorGameEnd.ShouldEndGameWithError) {
+        while (!destroyCancellationToken.IsCancellationRequested && !GameErrorHandler.ShouldEndGameWithError) {
             TurnInfo turnInfo = _game.GetNextTurnInfo();
 
             // check if game ended
             if (_game.CurrentGamePhase == GamePhase.Finished) {
-                Debug.Log("Game ended!");
+                Debug.Log("Game ended.");
                 _game.GameEnded();
                 break;
             }
@@ -388,13 +329,13 @@ public class GameManager : MonoBehaviour
             if (_game.CurrentGamePhase != GamePhase.FinishingTouches) {
                 while (_game.TryGetNextPuzzleFinishedBy(_game.CurrentPlayer, out var finishedPuzzleInfo)) {
                     LogPlayerFinishedPuzzle(finishedPuzzleInfo);
-                    GameEndStats.AddFinishedPuzzle(_game.CurrentPlayer, finishedPuzzleInfo.Puzzle);
+                    GameSummary.AddFinishedPuzzle(_game.CurrentPlayer, finishedPuzzleInfo.Puzzle);
                 }
             }
 
             // if finishing touches --> log used tetrominos
             if (_game.CurrentGamePhase == GamePhase.FinishingTouches && action is PlaceTetrominoAction a) {
-                GameEndStats.AddFinishingTouchTetromino(_game.CurrentPlayer, a.Shape);
+                GameSummary.AddFinishingTouchTetromino(_game.CurrentPlayer, a.Shape);
             }
         }
 
@@ -423,7 +364,7 @@ public class GameManager : MonoBehaviour
 
     private void LogDefaultFunctionAssignment(IAction action)
     {
-        Debug.Log($"{_game?.CurrentPlayer.Name} provided no action. Defaulting to {action}");
+        Debug.LogWarning($"{_game?.CurrentPlayer.Name} provided no action. Defaulting to {action}");
     }
 
     private void LogPlayerFinishedPuzzle(FinishedPuzzleInfo puzzleInfo)
@@ -462,7 +403,7 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
-    private static class ErrorGameEnd
+    private static class GameErrorHandler
     {
         public static bool ShouldEndGameWithError { get; private set; } = false;
         public static bool EndedGameWithError { get; private set; } = false;
@@ -492,17 +433,19 @@ public class GameManager : MonoBehaviour
         /// </summary>
         public static void EndGameWithError()
         {
+            if (_errorMessageBoxPrefab == null) {
+                return; // safety check
+            }
+
+            // check if we already created the error message box
             if (EndedGameWithError) {
                 return;
             }
-            EndedGameWithError = true;
-            PauseLogic.CanBePaused = false;
 
-            Debug.LogError("Fatal error: " + _message);
-            if (_errorMessageBoxPrefab == null)
-                Debug.LogError("Error message prefab is not set.");
-            else
-                Instantiate(_errorMessageBoxPrefab);
+            EndedGameWithError = true;
+            Debug.LogError(_message);
+            PauseLogic.CanBePaused = false;
+            Instantiate(_errorMessageBoxPrefab);
         }
     }
 }

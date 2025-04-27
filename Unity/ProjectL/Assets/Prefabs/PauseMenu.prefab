@@ -2539,7 +2539,6 @@ GameObject:
   - component: {fileID: 4484361582705540608}
   - component: {fileID: 9086905892935273213}
   - component: {fileID: 4608892401626137985}
-  - component: {fileID: 2055937274138700216}
   - component: {fileID: 7142934293402554323}
   m_Layer: 5
   m_Name: PauseMenu
@@ -2656,18 +2655,6 @@ MonoBehaviour:
   scoreValuesLabel: {fileID: 491339423520274752}
   animationSpeedSliderValueLabel: {fileID: 2581318649594695760}
   animationSpeedSlider: {fileID: 3558883270375359664}
---- !u!114 &2055937274138700216
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7944086331259125827}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7513bfbfa85984b42b23fdb5801d7ffa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!225 &7142934293402554323
 CanvasGroup:
   m_ObjectHideFlags: 0

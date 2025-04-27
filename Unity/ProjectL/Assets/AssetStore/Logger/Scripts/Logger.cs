@@ -63,6 +63,7 @@ namespace EasyUI
             // Singleton pattern
             if (Instance != null && Instance != this) {
                 Destroy(this.transform.root.gameObject);
+                return;
             }
 
             Instance = this;
