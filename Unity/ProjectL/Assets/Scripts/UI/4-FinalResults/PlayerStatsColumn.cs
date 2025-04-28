@@ -14,6 +14,7 @@ namespace ProjectL.UI.FinalResults
     /// Manages the "PlayerStatsColumn" prefab.
     /// </summary>
     /// <seealso cref="UnityEngine.MonoBehaviour" />
+    [RequireComponent(typeof(CanvasGroup))]
     public class PlayerStatsColumn : MonoBehaviour
     {
         #region Fields

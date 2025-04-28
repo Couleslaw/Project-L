@@ -12,6 +12,7 @@ namespace ProjectL.UI
     /// <summary>
     /// Manages the PauseMenu prefab.
     /// </summary>
+    [RequireComponent(typeof(CanvasGroup))]
     public class PauseMenuManager : MonoBehaviour
     {
         #region Constants

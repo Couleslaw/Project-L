@@ -30,7 +30,7 @@ namespace ProjectLCore.GamePieces
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BinaryImage"/> struct.
+        /// Initializes a new instance of the <see cref="BinaryImage"/> struct using an encoding of the image into an integer. The encoding should be as specified in the <see cref="BinaryImage"/> class documentation.
         /// </summary>
         /// <param name="image">The encoding of the image.</param>
         /// <exception cref="ArgumentException">Binary image must be 5x5</exception>
@@ -40,6 +40,24 @@ namespace ProjectLCore.GamePieces
                 throw new ArgumentException("Binary image must be 5x5");
             }
             _image = image;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BinaryImage"/> struct using a <c>bool[25]</c>. The first 5 elements represent the first row (left to right), the next 5 elements represent the second row, and so on. Filled in cells are represented by <see langword="true"/> and empty cells by <see langword="false"/>.
+        /// </summary>
+        /// <param name="array">The encoding of the image.</param>
+        /// <exception cref="ArgumentException">Binary image must be 5x5</exception>
+        public BinaryImage(bool[] array)
+        {
+            if (array.Length != 25) {
+                throw new ArgumentException("Binary image must be 5x5");
+            }
+            _image = 0;
+            for (int i = 0; i < 25; i++) {
+                if (array[i]) {
+                    _image |= 1 << i;
+                }
+            }
         }
 
         #endregion

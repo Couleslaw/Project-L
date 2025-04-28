@@ -8,6 +8,8 @@ namespace ProjectL.UI
     /// <summary>
     /// Manages the SoundControls prefab. Cycles through volume levels upon sound button click and updates its icon accordingly.
     /// </summary>
+    [RequireComponent(typeof(Button))]
+    [RequireComponent(typeof(Image))]
     public class SoundVolumeController : MonoBehaviour
     {
         #region Constants
