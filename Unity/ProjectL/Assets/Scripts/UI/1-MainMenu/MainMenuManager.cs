@@ -1,13 +1,21 @@
+#nullable enable
+
 namespace ProjectL.UI.MainMenu
 {
-    using UnityEngine;
     using ProjectL.UI;
+    using UnityEngine;
 
     /// <summary>
     /// Manages the "Main Menu" scene.
     /// </summary>
     public class MainMenuManager : MonoBehaviour
     {
+        #region Fields
+
+        [SerializeField] private EasyUI.Logger? loggerPrefab = null;
+
+        #endregion
+
         #region Methods
 
         /// <summary>
@@ -43,6 +51,22 @@ namespace ProjectL.UI.MainMenu
         {
             SoundManager.Instance?.PlayButtonClickSound();
             Application.Quit();
+        }
+
+        private void Awake()
+        {
+            if (loggerPrefab == null) {
+                Debug.LogError("Logger prefab is not assigned in the inspector.");
+                return;
+            }
+
+            // create a logger instance if it doesn't exist
+            if (EasyUI.Logger.Instance == null) {
+                Instantiate(loggerPrefab);
+            }
+
+            EasyUI.Logger.ClearLog();
+            EasyUI.Logger.DisableLogger();
         }
 
         #endregion

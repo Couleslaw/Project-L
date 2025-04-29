@@ -34,7 +34,6 @@ namespace ProjectL.UI.PlayerSelection
         [SerializeField] private Button? startGameButton;
         [SerializeField] private Toggle? shuffleCheckbox;
         [SerializeField] private TextMeshProUGUI? errorTextBox;
-        [SerializeField] private GameObject? loggerPrefab;
 
         [Header("Fade Settings")]
         [SerializeField] private float errorVisibleDuration = 1.0f;
@@ -137,18 +136,13 @@ namespace ProjectL.UI.PlayerSelection
         private void Awake()
         {
             // check if all UI components are assigned
-            if (numPiecesSlider == null || numPiecesText == null || startGameButton == null || shuffleCheckbox == null || errorTextBox == null || loggerPrefab == null) {
+            if (numPiecesSlider == null || numPiecesText == null || startGameButton == null || shuffleCheckbox == null || errorTextBox == null) {
                 Debug.LogError("One or more UI components are not assigned in the inspector.");
                 return;
             }
 
-            // create a logger instance if it doesn't exist
-            if (EasyUI.Logger.Instance == null) {
-                Instantiate(loggerPrefab);
-            }
-            else {
-                EasyUI.Logger.Instance.gameObject.SetActive(true);
-            }
+            // make logger visible
+            EasyUI.Logger.EnableLogger();
 
             GameSettings.Reset();
             SetUpSettingDefaults();

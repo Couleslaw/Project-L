@@ -51,6 +51,18 @@ namespace EasyUI
                 Instance.uiLogText!.text = string.Empty;
             }
         }
+        public static void DisableLogger()
+        {
+            if (Instance != null) {
+                Instance.gameObject.SetActive(false);
+            }
+        }
+        public static void EnableLogger()
+        {
+            if (Instance != null) {
+                Instance.gameObject.SetActive(true);
+            }
+        }
 
         private void OnEnable()
         {

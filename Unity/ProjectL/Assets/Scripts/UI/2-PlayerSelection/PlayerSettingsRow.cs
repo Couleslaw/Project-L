@@ -237,13 +237,14 @@ namespace ProjectL.UI.PlayerSelection
                 SoundManager.Instance?.PlayButtonClickSound();
         }
 
-        private void Awake()
+        private void Start()
         {
             if (playerTypeDropdown == null || playerNameInput == null || resetButton == null) {
                 Debug.LogError("Dropdown, input field or reset button is not assigned in the inspector.");
                 return;
             }
 
+            // this needs to be in start, so that the Logger is activated - that is done in PlayerSelectionManager.Awake()
             InitializePlayerTypeDropdownOptions();
             ResetToBlankSelection();
 

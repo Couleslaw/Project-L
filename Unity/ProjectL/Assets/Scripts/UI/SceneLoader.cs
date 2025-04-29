@@ -42,7 +42,6 @@ namespace ProjectL.UI
         /// </summary>
         public async void LoadMainMenuAsync()
         {
-            DisableLogger();
             await FadeOutAndLoadSceneAsync(_mainMenuScene);
         }
 
@@ -51,7 +50,6 @@ namespace ProjectL.UI
         /// </summary>
         public async void LoadPlayerSelectionAsync()
         {
-            EasyUI.Logger.ClearLog();
             await FadeOutAndLoadSceneAsync(_playerSelectionScene);
         }
 
@@ -112,13 +110,6 @@ namespace ProjectL.UI
             float animationLength = fadeAnimator.runtimeAnimatorController.animationClips[0].length;
             await Awaitable.WaitForSecondsAsync(animationLength);
             await SceneManager.LoadSceneAsync(sceneName);
-        }
-
-        private void DisableLogger()
-        {
-            if (EasyUI.Logger.Instance != null) {
-                EasyUI.Logger.Instance.gameObject.SetActive(false);
-            }
         }
 
         #endregion

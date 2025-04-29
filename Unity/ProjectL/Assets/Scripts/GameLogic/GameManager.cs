@@ -22,7 +22,6 @@ public class GameManager : MonoBehaviour
     #region Fields
 
     [Header("UI Elements")]
-    [SerializeField] private GameObject? loggerPrefab;
     [SerializeField] private GameObject? errorMessageBoxPrefab;
     [SerializeField] private GameObject? gameEndedBoxPrefab;
 
@@ -38,16 +37,10 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         // check that all components are assigned
-        if (loggerPrefab == null || errorMessageBoxPrefab == null || gameEndedBoxPrefab == null) {
+        if (errorMessageBoxPrefab == null || gameEndedBoxPrefab == null) {
             Debug.LogError("GameManager: One or more required UI elements are not assigned.");
             return;
         }
-
-        // create a logger instance if it doesn't exist
-        if (EasyUI.Logger.Instance == null)
-            Instantiate(loggerPrefab);
-        else
-            EasyUI.Logger.Instance.gameObject.SetActive(true);
 
         GameErrorHandler.Setup(errorMessageBoxPrefab);
     }
