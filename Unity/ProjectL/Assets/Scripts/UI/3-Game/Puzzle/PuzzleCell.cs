@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,13 +9,36 @@ using UnityEngine.UI;
 [RequireComponent(typeof(BoxCollider2D))]
 public class PuzzleCell : MonoBehaviour
 {
-    private Image? image;
+    #region Fields
 
-    public bool IsColliding => _numCollisions > 0;
+    private Image? image;
 
     private int _numCollisions = 0;
 
-    private Color defaultColor = new Color(Color.blue.r, Color.blue.g, Color.blue.b, 0.5f); // semi-transparent blue
+    private Color defaultColor = Color.clear; // new Color(Color.blue.r, Color.blue.g, Color.blue.b, 0.2f);// semi-transparent blue
+
+    #endregion
+
+    #region Properties
+
+    public bool IsColliding => _numCollisions > 0;
+
+    public Action? OnCollisionStateChanged { get; set; }
+
+
+    #endregion
+
+    #region Methods
+
+    public void ChangeColorTo(Color color)
+    {
+        if (image == null) {
+            return;
+        }
+        image.color = color;
+    }
+
+    public void ResetColor() => ChangeColorTo(defaultColor);
 
     private void Awake()
     {
@@ -27,26 +51,15 @@ public class PuzzleCell : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!IsColliding) {
-            ChangeColorTo(Color.red);
-        }
-
         _numCollisions++;
+        OnCollisionStateChanged?.Invoke();
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
         _numCollisions--;
-        if (!IsColliding) {
-            ChangeColorTo(defaultColor);
-        }
+        OnCollisionStateChanged?.Invoke();
     }
 
-    public void ChangeColorTo(Color color)
-    {
-        if (image == null) {
-            return;
-        }
-        image.color = color;
-    }
+    #endregion
 }

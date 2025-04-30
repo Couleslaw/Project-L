@@ -1,19 +1,20 @@
 #nullable enable
 
-namespace ProjectL.UI
+namespace ProjectL.UI.Pause
 {
     using System;
     using System.Globalization;
     using TMPro;
     using UnityEngine;
     using UnityEngine.UI;
-    using ProjectL.DataManagement;
+    using ProjectL.Data;
+    using ProjectL.Management;
+    using ProjectL.UI.Sound;
 
     /// <summary>
     /// Manages the PauseMenu prefab.
     /// </summary>
-    [RequireComponent(typeof(CanvasGroup))]
-    public class PauseMenuManager : MonoBehaviour
+    public class PauseMenu : MonoBehaviour
     {
         #region Constants
 
@@ -24,11 +25,6 @@ namespace ProjectL.UI
         #endregion
 
         #region Fields
-
-        [Header("Content Size Fitters")]
-        [SerializeField] private RectTransform? panelRectTransform;
-        [SerializeField] private RectTransform? outerScoreRectTransform;
-        [SerializeField] private RectTransform? innerScoreRectTransform;
 
         [Header("Turn Info")]
         [SerializeField] private TextMeshProUGUI? currentPlayerLabel;
@@ -44,7 +40,9 @@ namespace ProjectL.UI
         [SerializeField] private TextMeshProUGUI? animationSpeedSliderValueLabel;
         [SerializeField] private Slider? animationSpeedSlider;
 
-        private CanvasGroup? _canvasGroup;
+        [Header("Scene switching")]
+        [SerializeField] private GameObject? scorePanel;
+        [SerializeField] private GameObject? turnInfoPanel;
 
         private bool _didInitialize = false;
 
@@ -52,14 +50,16 @@ namespace ProjectL.UI
 
         #region Methods
 
+        public void Hide() => gameObject.SetActive(false);
+        public void Show() => gameObject.SetActive(true);
+
         /// <summary>
         /// Handles the click event for the "Home" button. Transitions to the main menu scene.
         /// </summary>
         public void OnHomeButtonClick()
         {
-            if (_didInitialize)
-                SoundManager.Instance?.PlayButtonClickSound();
-            PauseLogic.Instance?.Resume();
+            SoundManager.Instance?.PlayButtonClickSound();
+            GameManager.Instance?.ResumeGame();
             SceneLoader.Instance?.LoadMainMenuAsync();
         }
 
@@ -68,9 +68,8 @@ namespace ProjectL.UI
         /// </summary>
         public void OnResumeButtonClick()
         {
-            if (_didInitialize)
-                SoundManager.Instance?.PlayButtonClickSound();
-            PauseLogic.Instance?.Resume();
+            SoundManager.Instance?.PlayButtonClickSound();
+            GameManager.Instance?.ResumeGame();
         }
 
         /// <summary>
@@ -126,16 +125,12 @@ namespace ProjectL.UI
         private void Awake()
         {
             // check if all required components are assigned
-            if (outerScoreRectTransform == null || innerScoreRectTransform == null || panelRectTransform == null ||
-                currentPlayerLabel == null || actionsLeftLabel == null || gamePhaseLabel == null ||
+            if (currentPlayerLabel == null || actionsLeftLabel == null || gamePhaseLabel == null ||
                 scoreToggle == null || scoreNamesLabel == null || scoreValuesLabel == null ||
                 animationSpeedSliderValueLabel == null || animationSpeedSlider == null) {
                 Debug.LogError("PauseMenuManager: One or more required UI elements are not assigned.");
                 return;
             }
-
-            // needed to show / hide the pause menu
-            _canvasGroup = GetComponent<CanvasGroup>();
 
             // hide score info by default
             scoreToggle.isOn = false;
@@ -145,50 +140,21 @@ namespace ProjectL.UI
             animationSpeedSlider.maxValue = _animationSliderMaxValue;
             animationSpeedSlider.value = Mathf.Round(PlayerPrefs.GetFloat(AnimationSpeed.AnimationSpeedPlayerPrefKey) * 10f);
 
-            HidePauseMenu();
-
             _didInitialize = true;
         }
 
-        private void Start()
+        private void OnEnable()
         {
-            if (PauseLogic.Instance == null) {
-                Debug.LogError("PauseLogic singleton Instance is null.");
-                return;
-            }
-            AdjustPanelSize();
-            PauseLogic.Instance.OnPause += ShowPauseMenu;
-            PauseLogic.Instance.OnResume += HidePauseMenu;
-        }
-
-        private void ShowPauseMenu()
-        {
-            if (_canvasGroup == null) {
-                return; // safety check
-            }
-            UpdateUI();
-            _canvasGroup.alpha = 1f;
-            _canvasGroup.interactable = true;
-            _canvasGroup.blocksRaycasts = true;
-        }
-
-        private void HidePauseMenu()
-        {
-            if (_canvasGroup == null) {
-                return; // safety check
-            }
-            _canvasGroup.alpha = 0f;
-            _canvasGroup.interactable = false;
-            _canvasGroup.blocksRaycasts = false;
-        }
-
-        private void UpdateUI()
-        {
-            // safety check
-            if (currentPlayerLabel == null || actionsLeftLabel == null || gamePhaseLabel == null || scoreNamesLabel == null || scoreValuesLabel == null) {
+            if (currentPlayerLabel == null || actionsLeftLabel == null || gamePhaseLabel == null || scoreNamesLabel == null || scoreValuesLabel == null || scorePanel == null || turnInfoPanel == null) {
                 return;
             }
 
+
+            // toggle visibility of game related UI elements
+            scorePanel.SetActive(RuntimeGameInfo.IsGameInProgress);
+            turnInfoPanel.SetActive(RuntimeGameInfo.IsGameInProgress);
+
+            // if this is final results --> we are done
             if (!RuntimeGameInfo.TryGetCurrentInfo(out var gameInfo)) {
                 return;
             }
@@ -205,36 +171,6 @@ namespace ProjectL.UI
                 scoreNamesLabel.text += item.Key + "\n";
                 scoreValuesLabel.text += item.Value.ToString() + "\n";
             }
-        }
-
-        /// <summary>
-        /// Adjusts the size of the panel to fit the content (the number of players is variable).
-        /// This methods needs to be called when the GameObject is created. Otherwise the panel will flash as it adjust for the first time.
-        /// </summary>
-        private void AdjustPanelSize()
-        {
-            // safety check
-            if (scoreValuesLabel == null || scoreNamesLabel == null) {
-                return;
-            }
-            if (outerScoreRectTransform == null || innerScoreRectTransform == null || panelRectTransform == null) {
-                return;
-            }
-
-            // put text with <num players> lines into the score labels
-            // this will ensure that their size will not change when the real values are assigned
-            int numPlayers = GameSettings.Players.Count;
-            string text = "";
-            for (int i = 0; i < numPlayers; i++) {
-                text += "0\n";
-            }
-            scoreValuesLabel.text = text;
-            scoreNamesLabel.text = text;
-
-            // force adjust size of the panel to fit the content
-            LayoutRebuilder.ForceRebuildLayoutImmediate(innerScoreRectTransform);
-            LayoutRebuilder.ForceRebuildLayoutImmediate(outerScoreRectTransform);
-            LayoutRebuilder.ForceRebuildLayoutImmediate(panelRectTransform);
         }
 
         #endregion

@@ -306,6 +306,11 @@ namespace ProjectLCore.GamePieces
         /// <returns>The transformed image.</returns>
         public BinaryImage MoveImageToTopLeftCorner()
         {
+            // if the image is empty, return the empty image
+            if (_image == 0) {
+                return this;
+            }
+
             int newImage = _image;
             // move image up
             while ((newImage & 0b11111) == 0) {
@@ -404,7 +409,10 @@ namespace ProjectLCore.GamePieces
         /// </code></example>
         public static BinaryImage operator ~(BinaryImage image)
         {
-            return new(~image._image);
+            int newImage = ~image._image;
+            // remove the bits that are not part of the image
+            newImage &= (1 << 25) - 1;
+            return new(newImage);
         }
     }
 }

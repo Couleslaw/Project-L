@@ -9,9 +9,9 @@ namespace ProjectL.UI.PlayerSelection
     using TMPro;
     using UnityEngine;
     using UnityEngine.UI;
-    using ProjectL.UI;
-    using ProjectL.DataManagement;
-
+    using ProjectL.UI.Sound;
+    using ProjectL.Data;
+    using ProjectL.Management;
 
     /// <summary>
     /// Manages the "Player Selection" scene.
@@ -140,9 +140,6 @@ namespace ProjectL.UI.PlayerSelection
                 Debug.LogError("One or more UI components are not assigned in the inspector.");
                 return;
             }
-
-            // make logger visible
-            EasyUI.Logger.EnableLogger();
 
             GameSettings.Reset();
             SetUpSettingDefaults();

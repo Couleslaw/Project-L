@@ -1,16 +1,21 @@
 #nullable enable
 
-namespace ProjectL.DataManagement
+namespace ProjectL.Data
 {
     using ProjectLCore.GameLogic;
     using System.Collections.Generic;
-    using UnityEngine;
 
     public static class RuntimeGameInfo
     {
         #region Fields
 
         private static GameCore? _game;
+
+        #endregion
+
+        #region Properties
+
+        public static bool IsGameInProgress => _game != null;
 
         #endregion
 
@@ -34,7 +39,6 @@ namespace ProjectL.DataManagement
         /// <returns>
         /// <see langword="true"/> if a <see cref="GameCore"/> instance is registered; otherwise, <see langword="false"/>.
         ///</returns>
-
         public static bool TryGetCurrentInfo(out Info result)
         {
             if (_game == null) {

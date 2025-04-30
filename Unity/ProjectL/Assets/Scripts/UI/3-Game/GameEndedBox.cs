@@ -3,7 +3,8 @@
 namespace UI.GameScene
 {
     using UnityEngine;
-    using ProjectL.UI;
+    using ProjectL.Management;
+    using ProjectL.UI.Sound;
 
     /// <summary>
     /// Manages the ErrorMessageBox prefab.

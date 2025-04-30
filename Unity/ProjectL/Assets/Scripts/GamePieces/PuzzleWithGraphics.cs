@@ -49,6 +49,12 @@ public class PuzzleWithGraphics : Puzzle
         ColorImage = ColorImage.AddImage((ColorImage.Color)tetromino, position);
     }
 
+    public override void RemoveTetromino(TetrominoShape tetromino, BinaryImage position)
+    {
+        base.RemoveTetromino(tetromino, position);
+        ColorImage = ColorImage.AddImage(ColorImage.Color.Empty, position);
+    }
+
     /// <summary>
     /// Clones this instance.
     /// </summary>

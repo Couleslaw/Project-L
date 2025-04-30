@@ -3,7 +3,8 @@
 namespace ProjectL.UI.GameScene
 {
     using UnityEngine;
-    using ProjectL.UI;
+    using ProjectL.Management;
+    using ProjectL.UI.Sound;
 
     /// <summary>
     /// Manages the ErrorMessageBox prefab.
@@ -28,7 +29,7 @@ namespace ProjectL.UI.GameScene
         public void OnOpenLogButtonClick()
         {
             SoundManager.Instance?.PlayButtonClickSound();
-            EasyUI.Logger.Instance?.ToggleLogUI();
+            GameManager.Instance?.OpenLogger();
         }
 
         private void Start()

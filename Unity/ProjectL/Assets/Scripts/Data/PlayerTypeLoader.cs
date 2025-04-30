@@ -1,7 +1,7 @@
 #nullable enable
 
 
-namespace ProjectL.DataManagement
+namespace ProjectL.Data
 {
     using IniParser;
     using IniParser.Model;

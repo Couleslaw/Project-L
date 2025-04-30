@@ -35,7 +35,7 @@ namespace EasyUI
         private Image? uiToggleButtonImage;
         private RectTransform? uiToggleButtonRectTransform;
 
-        private bool isOpen = false;
+        public bool IsOpen { get; private set; } = false;
 
         private string[] colors = new string[3]{
             "#aaaaaa", // White
@@ -43,26 +43,9 @@ namespace EasyUI
             "#ff6666"  // Red
         };
 
-        public static Logger? Instance { get; private set; } = null;
-
-        public static void ClearLog()
-        {
-            if (Instance != null) {
-                Instance.uiLogText!.text = string.Empty;
-            }
-        }
-        public static void DisableLogger()
-        {
-            if (Instance != null) {
-                Instance.gameObject.SetActive(false);
-            }
-        }
-        public static void EnableLogger()
-        {
-            if (Instance != null) {
-                Instance.gameObject.SetActive(true);
-            }
-        }
+        public void ClearLog() => uiLogText!.text = string.Empty;
+        public void Hide() => gameObject.SetActive(false);
+        public void Show() => gameObject.SetActive(true);
 
         private void OnEnable()
         {
@@ -72,15 +55,6 @@ namespace EasyUI
 
         private void Awake()
         {
-            // Singleton pattern
-            if (Instance != null && Instance != this) {
-                Destroy(this.transform.root.gameObject);
-                return;
-            }
-
-            Instance = this;
-            DontDestroyOnLoad(this.transform.root.gameObject);
-
             if (FindObjectsByType<EventSystem>(FindObjectsSortMode.None).Length == 0) {
                 uiEventSystem!.SetActive(true);
             }
@@ -90,7 +64,7 @@ namespace EasyUI
             uiToggleButtonImage = uiToggleButton!.GetComponent<Image>();
             uiToggleButtonRectTransform = uiToggleButton!.GetComponent<RectTransform>();
 
-            isOpen = true;
+            IsOpen = true;
             ToggleLogUI();
         }
 
@@ -113,8 +87,8 @@ namespace EasyUI
 
         public void ToggleLogUI()
         {
-            isOpen = !isOpen;
-            if (isOpen) {
+            IsOpen = !IsOpen;
+            if (IsOpen) {
                 SetupUI(new Vector2(1f, height), spriteCloseIcon!);
                 ScrollDown();
             }
@@ -125,11 +99,11 @@ namespace EasyUI
 
         private void SetupUI(Vector2 size, Sprite icon)
         {
-            uiScrollRect!.enabled = isOpen;
-            uiViewport!.SetActive(isOpen);
-            uiScrollBar!.SetActive(isOpen);
-            uiContentVerticalLayoutGroup!.childForceExpandWidth = isOpen;
-            uiContentVerticalLayoutGroup.childControlWidth = isOpen;
+            uiScrollRect!.enabled = IsOpen;
+            uiViewport!.SetActive(IsOpen);
+            uiScrollBar!.SetActive(IsOpen);
+            uiContentVerticalLayoutGroup!.childForceExpandWidth = IsOpen;
+            uiContentVerticalLayoutGroup.childControlWidth = IsOpen;
             uiScrollRectTransform!.sizeDelta = size;
             uiToggleButtonImage!.sprite = icon;
             uiToggleButtonRectTransform!.sizeDelta = 0.7f * iconWidth * Vector2.one;
@@ -156,7 +130,7 @@ namespace EasyUI
             // hide the log UI
             Application.logMessageReceived -= LogCallback;
             uiToggleButton!.onClick.RemoveListener(ToggleLogUI);
-            isOpen = true;
+            IsOpen = true;
             ToggleLogUI();
         }
     }

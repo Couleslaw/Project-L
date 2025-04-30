@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace ProjectL.UI
+namespace ProjectL.UI.Sound
 {
     using UnityEngine;
 
@@ -63,7 +63,6 @@ namespace ProjectL.UI
                 return;
             }
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
 
         /// <summary>

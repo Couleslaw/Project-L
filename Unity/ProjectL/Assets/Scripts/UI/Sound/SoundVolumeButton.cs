@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace ProjectL.UI
+namespace ProjectL.UI.Sound
 {
     using UnityEngine;
     using UnityEngine.UI;
@@ -10,7 +10,7 @@ namespace ProjectL.UI
     /// </summary>
     [RequireComponent(typeof(Button))]
     [RequireComponent(typeof(Image))]
-    public class SoundVolumeController : MonoBehaviour
+    public class SoundVolumeButton : MonoBehaviour
     {
         #region Constants
 

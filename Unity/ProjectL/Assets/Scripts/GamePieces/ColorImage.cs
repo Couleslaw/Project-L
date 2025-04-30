@@ -8,7 +8,8 @@ public struct ColorImage
 {
     #region Fields
 
-    public Color[] _image;
+
+    private Color[] _image;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ColorImage"/> struct based on a <see cref="BinaryImage"/>.
@@ -41,6 +42,10 @@ public struct ColorImage
                 newImage._image[i] = color;
         }
         return newImage;
+    }
+
+    public Color this[int index] {
+        get => _image[index];
     }
 
     #endregion
@@ -102,5 +107,21 @@ public struct ColorImage
         /// </summary>
         /// <param name="shape">The shape to convert.</param>
         public static explicit operator Color(TetrominoShape shape) => new Color((int)shape);
+
+        public static implicit operator UnityEngine.Color(Color color)
+        {
+            return color._color switch {
+                (int)TetrominoShape.O1 => new(251f/255f, 243f/255f, 52f/255f),
+                (int)TetrominoShape.O2 => new(237f/255f, 20f/255f, 91f/255f),
+                (int)TetrominoShape.I2 => new(0f/255f, 174f/255f, 77f/255f),
+                (int)TetrominoShape.I3 => new(0f/255f, 124f/255f, 197f/255f),
+                (int)TetrominoShape.I4 => new(43f/255f, 71f/255f, 155f/255f),
+                (int)TetrominoShape.L2 => new(254f/255f, 183f/255f, 14f/255f),
+                (int)TetrominoShape.L3 => new(0f/255f, 171f/255f, 203f/255f),
+                (int)TetrominoShape.Z => new(243f/255f, 111f/255f, 34f/255f),
+                (int)TetrominoShape.T => new(236f/255f, 0f/255f, 141f/255f),
+                _ => UnityEngine.Color.clear
+            };
+        }
     }
 }

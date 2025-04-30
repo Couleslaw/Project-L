@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace ProjectL.UI
+namespace ProjectL.Management
 {
     using System.Threading.Tasks;
     using UnityEngine;
@@ -19,10 +19,10 @@ namespace ProjectL.UI
         private const string _fadeInAnimation = "FadeIn";
         private const string _fadeOutAnimation = "FadeOut";
 
-        private const string _mainMenuScene = "1-MainMenu";
-        private const string _playerSelectionScene = "2-PlayerSelection";
-        private const string _gameScene = "3-Game";
-        private const string _finalResultsScene = "4-FinalResults";
+        public const string MainMenuScene = "1-MainMenu";
+        public const string PlayerSelectionScene = "2-PlayerSelection";
+        public const string GameScene = "3-Game";
+        public const string FinalResultsScene = "4-FinalResults";
 
         #endregion
 
@@ -42,7 +42,7 @@ namespace ProjectL.UI
         /// </summary>
         public async void LoadMainMenuAsync()
         {
-            await FadeOutAndLoadSceneAsync(_mainMenuScene);
+            await FadeOutAndLoadSceneAsync(MainMenuScene);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace ProjectL.UI
         /// </summary>
         public async void LoadPlayerSelectionAsync()
         {
-            await FadeOutAndLoadSceneAsync(_playerSelectionScene);
+            await FadeOutAndLoadSceneAsync(PlayerSelectionScene);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace ProjectL.UI
         /// </summary>
         public async void LoadGameAsync()
         {
-            await FadeOutAndLoadSceneAsync(_gameScene);
+            await FadeOutAndLoadSceneAsync(GameScene);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace ProjectL.UI
         /// </summary>
         public async void LoadFinalResultsAsync()
         {
-            await FadeOutAndLoadSceneAsync(_finalResultsScene);
+            await FadeOutAndLoadSceneAsync(FinalResultsScene);
         }
 
         private void Awake()
@@ -77,7 +77,6 @@ namespace ProjectL.UI
                 return;
             }
             Instance = this;
-            DontDestroyOnLoad(gameObject);
 
             // safety check
             if (fadeAnimator == null) {
@@ -86,29 +85,27 @@ namespace ProjectL.UI
             }
 
             // fade in when a scene is loaded
-            SceneManager.sceneLoaded += FadeIn;
+            SceneManager.sceneLoaded += (_, _) => FadeIn();
         }
 
-        private void FadeIn(Scene scene, LoadSceneMode mode)
+        private void FadeIn()
         {
             if (fadeAnimator == null) {
                 return;
             }
-
             fadeAnimator.CrossFade(_fadeInAnimation, 0, 0);
         }
 
         private async Task FadeOutAndLoadSceneAsync(string sceneName)
         {
-            if (fadeAnimator == null) {
-                return;
-            }
-
             // fade out
-            PauseLogic.CanBePaused = false;
-            fadeAnimator.CrossFade(_fadeOutAnimation, 0, 0);
-            float animationLength = fadeAnimator.runtimeAnimatorController.animationClips[0].length;
-            await Awaitable.WaitForSecondsAsync(animationLength);
+            GameManager.CanGameBePaused = false;
+
+            if (fadeAnimator != null) {
+                fadeAnimator.CrossFade(_fadeOutAnimation, 0, 0);
+                float animationLength = fadeAnimator.runtimeAnimatorController.animationClips[0].length;
+                await Awaitable.WaitForSecondsAsync(animationLength);
+            }
             await SceneManager.LoadSceneAsync(sceneName);
         }
 

@@ -104,14 +104,34 @@
         public bool CanPlaceTetromino(BinaryImage position) => (Image & position) == BinaryImage.EmptyImage;
 
         /// <summary>
-        /// Places the given tetromino into the puzzle.
+        /// Places the given tetromino into the puzzle, if it can be placed there.
         /// </summary>
         /// <param name="tetromino">The shape of the tetromino.</param>
         /// <param name="position">The position of the tetromino.</param>
         public virtual void AddTetromino(TetrominoShape tetromino, BinaryImage position)
         {
+            if (!CanPlaceTetromino(position)) {
+                throw new InvalidOperationException("Cannot place tetromino in this position.");
+            }
             _usedTetrominos[(int)tetromino]++;
             Image |= position;
+        }
+
+        /// <summary>
+        /// Removes the given tetromino from the puzzle, if at least one tetromino of this kind has been placed in earlier and the are specified by <paramref name="position"/> is filled in.
+        /// </summary>
+        /// <param name="tetromino">The shape of the tetromino.</param>
+        /// <param name="position">The position of the tetromino.</param>
+        public virtual void RemoveTetromino(TetrominoShape tetromino, BinaryImage position)
+        {
+            if (_usedTetrominos[(int)tetromino] == 0) {
+                throw new InvalidOperationException("Cannot remove tetromino that has not been placed.");
+            }
+            if ((Image & position) != position) {
+                throw new InvalidOperationException("Cannot remove tetromino from this position.");
+            }
+            _usedTetrominos[(int)tetromino]--;
+            Image &= ~position;
         }
 
         /// <summary>

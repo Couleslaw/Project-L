@@ -14,10 +14,10 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using ProjectL.UI.GameScene;
-using ProjectL.UI;
-using ProjectL.DataManagement;
+using ProjectL.Data;
+using ProjectL.Management;
 
-public class GameManager : MonoBehaviour
+public class GameSessionManager : MonoBehaviour
 {
     #region Fields
 
@@ -258,7 +258,7 @@ public class GameManager : MonoBehaviour
         }
 
         Instantiate(gameEndedBoxPrefab);
-        PauseLogic.CanBePaused = false;
+        GameManager.CanGameBePaused = false;
     }
 
     private async Task GameLoopAsync()
@@ -436,7 +436,7 @@ public class GameManager : MonoBehaviour
 
             EndedGameWithError = true;
             Debug.LogError(_message);
-            PauseLogic.CanBePaused = false;
+            GameManager.CanGameBePaused = false;
             Instantiate(_errorMessageBoxPrefab);
         }
     }

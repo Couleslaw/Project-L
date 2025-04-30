@@ -1,12 +1,13 @@
 #nullable enable
 
-
-using ProjectLCore.GamePieces;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class TetrominoSpawnManager : MonoBehaviour
+public class TetrominoSizeManager : MonoBehaviour
 {
+    #region Fields
+
+    private static TetrominoSizeManager? _instance = null;
+
     [Header("Tetromino scale settings")]
     [Tooltip("Sample of a puzzle card to get it's scale")]
     [SerializeField] private Transform puzzleSample;
@@ -17,7 +18,27 @@ public class TetrominoSpawnManager : MonoBehaviour
     [Tooltip("Edge of the puzzle zone, to use as a border for scaling")]
     [SerializeField] private Transform puzzleZoneEdgeMarker;
 
-    public static TetrominoSpawnManager? Instance { get; private set; } = null;
+    #endregion
+
+    #region Methods
+
+    public static Vector3 GetScaleFor(Transform tetromino) => _instance?.GetScale(tetromino) ?? Vector3.one;
+
+    internal void Awake()
+    {
+        // singleton pattern
+        if (_instance != null && _instance != this) {
+            Destroy(gameObject);
+            return;
+        }
+        _instance = this;
+
+        // check that all components are assigned
+        if (puzzleSample == null || tetrominoSpawnerSample == null || puzzleZoneEdgeMarker == null) {
+            Debug.LogError("One or more components are not assigned!", this);
+            return;
+        }
+    }
 
     private float DistanceToPuzzleZone(float x)
     {
@@ -33,7 +54,7 @@ public class TetrominoSpawnManager : MonoBehaviour
         return 0f; // if x left of marker
     }
 
-    public Vector3 GetScale(Transform tetromino)
+    private Vector3 GetScale(Transform tetromino)
     {
         float distance = DistanceToPuzzleZone(tetromino.position.x);
         float maxScaleDistance = DistanceToPuzzleZone(tetrominoSpawnerSample.position.x);
@@ -50,19 +71,5 @@ public class TetrominoSpawnManager : MonoBehaviour
         return scaleVector;
     }
 
-    void Awake()
-    {
-        // singleton pattern
-        if (Instance != null && Instance != this) {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
-
-        // check that all components are assigned
-        if (puzzleSample == null || tetrominoSpawnerSample == null || puzzleZoneEdgeMarker == null) {
-            Debug.LogError("One or more components are not assigned!", this);
-            return;
-        }
-    }
+    #endregion
 }
