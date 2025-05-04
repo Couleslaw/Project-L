@@ -166,7 +166,9 @@ public class InteractivePuzzle : MonoBehaviour
         BinaryImage position = GetTetrominoPosition();
         TetrominoShape shape = DraggableTetromino.SelectedTetromino.Shape;
 
-        bool drawShadow = TetrominoManager.CompareShapeToImage(shape, position);
+        bool goodShape = TetrominoManager.CompareShapeToImage(shape, position);
+        bool tetrominoFits = _temporaryCopy!.CanPlaceTetromino(position);
+        bool drawShadow = goodShape && tetrominoFits;
 
         Color color = (ColorImage.Color)shape;
         color *= 0.7f;

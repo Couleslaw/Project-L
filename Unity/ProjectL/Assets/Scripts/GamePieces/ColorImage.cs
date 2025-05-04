@@ -115,7 +115,7 @@ public struct ColorImage
                 (int)TetrominoShape.O2 => new(237f/255f, 20f/255f, 91f/255f),
                 (int)TetrominoShape.I2 => new(0f/255f, 174f/255f, 77f/255f),
                 (int)TetrominoShape.I3 => new(0f/255f, 124f/255f, 197f/255f),
-                (int)TetrominoShape.I4 => new(43f/255f, 71f/255f, 155f/255f),
+                (int)TetrominoShape.I4 => new(143f/255f, 71f/255f, 155f/255f),
                 (int)TetrominoShape.L2 => new(254f/255f, 183f/255f, 14f/255f),
                 (int)TetrominoShape.L3 => new(0f/255f, 171f/255f, 203f/255f),
                 (int)TetrominoShape.Z => new(243f/255f, 111f/255f, 34f/255f),
