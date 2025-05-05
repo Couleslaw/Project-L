@@ -3,11 +3,11 @@ namespace ProjectLCore.GameLogic
     using ProjectLCore.GameManagers;
     using ProjectLCore.GamePieces;
     using ProjectLCore.Players;
-    using System.Text;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.IO;
+    using System.Linq;
+    using System.Text;
 
     /// <summary>
     /// Represents the resources and progress of a single <see cref="Player"/>.
@@ -55,6 +55,16 @@ namespace ProjectLCore.GameLogic
         #endregion
 
         #region Properties
+
+        /// <summary>
+        /// Called when the set of unfinished puzzles changes. The parameters are the position of the change and the new puzzle.
+        /// </summary>
+        public Action<int, Puzzle?>? OnPuzzleRowChanged { get; set; }
+
+        /// <summary>
+        /// Called when the number of tetrominos in the player's collection changes. The parameters are the type of the tetromino and the number of tetrominos of this type in the collection after the change.
+        /// </summary>
+        public Action<TetrominoShape, int>? OnTetrominosCollectionChanged { get; set; }
 
         /// <summary> Unique identifier of the player. </summary>
         public uint PlayerId { get; }
@@ -163,6 +173,7 @@ namespace ProjectLCore.GameLogic
             for (int i = 0; i < MaxPuzzles; i++) {
                 if (_puzzles[i] is null) {
                     _puzzles[i] = puzzle;
+                    OnPuzzleRowChanged?.Invoke(i, puzzle);
                     return;
                 }
             }
@@ -180,6 +191,7 @@ namespace ProjectLCore.GameLogic
                 if (_puzzles[i] is not null && _puzzles[i]!.Id == id) {
                     _puzzles[i] = null;
                     _finishedPuzzleIds.Add(id);
+                    OnPuzzleRowChanged?.Invoke(i, null);
                     return;
                 }
             }
@@ -223,6 +235,7 @@ namespace ProjectLCore.GameLogic
         public void AddTetromino(TetrominoShape shape)
         {
             _numTetrominosOwned[(int)shape]++;
+            OnTetrominosCollectionChanged?.Invoke(shape, _numTetrominosOwned[(int)shape]);
         }
 
         /// <summary>
@@ -231,7 +244,11 @@ namespace ProjectLCore.GameLogic
         /// <param name="shape">The tetromino type to remove.</param>
         public void RemoveTetromino(TetrominoShape shape)
         {
+            if (_numTetrominosOwned[(int)shape] == 0) {
+                throw new InvalidOperationException("Cannot remove tetromino that has not been placed.");
+            }
             _numTetrominosOwned[(int)shape]--;
+            OnTetrominosCollectionChanged?.Invoke(shape, _numTetrominosOwned[(int)shape]);
         }
 
         /// <summary>

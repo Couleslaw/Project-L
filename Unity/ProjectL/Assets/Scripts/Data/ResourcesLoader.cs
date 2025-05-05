@@ -12,7 +12,7 @@ namespace ProjectL.Data
         BorderDim,
         BorderBright,
         Borderless,
-        WithBackground
+        Highlighted
     }
 
     public static class ResourcesLoader
@@ -33,7 +33,7 @@ namespace ProjectL.Data
         { PuzzleSpriteType.BorderDim, "border-dim" },
         { PuzzleSpriteType.BorderBright, "border-bright" },
         { PuzzleSpriteType.Borderless, "borderless" },
-        { PuzzleSpriteType.WithBackground, "with-background" }
+        { PuzzleSpriteType.Highlighted, "with-background" }
     };
 
         private static readonly Dictionary<PuzzleSpriteType, Dictionary<(uint, bool), Sprite>> _puzzleSpriteCaches = new();

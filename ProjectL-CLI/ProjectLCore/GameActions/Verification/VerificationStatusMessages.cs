@@ -350,10 +350,25 @@
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerAlreadyHasMaxPuzzlesFail"/> class.
+    /// </summary>
+    /// <seealso cref="ProjectLCore.GameActions.Verification.VerificationFailure" />
+    public class PlayerAlreadyHasMaxPuzzlesFail : VerificationFailure
+    {
+        #region Properties
+
+        /// <summary>
+        /// A description of the failure. States that the player already has the maximum number of puzzles.
+        /// </summary>
+        public override string Message => $"Player already has the maximum number ({PlayerState.MaxPuzzles}) of puzzles";
+
+        #endregion
+    }
+
+    /// <summary>
     /// The player tried to place a tetromino, but the given configuration doesn't match its shape.
     /// This failure can be produced by the <see cref="PlaceTetrominoAction"/> or <see cref="MasterAction"/>.
     /// </summary>
-
     /// <seealso cref="VerificationFailure"/>
     public class InvalidTetrominoConfigurationFail : VerificationFailure
     {

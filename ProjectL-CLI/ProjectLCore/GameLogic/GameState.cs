@@ -2,11 +2,11 @@ namespace ProjectLCore.GameLogic
 {
     using ProjectLCore.GameManagers;
     using ProjectLCore.GamePieces;
-    using System.Text;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.IO;
     using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
 
     /// <summary>
     /// Builder for the <see cref="GameState"/> class.
@@ -104,12 +104,24 @@ namespace ProjectLCore.GameLogic
 
         #region Fields
 
+        /// <summary>
+        /// The row of available white puzzles. Each element represents a puzzle or is <see langword="null"/> if the slot is empty.
+        /// </summary>
         private readonly Puzzle?[] _whitePuzzlesRow = new Puzzle?[NumPuzzlesInRow];
 
+        /// <summary>
+        /// The row of available black puzzles. Each element represents a puzzle or is <see langword="null"/> if the slot is empty.
+        /// </summary>
         private readonly Puzzle?[] _blackPuzzlesRow = new Puzzle?[NumPuzzlesInRow];
 
+        /// <summary>
+        /// The deck of white puzzles represented as a queue. Puzzles are drawn from the front of the queue.
+        /// </summary>
         private readonly Queue<Puzzle> _whitePuzzlesDeck;
 
+        /// <summary>
+        /// The deck of black puzzles represented as a queue. Puzzles are drawn from the front of the queue.
+        /// </summary>
         private readonly Queue<Puzzle> _blackPuzzlesDeck;
 
         private readonly List<Puzzle> _allPuzzlesInGame = new();
@@ -168,6 +180,31 @@ namespace ProjectLCore.GameLogic
         #endregion
 
         #region Properties
+
+        /// <summary>
+        /// Called when the white puzzle row changes. The parameters are the position of the change and the new puzzle.
+        /// </summary>
+        public Action<int, Puzzle?>? OnWhitePuzzleRowChanged { get; set; }
+
+        /// <summary>
+        /// Called when the black puzzle row changes. The parameters are the position of the change and the new puzzle.
+        /// </summary>
+        public Action<int, Puzzle?>? OnBlackPuzzleRowChanged { get; set; }
+
+        /// <summary>
+        /// Called when the white puzzle deck changes. The parameter is the number of puzzles left in the deck.
+        /// </summary>
+        public Action<int>? OnWhitePuzzleDeckChanged { get; set; }
+
+        /// <summary>
+        /// Called when the black puzzle deck changes. The parameter is the number of puzzles left in the deck.
+        /// </summary>
+        public Action<int>? OnBlackPuzzleDeckChanged { get; set; }
+
+        /// <summary>
+        /// Called when the number of tetrominos in the shared reserve changes. The parameters are the type of the tetromino and the number of tetrominos of this type in the reserve after the change.
+        /// </summary>
+        public Action<TetrominoShape, int>? OnTetrominosReserveChanged { get; set; }
 
         /// <summary> Contains the number of tetrominos left in the shared reserve for each shape.  </summary>
         public int[] NumTetrominosLeft { get; } = new int[TetrominoManager.NumShapes];
@@ -297,7 +334,9 @@ namespace ProjectLCore.GameLogic
             if (_whitePuzzlesDeck.Count == 0) {
                 return null;
             }
-            return _whitePuzzlesDeck.Dequeue();
+            var result = _whitePuzzlesDeck.Dequeue();
+            OnWhitePuzzleDeckChanged?.Invoke(_whitePuzzlesDeck.Count);
+            return result;
         }
 
         /// <summary>
@@ -309,7 +348,9 @@ namespace ProjectLCore.GameLogic
             if (_blackPuzzlesDeck.Count == 0) {
                 return null;
             }
-            return _blackPuzzlesDeck.Dequeue();
+            var result = _blackPuzzlesDeck.Dequeue();
+            OnBlackPuzzleDeckChanged?.Invoke(_blackPuzzlesDeck.Count);
+            return result;
         }
 
         /// <summary>
@@ -341,12 +382,14 @@ namespace ProjectLCore.GameLogic
             for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
                 if (_whitePuzzlesRow[i] is not null && _whitePuzzlesRow[i]!.Id == id) {
                     _whitePuzzlesRow[i] = null;
+                    OnWhitePuzzleRowChanged?.Invoke(i, null);
                     return;
                 }
             }
             for (int i = 0; i < _blackPuzzlesRow.Length; i++) {
                 if (_blackPuzzlesRow[i] is not null && _blackPuzzlesRow[i]!.Id == id) {
                     _blackPuzzlesRow[i] = null;
+                    OnBlackPuzzleRowChanged?.Invoke(i, null);
                     return;
                 }
             }
@@ -360,11 +403,13 @@ namespace ProjectLCore.GameLogic
             for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
                 if (_whitePuzzlesRow[i] is null && _whitePuzzlesDeck.Count > 0) {
                     _whitePuzzlesRow[i] = TakeTopWhitePuzzle();
+                    OnWhitePuzzleRowChanged?.Invoke(i, _whitePuzzlesRow[i]);
                 }
             }
             for (int i = 0; i < _blackPuzzlesRow.Length; i++) {
                 if (_blackPuzzlesRow[i] is null && _blackPuzzlesDeck.Count > 0) {
                     _blackPuzzlesRow[i] = TakeTopBlackPuzzle();
+                    OnBlackPuzzleRowChanged?.Invoke(i, _blackPuzzlesRow[i]);
                 }
             }
         }
@@ -377,9 +422,11 @@ namespace ProjectLCore.GameLogic
         {
             if (puzzle.IsBlack) {
                 _blackPuzzlesDeck.Enqueue(puzzle);
+                OnBlackPuzzleDeckChanged?.Invoke(_blackPuzzlesDeck.Count);
             }
             else {
                 _whitePuzzlesDeck.Enqueue(puzzle);
+                OnWhitePuzzleDeckChanged?.Invoke(_whitePuzzlesDeck.Count);
             }
         }
 
@@ -404,6 +451,7 @@ namespace ProjectLCore.GameLogic
                 throw new InvalidOperationException($"No tetrominos of type {shape} left");
             }
             NumTetrominosLeft[(int)shape]--;
+            OnTetrominosReserveChanged?.Invoke(shape, NumTetrominosLeft[(int)shape]);
         }
 
         /// <summary>
@@ -417,6 +465,7 @@ namespace ProjectLCore.GameLogic
                 throw new InvalidOperationException($"Too many tetrominos of type {shape}");
             }
             NumTetrominosLeft[(int)shape]++;
+            OnTetrominosReserveChanged?.Invoke(shape, NumTetrominosLeft[(int)shape]);
         }
 
         /// <summary>

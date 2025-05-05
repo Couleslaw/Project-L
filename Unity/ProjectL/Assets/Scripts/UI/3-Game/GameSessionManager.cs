@@ -21,9 +21,12 @@ public class GameSessionManager : MonoBehaviour
 {
     #region Fields
 
-    [Header("UI Elements")]
+    [Header("Game End Boxes")]
     [SerializeField] private GameObject? errorMessageBoxPrefab;
     [SerializeField] private GameObject? gameEndedBoxPrefab;
+
+    [Header("UI management")]
+    [SerializeField] private GameGraphicsManager? gameGraphicsManager;
 
     [Header("Text game")]
     [SerializeField] private TextBasedGame? textGame;
@@ -37,7 +40,7 @@ public class GameSessionManager : MonoBehaviour
     private void Awake()
     {
         // check that all components are assigned
-        if (errorMessageBoxPrefab == null || gameEndedBoxPrefab == null) {
+        if (errorMessageBoxPrefab == null || gameEndedBoxPrefab == null || gameGraphicsManager == null) {
             Debug.LogError("GameManager: One or more required UI elements are not assigned.");
             return;
         }
@@ -54,6 +57,8 @@ public class GameSessionManager : MonoBehaviour
         if (_game == null) {
             return;
         }
+
+        gameGraphicsManager!.Initialize(_game.GameState);
 
         // initialize game
         _game.InitializeGame();

@@ -92,6 +92,7 @@
         /// <param name="action">The action to verify.</param>
         /// <returns>
         ///   <list type="bullet">
+        ///     <item> <see cref="PlayerAlreadyHasMaxPuzzlesFail"/> if the player already has <see cref="PlayerState.MaxPuzzles"/> puzzles.</item>
         ///     <item> <see cref="PuzzleDeckIsEmptyFail"/> if the player is taking a puzzle from the top of a deck but it is empty.</item>
         ///     <item> <see cref="PuzzleIdIsNullFail"/> if the player wants a specific puzzle but the ID is <see langword="null"/>.</item>
         ///     <item> <see cref="PuzzleNotAvailableFail"/> if the player wants a specific puzzle but the ID doesn't match any of the available puzzles.</item>
@@ -101,6 +102,11 @@
         /// </returns>
         private VerificationResult VerifyTakePuzzleAction(TakePuzzleAction action)
         {
+            // check that player has space for a new puzzle
+            if (_playerInfo.UnfinishedPuzzles.Length >= PlayerState.MaxPuzzles) {
+                return new PlayerAlreadyHasMaxPuzzlesFail();
+            }
+
             switch (action.Option) {
                 case TakePuzzleAction.Options.TopWhite: {
                     return _gameInfo.NumWhitePuzzlesLeft == 0

@@ -38,17 +38,27 @@
 
 ### Create main game screen
 
-- [ ] create game layout
-  - [ ] puzzle container
-    - [ ] puzzle action zone
-    - [ ] puzzle zone
-  - [ ] player zone
-    - [ ] create player row prefab
-      - [ ] background which highlights when current player
-  - [ ] player action zone
-    - [ ] player action zone
-    - [ ] player zone
-      - [ ] create player column prefab
+- [x] create game layout
+- [ ] create game board from PlayerSelection
+  - [x] Action zone
+    - [x] action buttons UI logic
+    - [x] end finishes touches button
+  - [x] Puzzle zone
+    - [x] populate columns with puzzles
+    - [x] logic for empty slot
+  - [ ] Player zone
+    - [ ] player row setup
+      - [ ] name
+      - [ ] show puzzles + empty slots
+      - [ ] player row collider visualization
+    - [ ] populate with player rows
+      - [ ] enable only row of selected player
+  - [ ] Piece zone
+    - [ ] populate names
+    - [ ] collection column setup
+      - [ ] add field for each shape
+    - [ ] add player collection columns
+    - [ ] add shared reserve column
 - [ ] add action buttons logic
 - [ ] add logic for human actions
 - [ ] add animation for AI actions
