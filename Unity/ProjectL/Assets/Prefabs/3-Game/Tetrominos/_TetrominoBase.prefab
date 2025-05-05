@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4183159750252936387}
   - component: {fileID: 3348258149989205388}
   m_Layer: 8
-  m_Name: _SpriteTetrominoBase
+  m_Name: _TetrominoBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
