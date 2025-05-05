@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9093484343030591692}
   - component: {fileID: 6981623035585068730}
+  - component: {fileID: 1753855051760846171}
   m_Layer: 5
   m_Name: PuzzleActionZone
   m_TagString: Untagged
@@ -58,6 +59,20 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &1753855051760846171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 263738363731806463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd835146f8c2eb646b92b875eeb30f6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionButtonsPanel: {fileID: 8447973012206262409}
+  finishingTouchesButton: {fileID: 905267606426348078}
 --- !u!1 &8447973012206262409
 GameObject:
   m_ObjectHideFlags: 0
@@ -516,6 +531,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 47a7cef872c526d459eb9274830bd0eb, type: 3}
+--- !u!114 &905267606426348078 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3638974421542951458, guid: 47a7cef872c526d459eb9274830bd0eb, type: 3}
+  m_PrefabInstance: {fileID: 4472096298702024716}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &4891307659632873799 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 9075168336381845835, guid: 47a7cef872c526d459eb9274830bd0eb, type: 3}

@@ -799,6 +799,11 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 9093484343030591692, guid: ba12f825bd6285541b0eb189a82baeaf, type: 3}
   m_PrefabInstance: {fileID: 1557228410239819528}
   m_PrefabAsset: {fileID: 0}
+--- !u!224 &715574245 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 613311933806963101, guid: 8701ced37ba08834fa94a9c009d4f1d5, type: 3}
+  m_PrefabInstance: {fileID: 1735769125}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &784531563
 GameObject:
   m_ObjectHideFlags: 0
@@ -1553,7 +1558,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c99986cf226d23f44a1885a4ce64d7c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  puzzleSample: {fileID: 0}
+  puzzleSample: {fileID: 715574245}
   tetrominoSpawnerSample: {fileID: 2118558258}
   puzzleZoneEdgeMarker: {fileID: 253462768}
 --- !u!1 &1598245869
@@ -2810,6 +2815,10 @@ PrefabInstance:
     - target: {fileID: 6213071480815947060, guid: 8f219779e283aee4c9d99f4b806a8b02, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6836385516243316821, guid: 8f219779e283aee4c9d99f4b806a8b02, type: 3}
+      propertyPath: m_Interactable
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7184653765596426791, guid: 8f219779e283aee4c9d99f4b806a8b02, type: 3}
       propertyPath: m_AnchorMax.y
