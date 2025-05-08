@@ -7,7 +7,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
     using ProjectLCore.Players;
     using ProjectLCore.GameLogic;
 
-    public class PlayerZoneManager : StaticInstance<PlayerZoneManager>, ICurrentPlayerListener, IGameZoneManager
+    public class PlayerZoneManager : GameZoneManager<PlayerZoneManager>, ICurrentPlayerListener
     {
         [SerializeField] private PlayerZoneRow? _playerZoneRowPrefab;
 
@@ -23,7 +23,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
         }
 
-        public void Init(GameCore game)
+        public override void Init(GameCore game)
         {
             if (_playerZoneRowPrefab == null) {
                 return;

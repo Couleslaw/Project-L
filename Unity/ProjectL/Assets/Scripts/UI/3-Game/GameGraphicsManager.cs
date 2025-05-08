@@ -7,20 +7,21 @@ namespace ProjectL.UI.GameScene
     using ProjectL.UI.GameScene.Zones.PlayerZone;
     using ProjectL.UI.GameScene.Zones.PuzzleZone;
     using ProjectL.UI.GameScene.Zones.ActionZones;
+    using ProjectL.UI.GameScene.Zones.PieceZone;
 
-
-    public interface IGameZoneManager
+    public abstract class GameZoneManager<TSelf> : StaticInstance<TSelf> where TSelf : GameZoneManager<TSelf>
     {
-        void Init(GameCore game);
+        public abstract void Init(GameCore game);
     }
 
-    public class GameGraphicsManager : StaticInstance<GameGraphicsManager>, IGameZoneManager
+    public class GameGraphicsManager : GameZoneManager<GameGraphicsManager>
     {
-        public void Init(GameCore game)
+        public override void Init(GameCore game)
         {
             PuzzleZoneManager.Instance.Init(game);
             PlayerZoneManager.Instance.Init(game);
             ActionZoneManager.Instance.Init(game);
+            PieceZoneManager.Instance.Init(game);
         }
     }
 }

@@ -2070,7 +2070,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   errorMessageBoxPrefab: {fileID: 5014135975779550276, guid: 03d0c3f9c5b425241afc04014725782f, type: 3}
   gameEndedBoxPrefab: {fileID: 1281577962761317963, guid: ecba7b0daaa5a534c87346e1a62ea876, type: 3}
-  gameGraphicsManager: {fileID: 0}
   textGame: {fileID: 45761246}
 --- !u!1 &1877775467
 GameObject:

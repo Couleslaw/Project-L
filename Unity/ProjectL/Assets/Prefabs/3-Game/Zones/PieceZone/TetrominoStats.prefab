@@ -260,6 +260,7 @@ GameObject:
   m_Component:
   - component: {fileID: 764798697489816436}
   - component: {fileID: 9063279939995699269}
+  - component: {fileID: 8359636303744059210}
   m_Layer: 5
   m_Name: TetrominoStats
   m_TagString: Untagged
@@ -316,6 +317,18 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &8359636303744059210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4298918529677534526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c78f120d047e9b46a2df28ba5b242de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4731407873895270433
 GameObject:
   m_ObjectHideFlags: 0
@@ -402,6 +415,7 @@ GameObject:
   - component: {fileID: 7515159740568058987}
   - component: {fileID: 8487956951832359423}
   - component: {fileID: 6274381099156076976}
+  - component: {fileID: 3233825538139974768}
   m_Layer: 5
   m_Name: SharedReserveStats
   m_TagString: Untagged
@@ -475,6 +489,18 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &3233825538139974768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7044564874037179920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b42598854164e1e4ab26007581f74b85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7213201442012683842
 GameObject:
   m_ObjectHideFlags: 0
@@ -549,6 +575,7 @@ GameObject:
   - component: {fileID: 5981344177058035411}
   - component: {fileID: 6757597306950850890}
   - component: {fileID: 4951353551145424953}
+  - component: {fileID: 7423206412432326512}
   m_Layer: 5
   m_Name: TetrominoButtons
   m_TagString: Untagged
@@ -630,6 +657,18 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &7423206412432326512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7585049714147041440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a36f70d552f13244d89fea1d9c789b0f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7754407402904251928
 GameObject:
   m_ObjectHideFlags: 0
@@ -724,6 +763,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7921546482423057597}
   - component: {fileID: 2830194192235214913}
+  - component: {fileID: 4056520793149668261}
   m_Layer: 5
   m_Name: PlayerStats
   m_TagString: Untagged
@@ -778,6 +818,18 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &4056520793149668261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9159347933981157209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 743087979222b1b44ab26abb96ace013, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &696541838639735342
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -6,7 +6,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
     using ProjectLCore.GamePieces;
     using UnityEngine;
 
-    public class PuzzleZoneManager : StaticInstance<PuzzleZoneManager>, IGameStatePuzzleListener, ICurrentTurnListener, IGameZoneManager
+    public class PuzzleZoneManager : GameZoneManager<PuzzleZoneManager>, IGameStatePuzzleListener, ICurrentTurnListener
     {
         [Header("Puzzle columns")]
         [SerializeField] private PuzzleColumn? _whitePuzzleColumn;
@@ -16,7 +16,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
         [SerializeField] private DeckCoverCard? _whiteDeckCoverCard;
         [SerializeField] private DeckCoverCard? _blackDeckCoverCard;
 
-        public void Init(GameCore game)
+        public override void Init(GameCore game)
         {
             game.AddListener(this);
             game.GameState.AddListener(this);

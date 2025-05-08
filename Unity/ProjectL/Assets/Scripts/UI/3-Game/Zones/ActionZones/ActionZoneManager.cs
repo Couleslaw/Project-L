@@ -6,12 +6,12 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
     using ProjectLCore.Players;
     using UnityEngine;
 
-    public class ActionZoneManager : StaticInstance<ActionZoneManager>, IGameZoneManager, ICurrentPlayerListener, ICurrentTurnListener
+    public class ActionZoneManager : GameZoneManager<ActionZoneManager>, ICurrentPlayerListener, ICurrentTurnListener
     {
         [SerializeField] private PuzzleActionZone? puzzleActionZone;
         [SerializeField] private PieceActionZone? pieceActionZone;
 
-        public void Init(GameCore game)
+        public override void Init(GameCore game)
         {
             game.AddListener((ICurrentPlayerListener)this);
             game.AddListener((ICurrentTurnListener)this);
