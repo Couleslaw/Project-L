@@ -6,13 +6,15 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(RectTransform))]
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(Collider2D))]
 public class DraggableTetromino : MonoBehaviour
 {
     #region Constants
 
-    private const float rotationSpeed = 30; // degrees per 1 mouse wheel move
+    private const float _rotationSpeed = 30; // degrees per 1 mouse wheel move
 
     #endregion
 
@@ -24,23 +26,27 @@ public class DraggableTetromino : MonoBehaviour
     private static int _abandonedTetrominosLayer;
     private static int _selectedTetrominoLayer;
     private static int _placedTetrominoLayer;
+    private static int _playerPuzzleRowLayer;
 
     private const int _placedTetrominoSortingOrder = 1;
     private const int _abandonedTetrominosSortingOrder = 2;
     private const int _selectedTetrominoSortingOrder = 3;
 
-    Vector2 pointerOffset;
+    Vector2 _pointerOffset;
 
-    private Rigidbody2D rb;
-    private RectTransform rt;
-
-    private SpriteRenderer spriteRenderer;
+    private Rigidbody2D? _rb;
+    private RectTransform? _rt;
+    private SpriteRenderer? _spriteRenderer;
 
     private Camera? mainCamera;
 
-    private bool isDragging = false;
+    private bool _isDragging = false;
 
-    private bool isMouseOver = false;
+    private bool _isMouseOver = false;
+
+    private bool _isOverPuzzleRow = false;
+
+    private Action? _onDiscard;
 
     #endregion
 
@@ -57,9 +63,10 @@ public class DraggableTetromino : MonoBehaviour
     #region Methods
 
     // Called by the ButtonShapeSpawner after instantiation
-    public void Initialize(Camera cam)
+    public void Init(Camera cam, Action onDiscard)
     {
         mainCamera = cam;
+        _onDiscard = onDiscard;
     }
 
     public void StartDragging()
@@ -72,25 +79,25 @@ public class DraggableTetromino : MonoBehaviour
             Vector2 mouseWorldPos = mainCamera.ScreenToWorldPoint(mouseScreenPos);
 
             // Calculate the difference between the object's center and the mouse click position
-            pointerOffset = (Vector2)transform.position - mouseWorldPos;
+            _pointerOffset = (Vector2)transform.position - mouseWorldPos;
         }
         else {
             Debug.LogError("Main Camera is not assigned, cannot calculate drag offset.");
-            pointerOffset = Vector2.zero; // Default to no offset if camera is missing
+            _pointerOffset = Vector2.zero; // Default to no offset if camera is missing
         }
         // --- Calculate Offset --- END
 
 
         SelectedTetromino = this;
         OnStartDragging?.Invoke(this);
-        isDragging = true;
+        _isDragging = true;
 
-        isMouseOver = true;
+        _isMouseOver = true;
         gameObject.layer = _selectedTetrominoLayer; // Set the layer to selected
-        spriteRenderer.sortingOrder = _selectedTetrominoSortingOrder; // Set the sorting order to selected
-        rb.bodyType = RigidbodyType2D.Kinematic; // Switch to Kinematic for drag
-        rb.linearVelocity = Vector2.zero;
-        rb.angularVelocity = 0f;
+        _spriteRenderer!.sortingOrder = _selectedTetrominoSortingOrder; // Set the sorting order to selected
+        _rb!.bodyType = RigidbodyType2D.Kinematic; // Switch to Kinematic for drag
+        _rb.linearVelocity = Vector2.zero;
+        _rb.angularVelocity = 0f;
 
         // set rotation to the closes mutliple of 90 degrees
         float angle = transform.rotation.eulerAngles.z;
@@ -101,28 +108,28 @@ public class DraggableTetromino : MonoBehaviour
 
     public void StopDragging()
     {
-        isDragging = false;
-        rb.bodyType = RigidbodyType2D.Dynamic; // Switch back to Dynamic
-        rb.linearVelocity = Vector2.zero;
+        _isDragging = false;
+        _rb!.bodyType = RigidbodyType2D.Dynamic; // Switch back to Dynamic
+        _rb.linearVelocity = Vector2.zero;
     }
 
     public void PlaceToPuzzle(Vector3 center)
     {
-        isDragging = false; // Stop dragging when placing
+        _isDragging = false; // Stop dragging when placing
 
         if (SelectedTetromino == this) {
             SelectedTetromino = null;
         }
         gameObject.layer = _placedTetrominoLayer;
-        spriteRenderer.sortingOrder = _placedTetrominoSortingOrder; // Set the sorting order to placed
-        rb.bodyType = RigidbodyType2D.Static;
+        _spriteRenderer!.sortingOrder = _placedTetrominoSortingOrder; // Set the sorting order to placed
+        _rb!.bodyType = RigidbodyType2D.Static;
 
         // set rotation to the closes mutliple of 90 degrees
         float angle = transform.rotation.eulerAngles.z;
         angle = Mathf.Round(angle / 90f) * 90f;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
 
-        Vector2 offset = Vector2.Scale(rt.sizeDelta, (0.5f * Vector2.one - rt.pivot));
+        Vector2 offset = Vector2.Scale(_rt!.sizeDelta, (0.5f * Vector2.one - _rt.pivot));
         offset = Vector2.Scale(offset, (Vector2)transform.localScale);
         transform.position = center + (Vector3)Rotate(offset, angle);
 
@@ -144,30 +151,46 @@ public class DraggableTetromino : MonoBehaviour
 
     public void OnMouseUp()
     {
-        if (isDragging) {
+        if (_isDragging) {
             StopDragging();
         }
     }
 
     public void OnMouseEnter()
     {
-        isMouseOver = true;
+        _isMouseOver = true;
     }
 
     public void OnMouseExit()
     {
-        isMouseOver = false;
+        _isMouseOver = false;
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.layer == _playerPuzzleRowLayer) {
+            _isOverPuzzleRow = true;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.layer == _playerPuzzleRowLayer) {
+            _isOverPuzzleRow = false;
+        }
+    }
+
 
     internal void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-        rt = GetComponent<RectTransform>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        _rb = GetComponent<Rigidbody2D>();
+        _rt = GetComponent<RectTransform>();
+        _spriteRenderer = GetComponent<SpriteRenderer>();
 
         _abandonedTetrominosLayer = LayerMask.NameToLayer("AbandonedTetromino");
         _selectedTetrominoLayer = LayerMask.NameToLayer("SelectedTetromino");
         _placedTetrominoLayer = LayerMask.NameToLayer("PlacedTetromino");
+        _playerPuzzleRowLayer = LayerMask.NameToLayer("PlayerPuzzleRow");
     }
 
     private void Start()
@@ -186,15 +209,15 @@ public class DraggableTetromino : MonoBehaviour
 
     internal void FixedUpdate() // Use FixedUpdate for Rigidbody manipulation
     {
-        if (isDragging && mainCamera != null) {
+        if (_isDragging && mainCamera != null) {
             // --- Move the Object ---
             Vector3 mouseScreenPos = Input.mousePosition;
             // Adjust Z before converting so it's within camera view frustum but not ON the near plane
             mouseScreenPos.z = mainCamera.WorldToScreenPoint(transform.position).z;
             Vector2 mouseWorldPos = mainCamera.ScreenToWorldPoint(mouseScreenPos);
-            Vector2 targetWorldPos = mouseWorldPos + pointerOffset; // Add the offset to the mouse position
+            Vector2 targetWorldPos = mouseWorldPos + _pointerOffset; // Add the offset to the mouse position
 
-            rb.MovePosition(targetWorldPos); // Move kinematic body correctly
+            _rb!.MovePosition(targetWorldPos); // Move kinematic body correctly
         }
     }
 
@@ -204,7 +227,7 @@ public class DraggableTetromino : MonoBehaviour
             return;
         }
         if (smooth)
-            transform.Rotate(0f, 0f, ctx.ReadValue<float>() * rotationSpeed);
+            transform.Rotate(0f, 0f, ctx.ReadValue<float>() * _rotationSpeed);
         else
             transform.Rotate(0f, 0f, 90 * Mathf.Sign(ctx.ReadValue<float>()));
     }
@@ -241,27 +264,35 @@ public class DraggableTetromino : MonoBehaviour
             return; // don't do anything if the tetromino is placed
         }
 
-        if (isDragging) {
+        if (_isDragging) {
             transform.localScale = TetrominoSizeManager.GetScaleFor(transform);
         }
 
         // --- Layer Management ---
-        if (isDragging || isMouseOver) {
+        if (_isDragging || _isMouseOver) {
             if (SelectedTetromino != null && SelectedTetromino != this) {
                 SelectedTetromino.gameObject.layer = _abandonedTetrominosLayer;
-                SelectedTetromino.spriteRenderer.sortingOrder = _abandonedTetrominosSortingOrder; // Set the sorting order to abandoned
+                SelectedTetromino._spriteRenderer!.sortingOrder = _abandonedTetrominosSortingOrder; // Set the sorting order to abandoned
             }
             if (SelectedTetromino != this) {
                 gameObject.layer = _selectedTetrominoLayer;
-                spriteRenderer.sortingOrder = _selectedTetrominoSortingOrder; // Set the sorting order to selected
+                _spriteRenderer!.sortingOrder = _selectedTetrominoSortingOrder; // Set the sorting order to selected
                 SelectedTetromino = this;
             }
         }
         else {
             gameObject.layer = _abandonedTetrominosLayer;
-            spriteRenderer.sortingOrder = _abandonedTetrominosSortingOrder; // Set the sorting order to abandoned
+            _spriteRenderer!.sortingOrder = _abandonedTetrominosSortingOrder; // Set the sorting order to abandoned
             if (SelectedTetromino == this) {
                 SelectedTetromino = null;
+            }
+        }
+
+        // destroy if abandoned and not over puzzle row
+        if (gameObject.layer == _abandonedTetrominosLayer) {
+            if (!_isOverPuzzleRow) {
+                _onDiscard?.Invoke();
+                Destroy(gameObject);
             }
         }
     }

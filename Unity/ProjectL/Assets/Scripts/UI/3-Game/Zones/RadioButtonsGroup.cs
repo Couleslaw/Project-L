@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace ProjectL.UI.Utils
+namespace ProjectL.UI.GameScene.Zones
 {
     using System;
     using System.Collections.Generic;
@@ -145,9 +145,7 @@ namespace ProjectL.UI.Utils
 
             // deselect the button in the event system
             if (deselect && EventSystem.current != null) {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                EventSystem.current.SetSelectedGameObject(null);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+                EventSystem.current.SetSelectedGameObject(null!);
             }
 
             // invoke connected methods

@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public class TetrominoSpawner : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField] private DraggableTetromino? draggableTetrominoPrefab;
-    private Camera mainCamera;
+    private Camera? mainCamera;
     private DraggableTetromino? currentTetromino = null;
 
     void Start()
@@ -24,11 +24,11 @@ public class TetrominoSpawner : MonoBehaviour, IPointerDownHandler, IPointerUpHa
 
         // --- Instantiate the Draggable Object ---
         // Convert mouse screen position to world position
-        Vector3 spawnPosition = mainCamera.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y, mainCamera.nearClipPlane + 10f)); // Adjust Z as needed
+        Vector3 spawnPosition = mainCamera!.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y, mainCamera.nearClipPlane + 10f)); // Adjust Z as needed
         spawnPosition.z = 0; // Ensure Z is appropriate for 2D
 
         currentTetromino = Instantiate(draggableTetrominoPrefab, spawnPosition, Quaternion.identity);
-        currentTetromino!.Initialize(mainCamera);
+        currentTetromino!.Init(mainCamera, null);
         currentTetromino.StartDragging(); 
     }
 

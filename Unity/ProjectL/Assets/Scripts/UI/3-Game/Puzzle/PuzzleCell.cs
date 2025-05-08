@@ -11,8 +11,8 @@ public class PuzzleCell : MonoBehaviour
 {
     #region Fields
 
-    private Image? image;
-
+    private Image? _image;
+    private BoxCollider2D? _collider;
     private int _numCollisions = 0;
 
     private Color defaultColor = Color.clear; // new Color(Color.blue.r, Color.blue.g, Color.blue.b, 0.2f);// semi-transparent blue
@@ -23,30 +23,38 @@ public class PuzzleCell : MonoBehaviour
 
     public bool IsColliding => _numCollisions > 0;
 
-    public Action? OnCollisionStateChanged { get; set; }
+    public event Action? OnCollisionStateChanged;
 
 
     #endregion
 
     #region Methods
 
-    public void ChangeColorTo(Color color)
+    public void SetColliderEnabled(bool enabled)
     {
-        if (image == null) {
+        if (_collider == null) {
             return;
         }
-        image.color = color;
+        _collider.enabled = enabled;
+    }
+
+    public void ChangeColorTo(Color color)
+    {
+        if (_image == null) {
+            return;
+        }
+        _image.color = color;
     }
 
     public void ResetColor() => ChangeColorTo(defaultColor);
 
     private void Awake()
     {
-        image = GetComponent<Image>();
-        var collider = GetComponent<BoxCollider2D>();
-        collider.isTrigger = true;
+        _image = GetComponent<Image>();
+        _collider = GetComponent<BoxCollider2D>();
+        _collider.isTrigger = true;
         // default color = transparent
-        image.color = defaultColor;
+        _image.color = defaultColor;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

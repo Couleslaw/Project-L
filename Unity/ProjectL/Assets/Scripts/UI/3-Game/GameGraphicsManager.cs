@@ -4,26 +4,23 @@ namespace ProjectL.UI.GameScene
 {
     using UnityEngine;
     using ProjectLCore.GameLogic;
+    using ProjectL.UI.GameScene.Zones.PlayerZone;
     using ProjectL.UI.GameScene.Zones.PuzzleZone;
+    using ProjectL.UI.GameScene.Zones.ActionZones;
 
-    public class GameGraphicsManager : MonoBehaviour
+
+    public interface IGameZoneManager
     {
-        [SerializeField] private PuzzleZoneManager? _puzzleZoneManager;
+        void Init(GameCore game);
+    }
 
-        private void Awake()
+    public class GameGraphicsManager : StaticInstance<GameGraphicsManager>, IGameZoneManager
+    {
+        public void Init(GameCore game)
         {
-            if (_puzzleZoneManager == null) {
-                Debug.LogError("PuzzleZoneManager is not assigned!", this);
-                return;
-            }
-        }
-
-        public void Initialize(GameState gameState)
-        {
-            if (_puzzleZoneManager == null) {
-                return;
-            }
-            _puzzleZoneManager.ListenTo(gameState);
+            PuzzleZoneManager.Instance.Init(game);
+            PlayerZoneManager.Instance.Init(game);
+            ActionZoneManager.Instance.Init(game);
         }
     }
 }

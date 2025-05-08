@@ -6,9 +6,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 [RequireComponent(typeof(RectTransform))]
+[RequireComponent(typeof(Image))]
 [RequireComponent(typeof(GridLayoutGroup))]
 public class InteractivePuzzle : MonoBehaviour
 {
@@ -20,20 +20,37 @@ public class InteractivePuzzle : MonoBehaviour
 
     private PuzzleCell[]? puzzleCells;
 
-    private PuzzleWithGraphics? _logicalPuzzle = new(BinaryImage.EmptyImage, 0, 0, false, 0);
+    private PuzzleWithGraphics? _logicalPuzzle = null;
+
+    private PuzzleWithGraphics? _temporaryCopy = null;
 
     private Dictionary<DraggableTetromino, BinaryImage> _placedTetrominos = new();
-
-    private PuzzleWithGraphics? _temporaryCopy = new(BinaryImage.EmptyImage, 0, 0, false, 0);
 
     #endregion
 
     #region Methods
 
-    public void Initialize(PuzzleWithGraphics logicalPuzzle)
+    public void MakeInteractive(bool enabled)
+    {
+        if (puzzleCells == null) {
+            Debug.LogError("Puzzle cells are not initialized.");
+            return;
+        }
+        foreach (var cell in puzzleCells) {
+            cell.SetColliderEnabled(enabled);
+        }
+    }
+
+    public void SetNewPuzzle(PuzzleWithGraphics logicalPuzzle)
     {
         _logicalPuzzle = logicalPuzzle;
         _temporaryCopy = (PuzzleWithGraphics)logicalPuzzle.Clone();
+
+        if (!_temporaryCopy.TryGetSprite(out Sprite? sprite)) {
+            Debug.LogError("Failed to get sprite for the puzzle.", this);
+            return;
+        }
+        GetComponent<Image>().sprite = sprite!;
     }
 
     public static void PlaceTetrominoToPuzzle(DraggableTetromino tetromino)
@@ -58,7 +75,7 @@ public class InteractivePuzzle : MonoBehaviour
     private static bool TryGetPuzzleWhichHasShapeOverIt(TetrominoShape shape, out InteractivePuzzle? result, out BinaryImage position)
     {
         foreach (var puzzle in _availablePuzzles) {
-            if (puzzle == null) {
+            if (puzzle == null || puzzle._logicalPuzzle == null || puzzle.gameObject.activeSelf == false) {
                 continue;
             }
             position = puzzle.GetTetrominoPosition();
@@ -138,7 +155,6 @@ public class InteractivePuzzle : MonoBehaviour
             }
         }
     }
-
 
     private BinaryImage GetTetrominoPosition()
     {

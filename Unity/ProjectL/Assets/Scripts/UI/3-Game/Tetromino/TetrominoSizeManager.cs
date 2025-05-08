@@ -10,13 +10,13 @@ public class TetrominoSizeManager : MonoBehaviour
 
     [Header("Tetromino scale settings")]
     [Tooltip("Sample of a puzzle card to get it's scale")]
-    [SerializeField] private Transform puzzleSample;
+    [SerializeField] private Transform? puzzleSample;
 
     [Tooltip("Sample of a tetromino spawner to get it's scale")]
-    [SerializeField] private Transform tetrominoSpawnerSample;
+    [SerializeField] private Transform? tetrominoSpawnerSample;
 
     [Tooltip("Edge of the puzzle zone, to use as a border for scaling")]
-    [SerializeField] private Transform puzzleZoneEdgeMarker;
+    [SerializeField] private Transform? puzzleZoneEdgeMarker;
 
     #endregion
 
@@ -57,9 +57,9 @@ public class TetrominoSizeManager : MonoBehaviour
     private Vector3 GetScale(Transform tetromino)
     {
         float distance = DistanceToPuzzleZone(tetromino.position.x);
-        float maxScaleDistance = DistanceToPuzzleZone(tetrominoSpawnerSample.position.x);
+        float maxScaleDistance = DistanceToPuzzleZone(tetrominoSpawnerSample!.position.x);
         float maxScale = tetrominoSpawnerSample.localScale.x;
-        float minScale = puzzleSample.localScale.x;
+        float minScale = puzzleSample!.localScale.x;
         float t = Mathf.Clamp01(Mathf.InverseLerp(maxScaleDistance, 0f, distance));
         float scale = Mathf.Lerp(maxScale, minScale, t);
         //Debug.Log($"Scale: {scale} for distance: {distance} from puzzle zone edge marker (x={tetromino.position.x}), minScale={minScale}, maxScale={maxScale}");

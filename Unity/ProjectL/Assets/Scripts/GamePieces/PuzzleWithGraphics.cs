@@ -1,5 +1,7 @@
-﻿using ProjectLCore.GamePieces;
+﻿using ProjectL.Data;
+using ProjectLCore.GamePieces;
 using System.Linq;
+using UnityEngine;
 
 #nullable enable
 
@@ -37,6 +39,11 @@ public class PuzzleWithGraphics : Puzzle
     #endregion
 
     #region Methods
+
+    public bool TryGetSprite(out Sprite? sprite)
+    {
+        return ResourcesLoader.TryGetPuzzleSprite(this, PuzzleSpriteType.Borderless, out sprite);
+    }
 
     /// <summary>
     /// Places the given tetromino into the puzzle.

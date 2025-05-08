@@ -1,12 +1,11 @@
 #nullable enable
 
-namespace ProjectL
+namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 {
     using TMPro;
     using System;
     using UnityEngine;
     using UnityEngine.UI;
-    using ProjectL.UI.Utils;
 
     [RequireComponent(typeof(Button))]
     public class DeckCoverCard : MonoBehaviour

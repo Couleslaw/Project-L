@@ -15,7 +15,7 @@ TagManager:
   - SelectedTetromino
   - AbandonedTetromino
   - PlacedTetromino
-  - 
+  - PlayerPuzzleRow
   - 
   - 
   - 
