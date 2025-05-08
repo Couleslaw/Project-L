@@ -15,6 +15,7 @@
     /// </list>
     /// The puzzle color and puzzle number together uniquely identify the file in which the puzzle image is stored.
     /// </summary>
+    /// <typeparam name="T"> The puzzle type to parse. Must be a subclass of <see cref="Puzzle"/> and have a constructor with the signature <see cref="Puzzle(BinaryImage, int, TetrominoShape, bool, uint)"/></typeparam>
     /// <remarks>
     /// The order of the lines doesn't matter and there can be an arbitrary number of lines not starting with a special character scattered throughout the puzzle definition.
     /// This however isn't recommended as it makes the file harder to read for humans.
@@ -30,7 +31,7 @@
     /// </code>
     /// This example encodes a black puzzle with number 13, reward of 5 points and <c>O1</c> tetromino.
     /// </example>
-    public class PuzzleParser : IDisposable
+    public class PuzzleParser<T> : IDisposable where T : Puzzle
     {
         #region Constants
 
@@ -50,7 +51,7 @@
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PuzzleParser"/> class.
+        /// Initializes a new instance of the <see cref="PuzzleParser{T}"/> class.
         /// </summary>
         /// <param name="path">The path to the puzzle configuration file.</param>
         /// <exception cref="ArgumentException">The path cannot be null or empty.</exception>"
@@ -98,7 +99,7 @@
         /// or
         /// Too many puzzle lines.
         /// </exception>
-        public Puzzle? GetNextPuzzle()
+        public T? GetNextPuzzle()
         {
             // parsing identifiers
             bool? isBlack = null;
@@ -203,9 +204,10 @@
         /// <param name="tetromino">The puzzle reward tetromino.</param>
         /// <param name="image">The puzzle image encoded with a <see cref="BinaryImage"/>.</param>
         /// <returns>The puzzle initialized from the given parameters.</returns>
-        protected virtual Puzzle CreatePuzzle(bool isBlack, uint puzzleNum, int score, TetrominoShape tetromino, BinaryImage image)
+        protected virtual T CreatePuzzle(bool isBlack, uint puzzleNum, int score, TetrominoShape tetromino, BinaryImage image)
         {
-            return new Puzzle(image, score, tetromino, isBlack, puzzleNum);
+            // Use reflection to create an instance of T, assuming T has a constructor matching the parameters.
+            return (T)Activator.CreateInstance(typeof(T), image, score, tetromino, isBlack, puzzleNum)!;
         }
 
         /// <summary>

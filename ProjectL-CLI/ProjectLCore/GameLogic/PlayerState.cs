@@ -10,6 +10,53 @@ namespace ProjectLCore.GameLogic
     using System.Text;
 
     /// <summary>
+    /// Interface for classes that want to be notified about changes in a <see cref="PlayerState"/>.
+    /// </summary>
+    /// <seealso cref="PlayerState.AddListener(IPlayerStatePuzzleListener)"/>
+    /// <seealso cref="PlayerState.RemoveListener(IPlayerStatePuzzleListener)"/>
+    /// <seealso cref="IPlayerStateTetrominoListener"/>
+    public interface IPlayerStatePuzzleListener
+    {
+        #region Methods
+
+        /// <summary>
+        /// Called when the set of unfinished puzzles changes.
+        /// </summary>
+        /// <param name="index"> The index (in the row) of the puzzle that was finished.</param>
+        /// <param name="info"> The information about the finished puzzle.</param>
+        public void OnPuzzleFinished(int index, FinishedPuzzleInfo info);
+
+        /// <summary>
+        /// Called when the player takes a new puzzle;
+        /// </summary>
+        /// <param name="index">The index (in the row) of the puzzle that was added.</param>
+        /// <param name="puzzle">The puzzle that was added.</param>
+        public void OnPuzzleAdded(int index, Puzzle puzzle);
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Interface for classes that want to be notified about tetromino changes in a <see cref="PlayerState"/>.
+    /// </summary>
+    /// <seealso cref="PlayerState.AddListener(IPlayerStateTetrominoListener)"/>
+    /// <seealso cref="PlayerState.RemoveListener(IPlayerStateTetrominoListener)"/>
+    /// <seealso cref="IPlayerStatePuzzleListener"/>
+    public interface IPlayerStateTetrominoListener
+    {
+        #region Methods
+
+        /// <summary>
+        /// Called when the number of tetrominos in the player's collection changes.
+        /// </summary>
+        /// <param name="shape">The shape of the tetromino that was used or added.</param>
+        /// <param name="count"> The number of tetrominos of this shape in the collection after the change.</param>
+        public void OnTetrominoCollectionChanged(TetrominoShape shape, int count);
+
+        #endregion
+    }
+
+    /// <summary>
     /// Represents the resources and progress of a single <see cref="Player"/>.
     ///   <list type="bullet">
     ///     <item>His current score.</item>
@@ -54,17 +101,17 @@ namespace ProjectLCore.GameLogic
 
         #endregion
 
+        #region Events
+
+        private event Action<int, FinishedPuzzleInfo>? PuzzleFinished;
+
+        private event Action<int, Puzzle>? PuzzleAdded;
+
+        private event Action<TetrominoShape, int>? TetrominosCollectionChanged;
+
+        #endregion
+
         #region Properties
-
-        /// <summary>
-        /// Called when the set of unfinished puzzles changes. The parameters are the position of the change and the new puzzle.
-        /// </summary>
-        public Action<int, Puzzle?>? OnPuzzleRowChanged { get; set; }
-
-        /// <summary>
-        /// Called when the number of tetrominos in the player's collection changes. The parameters are the type of the tetromino and the number of tetrominos of this type in the collection after the change.
-        /// </summary>
-        public Action<TetrominoShape, int>? OnTetrominosCollectionChanged { get; set; }
 
         /// <summary> Unique identifier of the player. </summary>
         public uint PlayerId { get; }
@@ -75,6 +122,48 @@ namespace ProjectLCore.GameLogic
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Subscribes the puzzle listener to the events of this <see cref="PlayerState"/>.
+        /// </summary>
+        /// <param name="listener">The listener to add.</param>
+        /// <seealso cref="RemoveListener(IPlayerStatePuzzleListener)"/>
+        public void AddListener(IPlayerStatePuzzleListener listener)
+        {
+            PuzzleFinished += listener.OnPuzzleFinished;
+            PuzzleAdded += listener.OnPuzzleAdded;
+        }
+
+        /// <summary>
+        /// Unsubscribes the puzzle listener from the events of this <see cref="PlayerState"/>.
+        /// </summary>
+        /// <param name="listener">The listener to remove.</param>
+        /// <seealso cref="AddListener(IPlayerStatePuzzleListener)"/>
+        public void RemoveListener(IPlayerStatePuzzleListener listener)
+        {
+            PuzzleFinished -= listener.OnPuzzleFinished;
+            PuzzleAdded -= listener.OnPuzzleAdded;
+        }
+
+        /// <summary>
+        /// Subscribes the tetromino listener to the events of this <see cref="PlayerState"/>.
+        /// </summary>
+        /// <param name="listener">The listener to add.</param>
+        /// <seealso cref="RemoveListener(IPlayerStateTetrominoListener)"/>
+        public void AddListener(IPlayerStateTetrominoListener listener)
+        {
+            TetrominosCollectionChanged += listener.OnTetrominoCollectionChanged;
+        }
+
+        /// <summary>
+        /// Unsubscribes the tetromino listener from the events of this <see cref="PlayerState"/>.
+        /// </summary>
+        /// <param name="listener">The listener to remove.</param>
+        /// <seealso cref="AddListener(IPlayerStateTetrominoListener)"/>
+        public void RemoveListener(IPlayerStateTetrominoListener listener)
+        {
+            TetrominosCollectionChanged -= listener.OnTetrominoCollectionChanged;
+        }
 
         /// <summary>
         /// <para>
@@ -165,6 +254,7 @@ namespace ProjectLCore.GameLogic
 
         /// <summary>
         /// Adds the puzzle to the player's unfinished puzzles.
+        /// Also calls the <see cref="IPlayerStatePuzzleListener.OnPuzzleAdded(int, Puzzle)"/> method of all listeners.
         /// </summary>
         /// <param name="puzzle">The puzzle.</param>
         /// <exception cref="InvalidOperationException">No space for puzzle</exception>
@@ -173,7 +263,7 @@ namespace ProjectLCore.GameLogic
             for (int i = 0; i < MaxPuzzles; i++) {
                 if (_puzzles[i] is null) {
                     _puzzles[i] = puzzle;
-                    OnPuzzleRowChanged?.Invoke(i, puzzle);
+                    PuzzleAdded?.Invoke(i, puzzle);
                     return;
                 }
             }
@@ -181,17 +271,19 @@ namespace ProjectLCore.GameLogic
         }
 
         /// <summary>
-        /// Removes the puzzle with the specified identifier from the player's unfinished puzzles and adds it to the list of finished puzzles.
+        /// Removes the puzzle specified in the <see cref="FinishedPuzzleInfo"/> from the player's unfinished puzzles and adds it to the list of finished puzzles.
+        /// Also calls the <see cref="IPlayerStatePuzzleListener.OnPuzzleFinished(int, FinishedPuzzleInfo)"/> method of all listeners.
         /// </summary>
-        /// <param name="id">The identifier.</param>
+        /// <param name="info">Information about the puzzle.</param>
         /// <exception cref="InvalidOperationException">Puzzle not found</exception>
-        public void FinishPuzzleWithId(uint id)
+        public void FinishPuzzle(FinishedPuzzleInfo info)
         {
+            uint id = info.Puzzle.Id;
             for (int i = 0; i < MaxPuzzles; i++) {
                 if (_puzzles[i] is not null && _puzzles[i]!.Id == id) {
                     _puzzles[i] = null;
                     _finishedPuzzleIds.Add(id);
-                    OnPuzzleRowChanged?.Invoke(i, null);
+                    PuzzleFinished?.Invoke(i, info);
                     return;
                 }
             }
@@ -230,16 +322,18 @@ namespace ProjectLCore.GameLogic
 
         /// <summary>
         /// Adds the given tetromino to the player's personal collection.
+        /// Also calls the <see cref="IPlayerStatePuzzleListener.OnTetrominoCollectionChanged(TetrominoShape, int)"/> method of all listeners.
         /// </summary>
         /// <param name="shape">The tetromino type to add.</param>
         public void AddTetromino(TetrominoShape shape)
         {
             _numTetrominosOwned[(int)shape]++;
-            OnTetrominosCollectionChanged?.Invoke(shape, _numTetrominosOwned[(int)shape]);
+            TetrominosCollectionChanged?.Invoke(shape, _numTetrominosOwned[(int)shape]);
         }
 
         /// <summary>
         /// Removes the tetromino from the player's personal collection.
+        /// Also calls the <see cref="IPlayerStatePuzzleListener.OnTetrominoCollectionChanged(TetrominoShape, int)"/> method of all listeners.
         /// </summary>
         /// <param name="shape">The tetromino type to remove.</param>
         public void RemoveTetromino(TetrominoShape shape)
@@ -248,7 +342,7 @@ namespace ProjectLCore.GameLogic
                 throw new InvalidOperationException("Cannot remove tetromino that has not been placed.");
             }
             _numTetrominosOwned[(int)shape]--;
-            OnTetrominosCollectionChanged?.Invoke(shape, _numTetrominosOwned[(int)shape]);
+            TetrominosCollectionChanged?.Invoke(shape, _numTetrominosOwned[(int)shape]);
         }
 
         /// <summary>

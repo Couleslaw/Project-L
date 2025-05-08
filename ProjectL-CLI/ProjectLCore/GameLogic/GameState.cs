@@ -9,68 +9,60 @@ namespace ProjectLCore.GameLogic
     using System.Text;
 
     /// <summary>
-    /// Builder for the <see cref="GameState"/> class.
+    /// Interface for classes that want to be notified about puzzle changes in a <see cref="GameState"/>.
     /// </summary>
-    /// <seealso cref="GameState"/>
-    /// <seealso cref="PuzzleParser"/>
-    public class GameStateBuilder
+    /// <seealso cref="GameState.AddListener(IGameStatePuzzleListener)"/>
+    /// <seealso cref="GameState.RemoveListener(IGameStatePuzzleListener)"/>
+    /// <seealso cref="IGameStateTetrominoListener"/>
+    public interface IGameStatePuzzleListener
     {
-        #region Fields
-
-        private readonly List<Puzzle> _whitePuzzlesDeck = new();
-
-        private readonly List<Puzzle> _blackPuzzlesDeck = new();
-
-        private readonly int _numInitialTetrominos;
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GameStateBuilder"/> class.
-        /// </summary>
-        /// <param name="numInitialTetrominos">The number initial tetrominos.</param>
-        /// <exception cref="System.ArgumentException">The number of initial tetrominos must be at least <see cref="GameState.MinNumInitialTetrominos"/>.</exception>
-        public GameStateBuilder(int numInitialTetrominos)
-        {
-            // check if the number of initial tetrominos is valid
-            if (numInitialTetrominos < GameState.MinNumInitialTetrominos) {
-                throw new ArgumentException($"The number of initial tetrominos must be at least {GameState.MinNumInitialTetrominos}");
-            }
-            _numInitialTetrominos = numInitialTetrominos;
-        }
-
-        #endregion
-
         #region Methods
 
         /// <summary>
-        /// Adds the given puzzle to the appropriate deck.
+        /// Called when the white puzzle row changes.
         /// </summary>
-        /// <param name="puzzle">The puzzle.</param>
-        /// <returns>The modified <see cref="GameStateBuilder"/>.</returns>
-        public GameStateBuilder AddPuzzle(Puzzle puzzle)
-        {
-            if (puzzle.IsBlack) {
-                _blackPuzzlesDeck.Add(puzzle);
-            }
-            else {
-                _whitePuzzlesDeck.Add(puzzle);
-            }
-            return this;
-        }
+        /// <param name="index">The index in the row where the change occurred.</param>
+        /// <param name="puzzle">The new puzzle at the specified index, or <see langword="null"/> if the slot is empty.</param>
+        public void OnWhitePuzzleRowChanged(int index, Puzzle? puzzle);
 
         /// <summary>
-        /// Builds a new instance of the <see cref="GameState"/> class containing shuffled decks of the added puzzles.
+        /// Called when the black puzzle row changes.
         /// </summary>
-        /// <returns>A new instance of the <see cref="GameState"/> class.</returns>
-        public GameState Build()
-        {
-            _whitePuzzlesDeck.Shuffle();
-            _blackPuzzlesDeck.Shuffle();
-            return new GameState(_whitePuzzlesDeck, _blackPuzzlesDeck, _numInitialTetrominos);
-        }
+        /// <param name="index">The index in the row where the change occurred.</param>
+        /// <param name="puzzle">The new puzzle at the specified index, or <see langword="null"/> if the slot is empty.</param>
+        public void OnBlackPuzzleRowChanged(int index, Puzzle? puzzle);
+
+        /// <summary>
+        /// Called when the number of puzzles in the white puzzle deck changes.
+        /// </summary>
+        /// <param name="count">The new number of puzzles in the white puzzle deck.</param>
+        public void OnWhitePuzzleDeckChanged(int count);
+
+        /// <summary>
+        /// Called when the number of puzzles in the black puzzle deck changes.
+        /// </summary>
+        /// <param name="count">The new number of puzzles in the black puzzle deck.</param>
+        public void OnBlackPuzzleDeckChanged(int count);
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Interface for classes that want to be notified about tetromino changes in a <see cref="GameState"/>.
+    /// </summary>
+    /// <seealso cref="GameState.AddListener(IGameStateTetrominoListener)"/>
+    /// <seealso cref="GameState.RemoveListener(IGameStateTetrominoListener)"/>
+    /// <seealso cref="IGameStatePuzzleListener"/>
+    public interface IGameStateTetrominoListener
+    {
+        #region Methods
+
+        /// <summary>
+        /// Called when the number of tetrominos in the shared reserve changes.
+        /// </summary>
+        /// <param name="shape">The shape of the tetromino that was used or added.</param>
+        /// <param name="count"> The number of tetrominos of this shape in the shared reserve after the change.</param>
+        public void OnTetrominosReserveChanged(TetrominoShape shape, int count);
 
         #endregion
     }
@@ -172,42 +164,50 @@ namespace ProjectLCore.GameLogic
 
             // initialize tetrominos
             _numInitialTetrominos = numInitialTetrominos;
-            for (int i = 0; i < NumTetrominosLeft.Length; i++) {
-                NumTetrominosLeft[i] = _numInitialTetrominos;
+            for (int i = 0; i < _numTetrominosLeft.Length; i++) {
+                _numTetrominosLeft[i] = _numInitialTetrominos;
             }
         }
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// Occurs when the number of tetrominos in the shared reserve changes. The parameters are the type of the tetromino and the number of tetrominos of this type in the reserve after the change.
+        /// </summary>
+        private event Action<TetrominoShape, int>? TetrominosReserveChanged;
+
+        /// <summary>
+        /// Occurs when the white puzzle row changes. The parameters are the position of the change and the new puzzle.
+        /// </summary>
+        private event Action<int, Puzzle?>? WhitePuzzleRowChanged;
+
+        /// <summary>
+        /// Occurs when the black puzzle row changes. The parameters are the position of the change and the new puzzle.
+        /// </summary>
+        private event Action<int, Puzzle?>? BlackPuzzleRowChanged;
+
+        /// <summary>
+        /// Occurs when the white puzzle deck changes. The parameter is the number of puzzles left in the deck.
+        /// </summary>
+        private event Action<int>? WhitePuzzleDeckChanged;
+
+        /// <summary>
+        /// Occurs when the black puzzle deck changes. The parameter is the number of puzzles left in the deck.
+        /// </summary>
+        private event Action<int>? BlackPuzzleDeckChanged;
 
         #endregion
 
         #region Properties
 
         /// <summary>
-        /// Called when the white puzzle row changes. The parameters are the position of the change and the new puzzle.
-        /// </summary>
-        public Action<int, Puzzle?>? OnWhitePuzzleRowChanged { get; set; }
-
-        /// <summary>
-        /// Called when the black puzzle row changes. The parameters are the position of the change and the new puzzle.
-        /// </summary>
-        public Action<int, Puzzle?>? OnBlackPuzzleRowChanged { get; set; }
-
-        /// <summary>
-        /// Called when the white puzzle deck changes. The parameter is the number of puzzles left in the deck.
-        /// </summary>
-        public Action<int>? OnWhitePuzzleDeckChanged { get; set; }
-
-        /// <summary>
-        /// Called when the black puzzle deck changes. The parameter is the number of puzzles left in the deck.
-        /// </summary>
-        public Action<int>? OnBlackPuzzleDeckChanged { get; set; }
-
-        /// <summary>
         /// Called when the number of tetrominos in the shared reserve changes. The parameters are the type of the tetromino and the number of tetrominos of this type in the reserve after the change.
         /// </summary>
-        public Action<TetrominoShape, int>? OnTetrominosReserveChanged { get; set; }
 
         /// <summary> Contains the number of tetrominos left in the shared reserve for each shape.  </summary>
-        public int[] NumTetrominosLeft { get; } = new int[TetrominoManager.NumShapes];
+        public int[] _numTetrominosLeft { get; } = new int[TetrominoManager.NumShapes];
 
         /// <summary> The number of puzzles left in the white deck. </summary>
         public int NumWhitePuzzlesLeft => _whitePuzzlesDeck.Count;
@@ -226,10 +226,12 @@ namespace ProjectLCore.GameLogic
         /// <param name="numInitialTetrominos">The number initial tetrominos.</param>
         /// <param name="numWhitePuzzles">The resulting <see cref="GameState"/> will contain <paramref name="numWhitePuzzles"/> random puzzles from the file. This number can exceed the number of puzzles in the file. Should be at least <see cref="NumPuzzlesInRow"/>.</param>
         /// <param name="numBlackPuzzles">The resulting <see cref="GameState"/> will contain <paramref name="numBlackPuzzles"/> random puzzles from the file. This number can exceed the number of puzzles in the file. Should be at least <see cref="NumPuzzlesInRow"/> + 1.</param>
+        /// <typeparam name="T"> The type of the puzzle. Must be a subclass of <see cref="Puzzle"/> and have a constructor with the signature <see cref="Puzzle(BinaryImage, int, TetrominoShape, bool, uint)"/></typeparam>
         /// <returns>Initialized <see cref="GameState"/>.</returns>
-        /// <seealso cref="GameStateBuilder">       
-        /// <seealso cref="PuzzleParser"/>
-        public static GameState CreateFromFile(string puzzlesFilePath, int numInitialTetrominos = 15, int numWhitePuzzles = int.MaxValue, int numBlackPuzzles = int.MaxValue)
+        /// <seealso cref="GameStateBuilder"/>
+        /// <seealso cref="PuzzleParser{T}"/>
+        public static GameState CreateFromFile<T>(string puzzlesFilePath, int numInitialTetrominos = 15, int numWhitePuzzles = int.MaxValue, int numBlackPuzzles = int.MaxValue) 
+            where T : Puzzle
         {
             if (string.IsNullOrWhiteSpace(puzzlesFilePath)) {
                 throw new ArgumentException("The file path cannot be null or empty.", nameof(puzzlesFilePath));
@@ -237,7 +239,7 @@ namespace ProjectLCore.GameLogic
 
             try {
                 using FileStream fileStream = new FileStream(puzzlesFilePath, FileMode.Open, FileAccess.Read);
-                return CreateFromStream(fileStream, numInitialTetrominos, numWhitePuzzles, numBlackPuzzles);
+                return CreateFromStream<T>(fileStream, numInitialTetrominos, numWhitePuzzles, numBlackPuzzles);
             }
             catch (Exception ex) {
                 throw new IOException($"Failed to create a stream from the file at path: {puzzlesFilePath}", ex);
@@ -251,19 +253,20 @@ namespace ProjectLCore.GameLogic
         /// <param name="numInitialTetrominos">The number initial tetrominos.</param>
         /// <param name="numWhitePuzzles">The resulting <see cref="GameState"/> will contain <paramref name="numWhitePuzzles"/> random puzzles from the stream. This number can exceed the number of puzzles in the stream. Should be at least <see cref="NumPuzzlesInRow"/>.</param>
         /// <param name="numBlackPuzzles">The resulting <see cref="GameState"/> will contain <paramref name="numBlackPuzzles"/> random puzzles from the stream. This number can exceed the number of puzzles in the stream. Should be at least <see cref="NumPuzzlesInRow"/> + 1.</param>
+        /// <typeparam name="T"> The type of the puzzle. Must be a subclass of <see cref="Puzzle"/> and have a constructor with the signature <see cref="Puzzle(BinaryImage, int, TetrominoShape, bool, uint)"/></typeparam>
         /// <returns>Initialized <see cref="GameState"/>.</returns>
         /// <seealso cref="GameStateBuilder"/>"
-        /// <seealso cref="PuzzleParser"/>
-        public static GameState CreateFromStream(Stream puzzleStream, int numInitialTetrominos = 15, int numWhitePuzzles = int.MaxValue, int numBlackPuzzles = int.MaxValue)
+        /// <seealso cref="PuzzleParser{T}"/>
+        public static GameState CreateFromStream<T>(Stream puzzleStream, int numInitialTetrominos = 15, int numWhitePuzzles = int.MaxValue, int numBlackPuzzles = int.MaxValue) 
+            where T : Puzzle
         {
             // parse the puzzles
-            PuzzleParser? puzzleParser = null;
             List<Puzzle> whitePuzzles = new();
             List<Puzzle> blackPuzzles = new();
 
-            using (puzzleParser = new PuzzleParser(puzzleStream)) {
+            using (PuzzleParser<T>puzzleParser = new(puzzleStream)) {
                 while (true) {
-                    Puzzle? puzzle = puzzleParser.GetNextPuzzle();
+                    T? puzzle = puzzleParser.GetNextPuzzle();
                     if (puzzle is null) {
                         break;
                     }
@@ -290,6 +293,52 @@ namespace ProjectLCore.GameLogic
             }
 
             return gameStateBuilder.Build();
+        }
+
+        /// <summary>
+        /// Subscribes the given puzzle listener to the events of this <see cref="GameState"/>.
+        /// </summary>
+        /// <param name="listener">The listener to add.</param>
+        /// <seealso cref="RemoveListener(IGameStatePuzzleListener)"/>
+        public void AddListener(IGameStatePuzzleListener listener)
+        {
+            WhitePuzzleRowChanged += listener.OnWhitePuzzleRowChanged;
+            BlackPuzzleRowChanged += listener.OnBlackPuzzleRowChanged;
+            WhitePuzzleDeckChanged += listener.OnWhitePuzzleDeckChanged;
+            BlackPuzzleDeckChanged += listener.OnBlackPuzzleDeckChanged;
+        }
+
+        /// <summary>
+        /// Unsubscribes the puzzle listener from the events of this <see cref="GameState"/>.
+        /// </summary>
+        /// <param name="listener">The listener to remove.</param>
+        /// <seealso cref="AddListener(IGameStatePuzzleListener)"/>
+        public void RemoveListener(IGameStatePuzzleListener listener)
+        {
+            WhitePuzzleRowChanged -= listener.OnWhitePuzzleRowChanged;
+            BlackPuzzleRowChanged -= listener.OnBlackPuzzleRowChanged;
+            WhitePuzzleDeckChanged -= listener.OnWhitePuzzleDeckChanged;
+            BlackPuzzleDeckChanged -= listener.OnBlackPuzzleDeckChanged;
+        }
+
+        /// <summary>
+        /// Subscribes the given tetromino listener to the events of this <see cref="GameState"/>.
+        /// </summary>
+        /// <param name="listener">The listener to add.</param>
+        /// <seealso cref="RemoveListener(IGameStateTetrominoListener)"/>
+        public void AddListener(IGameStateTetrominoListener listener)
+        {
+            TetrominosReserveChanged += listener.OnTetrominosReserveChanged;
+        }
+
+        /// <summary>
+        /// Unsubscribes the tetromino listener from the events of this <see cref="GameState"/>.
+        /// </summary>
+        /// <param name="listener">The listener to remove.</param>
+        /// <seealso cref="RemoveListener(IGameStateTetrominoListener)"/>
+        public void RemoveListener(IGameStateTetrominoListener listener)
+        {
+            TetrominosReserveChanged -= listener.OnTetrominosReserveChanged;
         }
 
         /// <summary>
@@ -335,7 +384,7 @@ namespace ProjectLCore.GameLogic
                 return null;
             }
             var result = _whitePuzzlesDeck.Dequeue();
-            OnWhitePuzzleDeckChanged?.Invoke(_whitePuzzlesDeck.Count);
+            WhitePuzzleDeckChanged?.Invoke(_whitePuzzlesDeck.Count);
             return result;
         }
 
@@ -349,7 +398,7 @@ namespace ProjectLCore.GameLogic
                 return null;
             }
             var result = _blackPuzzlesDeck.Dequeue();
-            OnBlackPuzzleDeckChanged?.Invoke(_blackPuzzlesDeck.Count);
+            BlackPuzzleDeckChanged?.Invoke(_blackPuzzlesDeck.Count);
             return result;
         }
 
@@ -382,14 +431,14 @@ namespace ProjectLCore.GameLogic
             for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
                 if (_whitePuzzlesRow[i] is not null && _whitePuzzlesRow[i]!.Id == id) {
                     _whitePuzzlesRow[i] = null;
-                    OnWhitePuzzleRowChanged?.Invoke(i, null);
+                    WhitePuzzleRowChanged?.Invoke(i, null);
                     return;
                 }
             }
             for (int i = 0; i < _blackPuzzlesRow.Length; i++) {
                 if (_blackPuzzlesRow[i] is not null && _blackPuzzlesRow[i]!.Id == id) {
                     _blackPuzzlesRow[i] = null;
-                    OnBlackPuzzleRowChanged?.Invoke(i, null);
+                    BlackPuzzleRowChanged?.Invoke(i, null);
                     return;
                 }
             }
@@ -403,13 +452,13 @@ namespace ProjectLCore.GameLogic
             for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
                 if (_whitePuzzlesRow[i] is null && _whitePuzzlesDeck.Count > 0) {
                     _whitePuzzlesRow[i] = TakeTopWhitePuzzle();
-                    OnWhitePuzzleRowChanged?.Invoke(i, _whitePuzzlesRow[i]);
+                    WhitePuzzleRowChanged?.Invoke(i, _whitePuzzlesRow[i]);
                 }
             }
             for (int i = 0; i < _blackPuzzlesRow.Length; i++) {
                 if (_blackPuzzlesRow[i] is null && _blackPuzzlesDeck.Count > 0) {
                     _blackPuzzlesRow[i] = TakeTopBlackPuzzle();
-                    OnBlackPuzzleRowChanged?.Invoke(i, _blackPuzzlesRow[i]);
+                    BlackPuzzleRowChanged?.Invoke(i, _blackPuzzlesRow[i]);
                 }
             }
         }
@@ -422,22 +471,21 @@ namespace ProjectLCore.GameLogic
         {
             if (puzzle.IsBlack) {
                 _blackPuzzlesDeck.Enqueue(puzzle);
-                OnBlackPuzzleDeckChanged?.Invoke(_blackPuzzlesDeck.Count);
+                BlackPuzzleDeckChanged?.Invoke(_blackPuzzlesDeck.Count);
             }
             else {
                 _whitePuzzlesDeck.Enqueue(puzzle);
-                OnWhitePuzzleDeckChanged?.Invoke(_whitePuzzlesDeck.Count);
+                WhitePuzzleDeckChanged?.Invoke(_whitePuzzlesDeck.Count);
             }
         }
 
         /// <summary>
-        /// Gets the number of tetrominos of the given shape left in the shared reserve.
+        /// Gets the number of tetrominos of each type left in the shared reserve.
         /// </summary>
-        /// <param name="shape">The shape.</param>
-        /// <returns>The number of tetrominos of type <paramref name="shape"/> left in the shared reserve.</returns>
-        public int GetNumTetrominosOfType(TetrominoShape shape)
+        /// <returns>List with tetromino counts. Count of <see cref="TetrominoShape"/> <c>shape</c> is on index <c>(int)shape</c>.</returns>
+        public IReadOnlyList<int> GetNumTetrominosLeft()
         {
-            return NumTetrominosLeft[(int)shape];
+            return Array.AsReadOnly(_numTetrominosLeft);
         }
 
         /// <summary>
@@ -447,11 +495,11 @@ namespace ProjectLCore.GameLogic
         /// <exception cref="InvalidOperationException">No tetrominos of type {shape} left</exception>
         public void RemoveTetromino(TetrominoShape shape)
         {
-            if (NumTetrominosLeft[(int)shape] == 0) {
+            if (_numTetrominosLeft[(int)shape] == 0) {
                 throw new InvalidOperationException($"No tetrominos of type {shape} left");
             }
-            NumTetrominosLeft[(int)shape]--;
-            OnTetrominosReserveChanged?.Invoke(shape, NumTetrominosLeft[(int)shape]);
+            _numTetrominosLeft[(int)shape]--;
+            TetrominosReserveChanged?.Invoke(shape, _numTetrominosLeft[(int)shape]);
         }
 
         /// <summary>
@@ -461,11 +509,11 @@ namespace ProjectLCore.GameLogic
         /// <exception cref="InvalidOperationException">Too many tetrominos of type {shape}</exception>
         public void AddTetromino(TetrominoShape shape)
         {
-            if (NumTetrominosLeft[(int)shape] >= _numInitialTetrominos) {
+            if (_numTetrominosLeft[(int)shape] >= _numInitialTetrominos) {
                 throw new InvalidOperationException($"Too many tetrominos of type {shape}");
             }
-            NumTetrominosLeft[(int)shape]++;
-            OnTetrominosReserveChanged?.Invoke(shape, NumTetrominosLeft[(int)shape]);
+            _numTetrominosLeft[(int)shape]++;
+            TetrominosReserveChanged?.Invoke(shape, _numTetrominosLeft[(int)shape]);
         }
 
         /// <summary>
@@ -493,7 +541,7 @@ namespace ProjectLCore.GameLogic
                 NumBlackPuzzlesLeft = gameState.NumBlackPuzzlesLeft;
                 AvailableWhitePuzzles = gameState.GetAvailableWhitePuzzles().Select(p => p.Clone()).ToArray();
                 AvailableBlackPuzzles = gameState.GetAvailableBlackPuzzles().Select(p => p.Clone()).ToArray();
-                NumTetrominosLeft = Array.AsReadOnly(gameState.NumTetrominosLeft);
+                NumTetrominosLeft = Array.AsReadOnly(gameState._numTetrominosLeft);
             }
 
             #endregion

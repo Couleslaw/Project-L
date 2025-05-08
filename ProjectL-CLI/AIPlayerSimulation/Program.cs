@@ -158,7 +158,7 @@
         internal static GameState? LoadGameStateFromFile(string filePath, SimulationParams simParams)
         {
             try {
-                return GameState.CreateFromFile("puzzles.txt", simParams.NumInitialTetrominos, simParams.NumWhitePuzzles, simParams.NumBlackPuzzles);
+                return GameState.CreateFromFile<Puzzle>("puzzles.txt", simParams.NumInitialTetrominos, simParams.NumWhitePuzzles, simParams.NumBlackPuzzles);
             }
             catch (Exception e) {
                 ExitGame("Failed to load game state from file: " + e.Message);

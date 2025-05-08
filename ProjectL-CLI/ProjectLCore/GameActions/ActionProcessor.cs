@@ -247,9 +247,10 @@
             if (_game.CurrentGamePhase == GamePhase.FinishingTouches) {
                 _playerState.Score -= 1;
                 if (puzzle.IsFinished) {
-                    _playerState.FinishPuzzleWithId(puzzle.Id);
+                    var ftInfo = GetFinishedPuzzleInfo(puzzle, null, null);
+                    FinishedPuzzlesQueue.Enqueue(ftInfo);
+                    _playerState.FinishPuzzle(ftInfo);
                 }
-                AddFinishedPuzzleInfoToQueue(puzzle, null, null);
                 return;
             }
 
@@ -261,7 +262,9 @@
             // if the puzzle is finished --> reward the player
             _playerState.Score += puzzle.RewardScore;
 
-            TetrominoShape? reward = GetPuzzleReward(puzzle);
+            FinishedPuzzleInfo info = GetPuzzleReward(puzzle);
+            TetrominoShape? reward = info.SelectedReward;
+
             if (reward is not null) {
                 _playerState.AddTetromino(reward.Value);
                 _gameState.RemoveTetromino(reward.Value);
@@ -272,8 +275,8 @@
                 _playerState.AddTetromino(tetromino);
             }
 
-            // remove the puzzle from the player's state
-            _playerState.FinishPuzzleWithId(puzzle.Id);
+            FinishedPuzzlesQueue.Enqueue(info);
+            _playerState.FinishPuzzle(info);
         }
 
         /// <summary>
@@ -292,25 +295,24 @@
         }
 
         /// <summary>
-        /// Gets the reward for completing a puzzle. If there are multiple options, the player gets to choose.
+        /// Gets the reward for completing a puzzle and other information about the reward selection process. If there are multiple options, the player gets to choose.
         /// If the player fails to choose a valid reward, the first available one is picked.
         /// Also adds information about the puzzle to the <see cref="FinishedPuzzlesQueue"/>.
         /// </summary>
         /// <param name="puzzle">The puzzle the reward is for.</param>
-        /// <returns>The reward the player chose or <see langword="null"/> if there are no reward options.</returns>
-        private TetrominoShape? GetPuzzleReward(Puzzle puzzle)
+        /// <returns>Information about se reward selection process. The selected reward is in <see cref="FinishedPuzzleInfo.SelectedReward"/>.</returns>
+        private FinishedPuzzleInfo GetPuzzleReward(Puzzle puzzle)
         {
-            List<TetrominoShape> rewardOptions = RewardManager.GetRewardOptions(_gameState.NumTetrominosLeft, puzzle.RewardTetromino);
+            List<TetrominoShape> rewardOptions = RewardManager.GetRewardOptions(_gameState.GetNumTetrominosLeft(), puzzle.RewardTetromino);
 
             // if there are no reward options, the player doesn't get anything
             if (rewardOptions.Count == 0) {
-                AddFinishedPuzzleInfoToQueue(puzzle, rewardOptions, null);
-                return null;
+                return GetFinishedPuzzleInfo(puzzle, rewardOptions, null);
             }
             // get reward from player
             TetrominoShape? reward;
             try {
-                reward = _player.GetRewardAsync(rewardOptions, puzzle.Clone()).Result;
+                reward = _player.GetRewardAsync(rewardOptions, puzzle.Clone()).GetAwaiter().GetResult();
             }
             catch (Exception) {
                 reward = null;
@@ -321,13 +323,12 @@
                 reward = rewardOptions[0];
             }
 
-            AddFinishedPuzzleInfoToQueue(puzzle, rewardOptions, reward);
-            return reward;
+            return GetFinishedPuzzleInfo(puzzle, rewardOptions, reward);
         }
 
-        private void AddFinishedPuzzleInfoToQueue(Puzzle puzzle, List<TetrominoShape>? rewardOptions, TetrominoShape? selectedReward)
+        private FinishedPuzzleInfo GetFinishedPuzzleInfo(Puzzle puzzle, List<TetrominoShape>? rewardOptions, TetrominoShape? selectedReward)
         {
-            FinishedPuzzlesQueue.Enqueue(new FinishedPuzzleInfo(_player.Id, puzzle, rewardOptions, selectedReward));
+            return new FinishedPuzzleInfo(_player.Id, puzzle, rewardOptions, selectedReward);
         }
 
         #endregion
