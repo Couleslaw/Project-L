@@ -29,6 +29,8 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
                 return;
             }
 
+            game.AddListener(this);
+
             foreach (var player in game.Players) {
                 var playerZoneRow = Instantiate(_playerZoneRowPrefab, transform);
                 playerZoneRow.gameObject.SetActive(true);

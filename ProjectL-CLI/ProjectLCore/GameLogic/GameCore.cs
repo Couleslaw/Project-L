@@ -5,8 +5,8 @@ namespace ProjectLCore.GameLogic
     using ProjectLCore.GameManagers;
     using ProjectLCore.GamePieces;
     using ProjectLCore.Players;
-    using System.Collections.Generic;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     /// <summary>
@@ -70,8 +70,15 @@ namespace ProjectLCore.GameLogic
 
         #endregion
 
-        #region Properties
+        #region Events
 
+        private event Action<TurnInfo>? OnTurnChanged;
+
+        private event Action<Player>? CurrentPlayerChanged;
+
+        #endregion
+
+        #region Properties
 
         /// <summary> Information about the current turn. </summary>
         public TurnInfo CurrentTurn { get; private set; }
@@ -94,6 +101,58 @@ namespace ProjectLCore.GameLogic
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Subscribes the turn listener to the events of this <see cref="GameCore"/>.
+        /// </summary>
+        /// <param name="listener">The listener to add.</param>
+        /// <seealso cref="RemoveListener(ICurrentTurnListener)"/>
+        public void AddListener(ICurrentTurnListener listener)
+        {
+            if (listener == null) {
+                return;
+            }
+            OnTurnChanged += listener.OnCurrentTurnChanged;
+        }
+
+        /// <summary>
+        /// Unsubscribes the turn listener from the events of this <see cref="GameCore"/>.
+        /// </summary>
+        /// <param name="listener">The listener to remove.</param>
+        /// <seealso cref="AddListener(ICurrentTurnListener)"/>
+        public void RemoveListener(ICurrentTurnListener listener)
+        {
+            if (listener == null) {
+                return;
+            }
+            OnTurnChanged -= listener.OnCurrentTurnChanged;
+        }
+
+        /// <summary>
+        /// Subscribes the player listener to the events of this <see cref="GameCore"/>.
+        /// </summary>
+        /// <param name="listener">The listener to add.</param>
+        /// <seealso cref="RemoveListener(ICurrentPlayerListener)"/>
+        public void AddListener(ICurrentPlayerListener listener)
+        {
+            if (listener == null) {
+                return;
+            }
+            CurrentPlayerChanged += listener.OnCurrentPlayerChanged;
+        }
+
+        /// <summary>
+        /// Unsubscribes the player listener from the events of this <see cref="GameCore"/>.
+        /// </summary>
+        /// <param name="listener">The listener to remove.</param>
+        /// <seealso cref="AddListener(ICurrentPlayerListener)"/>
+        public void RemoveListener(ICurrentPlayerListener listener)
+        {
+            if (listener == null) {
+                return;
+            }
+            CurrentPlayerChanged -= listener.OnCurrentPlayerChanged;
+        }
 
         /// <summary>
         /// Initializes the game by giving every player a <see cref="TetrominoShape.O1"/> and <see cref="TetrominoShape.I2"/> tetromino from the shared reserve.
@@ -165,6 +224,13 @@ namespace ProjectLCore.GameLogic
         {
             CurrentTurn = _turnManager.NextTurn();
             CurrentPlayer = GetPlayerWithId(_turnManager.CurrentPlayerId);
+
+            // notify listeners about the current turn change
+            OnTurnChanged?.Invoke(CurrentTurn);
+            if (CurrentTurn.NumActionsLeft == TurnManager.NumActionsInTurn) {
+                CurrentPlayerChanged?.Invoke(CurrentPlayer);
+            }
+
             return CurrentTurn;
         }
 

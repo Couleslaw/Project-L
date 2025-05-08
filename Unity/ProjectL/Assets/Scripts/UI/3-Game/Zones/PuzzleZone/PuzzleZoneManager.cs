@@ -18,6 +18,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
         public void Init(GameCore game)
         {
+            game.AddListener(this);
             game.GameState.AddListener(this);
         }
 

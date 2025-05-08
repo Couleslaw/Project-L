@@ -13,6 +13,8 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
         public void Init(GameCore game)
         {
+            game.AddListener((ICurrentPlayerListener)this);
+            game.AddListener((ICurrentTurnListener)this);
             throw new System.NotImplementedException();
         }
 

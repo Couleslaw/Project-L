@@ -18,15 +18,6 @@ using ProjectL.Data;
 using ProjectL.Management;
 
 
-public interface ICurrentTurnListener
-{
-    void OnCurrentTurnChanged(TurnInfo currentTurnInfo);
-}
-
-public interface ICurrentPlayerListener
-{
-    void OnCurrentPlayerChanged(Player currentPlayer);
-}
 
 
 public class GameSessionManager : MonoBehaviour
@@ -44,42 +35,8 @@ public class GameSessionManager : MonoBehaviour
 
     #endregion
 
-    private event Action<TurnInfo>? OnTurnChanged;
-    private event Action<Player>? CurrentPlayerChanged;
 
     #region Methods
-
-    public void AddListener(ICurrentTurnListener listener)
-    {
-        if (listener == null) {
-            return;
-        }
-        OnTurnChanged += listener.OnCurrentTurnChanged;
-    }
-
-    public void RemoveListener(ICurrentTurnListener listener)
-    {
-        if (listener == null) {
-            return;
-        }
-        OnTurnChanged -= listener.OnCurrentTurnChanged;
-    }
-
-    public void AddListener(ICurrentPlayerListener listener)
-    {
-        if (listener == null) {
-            return;
-        }
-        CurrentPlayerChanged += listener.OnCurrentPlayerChanged;
-    }
-
-    public void RemoveListener(ICurrentPlayerListener listener)
-    {
-        if (listener == null) {
-            return;
-        }
-        CurrentPlayerChanged -= listener.OnCurrentPlayerChanged;
-    }
 
     private void Awake()
     {
@@ -321,7 +278,6 @@ public class GameSessionManager : MonoBehaviour
 
         while (!destroyCancellationToken.IsCancellationRequested && !GameErrorHandler.ShouldEndGameWithError) {
             TurnInfo turnInfo = _game.GetNextTurnInfo();
-            HandleEvents(turnInfo);
 
             // check if game ended
             if (_game.CurrentGamePhase == GamePhase.Finished) {
@@ -389,14 +345,6 @@ public class GameSessionManager : MonoBehaviour
         }
     }
 
-    private void HandleEvents(TurnInfo turnInfo)
-    {
-        // check if new player
-        if (turnInfo.NumActionsLeft == TurnManager.NumActionsInTurn) {
-            CurrentPlayerChanged?.Invoke(_game!.CurrentPlayer);
-        }
-        OnTurnChanged?.Invoke(turnInfo);
-    }
 
     private void LogPlayerGetActionThrownException(string message)
     {

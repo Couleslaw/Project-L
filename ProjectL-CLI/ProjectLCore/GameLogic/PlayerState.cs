@@ -9,52 +9,6 @@ namespace ProjectLCore.GameLogic
     using System.Linq;
     using System.Text;
 
-    /// <summary>
-    /// Interface for classes that want to be notified about changes in a <see cref="PlayerState"/>.
-    /// </summary>
-    /// <seealso cref="PlayerState.AddListener(IPlayerStatePuzzleListener)"/>
-    /// <seealso cref="PlayerState.RemoveListener(IPlayerStatePuzzleListener)"/>
-    /// <seealso cref="IPlayerStateTetrominoListener"/>
-    public interface IPlayerStatePuzzleListener
-    {
-        #region Methods
-
-        /// <summary>
-        /// Called when the set of unfinished puzzles changes.
-        /// </summary>
-        /// <param name="index"> The index (in the row) of the puzzle that was finished.</param>
-        /// <param name="info"> The information about the finished puzzle.</param>
-        public void OnPuzzleFinished(int index, FinishedPuzzleInfo info);
-
-        /// <summary>
-        /// Called when the player takes a new puzzle;
-        /// </summary>
-        /// <param name="index">The index (in the row) of the puzzle that was added.</param>
-        /// <param name="puzzle">The puzzle that was added.</param>
-        public void OnPuzzleAdded(int index, Puzzle puzzle);
-
-        #endregion
-    }
-
-    /// <summary>
-    /// Interface for classes that want to be notified about tetromino changes in a <see cref="PlayerState"/>.
-    /// </summary>
-    /// <seealso cref="PlayerState.AddListener(IPlayerStateTetrominoListener)"/>
-    /// <seealso cref="PlayerState.RemoveListener(IPlayerStateTetrominoListener)"/>
-    /// <seealso cref="IPlayerStatePuzzleListener"/>
-    public interface IPlayerStateTetrominoListener
-    {
-        #region Methods
-
-        /// <summary>
-        /// Called when the number of tetrominos in the player's collection changes.
-        /// </summary>
-        /// <param name="shape">The shape of the tetromino that was used or added.</param>
-        /// <param name="count"> The number of tetrominos of this shape in the collection after the change.</param>
-        public void OnTetrominoCollectionChanged(TetrominoShape shape, int count);
-
-        #endregion
-    }
 
     /// <summary>
     /// Represents the resources and progress of a single <see cref="Player"/>.

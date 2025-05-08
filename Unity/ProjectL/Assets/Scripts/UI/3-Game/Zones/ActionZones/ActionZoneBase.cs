@@ -35,6 +35,10 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
                 return;
             }
 
+            _confirmButton.onClick.AddListener(
+                () => OnConfirmButtonClick?.Invoke()
+            );
+
             SetNormalMode();
         }
 
