@@ -227,7 +227,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 459f8b441e5da674fa979597b9dfe779, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loggerPrefab: {fileID: 5017385224150913172, guid: d1ece20f6d085ff458629ea218f1aaf2, type: 3}
 --- !u!4 &837944523
 Transform:
   m_ObjectHideFlags: 0
@@ -1722,7 +1721,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 614330182339787342, guid: c212e07901c72014a894e14eb864e08a, type: 3}
       propertyPath: m_Name
-      value: GameManager
+      value: Systems
       objectReference: {fileID: 0}
     - target: {fileID: 4944874763153379755, guid: c212e07901c72014a894e14eb864e08a, type: 3}
       propertyPath: m_LocalPosition.x

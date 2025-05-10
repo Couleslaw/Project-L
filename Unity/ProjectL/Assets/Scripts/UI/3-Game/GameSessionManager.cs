@@ -16,11 +16,13 @@ using UnityEngine;
 using ProjectL.UI.GameScene;
 using ProjectL.Data;
 using ProjectL.Management;
+using ProjectL;
+using Unity.VisualScripting;
 
 
 
 
-public class GameSessionManager : MonoBehaviour
+public class GameSessionManager : StaticInstance<GameSessionManager>
 {
     #region Fields
 
@@ -33,13 +35,9 @@ public class GameSessionManager : MonoBehaviour
 
     private GameCore? _game;
 
-    #endregion
-
-
-    #region Methods
-
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         // check that all components are assigned
         if (errorMessageBoxPrefab == null || gameEndedBoxPrefab == null) {
             Debug.LogError("GameManager: One or more required UI elements are not assigned.");
@@ -59,7 +57,7 @@ public class GameSessionManager : MonoBehaviour
             return;
         }
 
-        GameGraphicsManager.Instance.Init(_game);
+        GameGraphicsSystem.Instance.Init(_game);
 
         // initialize game
         _game.InitializeGame();
@@ -70,7 +68,7 @@ public class GameSessionManager : MonoBehaviour
 
         // game loop
         GameSummary.Clear();
-        await textGame!.GameLoopAsync(_game);
+        await GameLoopAsync();
 
         // final results
         PrepareGameEndStats();
@@ -84,7 +82,7 @@ public class GameSessionManager : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
         RuntimeGameInfo.UnregisterGame();
     }
@@ -229,6 +227,8 @@ public class GameSessionManager : MonoBehaviour
             Debug.LogError("GameCore is null. Cannot prepare end game stats.");
             return; // safety check
         }
+
+        Debug.Log("Calculating game results.");
 
         // add final results
         GameSummary.FinalResults = _game.GetFinalResults();

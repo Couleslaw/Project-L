@@ -399,7 +399,7 @@ GameObject:
   - component: {fileID: 7992036286334671074}
   - component: {fileID: 5187558349787808853}
   - component: {fileID: 6495040050427768252}
-  m_Layer: 5
+  m_Layer: 10
   m_Name: PlayerZoneRow
   m_TagString: Untagged
   m_Icon: {fileID: 0}

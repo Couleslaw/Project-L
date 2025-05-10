@@ -18,7 +18,7 @@ public class InteractivePuzzle : MonoBehaviour
 
     [SerializeField] private PuzzleCell? puzzleCellPrefab;
 
-    private PuzzleCell[]? puzzleCells;
+    private PuzzleCell[]? _puzzleCells;
 
     private PuzzleWithGraphics? _logicalPuzzle = null;
 
@@ -32,11 +32,11 @@ public class InteractivePuzzle : MonoBehaviour
 
     public void MakeInteractive(bool enabled)
     {
-        if (puzzleCells == null) {
+        if (_puzzleCells == null) {
             Debug.LogError("Puzzle cells are not initialized.");
             return;
         }
-        foreach (var cell in puzzleCells) {
+        foreach (var cell in _puzzleCells) {
             cell.SetColliderEnabled(enabled);
         }
     }
@@ -129,15 +129,17 @@ public class InteractivePuzzle : MonoBehaviour
         }
 
         // Create puzzle cells
-        puzzleCells = new PuzzleCell[25]; // 5x5 grid
-        for (int i = 0; i < puzzleCells.Length; i++) {
-            puzzleCells[i] = Instantiate(puzzleCellPrefab, transform);
-            puzzleCells[i].OnCollisionStateChanged += TryDrawingTetrominoShadow;
-            puzzleCells[i].gameObject.name = $"PuzzleCell_{1 + i / 5}x{1 + i % 5}";
+        _puzzleCells = new PuzzleCell[25]; // 5x5 grid
+        for (int i = 0; i < _puzzleCells.Length; i++) {
+            _puzzleCells[i] = Instantiate(puzzleCellPrefab, transform);
+            _puzzleCells[i].OnCollisionStateChanged += TryDrawingTetrominoShadow;
+            _puzzleCells[i].gameObject.name = $"PuzzleCell_{1 + i / 5}x{1 + i % 5}";
         }
 
         // remember this puzzle
         _availablePuzzles.Add(this);
+
+        gameObject.SetActive(false);
     }
 
     private void OnDestroy()
@@ -145,34 +147,34 @@ public class InteractivePuzzle : MonoBehaviour
         // remove this puzzle from the list of available puzzles
         _availablePuzzles.Remove(this);
 
-        if (puzzleCells == null) {
+        if (_puzzleCells == null) {
             return;
         }
         // Clean up the cells 
-        for (int i = 0; i < puzzleCells.Length; i++) {
-            if (puzzleCells[i] != null) {
-                Destroy(puzzleCells[i].gameObject);
+        for (int i = 0; i < _puzzleCells.Length; i++) {
+            if (_puzzleCells[i] != null) {
+                Destroy(_puzzleCells[i].gameObject);
             }
         }
     }
 
     private BinaryImage GetTetrominoPosition()
     {
-        if (puzzleCells == null) {
+        if (_puzzleCells == null) {
             throw new InvalidOperationException("Puzzle cells are not initialized.");
         }
         Debug.Log($"{gameObject.name}.GetTetrominoPosition");
 
-        bool[] collisions = new bool[puzzleCells.Length];
-        for (int i = 0; i < puzzleCells.Length; i++) {
-            collisions[i] = puzzleCells[i].IsColliding;
+        bool[] collisions = new bool[_puzzleCells.Length];
+        for (int i = 0; i < _puzzleCells.Length; i++) {
+            collisions[i] = _puzzleCells[i].IsColliding;
         }
         return new BinaryImage(collisions);
     }
 
     private void TryDrawingTetrominoShadow()
     {
-        if (puzzleCells == null) {
+        if (_puzzleCells == null) {
             throw new InvalidOperationException("Puzzle cells are not initialized.");
         }
         if (DraggableTetromino.SelectedTetromino == null) {
@@ -190,25 +192,25 @@ public class InteractivePuzzle : MonoBehaviour
         color *= 0.7f;
         color.a = 1f;
 
-        for (int i = 0; i < puzzleCells.Length; i++) {
-            if (drawShadow && puzzleCells[i].IsColliding) {
-                puzzleCells[i].ChangeColorTo(color);
+        for (int i = 0; i < _puzzleCells.Length; i++) {
+            if (drawShadow && _puzzleCells[i].IsColliding) {
+                _puzzleCells[i].ChangeColorTo(color);
             }
             else {
-                puzzleCells[i].ResetColor();
+                _puzzleCells[i].ResetColor();
             }
         }
     }
 
     private Vector3 GetTetrominoCenter()
     {
-        if (puzzleCells == null) {
+        if (_puzzleCells == null) {
             throw new InvalidOperationException("Puzzle cells are not initialized.");
         }
 
         Vector3 center = Vector3.zero;
         int count = 0;
-        foreach (var cell in puzzleCells) {
+        foreach (var cell in _puzzleCells) {
             if (cell.IsColliding) {
                 center += cell.transform.position;
                 count++;

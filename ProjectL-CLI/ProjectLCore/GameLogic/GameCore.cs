@@ -218,6 +218,7 @@ namespace ProjectLCore.GameLogic
         /// <summary>
         /// Prepares the next turn and updates <see cref="CurrentPlayer"/> and <see cref="CurrentGamePhase"/>.
         /// </summary>
+        /// <remarks>Notifies listening <see cref="ICurrentPlayerListener"/>s if the current player changed. Then notifies <see cref="ICurrentTurnListener"/>s about the turn change.</remarks>
         /// <returns>Information about the next turn.</returns>
         /// <seealso cref="TurnManager.NextTurn"/>
         public TurnInfo GetNextTurnInfo()
@@ -225,11 +226,13 @@ namespace ProjectLCore.GameLogic
             CurrentTurn = _turnManager.NextTurn();
             CurrentPlayer = GetPlayerWithId(_turnManager.CurrentPlayerId);
 
-            // notify listeners about the current turn change
-            OnTurnChanged?.Invoke(CurrentTurn);
+            // first notify about the current player change
             if (CurrentTurn.NumActionsLeft == TurnManager.NumActionsInTurn) {
                 CurrentPlayerChanged?.Invoke(CurrentPlayer);
             }
+            // then about turn change
+            OnTurnChanged?.Invoke(CurrentTurn);
+            
 
             return CurrentTurn;
         }

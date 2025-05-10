@@ -20,7 +20,7 @@ namespace ProjectLCore.GameLogic
     /// </summary>
     /// <seealso cref="GameStateBuilder"/>
     /// <seealso cref="GameInfo"/>
-    public class GameState
+    public class GameState : ITetrominoCollectionNotifier
     {
         #region Constants
 
@@ -61,7 +61,7 @@ namespace ProjectLCore.GameLogic
         private readonly List<Puzzle> _allPuzzlesInGame = new();
 
         /// <summary> The amount of tetrominos of each shape in the shared reserve at the beginning of the game.  </summary>
-        private readonly int _numInitialTetrominos;
+        public int NumInitialTetrominos { get; }
 
         #endregion
 
@@ -105,9 +105,9 @@ namespace ProjectLCore.GameLogic
             _blackPuzzlesDeck = new Queue<Puzzle>(blackPuzzlesDeck);
 
             // initialize tetrominos
-            _numInitialTetrominos = numInitialTetrominos;
+            NumInitialTetrominos = numInitialTetrominos;
             for (int i = 0; i < _numTetrominosLeft.Length; i++) {
-                _numTetrominosLeft[i] = _numInitialTetrominos;
+                _numTetrominosLeft[i] = NumInitialTetrominos;
             }
         }
 
@@ -267,20 +267,20 @@ namespace ProjectLCore.GameLogic
         /// Subscribes the given tetromino listener to the events of this <see cref="GameState"/>.
         /// </summary>
         /// <param name="listener">The listener to add.</param>
-        /// <seealso cref="RemoveListener(IGameStateTetrominoListener)"/>
-        public void AddListener(IGameStateTetrominoListener listener)
+        /// <seealso cref="RemoveListener(ITetrominoCollectionListener)"/>
+        public void AddListener(ITetrominoCollectionListener listener)
         {
-            TetrominosReserveChanged += listener.OnTetrominosReserveChanged;
+            TetrominosReserveChanged += listener.OnTetrominoCollectionChanged;
         }
 
         /// <summary>
         /// Unsubscribes the tetromino listener from the events of this <see cref="GameState"/>.
         /// </summary>
         /// <param name="listener">The listener to remove.</param>
-        /// <seealso cref="RemoveListener(IGameStateTetrominoListener)"/>
-        public void RemoveListener(IGameStateTetrominoListener listener)
+        /// <seealso cref="RemoveListener(ITetrominoCollectionListener)"/>
+        public void RemoveListener(ITetrominoCollectionListener listener)
         {
-            TetrominosReserveChanged -= listener.OnTetrominosReserveChanged;
+            TetrominosReserveChanged -= listener.OnTetrominoCollectionChanged;
         }
 
         /// <summary>
@@ -451,7 +451,7 @@ namespace ProjectLCore.GameLogic
         /// <exception cref="InvalidOperationException">Too many tetrominos of type {shape}</exception>
         public void AddTetromino(TetrominoShape shape)
         {
-            if (_numTetrominosLeft[(int)shape] >= _numInitialTetrominos) {
+            if (_numTetrominosLeft[(int)shape] >= NumInitialTetrominos) {
                 throw new InvalidOperationException($"Too many tetrominos of type {shape}");
             }
             _numTetrominosLeft[(int)shape]++;

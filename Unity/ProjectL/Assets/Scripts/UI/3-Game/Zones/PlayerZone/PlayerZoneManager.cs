@@ -7,25 +7,16 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
     using ProjectLCore.Players;
     using ProjectLCore.GameLogic;
 
-    public class PlayerZoneManager : GameZoneManager<PlayerZoneManager>, ICurrentPlayerListener
+    public class PlayerZoneManager : GraphicsManager<PlayerZoneManager>, ICurrentPlayerListener
     {
         [SerializeField] private PlayerZoneRow? _playerZoneRowPrefab;
 
         private Dictionary<Player, PlayerZoneRow> _playerZoneRows = new();
 
-        protected override void Awake()
-        {
-            base.Awake();
-            if (_playerZoneRowPrefab == null) {
-                Debug.LogError("PlayerZoneRow prefab is not assigned!", this);
-                return;
-            }
-
-        }
-
         public override void Init(GameCore game)
         {
             if (_playerZoneRowPrefab == null) {
+                Debug.LogError("PlayerZoneRow prefab is not assigned!", this);
                 return;
             }
 

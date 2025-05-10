@@ -16,7 +16,6 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
                 return;
             }
 
-            puzzleCard.gameObject.SetActive(false);
             emptySlot.SetActive(true);
         }
 

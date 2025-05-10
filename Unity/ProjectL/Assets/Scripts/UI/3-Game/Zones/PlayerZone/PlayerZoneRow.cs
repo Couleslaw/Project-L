@@ -18,7 +18,6 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
                 Debug.LogError("One or more UI components is not assigned!", this);
                 return;
             }
-            SetAsCurrentPlayer(false);
         }
 
         public void Init(string playerName, PlayerState playerState)
@@ -48,7 +47,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
         {
             // make name white / gray
             if (playerNameLabel != null) {
-                playerNameLabel.color = current ? Color.white : Color.gray;
+                playerNameLabel.color = current ? GameGraphicsSystem.ActivePlayerColor : GameGraphicsSystem.InactivePlayerColor;
             }
 
             // enable / disable puzzles container

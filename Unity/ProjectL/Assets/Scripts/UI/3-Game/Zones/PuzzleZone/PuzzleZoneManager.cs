@@ -6,7 +6,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
     using ProjectLCore.GamePieces;
     using UnityEngine;
 
-    public class PuzzleZoneManager : GameZoneManager<PuzzleZoneManager>, IGameStatePuzzleListener, ICurrentTurnListener
+    public class PuzzleZoneManager : GraphicsManager<PuzzleZoneManager>, IGameStatePuzzleListener
     {
         [Header("Puzzle columns")]
         [SerializeField] private PuzzleColumn? _whitePuzzleColumn;
@@ -18,18 +18,16 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
         public override void Init(GameCore game)
         {
-            game.AddListener(this);
-            game.GameState.AddListener(this);
-        }
-
-        protected override void Awake()
-        {
-            base.Awake();
             if (_whitePuzzleColumn == null || _blackPuzzleColumn == null ||
                 _whiteDeckCoverCard == null || _blackDeckCoverCard == null) {
                 Debug.LogError("One or more UI components is not assigned!", this);
                 return;
             }
+            game.GameState.AddListener(this);
+            _whiteDeckCoverCard.DisableCard();
+            _blackDeckCoverCard.DisableCard();
+            _whitePuzzleColumn.DisableColumn();
+            _blackPuzzleColumn.DisableColumn();
         }
 
         public void OnWhitePuzzleRowChanged(int index, Puzzle? puzzle)
@@ -62,8 +60,10 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             }
         }
 
-        public void OnCurrentTurnChanged(TurnInfo info)
+        public void PrepareForTakePuzzleAction(TurnInfo info)
         {
+            _whiteDeckCoverCard?.EnableCard();
+            _whitePuzzleColumn?.EnableColumn();
             if (info.GamePhase == GamePhase.EndOfTheGame && info.TookBlackPuzzle) {
                 _blackPuzzleColumn?.DisableColumn();
                 _blackDeckCoverCard?.DisableCard();

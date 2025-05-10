@@ -46,13 +46,13 @@
   - [x] Puzzle zone
     - [x] populate columns with puzzles
     - [x] logic for empty slot
-  - [ ] Player zone
-    - [ ] player row setup
-      - [ ] name
-      - [ ] show puzzles + empty slots
-      - [ ] player row collider visualization
-    - [ ] populate with player rows
-      - [ ] enable only row of selected player
+  - [x] Player zone
+    - [x] player row setup
+      - [x] name
+      - [x] show puzzles + empty slots
+      - [x] player row collider visualization
+    - [x] populate with player rows
+      - [x] enable only row of selected player
   - [ ] Piece zone
     - [ ] populate names
     - [ ] collection column setup

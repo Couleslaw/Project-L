@@ -21,7 +21,7 @@ namespace ProjectLCore.GameLogic
     /// </summary>
     /// <seealso cref="PlayerInfo"/>
     /// <seealso cref="GameState"/>
-    public class PlayerState : IComparable<PlayerState>, IEquatable<PlayerState>
+    public class PlayerState : ITetrominoCollectionNotifier, IComparable<PlayerState>, IEquatable<PlayerState>
     {
         #region Constants
 
@@ -61,7 +61,7 @@ namespace ProjectLCore.GameLogic
 
         private event Action<int, Puzzle>? PuzzleAdded;
 
-        private event Action<TetrominoShape, int>? TetrominosCollectionChanged;
+        private event Action<TetrominoShape, int>? TetrominoCollectionChanged;
 
         #endregion
 
@@ -103,20 +103,20 @@ namespace ProjectLCore.GameLogic
         /// Subscribes the tetromino listener to the events of this <see cref="PlayerState"/>.
         /// </summary>
         /// <param name="listener">The listener to add.</param>
-        /// <seealso cref="RemoveListener(IPlayerStateTetrominoListener)"/>
-        public void AddListener(IPlayerStateTetrominoListener listener)
+        /// <seealso cref="RemoveListener(ITetrominoCollectionListener)"/>
+        public void AddListener(ITetrominoCollectionListener listener)
         {
-            TetrominosCollectionChanged += listener.OnTetrominoCollectionChanged;
+            TetrominoCollectionChanged += listener.OnTetrominoCollectionChanged;
         }
 
         /// <summary>
         /// Unsubscribes the tetromino listener from the events of this <see cref="PlayerState"/>.
         /// </summary>
         /// <param name="listener">The listener to remove.</param>
-        /// <seealso cref="AddListener(IPlayerStateTetrominoListener)"/>
-        public void RemoveListener(IPlayerStateTetrominoListener listener)
+        /// <seealso cref="AddListener(ITetrominoCollectionListener)"/>
+        public void RemoveListener(ITetrominoCollectionListener listener)
         {
-            TetrominosCollectionChanged -= listener.OnTetrominoCollectionChanged;
+            TetrominoCollectionChanged -= listener.OnTetrominoCollectionChanged;
         }
 
         /// <summary>
@@ -282,7 +282,7 @@ namespace ProjectLCore.GameLogic
         public void AddTetromino(TetrominoShape shape)
         {
             _numTetrominosOwned[(int)shape]++;
-            TetrominosCollectionChanged?.Invoke(shape, _numTetrominosOwned[(int)shape]);
+            TetrominoCollectionChanged?.Invoke(shape, _numTetrominosOwned[(int)shape]);
         }
 
         /// <summary>
@@ -296,7 +296,7 @@ namespace ProjectLCore.GameLogic
                 throw new InvalidOperationException("Cannot remove tetromino that has not been placed.");
             }
             _numTetrominosOwned[(int)shape]--;
-            TetrominosCollectionChanged?.Invoke(shape, _numTetrominosOwned[(int)shape]);
+            TetrominoCollectionChanged?.Invoke(shape, _numTetrominosOwned[(int)shape]);
         }
 
         /// <summary>

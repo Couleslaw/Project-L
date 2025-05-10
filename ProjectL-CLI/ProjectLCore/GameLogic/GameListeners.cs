@@ -46,7 +46,7 @@
     /// </summary>
     /// <seealso cref="PlayerState.AddListener(IPlayerStatePuzzleListener)"/>
     /// <seealso cref="PlayerState.RemoveListener(IPlayerStatePuzzleListener)"/>
-    /// <seealso cref="IPlayerStateTetrominoListener"/>
+    /// <seealso cref="ITetrominoCollectionListener"/>
     public interface IPlayerStatePuzzleListener
     {
         #region Methods
@@ -69,31 +69,11 @@
     }
 
     /// <summary>
-    /// Interface for classes that want to be notified about tetromino changes in a <see cref="PlayerState"/>.
-    /// </summary>
-    /// <seealso cref="PlayerState.AddListener(IPlayerStateTetrominoListener)"/>
-    /// <seealso cref="PlayerState.RemoveListener(IPlayerStateTetrominoListener)"/>
-    /// <seealso cref="IPlayerStatePuzzleListener"/>
-    public interface IPlayerStateTetrominoListener
-    {
-        #region Methods
-
-        /// <summary>
-        /// Called when the number of tetrominos in the player's collection changes.
-        /// </summary>
-        /// <param name="shape">The shape of the tetromino that was used or added.</param>
-        /// <param name="count"> The number of tetrominos of this shape in the collection after the change.</param>
-        public void OnTetrominoCollectionChanged(TetrominoShape shape, int count);
-
-        #endregion
-    }
-
-    /// <summary>
     /// Interface for classes that want to be notified about puzzle changes in a <see cref="GameState"/>.
     /// </summary>
     /// <seealso cref="GameState.AddListener(IGameStatePuzzleListener)"/>
     /// <seealso cref="GameState.RemoveListener(IGameStatePuzzleListener)"/>
-    /// <seealso cref="IGameStateTetrominoListener"/>
+    /// <seealso cref="ITetrominoCollectionListener"/>
     public interface IGameStatePuzzleListener
     {
         #region Methods
@@ -130,10 +110,11 @@
     /// <summary>
     /// Interface for classes that want to be notified about tetromino changes in a <see cref="GameState"/>.
     /// </summary>
-    /// <seealso cref="GameState.AddListener(IGameStateTetrominoListener)"/>
-    /// <seealso cref="GameState.RemoveListener(IGameStateTetrominoListener)"/>
+    /// <seealso cref="ITetrominoCollectionNotifier.AddListener(ITetrominoCollectionListener)"/>
+    /// <seealso cref="ITetrominoCollectionNotifier.RemoveListener(ITetrominoCollectionListener)"/>
     /// <seealso cref="IGameStatePuzzleListener"/>
-    public interface IGameStateTetrominoListener
+    /// <seealso cref="IPlayerStatePuzzleListener"/>
+    public interface ITetrominoCollectionListener
     {
         #region Methods
 
@@ -142,9 +123,28 @@
         /// </summary>
         /// <param name="shape">The shape of the tetromino that was used or added.</param>
         /// <param name="count"> The number of tetrominos of this shape in the shared reserve after the change.</param>
-        public void OnTetrominosReserveChanged(TetrominoShape shape, int count);
+        public void OnTetrominoCollectionChanged(TetrominoShape shape, int count);
 
         #endregion
     }
 
+    /// <summary>
+    /// Interface for notifying listeners about changes in the tetromino collection.
+    /// </summary>
+    /// <seealso cref="GameState"/>
+    /// <seealso cref="PlayerState"/>
+    public interface ITetrominoCollectionNotifier
+    {
+        /// <summary>
+        /// Adds a listener to be notified when the tetromino collection changes.
+        /// </summary>
+        /// <param name="listener">The listener to add.</param>
+        public void AddListener(ITetrominoCollectionListener listener);
+
+        /// <summary>
+        /// Removes a listener so it will no longer be notified about changes in the tetromino collection.
+        /// </summary>
+        /// <param name="listener">The listener to remove.</param>
+        public void RemoveListener(ITetrominoCollectionListener listener);
+    }
 }

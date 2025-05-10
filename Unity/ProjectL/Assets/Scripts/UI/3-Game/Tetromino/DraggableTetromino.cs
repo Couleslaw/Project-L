@@ -1,8 +1,10 @@
 #nullable enable
 
 using ProjectL.Management;
+using ProjectL.UI.GameScene;
 using ProjectLCore.GamePieces;
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,7 +12,7 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(Collider2D))]
-public class DraggableTetromino : MonoBehaviour
+public class DraggableTetromino : MonoBehaviour, IPlaceActionCanceledListener, IPlaceActionConfirmedListener
 {
     #region Constants
 
@@ -67,6 +69,8 @@ public class DraggableTetromino : MonoBehaviour
     {
         mainCamera = cam;
         _onDiscard = onDiscard;
+        ActionCreationManager.Instance.AddListener((IPlaceActionCanceledListener)this);
+        ActionCreationManager.Instance.AddListener((IPlaceActionConfirmedListener)this);
     }
 
     public void StartDragging()
@@ -166,16 +170,18 @@ public class DraggableTetromino : MonoBehaviour
         _isMouseOver = false;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.layer == _playerPuzzleRowLayer) {
+            Debug.Log("Entered puzzle row");
             _isOverPuzzleRow = true;
         }
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+    private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.gameObject.layer == _playerPuzzleRowLayer) {
+            Debug.Log("Exited puzzle row");
             _isOverPuzzleRow = false;
         }
     }
@@ -201,13 +207,13 @@ public class DraggableTetromino : MonoBehaviour
             Debug.LogError("GameManager controls are not initialized.");
             return;
         }
-        GameManager.Controls.Gameplay.RotateSmooth.performed += ctx => OnRotateInputAction(ctx, true);
-        GameManager.Controls.Gameplay.Rotate90.performed += ctx => OnRotateInputAction(ctx, false);
+        GameManager.Controls.Gameplay.RotateSmooth.performed += OnRotateSmoothInputAction;
+        GameManager.Controls.Gameplay.Rotate90.performed += OnRotate90InputAction;
         GameManager.Controls.Gameplay.Flip.performed += OnFlipInputAction;
         GameManager.Controls.Gameplay.Place.performed += OnPlaceInputAction;
     }
 
-    internal void FixedUpdate() // Use FixedUpdate for Rigidbody manipulation
+    private void FixedUpdate() // Use FixedUpdate for Rigidbody manipulation
     {
         if (_isDragging && mainCamera != null) {
             // --- Move the Object ---
@@ -221,16 +227,33 @@ public class DraggableTetromino : MonoBehaviour
         }
     }
 
-    private void OnRotateInputAction(InputAction.CallbackContext ctx, bool smooth)
+    private void OnDestroy()
     {
-        if (this != SelectedTetromino) {
-            return;
+        ActionCreationManager.Instance.RemoveListener((IPlaceActionCanceledListener)this);
+        ActionCreationManager.Instance.RemoveListener((IPlaceActionConfirmedListener)this);
+        GameManager.Controls!.Gameplay.RotateSmooth.performed -= OnRotateSmoothInputAction;
+        GameManager.Controls.Gameplay.Rotate90.performed -= OnRotate90InputAction;
+        GameManager.Controls.Gameplay.Flip.performed -= OnFlipInputAction;
+        GameManager.Controls.Gameplay.Place.performed -= OnPlaceInputAction;
+        if (gameObject.layer != _placedTetrominoLayer) {
+            _onDiscard?.Invoke();
         }
-        if (smooth)
-            transform.Rotate(0f, 0f, ctx.ReadValue<float>() * _rotationSpeed);
-        else
-            transform.Rotate(0f, 0f, 90 * Mathf.Sign(ctx.ReadValue<float>()));
     }
+
+    private void OnRotateSmoothInputAction(InputAction.CallbackContext ctx)
+    {
+        if (this == SelectedTetromino) {
+            transform.Rotate(0f, 0f, ctx.ReadValue<float>() * _rotationSpeed);
+        }
+    }
+
+    private void OnRotate90InputAction(InputAction.CallbackContext ctx)
+    {
+        if (this == SelectedTetromino) {
+            transform.Rotate(0f, 0f, 90 * Mathf.Sign(ctx.ReadValue<float>()));
+        }
+    }
+
 
     private void OnFlipInputAction(InputAction.CallbackContext ctx)
     {
@@ -249,11 +272,9 @@ public class DraggableTetromino : MonoBehaviour
     private void OnPlaceInputAction(InputAction.CallbackContext ctx)
     {
         if (this == SelectedTetromino) {
-            Debug.Log($"{gameObject.name}: left button pressed, placing tetromino");
             InteractivePuzzle.PlaceTetrominoToPuzzle(this);
         }
     }
-
 
 
     internal void Update() // Scale can be done in Update
@@ -289,14 +310,14 @@ public class DraggableTetromino : MonoBehaviour
         }
 
         // destroy if abandoned and not over puzzle row
-        if (gameObject.layer == _abandonedTetrominosLayer) {
-            if (!_isOverPuzzleRow) {
-                _onDiscard?.Invoke();
-                Destroy(gameObject);
-            }
+        if (!_isOverPuzzleRow && gameObject.layer == _abandonedTetrominosLayer) {
+            Destroy(gameObject);
         }
     }
 
+    public void OnActionCanceled() => Destroy(gameObject);
+
+    public void OnActionConfirmed() => Destroy(gameObject);
 
     #endregion
 }
