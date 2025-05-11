@@ -30,7 +30,7 @@ namespace ProjectL.UI.GameScene
 
     public class ActionCreationManager : GraphicsManager<ActionCreationManager>
     {
-        private IAction? _action;
+        private GameAction? _action;
 
         private event Action? OnPlaceActionCanceled;
         private event Action? OnPlaceActionConfirmed;

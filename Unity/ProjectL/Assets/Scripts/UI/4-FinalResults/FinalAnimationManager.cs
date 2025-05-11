@@ -2,26 +2,30 @@
 
 namespace ProjectL.UI.FinalResults
 {
+    using ProjectL.Data;
+    using ProjectL.Management;
+    using ProjectL.UI.Sound;
     using System;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
     using System.Threading;
+    using System.Threading.Tasks;
     using TMPro;
     using UnityEngine;
     using UnityEngine.UI;
-    using ProjectL.UI.Sound;
-    using ProjectL.Data;
-    using ProjectL.Management;
 
     public class FinalAnimationManager : MonoBehaviour
     {
         #region Constants
 
-        public const float AnimationDelay = 1.5f;
+        private const float _defaultAnimationDelay = 1.5f;
 
         #endregion
 
         #region Fields
+
+        private readonly List<PlayerStatsColumn> _playerStatsColumns = new();
+
+        private readonly List<ScoreDetailsColumn> _scoreDetailsColumns = new();
 
         [Header("Final Results Panel")]
         [SerializeField] private CanvasGroup? finalResultsPanel;
@@ -39,22 +43,15 @@ namespace ProjectL.UI.FinalResults
         [SerializeField] private Image? dividerLine;
         [SerializeField] private CanvasGroup? detailsPanel;
 
+        #endregion
 
-        private readonly List<PlayerStatsColumn> _playerStatsColumns = new();
-        private readonly List<ScoreDetailsColumn> _scoreDetailsColumns = new();
+        #region Properties
+
+        public static float AnimationDelay => _defaultAnimationDelay * AnimationSpeed.Multiplier;
 
         #endregion
 
         #region Methods
-
-        /// <summary>
-        /// Handles the click event of the "Home" button. Loads the main menu scene.
-        /// </summary>
-        public void OnHomeButtonClick()
-        {
-            SoundManager.Instance?.PlayButtonClickSound();
-            SceneLoader.Instance?.LoadMainMenuAsync();
-        }
 
         public static async Task WaitForAnimationDelayAndPlaySound(CancellationToken cancellationToken = default)
         {
@@ -63,10 +60,19 @@ namespace ProjectL.UI.FinalResults
             }
             try {
                 SoundManager.Instance?.PlayTapSoundEffect();
-                await Awaitable.WaitForSecondsAsync(AnimationDelay * AnimationSpeed.Multiplier, cancellationToken);
+                await Awaitable.WaitForSecondsAsync(AnimationDelay, cancellationToken);
             }
             catch (OperationCanceledException) {
             }
+        }
+
+        /// <summary>
+        /// Handles the click event of the "Home" button. Loads the main menu scene.
+        /// </summary>
+        public void OnHomeButtonClick()
+        {
+            SoundManager.Instance?.PlayButtonClickSound();
+            SceneLoader.Instance?.LoadMainMenuAsync();
         }
 
         private void Awake()
@@ -103,7 +109,7 @@ namespace ProjectL.UI.FinalResults
 
             // show player stats labels
             if (this != null) {
-                await Awaitable.WaitForSecondsAsync(AnimationDelay * AnimationSpeed.Multiplier);
+                await Awaitable.WaitForSecondsAsync(AnimationDelay);
                 ShowPlayerStatsPanel();
                 await WaitForAnimationDelayAndPlaySound(destroyCancellationToken);
             }

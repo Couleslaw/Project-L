@@ -18,6 +18,7 @@ using ProjectL.Data;
 using ProjectL.Management;
 using ProjectL;
 using Unity.VisualScripting;
+using System.Threading;
 
 
 
@@ -64,11 +65,11 @@ public class GameSessionManager : StaticInstance<GameSessionManager>
         RuntimeGameInfo.RegisterGame(_game);
 
         // initialize players
-        InitializeAIPlayersAsync(_game.Players, _game.GameState);
+        InitializeAIPlayersAsync(_game.Players, _game.GameState, destroyCancellationToken);
 
         // game loop
         GameSummary.Clear();
-        await GameLoopAsync();
+        await GameLoopAsync(destroyCancellationToken);
 
         // final results
         PrepareGameEndStats();
@@ -188,7 +189,7 @@ public class GameSessionManager : StaticInstance<GameSessionManager>
     /// </summary>
     /// <param name="players">List of players to initialize.</param>
     /// <param name="gameState">The game state.</param>
-    private void InitializeAIPlayersAsync(Player[] players, GameState gameState)
+    private void InitializeAIPlayersAsync(Player[] players, GameState gameState, CancellationToken cancellationToken)
     {
         if (GameErrorHandler.ShouldEndGameWithError) {
             return;
@@ -199,7 +200,7 @@ public class GameSessionManager : StaticInstance<GameSessionManager>
                 string? initPath = GameSettings.Players[player.Name].InitPath;
                 Debug.Log($"Initializing AI player {player.Name}. Init file: {initPath}");
 
-                aiPlayer.InitAsync(players.Length, gameState.GetAllPuzzlesInGame(), initPath, destroyCancellationToken)
+                aiPlayer.InitAsync(players.Length, gameState.GetAllPuzzlesInGame(), initPath, cancellationToken)
                     .ContinueWith(t => {
                         if (t.Exception != null) {
                             GameErrorHandler.FatalErrorOccurred($"Initialization of player {player.Name} failed: {t.Exception.InnerException?.Message}");
@@ -208,7 +209,7 @@ public class GameSessionManager : StaticInstance<GameSessionManager>
                             Debug.Log($"AI player {player.Name} initialized successfully.");
                         }
                     },
-                    destroyCancellationToken
+                    cancellationToken
                 );
             }
         }
@@ -267,7 +268,7 @@ public class GameSessionManager : StaticInstance<GameSessionManager>
         GameManager.CanGameBePaused = false;
     }
 
-    private async Task GameLoopAsync()
+    private async Task GameLoopAsync(CancellationToken cancellationToken)
     {
         if (_game == null) {
             Debug.LogError("GameCore is null. Cannot start game loop.");
@@ -275,8 +276,9 @@ public class GameSessionManager : StaticInstance<GameSessionManager>
         }
 
         Debug.Log("Starting game loop.");
+        AIPlayerActionAnimator aIPlayerActionAnimator = new();
 
-        while (!destroyCancellationToken.IsCancellationRequested && !GameErrorHandler.ShouldEndGameWithError) {
+        while (!cancellationToken.IsCancellationRequested && !GameErrorHandler.ShouldEndGameWithError) {
             TurnInfo turnInfo = _game.GetNextTurnInfo();
 
             // check if game ended
@@ -293,7 +295,7 @@ public class GameSessionManager : StaticInstance<GameSessionManager>
             var verifier = new ActionVerifier(gameInfo, currentPlayerInfo, turnInfo);
 
             // get action from player
-            IAction? action;
+            GameAction? action;
             try {
                 action = await _game.CurrentPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier, destroyCancellationToken);
                 if (action == null) {
@@ -321,6 +323,9 @@ public class GameSessionManager : StaticInstance<GameSessionManager>
             }
 
             // process valid action
+            if (_game.CurrentPlayer is AIPlayerBase aiPlayer) {
+                await action.AcceptAsync(aIPlayerActionAnimator);
+            }
             _game.ProcessAction(action);
 
             // if not Finishing touches --> log finished puzzles
@@ -337,7 +342,7 @@ public class GameSessionManager : StaticInstance<GameSessionManager>
             }
         }
 
-        IAction GetDefaultAction()
+        GameAction GetDefaultAction()
         {
             return (_game?.CurrentGamePhase == GamePhase.FinishingTouches)
                         ? new EndFinishingTouchesAction()
@@ -356,12 +361,12 @@ public class GameSessionManager : StaticInstance<GameSessionManager>
         Debug.LogWarning($"{_game?.CurrentPlayer.Name} provided no action.");
     }
 
-    private void LogPlayerProvidedInvalidAction(IAction action, VerificationFailure fail)
+    private void LogPlayerProvidedInvalidAction(GameAction action, VerificationFailure fail)
     {
         Debug.LogWarning($"{_game?.CurrentPlayer.Name} provided an invalid {action}\nVerification result:\n{fail.GetType()}: {fail.Message}\n");
     }
 
-    private void LogDefaultFunctionAssignment(IAction action)
+    private void LogDefaultFunctionAssignment(GameAction action)
     {
         Debug.LogWarning($"{_game?.CurrentPlayer.Name} provided no action. Defaulting to {action}");
     }

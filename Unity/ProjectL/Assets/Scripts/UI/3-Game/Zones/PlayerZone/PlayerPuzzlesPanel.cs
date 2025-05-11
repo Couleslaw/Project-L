@@ -19,6 +19,9 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
         private BoxCollider2D? _collider;
         private Image? _image;
 
+        private readonly static Color _currentPlayerBorderColor = new Color(34f / 255, 34f / 255, 34f / 255);
+        private readonly static Color _notCurrentPlayerBorderColor = Color.black;
+
         private void Awake()
         {
             if (playerRowSlotPrefab == null) {
@@ -51,7 +54,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             if (_image == null || _collider == null) {
                 return;
             }
-            _image.enabled = current;
+            _image.color = current ? _currentPlayerBorderColor : _notCurrentPlayerBorderColor;
             _collider.enabled = current;
 
             foreach (var puzzle in _puzzles) {

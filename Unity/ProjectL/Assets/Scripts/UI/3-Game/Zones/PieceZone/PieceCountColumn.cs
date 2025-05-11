@@ -50,14 +50,11 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 PieceCounter pieceCounter = Instantiate(_pieceCounterPrefab, transform);
                 pieceCounter.gameObject.SetActive(true);
                 _pieceCounters.Add(shape, pieceCounter);
-                Debug.Log($"{gameObject.name}: added shape {shape}");
             }
-            Debug.Log($"{gameObject.name}: Awake Ended");
         }
 
         public void Init(int numInitialTetrominos, ITetrominoCollectionNotifier notifier)
         {
-            Debug.Log($"{gameObject.name}: Init");
             for (int i = 0; i < _realCounts.Length; i++) {
                 _realCounts[i] = numInitialTetrominos;
             }

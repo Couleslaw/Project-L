@@ -73,7 +73,7 @@ namespace ProjectL.UI.GameScene
                 GameTextView.PrintGameScreen(gameInfo, playerInfos, game);
 
                 // get action from player
-                IAction? action;
+                GameAction? action;
                 try {
                     action = await game.CurrentPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier, destroyCancellationToken);
                 }
@@ -143,7 +143,7 @@ namespace ProjectL.UI.GameScene
             continueButton.onClick.AddListener(OnContinueButtonClick);
         }
 
-        private IAction GetDefaultAction(GamePhase gamePhase)
+        private GameAction GetDefaultAction(GamePhase gamePhase)
         {
             return (gamePhase == GamePhase.FinishingTouches)
                         ? new EndFinishingTouchesAction()
@@ -256,12 +256,12 @@ namespace ProjectL.UI.GameScene
                 WriteLine(ActionsTextBox!, $"{player.Name} failed to provide an action with error: {message}.\nSkipping action...");
             }
 
-            public static void PrintPlayerProvidedInvalidAction(IAction action, VerificationFailure fail, Player player)
+            public static void PrintPlayerProvidedInvalidAction(GameAction action, VerificationFailure fail, Player player)
             {
                 WriteLine(ActionsTextBox!, $"{player.Name} provided an invalid {action.GetType()}. Verification result:\n{fail.GetType()}: {fail.Message}\n");
             }
 
-            public static void PrintPlayerProvidedValidAction(IAction action, Player player)
+            public static void PrintPlayerProvidedValidAction(GameAction action, Player player)
             {
                 WriteLine(ActionsTextBox!, $"{player.Name} used a {action}\n");
             }
