@@ -6,7 +6,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     using ProjectLCore.GameLogic;
     using ProjectLCore.GameActions;
 
-    public class SharedReserveManager : GraphicsManager<SharedReserveManager>, ITetrominoActionCanceledListener
+    public class SharedReserveManager : GraphicsManager<SharedReserveManager>, ITetrominoActionListener
     {
         [SerializeField] private PieceCountColumn? _sharedReserveStats;
         
@@ -21,9 +21,11 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             ActionCreationManager.Instance.AddListener(this);
         }
 
-        public void OnActionCanceled()
-        {
-            _sharedReserveStats!.ResetColumn();
-        }
+
+        void IHumanPlayerActionListener.OnActionCanceled() => _sharedReserveStats!.ResetColumn();
+
+        void IHumanPlayerActionListener.OnActionConfirmed() => _sharedReserveStats!.ResetColumn();
+
+        void IHumanPlayerActionListener.OnActionRequested() { }
     }
 }

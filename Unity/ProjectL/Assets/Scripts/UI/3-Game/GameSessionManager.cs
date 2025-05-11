@@ -61,7 +61,7 @@ public class GameSessionManager : StaticInstance<GameSessionManager>
         var cancellationToken = destroyCancellationToken;
 
         await InitializeGameAsync();
-        InitializeAIPlayersAsync(_game.Players, _game.GameState, cancellationToken);
+        InitializePlayersAsync(_game.Players, _game.GameState, cancellationToken);
 
         // game loop
         GameSummary.Clear();
@@ -207,14 +207,17 @@ public class GameSessionManager : StaticInstance<GameSessionManager>
     /// </summary>
     /// <param name="players">List of players to initialize.</param>
     /// <param name="gameState">The game state.</param>
-    private void InitializeAIPlayersAsync(Player[] players, GameState gameState, CancellationToken cancellationToken)
+    private void InitializePlayersAsync(Player[] players, GameState gameState, CancellationToken cancellationToken)
     {
         if (GameErrorHandler.ShouldEndGameWithError) {
             return;
         }
 
         foreach (Player player in players) {
-            if (player is AIPlayerBase aiPlayer) {
+            if (player is HumanPlayer humanPlayer) {
+                ActionCreationManager.Instance.Register(humanPlayer);
+            }
+            else if (player is AIPlayerBase aiPlayer) {
                 string? initPath = GameSettings.Players[player.Name].InitPath;
                 Debug.Log($"Initializing AI player {player.Name}. Init file: {initPath}");
 
@@ -229,6 +232,9 @@ public class GameSessionManager : StaticInstance<GameSessionManager>
                     },
                     cancellationToken
                 );
+            }
+            else {
+                Debug.LogError($"Player {player.Name} is not a supported player type.");
             }
         }
     }

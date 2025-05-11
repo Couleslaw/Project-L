@@ -11,17 +11,15 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
     [RequireComponent(typeof(Button))]
     public class ActionButton : MonoBehaviour
     {
-        #region Fields
 
         private Button? _button;
 
-        #endregion
 
         #region Properties
 
-        public static Action? OnCancelAction { get; set; }
+        public static event Action? CancelAction;
 
-        public Action? OnSelectAction { get; set; }
+        public event Action? SelectAction;
 
         #endregion
 
@@ -62,7 +60,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
                 return;
             }
 
-            RadioButtonsGroup.RegisterButton(_button, nameof(ActionButton), OnSelectAction, OnCancelAction);
+            RadioButtonsGroup.RegisterButton(_button, nameof(ActionButton), SelectAction, CancelAction);
         }
 
         #endregion

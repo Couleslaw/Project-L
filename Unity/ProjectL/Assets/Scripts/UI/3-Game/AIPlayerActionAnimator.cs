@@ -44,7 +44,7 @@ namespace ProjectL.UI.GameScene
             Vector2 center = PlayerZoneManager.Instance.GetPlacementPositionFor(action);
             await tetromino.AnimateAIPlayerPlaceActionAsync(center, action, cancellationToken);
             await GameAnimationManager.WaitForAnimationDelayFraction(0.5f, cancellationToken);
-            tetromino.Discard();
+            tetromino.ReturnToCollection();
         }
 
         protected override async Task ProcessActionAsync(MasterAction action, CancellationToken cancellationToken)

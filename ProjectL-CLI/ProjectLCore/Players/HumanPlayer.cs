@@ -29,12 +29,12 @@
         /// <summary>
         /// Occurs when the player is requested to provide an action during their turn.
         /// </summary>
-        public event EventHandler<GetActionEventArgs>? GetActionRequested;
+        public event EventHandler<GetActionEventArgs>? ActionRequested;
 
         /// <summary>
         /// Occurs when the player is requested to select a reward after completing a puzzle.
         /// </summary>
-        public event EventHandler<GetRewardEventArgs>? GetRewardRequested;
+        public event EventHandler<GetRewardEventArgs>? RewardChoiceRequested;
 
         #endregion
 
@@ -90,7 +90,7 @@
 
             // request the action
             var args = new GetActionEventArgs(gameInfo, playerInfo!, turnInfo, verifier);
-            GetActionRequested?.Invoke(this, args);
+            ActionRequested?.Invoke(this, args);
 
             // wait until the action has been set from the outside
             return await _getActionCompletionSource.Task;
@@ -113,7 +113,7 @@
 
             // request the reward
             var args = new GetRewardEventArgs(rewardOptions, puzzle);
-            GetRewardRequested?.Invoke(this, args);
+            RewardChoiceRequested?.Invoke(this, args);
 
             // wait until the reward has been set from the outside
             return await _getRewardCompletionSource.Task;
@@ -134,7 +134,7 @@
         #endregion
 
         /// <summary>
-        /// Provides data for the <see cref="HumanPlayer.GetActionRequested"/> event.
+        /// Provides data for the <see cref="HumanPlayer.ActionRequested"/> event.
         /// </summary>
         public class GetActionEventArgs : EventArgs
         {
@@ -183,7 +183,7 @@
         }
 
         /// <summary>
-        /// Provides data for the <see cref="HumanPlayer.GetRewardRequested"/> event.
+        /// Provides data for the <see cref="HumanPlayer.RewardChoiceRequested"/> event.
         /// </summary>
         public class GetRewardEventArgs : EventArgs
         {

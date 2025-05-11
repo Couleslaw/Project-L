@@ -19,7 +19,7 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(Collider2D))]
-public class DraggableTetromino : MonoBehaviour, IPlaceActionCanceledListener, IPlaceActionConfirmedListener
+public class DraggableTetromino : MonoBehaviour, IPlacePieceActionListener
 {
     #region Constants
 
@@ -58,7 +58,7 @@ public class DraggableTetromino : MonoBehaviour, IPlaceActionCanceledListener, I
 
     private bool _isAnimating = false;
 
-    private Action? _onDiscard;
+    private Action? _onReturnToCollection;
 
     #endregion
 
@@ -75,12 +75,11 @@ public class DraggableTetromino : MonoBehaviour, IPlaceActionCanceledListener, I
     #region Methods
 
     // Called by the ButtonShapeSpawner after instantiation
-    public void Init(Camera cam, Action onDiscard)
+    public void Init(Camera cam, Action onReturnToCollection)
     {
         mainCamera = cam;
-        _onDiscard = onDiscard;
-        ActionCreationManager.Instance.AddListener((IPlaceActionCanceledListener)this);
-        ActionCreationManager.Instance.AddListener((IPlaceActionConfirmedListener)this);
+        _onReturnToCollection = onReturnToCollection;
+        ActionCreationManager.Instance.AddListener(this);
     }
 
     public async Task AnimateAIPlayerPlaceActionAsync(Vector2 goalPosition, PlaceTetrominoAction action, CancellationToken cancellationToken = default)
@@ -284,14 +283,13 @@ public class DraggableTetromino : MonoBehaviour, IPlaceActionCanceledListener, I
 
     private void OnDestroy()
     {
-        ActionCreationManager.Instance.RemoveListener((IPlaceActionCanceledListener)this);
-        ActionCreationManager.Instance.RemoveListener((IPlaceActionConfirmedListener)this);
+        ActionCreationManager.Instance.RemoveListener(this);
         GameManager.Controls!.Gameplay.RotateSmooth.performed -= OnRotateSmoothInputAction;
         GameManager.Controls.Gameplay.Rotate90.performed -= OnRotate90InputAction;
         GameManager.Controls.Gameplay.Flip.performed -= OnFlipInputAction;
         GameManager.Controls.Gameplay.Place.performed -= OnPlaceInputAction;
         if (gameObject.layer != _placedTetrominoLayer) {
-            _onDiscard?.Invoke();
+            _onReturnToCollection?.Invoke();
         }
     }
 
@@ -374,15 +372,17 @@ public class DraggableTetromino : MonoBehaviour, IPlaceActionCanceledListener, I
 
         // destroy if abandoned and not over puzzle row
         if (!_isOverPuzzleRow && gameObject.layer == _abandonedTetrominosLayer) {
-            Destroy(gameObject);
+            ReturnToCollection();
         }
     }
 
-    public void OnActionCanceled() => Destroy(gameObject);
+    public void ReturnToCollection() => Destroy(gameObject);
 
-    public void OnActionConfirmed() => Destroy(gameObject);
+    void IHumanPlayerActionListener.OnActionRequested() { }
 
-    public void Discard() => Destroy(gameObject);
+    void IHumanPlayerActionListener.OnActionCanceled() => ReturnToCollection();
+
+    void IHumanPlayerActionListener.OnActionConfirmed() => ReturnToCollection();
 
     #endregion
 }
