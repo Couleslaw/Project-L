@@ -58,7 +58,6 @@ namespace ProjectL.UI.GameScene
                 // check if game ended
                 if (game.CurrentGamePhase == GamePhase.Finished) {
                     Debug.Log("Game ended.");
-                    game.GameEnded();
                     break;
                 }
 

@@ -24,6 +24,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
                 return;
             }
             game.GameState.AddListener(this);
+            Debug.Log("PuzzleZoneManager initialized.");
             _whiteDeckCoverCard.DisableCard();
             _blackDeckCoverCard.DisableCard();
             _whitePuzzleColumn.DisableColumn();

@@ -58,13 +58,7 @@ public class GameSessionManager : StaticInstance<GameSessionManager>
             return;
         }
 
-        GameGraphicsSystem.Instance.Init(_game);
-
-        // initialize game
-        _game.InitializeGame();
-        RuntimeGameInfo.RegisterGame(_game);
-
-        // initialize players
+        await InitializeGameAsync();
         InitializeAIPlayersAsync(_game.Players, _game.GameState, destroyCancellationToken);
 
         // game loop
@@ -72,6 +66,7 @@ public class GameSessionManager : StaticInstance<GameSessionManager>
         await GameLoopAsync(destroyCancellationToken);
 
         // final results
+        _game.FinalizeGame();
         PrepareGameEndStats();
         GoToFinalResultsScreen();
     }
@@ -184,6 +179,25 @@ public class GameSessionManager : StaticInstance<GameSessionManager>
         return new GameCore(gameState, players, GameSettings.ShufflePlayers);
     }
 
+    private async Task InitializeGameAsync()
+    {
+        if (_game == null) {
+            Debug.LogError("GameCore is null. Cannot prepare end game stats.");
+            return; // safety check
+        }
+
+        Debug.Log("Initializing game.");
+        RuntimeGameInfo.RegisterGame(_game);
+
+        // wait until the graphics system is ready
+        while (!GameGraphicsSystem.Instance.IsReadyForInitialization) {
+            await Task.Delay(10);
+        }
+
+        GameGraphicsSystem.Instance.Init(_game);
+        _game.InitializeGame();
+    }
+
     /// <summary>
     /// Asynchronously initializes all AI players by calling their <see cref="AIPlayerBase.InitAsync(int, List{Puzzle}, string?)"/> method.
     /// </summary>
@@ -232,7 +246,7 @@ public class GameSessionManager : StaticInstance<GameSessionManager>
         Debug.Log("Calculating game results.");
 
         // add final results
-        GameSummary.FinalResults = _game.GetFinalResults();
+        GameSummary.FinalResults = _game.GetPlayerRankings();
 
         // add info about leftover tetrominos
         foreach (Player player in _game.Players) {
@@ -284,7 +298,6 @@ public class GameSessionManager : StaticInstance<GameSessionManager>
             // check if game ended
             if (_game.CurrentGamePhase == GamePhase.Finished) {
                 Debug.Log("Game ended.");
-                _game.GameEnded();
                 break;
             }
 

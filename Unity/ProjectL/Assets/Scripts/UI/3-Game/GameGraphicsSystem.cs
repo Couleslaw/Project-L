@@ -14,14 +14,20 @@ namespace ProjectL.UI.GameScene
         where TSelf : GraphicsManager<TSelf>
     {
 
+        protected override void Awake()
+        {
+            base.Awake();
+            GameGraphicsSystem.NewManagerCreated();
+        }
+
         protected virtual void Start()
         {
-            if (GameGraphicsSystem.Instance != null) {
-                GameGraphicsSystem.Instance.Register(this);
+            if (GameGraphicsSystem.Instance == null) {
+                Debug.LogError("GameGraphicsSystem is not initialized.", this);
+                return;
             }
-            else {
-                Debug.LogError($"GameGraphicsSystem instance is null.", this);
-            }
+            // register in Start so that components of this class can be initialized in Awake
+            GameGraphicsSystem.Instance.Register(this);
         }
 
         public abstract void Init(GameCore game);
@@ -32,17 +38,28 @@ namespace ProjectL.UI.GameScene
         public static Color ActivePlayerColor { get; } = Color.white;
         public static Color InactivePlayerColor { get; } = Color.gray;
 
-        private List<IGraphicsManager> _graphicsManagers = new();
-
         private GameCore? _game;
+
+        private List<IGraphicsManager> _managersToRegister = new();
+
+        private static int _numTotalManagers = 0;
+        private int _numRegisteredManagers = 0;
+
+        public bool IsReadyForInitialization => _numTotalManagers == _numRegisteredManagers;
+
+        public static void NewManagerCreated()
+        {
+            _numTotalManagers++;
+        }
 
         public void Register(IGraphicsManager manager)
         {
+            _numRegisteredManagers++;
             if (_game != null) {
                 manager.Init(_game);
             }
             else {
-                _graphicsManagers.Add(manager);
+                _managersToRegister.Add(manager);
             }
         }
 
@@ -53,15 +70,21 @@ namespace ProjectL.UI.GameScene
                 return;
             }
             _game = game;
-            foreach (var manager in _graphicsManagers) {
+            foreach (var manager in _managersToRegister) {
                 manager.Init(game);
             }
-            _graphicsManagers = null!;  // allow garbage collection
+            _managersToRegister = null!;  // allow garbage collection
         }
 
         public interface IGraphicsManager
         {
             void Init(GameCore game);
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            _numTotalManagers = 0;
         }
     }
 }
