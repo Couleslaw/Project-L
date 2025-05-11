@@ -48,14 +48,14 @@
             // initialize tetromino images
             _binaryImages = new BinaryImage[NumShapes];
             _binaryImages[(int)TetrominoShape.O1] = new(0b1);
-            _binaryImages[(int)TetrominoShape.O2] = new(0b1100011);
-            _binaryImages[(int)TetrominoShape.I2] = new(0b11);
             _binaryImages[(int)TetrominoShape.I3] = new(0b111);
             _binaryImages[(int)TetrominoShape.I4] = new(0b1111);
-            _binaryImages[(int)TetrominoShape.L2] = new(0b100011);
-            _binaryImages[(int)TetrominoShape.L3] = new(0b100111);
-            _binaryImages[(int)TetrominoShape.Z] = new(0b11000011);
-            _binaryImages[(int)TetrominoShape.T] = new(0b1000111);
+            _binaryImages[(int)TetrominoShape.O2] = new(0b11000_11000);
+            _binaryImages[(int)TetrominoShape.I2] = new(0b10000_10000);
+            _binaryImages[(int)TetrominoShape.L2] = new(0b11000_10000);
+            _binaryImages[(int)TetrominoShape.L3] = new(0b11100_10000);
+            _binaryImages[(int)TetrominoShape.Z ] = new(0b00110_00011);
+            _binaryImages[(int)TetrominoShape.T ] = new(0b01110_00100);
 
             // level of tetromino = number of 1s in its binary image
             _levels = new int[NumShapes];

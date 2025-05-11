@@ -2,8 +2,11 @@
 
 namespace ProjectL.UI.GameScene.Zones.PieceZone
 {
+    using ProjectLCore.GameActions;
     using ProjectLCore.GamePieces;
     using System;
+    using System.Threading;
+    using Unity.VisualScripting;
     using UnityEngine;
     using UnityEngine.EventSystems;
     using UnityEngine.UI;
@@ -62,10 +65,19 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             Vector3 spawnPosition = mainCamera!.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y, mainCamera.nearClipPlane + 10f)); // Adjust Z as needed
             spawnPosition.z = 0; // Ensure Z is appropriate for 2D
 
-            _currentTetromino = Instantiate(draggableTetrominoPrefab, spawnPosition, Quaternion.identity);
-            _currentTetromino!.Init(mainCamera, () => TetrominoReturned?.Invoke(Shape));
-            TetrominoSpawned?.Invoke(Shape);
+            _currentTetromino = SpawnTetromino();
             _currentTetromino.StartDragging();
+        }
+
+        public DraggableTetromino SpawnTetromino()
+        {
+            if (draggableTetrominoPrefab == null) {
+                throw new InvalidOperationException("DraggableTetromino prefab is not assigned!");
+            }
+            DraggableTetromino tetromino = Instantiate(draggableTetrominoPrefab, transform.position, Quaternion.identity);
+            tetromino.Init(mainCamera!, () => TetrominoReturned?.Invoke(Shape));
+            TetrominoSpawned?.Invoke(Shape);
+            return tetromino;
         }
 
         // Called by EventSystem when pointer is released ANYWHERE after pressing down on this button

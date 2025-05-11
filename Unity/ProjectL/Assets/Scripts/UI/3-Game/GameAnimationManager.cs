@@ -12,7 +12,7 @@ namespace ProjectL.UI.GameScene
     public class GameAnimationManager
     {
         private const float _defaultAnimationDelay = 1.5f;
-        public static float AnimationDelay => _defaultAnimationDelay * AnimationSpeed.Multiplier;
+        public static float AnimationDelay => _defaultAnimationDelay * AnimationSpeed.DelayMultiplier;
 
         public static async Task WaitForAnimationDelayFraction(float fraction = 1f, CancellationToken cancellationToken = default)
         {

@@ -8,6 +8,9 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
     using System.Collections.Generic;
     using System.Collections;
     using UnityEngine.UI;
+    using ProjectLCore.GameActions;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     [RequireComponent(typeof(Image))]
     [RequireComponent(typeof(BoxCollider2D))]
@@ -60,6 +63,17 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             foreach (var puzzle in _puzzles) {
                 puzzle.SetAsCurrentPlayer(current);
             }
+        }
+
+        public Vector2 GetPlacementPositionFor(PlaceTetrominoAction action)
+        {
+            // find puzzle with matching ID
+            for (int i = 0; i < _puzzles.Length; i++) {
+                if (_puzzles[i].CurrentPuzzleId == action.PuzzleId) {
+                    return _puzzles[i].GetPlacementPositionFor(action.Position);
+                }
+            }
+            return default;
         }
     }
 }

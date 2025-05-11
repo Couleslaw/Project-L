@@ -58,17 +58,21 @@ public class GameSessionManager : StaticInstance<GameSessionManager>
             return;
         }
 
+        var cancellationToken = destroyCancellationToken;
+
         await InitializeGameAsync();
-        InitializeAIPlayersAsync(_game.Players, _game.GameState, destroyCancellationToken);
+        InitializeAIPlayersAsync(_game.Players, _game.GameState, cancellationToken);
 
         // game loop
         GameSummary.Clear();
-        await GameLoopAsync(destroyCancellationToken);
+        await GameLoopAsync(cancellationToken);
 
         // final results
-        _game.FinalizeGame();
-        PrepareGameEndStats();
-        GoToFinalResultsScreen();
+        if (!cancellationToken.IsCancellationRequested) {
+            _game.FinalizeGame();
+            PrepareGameEndStats();
+            GoToFinalResultsScreen();
+        }
     }
 
     private void Update()
@@ -337,7 +341,7 @@ public class GameSessionManager : StaticInstance<GameSessionManager>
 
             // process valid action
             if (_game.CurrentPlayer is AIPlayerBase aiPlayer) {
-                await action.AcceptAsync(aIPlayerActionAnimator);
+                await action.AcceptAsync(aIPlayerActionAnimator, cancellationToken);
             }
             _game.ProcessAction(action);
 

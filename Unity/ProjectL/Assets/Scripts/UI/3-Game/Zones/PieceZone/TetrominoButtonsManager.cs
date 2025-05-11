@@ -2,12 +2,15 @@
 
 namespace ProjectL.UI.GameScene.Zones.PieceZone
 {
+    using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GameManagers;
     using ProjectLCore.GamePieces;
     using ProjectLCore.Players;
     using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using UnityEngine;
 
 
@@ -49,7 +52,17 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 Debug.LogError($"Number of TetrominoSpawners ({_tetrominoSpawners.Count}) does not match TetrominoShape count ({TetrominoManager.NumShapes})", this);
             }
         }
-   
+
+        public DraggableTetromino SpawnTetromino(TetrominoShape shape)
+        {
+            // find the spawner for the tetromino shape
+            if (!_tetrominoSpawners.TryGetValue(shape, out TetrominoSpawner? spawner)) {
+                throw new InvalidOperationException($"No spawner found for tetromino shape {shape}");
+            }
+            return spawner.SpawnTetromino();
+        }
+
+
         public void RegisterListener(ITetrominoSpawnerListener listener)
         {
             foreach (var spawner in _tetrominoSpawners.Values) {

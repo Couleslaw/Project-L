@@ -2,12 +2,18 @@
 
 namespace ProjectL.UI.GameScene.Zones.PlayerZone
 {
+    using ProjectLCore.GameActions;
+    using ProjectLCore.GamePieces;
+    using System.Threading;
+    using System.Threading.Tasks;
     using UnityEngine;
 
     public class PlayerRowSlot : MonoBehaviour
     {
         [SerializeField] private InteractivePuzzle? puzzleCard;
         [SerializeField] private GameObject? emptySlot;
+
+        public uint? CurrentPuzzleId => puzzleCard != null ? puzzleCard.CurrentPuzzleId : null;
 
         private void Awake()
         {
@@ -44,6 +50,14 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
                 return;
             }
             puzzleCard.MakeInteractive(current);
+        }
+
+        public Vector2 GetPlacementPositionFor(BinaryImage placement)
+        {
+            if (puzzleCard != null) {
+                return puzzleCard.GetPlacementCenter(placement);
+            }
+            return default;
         }
     }
 }

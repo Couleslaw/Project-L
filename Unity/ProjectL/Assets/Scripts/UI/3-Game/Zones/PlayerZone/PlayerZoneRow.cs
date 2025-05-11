@@ -2,8 +2,11 @@
 
 namespace ProjectL.UI.GameScene.Zones.PlayerZone
 {
+    using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
+    using System.Threading;
+    using System.Threading.Tasks;
     using TMPro;
     using UnityEngine;
 
@@ -39,11 +42,11 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
                 puzzlesContainer![index].PlacePuzzle(grPuzzle);
             }
             else {
-                Debug.LogError($"Puzzle {puzzle} is not a PuzzleWithGraphics.");
+                Debug.LogError($"Puzzle {puzzle} is not a {nameof(PuzzleWithGraphics)}.");
             }
         }
 
-        public void SetAsCurrentPlayer(bool current) 
+        public void SetAsCurrentPlayer(bool current)
         {
             // make name white / gray
             if (playerNameLabel != null) {
@@ -54,6 +57,11 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             if (puzzlesContainer != null) {
                 puzzlesContainer.SetAsCurrentPlayer(current);
             }
+        }
+
+        public Vector2 GetPlacementPositionFor(PlaceTetrominoAction action)
+        {
+            return puzzlesContainer!.GetPlacementPositionFor(action);
         }
     }
 }

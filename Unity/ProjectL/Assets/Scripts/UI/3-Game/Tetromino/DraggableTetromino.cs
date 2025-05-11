@@ -1,12 +1,19 @@
 #nullable enable
 
+using ProjectL.Data;
 using ProjectL.Management;
 using ProjectL.UI.GameScene;
+using ProjectLCore.GameActions;
+using ProjectLCore.GameManagers;
 using ProjectLCore.GamePieces;
 using System;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 [RequireComponent(typeof(RectTransform))]
 [RequireComponent(typeof(Rigidbody2D))]
@@ -17,6 +24,7 @@ public class DraggableTetromino : MonoBehaviour, IPlaceActionCanceledListener, I
     #region Constants
 
     private const float _rotationSpeed = 30; // degrees per 1 mouse wheel move
+    private const float _animationSpeed = 5f; // units per second
 
     #endregion
 
@@ -48,6 +56,8 @@ public class DraggableTetromino : MonoBehaviour, IPlaceActionCanceledListener, I
 
     private bool _isOverPuzzleRow = false;
 
+    private bool _isAnimating = false;
+
     private Action? _onDiscard;
 
     #endregion
@@ -71,6 +81,47 @@ public class DraggableTetromino : MonoBehaviour, IPlaceActionCanceledListener, I
         _onDiscard = onDiscard;
         ActionCreationManager.Instance.AddListener((IPlaceActionCanceledListener)this);
         ActionCreationManager.Instance.AddListener((IPlaceActionConfirmedListener)this);
+    }
+
+    public async Task AnimateAIPlayerPlaceActionAsync(Vector2 goalPosition, PlaceTetrominoAction action, CancellationToken cancellationToken = default)
+    {
+        _isAnimating = true;
+        // rotate and flip the tetromino to match the placement
+        var transformation = GetTransformation(TetrominoManager.GetImageOf(Shape), action.Position);
+        if (transformation.Item1) {
+            transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+        }
+        transform.rotation = Quaternion.Euler(0f, 0f, transformation.Item2);
+
+        // move to the goal position
+        Vector2 currentPos = transform.position;
+
+        while (!cancellationToken.IsCancellationRequested) {
+            float delta = Time.fixedDeltaTime * _animationSpeed * AnimationSpeed.Multiplier;
+            currentPos = Vector2.MoveTowards(currentPos, goalPosition, delta);
+            SetPosition(currentPos);
+            if (Vector2.Distance(currentPos, goalPosition) < 0.1f) {
+                SetPosition(goalPosition);
+                break;
+            }
+            await Awaitable.FixedUpdateAsync();
+        }
+
+        // returns [shouldFlip], angle
+        static (bool, float) GetTransformation(BinaryImage start, BinaryImage goal)
+        {
+            goal = goal.MoveImageToTopLeftCorner();
+            for (int flip = 0; flip <= 1; flip++) {
+                for (int rotate = 0; rotate <= 3; rotate++) {
+                    if (start.MoveImageToTopLeftCorner() == goal) {
+                        return (flip == 1, rotate * 90);
+                    }
+                    start = start.RotateLeft();
+                }
+                start = start.FlipVertically();
+            }
+            return (false, 0);
+        }
     }
 
     public void StartDragging()
@@ -107,7 +158,6 @@ public class DraggableTetromino : MonoBehaviour, IPlaceActionCanceledListener, I
         float angle = transform.rotation.eulerAngles.z;
         angle = Mathf.Round(angle / 90f) * 90f;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
-
     }
 
     public void StopDragging()
@@ -128,17 +178,22 @@ public class DraggableTetromino : MonoBehaviour, IPlaceActionCanceledListener, I
         _spriteRenderer!.sortingOrder = _placedTetrominoSortingOrder; // Set the sorting order to placed
         _rb!.bodyType = RigidbodyType2D.Static;
 
-        // set rotation to the closes mutliple of 90 degrees
+        // set rotation to the closes multiple of 90 degrees
         float angle = transform.rotation.eulerAngles.z;
         angle = Mathf.Round(angle / 90f) * 90f;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
 
+        SetPosition(center);
+    }
+
+    public void SetPosition(Vector3 center)
+    {
         Vector2 offset = Vector2.Scale(_rt!.sizeDelta, (0.5f * Vector2.one - _rt.pivot));
         offset = Vector2.Scale(offset, (Vector2)transform.localScale);
-        transform.position = center + (Vector3)Rotate(offset, angle);
+        Vector2 correctedCenter = center + (Vector3)RotateVector(offset, transform.rotation.eulerAngles.z);
+        _rt!.position = correctedCenter;
 
-
-        static Vector2 Rotate(Vector2 v, float degrees)
+        static Vector2 RotateVector(Vector2 v, float degrees)
         {
             float delta = Mathf.Deg2Rad * degrees;
             return new Vector2(
@@ -285,8 +340,16 @@ public class DraggableTetromino : MonoBehaviour, IPlaceActionCanceledListener, I
             return; // don't do anything if the tetromino is placed
         }
 
-        if (_isDragging) {
+        if (_isDragging || _isAnimating) {
             transform.localScale = TetrominoSizeManager.GetScaleFor(transform);
+        }
+
+        if (_isAnimating) {
+            if (SelectedTetromino != this) {
+                SelectedTetromino = this;
+                gameObject.layer = _selectedTetrominoLayer;
+            }
+            return;
         }
 
         // --- Layer Management ---
@@ -318,6 +381,8 @@ public class DraggableTetromino : MonoBehaviour, IPlaceActionCanceledListener, I
     public void OnActionCanceled() => Destroy(gameObject);
 
     public void OnActionConfirmed() => Destroy(gameObject);
+
+    public void Discard() => Destroy(gameObject);
 
     #endregion
 }

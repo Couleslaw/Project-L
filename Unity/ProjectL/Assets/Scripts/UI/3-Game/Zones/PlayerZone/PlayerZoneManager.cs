@@ -6,12 +6,17 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
     using UnityEngine;
     using ProjectLCore.Players;
     using ProjectLCore.GameLogic;
+    using System.Threading.Tasks;
+    using ProjectLCore.GameActions;
+    using System.Threading;
 
     public class PlayerZoneManager : GraphicsManager<PlayerZoneManager>, ICurrentPlayerListener
     {
         [SerializeField] private PlayerZoneRow? _playerZoneRowPrefab;
 
         private Dictionary<Player, PlayerZoneRow> _playerZoneRows = new();
+
+        private Player? _currentPlayer;
 
         public override void Init(GameCore game)
         {
@@ -32,10 +37,22 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
         public void OnCurrentPlayerChanged(Player currentPlayer)
         {
+            _currentPlayer = currentPlayer;
             foreach (var kvp in _playerZoneRows) {
                 var playerZoneRow = kvp.Value;
                 playerZoneRow.SetAsCurrentPlayer(kvp.Key == currentPlayer);
             }
+        }
+
+        public Vector2 GetPlacementPositionFor(PlaceTetrominoAction action)
+        {
+            if (_currentPlayer == null) {
+                Debug.LogError("Current player is not set!", this);
+                return default;
+            }
+
+            var playerZoneRow = _playerZoneRows[_currentPlayer];
+            return playerZoneRow.GetPlacementPositionFor(action);
         }
     }
 }

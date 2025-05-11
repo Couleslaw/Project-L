@@ -47,7 +47,7 @@ namespace ProjectL.UI.FinalResults
 
         #region Properties
 
-        public static float AnimationDelay => _defaultAnimationDelay * AnimationSpeed.Multiplier;
+        public static float AnimationDelay => _defaultAnimationDelay * AnimationSpeed.DelayMultiplier;
 
         #endregion
 

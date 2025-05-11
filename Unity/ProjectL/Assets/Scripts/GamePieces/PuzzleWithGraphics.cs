@@ -1,15 +1,22 @@
 ﻿using ProjectL.Data;
 using ProjectLCore.GamePieces;
+using System;
 using System.Linq;
 using UnityEngine;
 
 #nullable enable
+
+public interface IPuzzleListener
+{
+    void OnTetrominoPlaced(TetrominoShape tetromino, BinaryImage position);
+}
 
 /// <summary>
 /// Represents a puzzle in the game.
 /// </summary>
 public class PuzzleWithGraphics : Puzzle
 {
+
     #region Constructors
 
     /// <summary>
@@ -28,6 +35,8 @@ public class PuzzleWithGraphics : Puzzle
 
     #endregion
 
+    private event Action<TetrominoShape, BinaryImage>? TetrominoPlaced;
+
     #region Properties
 
     /// <summary>
@@ -39,6 +48,16 @@ public class PuzzleWithGraphics : Puzzle
     #endregion
 
     #region Methods
+
+    public void AddListener(IPuzzleListener listener)
+    {
+        TetrominoPlaced += listener.OnTetrominoPlaced;
+    }
+
+    public void RemoveListener(IPuzzleListener listener)
+    {
+        TetrominoPlaced -= listener.OnTetrominoPlaced;
+    }
 
     public bool TryGetSprite(out Sprite? sprite)
     {
@@ -54,6 +73,7 @@ public class PuzzleWithGraphics : Puzzle
     {
         base.AddTetromino(tetromino, position);
         ColorImage = ColorImage.AddImage((ColorImage.Color)tetromino, position);
+        TetrominoPlaced?.Invoke(tetromino, position);
     }
 
     public override void RemoveTetromino(TetrominoShape tetromino, BinaryImage position)

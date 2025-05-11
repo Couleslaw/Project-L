@@ -1,16 +1,19 @@
 #nullable enable
 
+using ProjectLCore.GameActions;
 using ProjectLCore.GameManagers;
 using ProjectLCore.GamePieces;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(RectTransform))]
 [RequireComponent(typeof(Image))]
 [RequireComponent(typeof(GridLayoutGroup))]
-public class InteractivePuzzle : MonoBehaviour
+public class InteractivePuzzle : MonoBehaviour, IPuzzleListener
 {
     #region Fields
 
@@ -25,6 +28,8 @@ public class InteractivePuzzle : MonoBehaviour
     private PuzzleWithGraphics? _temporaryCopy = null;
 
     private Dictionary<DraggableTetromino, BinaryImage> _placedTetrominos = new();
+
+    public uint? CurrentPuzzleId => _logicalPuzzle?.Id;
 
     #endregion
 
@@ -43,14 +48,30 @@ public class InteractivePuzzle : MonoBehaviour
 
     public void SetNewPuzzle(PuzzleWithGraphics logicalPuzzle)
     {
-        _logicalPuzzle = logicalPuzzle;
-        _temporaryCopy = (PuzzleWithGraphics)logicalPuzzle.Clone();
+        if (_puzzleCells == null) {
+            Debug.LogError("Puzzle cells are not initialized.");
+            return;
+        }
 
-        if (!_temporaryCopy.TryGetSprite(out Sprite? sprite)) {
+        // reset cell colors
+        foreach (var cell in _puzzleCells) {
+            cell.ResetColor();
+        }
+
+        // listen to the new puzzle
+        _logicalPuzzle?.RemoveListener(this);
+        logicalPuzzle.AddListener(this);
+
+        // change sprite
+        if (!logicalPuzzle.TryGetSprite(out Sprite? sprite)) {
             Debug.LogError("Failed to get sprite for the puzzle.", this);
             return;
         }
         GetComponent<Image>().sprite = sprite!;
+
+        // remember this puzzle
+        _logicalPuzzle = logicalPuzzle;
+        _temporaryCopy = (PuzzleWithGraphics)logicalPuzzle.Clone();
     }
 
     public static void PlaceTetrominoToPuzzle(DraggableTetromino tetromino)
@@ -64,7 +85,7 @@ public class InteractivePuzzle : MonoBehaviour
         }
 
         if (puzzle!._temporaryCopy!.CanPlaceTetromino(position)) {
-            tetromino.PlaceToPuzzle(puzzle!.GetTetrominoCenter());
+            tetromino.PlaceToPuzzle(puzzle!.GetCollisionCenter());
             puzzle._placedTetrominos.Add(tetromino, position);
             puzzle._temporaryCopy!.AddTetromino(tetromino.Shape, position);
             tetromino.OnStartDragging += puzzle.RemoveTetromino;
@@ -134,6 +155,7 @@ public class InteractivePuzzle : MonoBehaviour
             _puzzleCells[i] = Instantiate(puzzleCellPrefab, transform);
             _puzzleCells[i].OnCollisionStateChanged += TryDrawingTetrominoShadow;
             _puzzleCells[i].gameObject.name = $"PuzzleCell_{1 + i / 5}x{1 + i % 5}";
+            _puzzleCells[i].gameObject.SetActive(true);
         }
 
         // remember this puzzle
@@ -193,6 +215,9 @@ public class InteractivePuzzle : MonoBehaviour
         color.a = 1f;
 
         for (int i = 0; i < _puzzleCells.Length; i++) {
+            if (_logicalPuzzle!.Image[i]) {
+                continue;
+            }
             if (drawShadow && _puzzleCells[i].IsColliding) {
                 _puzzleCells[i].ChangeColorTo(color);
             }
@@ -202,7 +227,7 @@ public class InteractivePuzzle : MonoBehaviour
         }
     }
 
-    private Vector3 GetTetrominoCenter()
+    private Vector3 GetCollisionCenter()
     {
         if (_puzzleCells == null) {
             throw new InvalidOperationException("Puzzle cells are not initialized.");
@@ -217,6 +242,37 @@ public class InteractivePuzzle : MonoBehaviour
             }
         }
         return center / count;
+    }
+
+    public Vector2 GetPlacementCenter(BinaryImage placement)
+    {
+        if (_puzzleCells == null) {
+            throw new InvalidOperationException("Puzzle cells are not initialized.");
+        }
+
+        Vector3 center = Vector3.zero;
+        int count = 0;
+        for (int i = 0; i < _puzzleCells.Length; i++) {
+            if (placement[i]) {
+                center += _puzzleCells[i].transform.position;
+                count++;
+            }
+        }
+        return center / count;
+    }
+
+    void IPuzzleListener.OnTetrominoPlaced(TetrominoShape tetromino, BinaryImage position)
+    {
+        if (_puzzleCells == null) {
+            return;
+        }
+
+        // set color of these cells
+        for (int i = 0; i < _puzzleCells.Length; i++) {
+            if (position[i]) {
+                _puzzleCells[i].ChangeColorTo((ColorImage.Color)tetromino);
+            }
+        }
     }
 
     #endregion

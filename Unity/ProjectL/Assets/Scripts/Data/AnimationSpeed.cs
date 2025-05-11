@@ -16,11 +16,9 @@ namespace ProjectL.Data
         #endregion
 
         #region Properties
+        public static float Multiplier => PlayerPrefs.GetFloat(AnimationSpeedPlayerPrefKey);
 
-        /// <summary>
-        /// Multiplier for the animation speed.
-        /// </summary>
-        public static float Multiplier => 1f / PlayerPrefs.GetFloat(AnimationSpeedPlayerPrefKey);
+        public static float DelayMultiplier => 1f / Multiplier;
 
         #endregion
 
