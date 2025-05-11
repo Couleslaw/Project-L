@@ -163,7 +163,7 @@
 
                     foreach (var placement in GetAllValidPlacements(_puzzle, (TetrominoShape)i)) {
                         var newPuzzleNode = new PuzzleNode(_puzzle | placement.Position, PuzzleId, _numTetrominosLeft, newNumTetrominosOwned, _finishingTouches);
-                        var action = new List<IAction>() { placement };
+                        var action = new List<GameAction>() { placement };
                         yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, action);
                     }
                     continue;
@@ -185,7 +185,7 @@
 
                     foreach (var placement in GetAllValidPlacements(_puzzle, (TetrominoShape)i)) {
                         var newPuzzleNode = new PuzzleNode(_puzzle | placement.Position, PuzzleId, newNumTetrominosLeft, _numTetrominosOwned, _finishingTouches);
-                        var actions = new List<IAction>() { new TakeBasicTetrominoAction(), placement };
+                        var actions = new List<GameAction>() { new TakeBasicTetrominoAction(), placement };
                         yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, actions);
                     }
                     continue;
@@ -210,7 +210,7 @@
 
                 foreach (var placement in GetAllValidPlacements(_puzzle, (TetrominoShape)i)) {
                     var newPuzzleNode = new PuzzleNode(_puzzle | placement.Position, PuzzleId, newNumTetrominosLeft, _numTetrominosOwned, _finishingTouches);
-                    yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, new List<IAction>(upgradePath) { placement });
+                    yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, new List<GameAction>(upgradePath) { placement });
                 }
             }
         }

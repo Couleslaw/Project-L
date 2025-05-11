@@ -3,17 +3,19 @@
     using ProjectLCore.GameActions.Verification;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
-    using System.Text;
-    using System.IO;
     using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
-    /// Represents an action that a player can take during their turn. Together with <see cref="IActionProcessor" /> it implements the visitor pattern.
+    /// Represents an action that a player can take during their turn. Together with <see cref="ActionProcessorBase" /> it implements the visitor pattern.
     /// The validity of every action should be checked by an <see cref="ActionVerifier" /> before being processed.
     /// </summary>
-    /// <seealso cref="IActionProcessor" />
+    /// <seealso cref="ActionProcessorBase" />
     /// <seealso cref="ActionVerifier" />
-    public interface IAction
+    public abstract class GameAction
     {
         #region Methods
 
@@ -21,7 +23,21 @@
         /// Accepts the specified visitor by calling the appropriate method.
         /// </summary>
         /// <param name="visitor">The visitor to accept.</param>
-        public void Accept(IActionProcessor visitor);
+        public void Accept(ActionProcessorBase visitor)
+        {
+            visitor.ProcessAction(this);
+        }
+
+        /// <summary>
+        /// Asynchronously accepts the specified visitor by calling the appropriate method.
+        /// </summary>
+        /// <param name="visitor">The visitor to accept.</param>
+        /// <param name="cancellationToken">Cancellation token to observe while waiting for the task to complete.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        public async Task AcceptAsync(AsyncActionProcessorBase visitor, CancellationToken cancellationToken = default)
+        {
+            await visitor.ProcessActionAsync(this, cancellationToken).ConfigureAwait(false);
+        }
 
         #endregion
     }
@@ -29,8 +45,8 @@
     /// <summary>
     /// Last resort action for AI players, they should never actually need to use it. It will always be accepted unless the game phase is <see cref="GamePhase.FinishingTouches"/>.
     /// </summary>
-    /// <seealso cref="IAction" />
-    public class DoNothingAction : IAction
+    /// <seealso cref="GameAction" />
+    public class DoNothingAction : GameAction
     {
         #region Methods
 
@@ -38,37 +54,20 @@
         /// <returns> A <see cref="System.String" /> that represents this instance.  </returns>
         public override string ToString() => $"{nameof(DoNothingAction)}";
 
-        /// <summary>
-        /// Does nothing, but implements the visitor pattern.
-        /// </summary>
-        /// <param name="visitor">The visitor to accept.</param>
-        public void Accept(IActionProcessor visitor)
-        {
-        }
-
         #endregion
     }
 
     /// <summary>
     /// Represents the action of ending a player's turn during <see cref="GamePhase.FinishingTouches"/>
     /// </summary>
-    /// <seealso cref="IAction" />
-    public class EndFinishingTouchesAction : IAction
+    /// <seealso cref="GameAction" />
+    public class EndFinishingTouchesAction : GameAction
     {
         #region Methods
 
         /// <summary>  Converts to string. States that this is a <see cref="EndFinishingTouchesAction"/>.</summary>
         /// <returns> A <see cref="System.String" /> that represents this instance.  </returns>
         public override string ToString() => $"{nameof(EndFinishingTouchesAction)}";
-
-        /// <summary>
-        /// Accepts the specified visitor by calling <see cref="IActionProcessor.ProcessEndFinishingTouchesAction"/>.
-        /// </summary>
-        /// <param name="visitor">The visitor to accept.</param>
-        public void Accept(IActionProcessor visitor)
-        {
-            visitor.ProcessEndFinishingTouchesAction(this);
-        }
 
         #endregion
     }
@@ -77,8 +76,8 @@
     /// Represents the action of taking a puzzle.
     /// Players can take puzzles from the top of the white deck, top of the black deck or a specific puzzle in one of the rows.
     /// </summary>
-    /// <seealso cref="IAction" />
-    public class TakePuzzleAction : IAction
+    /// <seealso cref="GameAction" />
+    public class TakePuzzleAction : GameAction
     {
         #region Constructors
 
@@ -142,15 +141,6 @@
             return $"{nameof(TakePuzzleAction)}: {action}";
         }
 
-        /// <summary>
-        /// Accepts the specified visitor by calling <see cref="IActionProcessor.ProcessTakePuzzleAction"/>.
-        /// </summary>
-        /// <param name="visitor">The visitor to accept.</param>
-        public void Accept(IActionProcessor visitor)
-        {
-            visitor.ProcessTakePuzzleAction(this);
-        }
-
         #endregion
     }
 
@@ -158,8 +148,8 @@
     /// Represents the action of recycling puzzles.
     /// The player chooses a row to recycle. The puzzles from the row will be put to the bottom of the deck in the order specified by the player. The puzzle row is then refilled.
     /// </summary>
-    /// <seealso cref="IAction" />
-    public class RecycleAction : IAction
+    /// <seealso cref="GameAction" />
+    public class RecycleAction : GameAction
     {
         #region Constructors
 
@@ -217,36 +207,21 @@
             return $"{nameof(RecycleAction)}: Recycle {color} row in order: {orderString}";
         }
 
-        /// <summary>
-        /// Accepts the specified visitor by calling <see cref="IActionProcessor.ProcessRecycleAction"/>.
-        /// </summary>
-        /// <param name="visitor">The visitor to accept.</param>
-        public void Accept(IActionProcessor visitor)
-        {
-            visitor.ProcessRecycleAction(this);
-        }
-
         #endregion
     }
 
     /// <summary>
     /// The base class for <see cref="TakeBasicTetrominoAction"/> and <see cref="ChangeTetrominoAction"/> because they are technically the same action, just with different parameters.
     /// </summary>
-    /// <seealso cref="IAction" />
-    public abstract class TetrominoAction : IAction
+    /// <seealso cref="GameAction" />
+    public abstract class TetrominoAction : GameAction
     {
-        #region Methods
-
-        /// <inheritdoc/>
-        public abstract void Accept(IActionProcessor visitor);
-
-        #endregion
     }
 
     /// <summary>
     /// Represents the action of taking a <see cref="TetrominoShape.O1"/> tetromino from the shared reserve.
     /// </summary>
-    /// <seealso cref="IAction" />
+    /// <seealso cref="GameAction" />
     public class TakeBasicTetrominoAction : TetrominoAction
     {
         #region Methods
@@ -255,22 +230,13 @@
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString() => $"{nameof(TakeBasicTetrominoAction)}";
 
-        /// <summary>
-        /// Accepts the specified visitor by calling <see cref="IActionProcessor.ProcessTakeBasicTetrominoAction"/>.
-        /// </summary>
-        /// <param name="visitor">The visitor to accept.</param>
-        public override void Accept(IActionProcessor visitor)
-        {
-            visitor.ProcessTakeBasicTetrominoAction(this);
-        }
-
         #endregion
     }
 
     /// <summary>
     /// Represents the action of changing a tetromino for a different one.
     /// </summary>
-    /// <seealso cref="IAction"/>
+    /// <seealso cref="GameAction"/>
     public class ChangeTetrominoAction : TetrominoAction
     {
         #region Constructors
@@ -308,23 +274,14 @@
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString() => $"{nameof(ChangeTetrominoAction)}: {OldTetromino}  --->  {NewTetromino}";
 
-        /// <summary>
-        /// Accepts the specified visitor by calling <see cref="IActionProcessor.ProcessChangeTetrominoAction"/>.
-        /// </summary>
-        /// <param name="visitor">The visitor to accept.</param>
-        public override void Accept(IActionProcessor visitor)
-        {
-            visitor.ProcessChangeTetrominoAction(this);
-        }
-
         #endregion
     }
 
     /// <summary>
     /// Represents the action of placing a tetromino on a puzzle.
     /// </summary>
-    /// <seealso cref="IAction" />
-    public class PlaceTetrominoAction : IAction
+    /// <seealso cref="GameAction" />
+    public class PlaceTetrominoAction : GameAction
     {
         #region Constructors
 
@@ -383,23 +340,14 @@
             return action.ToString();
         }
 
-        /// <summary>
-        /// Accepts the specified visitor by calling <see cref="IActionProcessor.ProcessPlaceTetrominoAction"/>.
-        /// </summary>
-        /// <param name="visitor">The visitor to accept.</param>
-        public void Accept(IActionProcessor visitor)
-        {
-            visitor.ProcessPlaceTetrominoAction(this);
-        }
-
         #endregion
     }
 
     /// <summary>
     /// Represents the use of the Master Action.
     /// </summary>
-    /// <seealso cref="IAction" />
-    public class MasterAction : IAction
+    /// <seealso cref="GameAction" />
+    public class MasterAction : GameAction
     {
         #region Constructors
 
@@ -434,15 +382,6 @@
                 action += $"{i + 1}. " + TetrominoPlacements[i].ToString();
             }
             return action;
-        }
-
-        /// <summary>
-        /// Accepts the specified visitor by calling <see cref="IActionProcessor.ProcessMasterAction"/>.
-        /// </summary>
-        /// <param name="visitor">The visitor to accept.</param>
-        public void Accept(IActionProcessor visitor)
-        {
-            visitor.ProcessMasterAction(this);
         }
 
         #endregion

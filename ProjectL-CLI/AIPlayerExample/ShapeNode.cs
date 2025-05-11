@@ -67,7 +67,7 @@
                 newNumTetrominosLeft[(int)newShape]--;
                 newNumTetrominosLeft[(int)_shape]++;
                 var newShapeNode = new ShapeNode(newShape, newNumTetrominosLeft);
-                var action = new List<IAction>() { new ChangeTetrominoAction(_shape, newShape) };
+                var action = new List<GameAction>() { new ChangeTetrominoAction(_shape, newShape) };
                 yield return new ActionEdge<ShapeNode>(this, newShapeNode, action);
             }
         }

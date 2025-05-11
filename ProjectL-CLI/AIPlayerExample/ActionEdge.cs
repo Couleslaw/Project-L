@@ -4,7 +4,7 @@
     using System.Collections.Generic;
 
     /// <summary>
-    /// Represents transition between two states using a sequence of <see cref="IAction"/> actions.
+    /// Represents transition between two states using a sequence of <see cref="GameAction"/> actions.
     /// </summary>
     internal class ActionEdge<T> : IEdge<T> where T : INode<T>
     {
@@ -12,7 +12,7 @@
         /// <param name="from">The original state.</param>
         /// <param name="to">The new state.</param>
         /// <param name="actions">The actions needed to get from <paramref name="from"/> to <paramref name="to"/>.</param>
-        public ActionEdge(T from, T to, IReadOnlyList<IAction> actions)
+        public ActionEdge(T from, T to, IReadOnlyList<GameAction> actions)
         {
             From = from;
             To = to;
@@ -38,7 +38,7 @@
         /// <summary>
         /// The actions needed to get from <see cref="From"/> to <see cref="To"/>.
         /// </summary>
-        public IReadOnlyList<IAction> Action { get; }
+        public IReadOnlyList<GameAction> Action { get; }
 
         #endregion
     }

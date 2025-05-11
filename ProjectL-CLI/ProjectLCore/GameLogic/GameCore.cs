@@ -285,7 +285,7 @@ namespace ProjectLCore.GameLogic
         /// Doesn't check if the action is valid. Use an <see cref="ActionVerifier"/> to check if the action is valid before calling this function.
         /// </summary>
         /// <param name="action">The action.</param>
-        public void ProcessAction(IAction action)
+        public void ProcessAction(GameAction action)
         {
             action.Accept(_actionProcessors[CurrentPlayer]);
         }

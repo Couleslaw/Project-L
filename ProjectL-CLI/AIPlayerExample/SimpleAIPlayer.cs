@@ -22,10 +22,10 @@
         private Puzzle? _currentPuzzle;
 
         /// <summary>The strategy to solve <see cref="_currentPuzzle"/>.</summary>
-        private Queue<IAction> _currentStrategy = new();
+        private Queue<GameAction> _currentStrategy = new();
 
         /// <summary>The strategy for the <see cref="GamePhase.FinishingTouches"/> game phase.</summary>
-        private Queue<IAction>? _finishingTouchesStrategy = null;
+        private Queue<GameAction>? _finishingTouchesStrategy = null;
 
         #endregion
 
@@ -67,7 +67,7 @@
         /// The action the player wants to take.
         /// </returns>
         /// <exception cref="System.InvalidOperationException">Invalid game phase</exception>
-        protected override IAction GetAction(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, List<PlayerState.PlayerInfo> enemyInfos, TurnInfo turnInfo, ActionVerifier verifier)
+        protected override GameAction GetAction(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, List<PlayerState.PlayerInfo> enemyInfos, TurnInfo turnInfo, ActionVerifier verifier)
         {
             // get an unfinished puzzle if there is one
             _currentPuzzle = myInfo.UnfinishedPuzzles.Length == 0 ? null : myInfo.UnfinishedPuzzles[0];
@@ -98,7 +98,7 @@
 
                     // if we don't have a puzzle --> don't take a new one (negative points)
                     // try to get more tetrominos (in case tie the player with more tetrominos leftover wins)
-                    IAction? action = GetValidTetrominoAction(gameInfo, myInfo);
+                    GameAction? action = GetValidTetrominoAction(gameInfo, myInfo);
                     if (action != null)
                         return action;
 
@@ -123,7 +123,7 @@
                         if (solution is null) {
                             return new EndFinishingTouchesAction();
                         }
-                        _finishingTouchesStrategy = new Queue<IAction>(solution);
+                        _finishingTouchesStrategy = new Queue<GameAction>(solution);
                     }
 
                     // proceed with the strategy
@@ -193,7 +193,7 @@
         ///     <item><c>(null, -1)</c> if the puzzle can't be solved using the available resources.</item>
         ///   </list>
         /// </returns>
-        private static Tuple<List<IAction>?, int> SolvePuzzleWithIDAStar(Puzzle puzzle, IReadOnlyList<int> numTetrominosLeft, IReadOnlyList<int> numTetrominosOwned, int maxDepth = -1, bool finishingTouches = false)
+        private static Tuple<List<GameAction>?, int> SolvePuzzleWithIDAStar(Puzzle puzzle, IReadOnlyList<int> numTetrominosLeft, IReadOnlyList<int> numTetrominosOwned, int maxDepth = -1, bool finishingTouches = false)
         {
             var solution = IDAStar.IterativeDeepeningAStar(
                 new PuzzleNode(puzzle.Image, puzzle.Id, numTetrominosLeft, numTetrominosOwned, finishingTouches),
@@ -205,7 +205,7 @@
                 return new(null, solution.Item2);
             }
 
-            var path = new List<IAction>();
+            var path = new List<GameAction>();
             foreach (ActionEdge<PuzzleNode> edge in solution.Item1.Cast<ActionEdge<PuzzleNode>>()) {
                 path.AddRange(edge.Action);
             }
@@ -221,7 +221,7 @@
         /// <param name="maxDepth">The maximum depth for IDA*.</param>
         /// <param name="levelSumToConsiderBlackPuzzles">If the sum of the levels of the tetrominos owned by the player is less than this number then only white puzzles are considered.</param>
         /// <returns>The puzzle to solve and a solution, or <see langword="null"/> if no puzzle can be solved.</returns>
-        private static Tuple<Puzzle, List<IAction>>? ChoosePuzzle(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, int maxDepth = -1, int levelSumToConsiderBlackPuzzles = 15)
+        private static Tuple<Puzzle, List<GameAction>>? ChoosePuzzle(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, int maxDepth = -1, int levelSumToConsiderBlackPuzzles = 15)
         {
             List<Puzzle> possiblePuzzles = new();
 
@@ -287,9 +287,9 @@
         ///     <item>A strategy to (take) and solve the next puzzle otherwise.</item>
         ///   </list>
         /// </returns>
-        private Queue<IAction> GetStrategy(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, int maxDepth = -1)
+        private Queue<GameAction> GetStrategy(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, int maxDepth = -1)
         {
-            var strategy = new Queue<IAction>();
+            var strategy = new Queue<GameAction>();
 
             // if we already have a puzzle to solve
             if (_currentPuzzle is not null) {
@@ -327,7 +327,7 @@
         private readonly struct PuzzleSolutionInfo
         {
             #region Constructors
-            public PuzzleSolutionInfo(Puzzle puzzle, List<IAction> solution, int numSteps)
+            public PuzzleSolutionInfo(Puzzle puzzle, List<GameAction> solution, int numSteps)
             {
                 Puzzle = puzzle;
                 Solution = solution;
@@ -340,7 +340,7 @@
 
             public Puzzle Puzzle { get; }
 
-            public List<IAction> Solution { get; }
+            public List<GameAction> Solution { get; }
 
             public int NumSteps { get; }
 

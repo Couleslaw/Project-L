@@ -5,7 +5,7 @@
     using System;
 
     /// <summary>
-    /// Represents the result of a verification of a <see cref="IAction"/> by a <see cref="ActionVerifier"/>.
+    /// Represents the result of a verification of a <see cref="GameAction"/> by a <see cref="ActionVerifier"/>.
     /// </summary>
     /// <seealso cref="VerificationSuccess"/>
     /// <seealso cref="VerificationFailure"/>
@@ -14,7 +14,7 @@
     }
 
     /// <summary>
-    /// Represents a successful verification of a <see cref="IAction"/> by a <see cref="ActionVerifier"/>.
+    /// Represents a successful verification of a <see cref="GameAction"/> by a <see cref="ActionVerifier"/>.
     /// </summary>
     /// <seealso cref="VerificationResult" />
     /// <seealso cref="VerificationFailure" />
@@ -23,7 +23,7 @@
     }
 
     /// <summary>
-    /// Represents a failed verification of a <see cref="IAction"/> by a <see cref="ActionVerifier"/>.
+    /// Represents a failed verification of a <see cref="GameAction"/> by a <see cref="ActionVerifier"/>.
     /// Derived classes should provide a description of the failure in the <see cref="Message"/> property.
     /// </summary>
     /// <seealso cref="VerificationResult" />

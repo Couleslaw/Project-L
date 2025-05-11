@@ -10,7 +10,7 @@
     /// <summary>
     /// Verifies the validity of actions made by a player in the context of the current game state.
     /// </summary>
-    /// <seealso cref="IAction"/>
+    /// <seealso cref="GameAction"/>
     /// <seealso cref="VerificationResult"/>
     /// <seealso cref="GameActionProcessor"/>
     public class ActionVerifier
@@ -44,13 +44,13 @@
 
         #region Methods
 
-        /// <summary> Verifies the given <see cref="IAction"/>. </summary>
+        /// <summary> Verifies the given <see cref="GameAction"/>. </summary>
         /// <param name="action">The action to verify.</param>
         /// <returns>The result of the verification. 
         /// <see cref="VerificationSuccess"/> if the action is valid. 
         /// In case the action is invalid, returns a <see cref="VerificationFailure"/> describing the first issue encountered.
         /// </returns>
-        public VerificationResult Verify(IAction action)
+        public VerificationResult Verify(GameAction action)
         {
             // if FinishingTouches --> only EndFinishingTouchesAction and PlaceAction are allowed
             if (_turnInfo.GamePhase == GamePhase.FinishingTouches) {

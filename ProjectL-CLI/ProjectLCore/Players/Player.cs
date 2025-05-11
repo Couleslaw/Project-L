@@ -56,7 +56,7 @@ namespace ProjectLCore.Players
         /// <param name="verifier">Verifier for verifying the validity of actions in the current game context.</param>
         /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
         /// <returns>The action the player wants to take.</returns>
-        public abstract Task<IAction> GetActionAsync(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, TurnInfo turnInfo, ActionVerifier verifier, CancellationToken cancellationToken = default);
+        public abstract Task<GameAction> GetActionAsync(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, TurnInfo turnInfo, ActionVerifier verifier, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Asynchronously gets the shape the player wants as a reward for completing a puzzle.

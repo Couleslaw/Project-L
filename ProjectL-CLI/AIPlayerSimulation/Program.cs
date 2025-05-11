@@ -109,7 +109,7 @@
                 PrintGameScreen(gameInfo, playerInfos, game);
 
                 // get action from player
-                IAction? action;
+                GameAction? action;
                 try {
                     action = game.CurrentPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier).Result;
                 }
@@ -264,7 +264,7 @@
             }
         }
 
-        internal static void PrintPlayerProvidedInvalidAction(IAction action, VerificationFailure fail, Player player)
+        internal static void PrintPlayerProvidedInvalidAction(GameAction action, VerificationFailure fail, Player player)
         {
             Console.WriteLine($"{player.Name} provided an invalid {action.GetType()}. Verification result:\n{fail.GetType()}: {fail.Message}\n");
             Console.WriteLine("Skipping action...");
@@ -277,7 +277,7 @@
             }
         }
 
-        internal static void PrintPlayerProvidedValidAction(IAction action, Player player)
+        internal static void PrintPlayerProvidedValidAction(GameAction action, Player player)
         {
             Console.WriteLine($"{player.Name} used a {action}\n");
             if (IsInteractive) {

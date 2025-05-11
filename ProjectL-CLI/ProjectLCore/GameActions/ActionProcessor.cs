@@ -9,70 +9,14 @@
     using System.Collections.Generic;
 
     /// <summary>
-    /// An interface for processing actions using the visitor pattern.
-    /// Each action should be verified by an <see cref="ActionVerifier"/> before being processed.
-    /// </summary>
-    /// <seealso cref="IAction"/>
-    /// <seealso cref="ActionVerifier"/>
-    /// <seealso cref="GameActionProcessor"/>
-    public interface IActionProcessor
-    {
-        #region Methods
-
-        /// <summary>
-        /// Processes the given <see cref="EndFinishingTouchesAction"/>.
-        /// </summary>
-        /// <param name="action">The action to process.</param>
-        public void ProcessEndFinishingTouchesAction(EndFinishingTouchesAction action);
-
-        /// <summary>
-        /// Processes the given <see cref="TakePuzzleAction"/>.
-        /// </summary>
-        /// <param name="action">The action to process.</param>
-        public void ProcessTakePuzzleAction(TakePuzzleAction action);
-
-        /// <summary>
-        /// Processes the given <see cref="RecycleAction"/>.
-        /// </summary>
-        /// <param name="action">The action to process.</param>
-        public void ProcessRecycleAction(RecycleAction action);
-
-        /// <summary>
-        /// Processes the given <see cref="TakeBasicTetrominoAction"/>.
-        /// </summary>
-        /// <param name="action">The action to process.</param>
-        public void ProcessTakeBasicTetrominoAction(TakeBasicTetrominoAction action);
-
-        /// <summary>
-        /// Processes the given <see cref="ChangeTetrominoAction"/>.
-        /// </summary>
-        /// <param name="action">The action to process.</param>
-        public void ProcessChangeTetrominoAction(ChangeTetrominoAction action);
-
-        /// <summary>
-        /// Processes the given <see cref="PlaceTetrominoAction"/>.
-        /// </summary>
-        /// <param name="action">The action to process.</param>
-        public void ProcessPlaceTetrominoAction(PlaceTetrominoAction action);
-
-        /// <summary>
-        /// Processes the given <see cref="MasterAction"/>.
-        /// </summary>
-        /// <param name="action">The action to process.</param>
-        public void ProcessMasterAction(MasterAction action);
-
-        #endregion
-    }
-
-    /// <summary>
     /// Processes actions of one player in the game.
     /// The class is responsible for updating the game state based on the player's actions.
     /// It isn't responsible for verifying the actions. The actions should be verified by an <see cref="ActionVerifier"/> before being processed.
     /// </summary>
     /// <seealso cref="ActionVerifier"/>
-    /// <seealso cref="IAction"/>
-    /// <seealso cref="IActionProcessor" />
-    public class GameActionProcessor : IActionProcessor
+    /// <seealso cref="GameAction"/>
+    /// <seealso cref="ActionProcessorBase" />
+    public class GameActionProcessor : ActionProcessorBase
     {
         #region Fields
 
@@ -120,10 +64,18 @@
         #region Methods
 
         /// <summary>
+        /// Does nothing.
+        /// </summary>
+        /// <param name="action">The action to process.</param>
+        protected override void ProcessAction(DoNothingAction action)
+        {
+        }
+
+        /// <summary>
         /// Signals <see cref="TurnManager.Signaler.PlayerEndedFinishingTouches"/>.
         /// </summary>
         /// <param name="action">The action to process.</param>
-        public void ProcessEndFinishingTouchesAction(EndFinishingTouchesAction action)
+        protected override void ProcessAction(EndFinishingTouchesAction action)
         {
             _signaler.PlayerEndedFinishingTouches();
         }
@@ -135,7 +87,7 @@
         /// </summary>
         /// <param name="action">The action to be processed.</param>
         /// <exception cref="InvalidOperationException">The specified puzzle was not found.</exception>
-        public void ProcessTakePuzzleAction(TakePuzzleAction action)
+        protected override void ProcessAction(TakePuzzleAction action)
         {
             Puzzle? puzzle = null;
             switch (action.Option) {
@@ -183,7 +135,7 @@
         /// </summary>
         /// <param name="action">The action to process.</param>
         /// <exception cref="System.InvalidOperationException">One of the puzzles specified in the <see cref="RecycleAction.Order"/> of <paramref name="action"/> was not found.</exception>
-        public void ProcessRecycleAction(RecycleAction action)
+        protected override void ProcessAction(RecycleAction action)
         {
             foreach (var id in action.Order) {
                 Puzzle? puzzle = _gameState.GetPuzzleWithId(id);
@@ -200,7 +152,7 @@
         /// Removes a <see cref="TetrominoShape.O1"/> tetromino from the <see cref="GameCore.GameState"/> and adds it to the appropirate <see cref="PlayerState"/>.
         /// </summary>
         /// <param name="action">The action to process.</param>
-        public void ProcessTakeBasicTetrominoAction(TakeBasicTetrominoAction action)
+        protected override void ProcessAction(TakeBasicTetrominoAction action)
         {
             _gameState.RemoveTetromino(TetrominoShape.O1);
             _playerState.AddTetromino(TetrominoShape.O1);
@@ -211,7 +163,7 @@
         /// Then removes the new tetromino from the <see cref="GameCore.GameState"/> and adds it to the <see cref="PlayerState"/>.
         /// </summary>
         /// <param name="action">The action to process.</param>
-        public void ProcessChangeTetrominoAction(ChangeTetrominoAction action)
+        protected override void ProcessAction(ChangeTetrominoAction action)
         {
             // remove old tetromino
             _playerState.RemoveTetromino(action.OldTetromino);
@@ -231,7 +183,7 @@
         ///  If this action completes the puzzle, information about it is added to the <see cref="FinishedPuzzlesQueue"/>.
         /// </remarks>
         /// <exception cref="InvalidOperationException">The player doesn't have the puzzle specified by the action</exception>
-        public void ProcessPlaceTetrominoAction(PlaceTetrominoAction action)
+        protected override void ProcessAction(PlaceTetrominoAction action)
         {
             // add the tetromino to the puzzle
             Puzzle? puzzle = _playerState.GetPuzzleWithId(action.PuzzleId);
@@ -285,12 +237,12 @@
         /// Also signals <see cref="TurnManager.Signaler.PlayerUsedMasterAction()"/>
         /// </summary>
         /// <param name="action">The action to process.</param>
-        public void ProcessMasterAction(MasterAction action)
+        protected override void ProcessAction(MasterAction action)
         {
             _signaler.PlayerUsedMasterAction();
 
             foreach (var placement in action.TetrominoPlacements) {
-                ProcessPlaceTetrominoAction(placement);
+                ProcessAction(placement);
             }
         }
 
