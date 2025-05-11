@@ -80,6 +80,16 @@ namespace ProjectLCore.GameLogic
 
         #region Properties
 
+        /// <summary>
+        /// <see langword="true"/> if <see cref="InitializeGame"/> was called; otherwise <see langword="false"/>.
+        /// </summary>
+        public bool DidInitialize { get; private set; } = false;
+
+        /// <summary>
+        /// <see langword="true"/> if <see cref="FinalizeGame"/> was called; otherwise <see langword="false"/>.
+        /// </summary>
+        public bool DidFinalize { get; private set; } = false;
+
         /// <summary> Information about the current turn. </summary>
         public TurnInfo CurrentTurn { get; private set; }
 
@@ -155,11 +165,18 @@ namespace ProjectLCore.GameLogic
         }
 
         /// <summary>
-        /// Initializes the game by giving every player a <see cref="TetrominoShape.O1"/> and <see cref="TetrominoShape.I2"/> tetromino from the shared reserve.
-        /// And filling the black and white puzzle rows with puzzles from the decks.
+        /// Gives every player a <see cref="TetrominoShape.O1"/> and <see cref="TetrominoShape.I2"/> tetromino from the shared reserve.
+        /// And fills the black and white puzzle rows with puzzles from the decks.
+        /// Throws an exception if this method is called more than once.
         /// </summary>
+        /// <exception cref="InvalidOperationException">Game already finalized</exception>
         public void InitializeGame()
         {
+            if (DidInitialize) {
+                throw new InvalidOperationException("Game already initialized");
+            }
+            DidInitialize = true;
+
             // give all players their initial tetrominos
             foreach (var playerState in PlayerStates.Values) {
                 playerState.AddTetromino(TetrominoShape.O1);
@@ -175,9 +192,16 @@ namespace ProjectLCore.GameLogic
         /// <summary>
         /// Finishes up internal game state and prepares for evaluating the results of the game.
         /// Should be called after <see cref="CurrentGamePhase"/> changes to <see cref="GamePhase.Finished"/>.
+        /// Throws an exception if this method is called more than once.
         /// </summary>
-        public void GameEnded()
+        /// <exception cref="InvalidOperationException">Game already finalized</exception>
+        public void FinalizeGame()
         {
+            if (DidFinalize) {
+                throw new InvalidOperationException("Game already finalized");
+            }
+            DidFinalize = true;
+
             // remove points for unfinished puzzles
             foreach (var playerState in PlayerStates.Values) {
                 foreach (var puzzle in playerState.GetUnfinishedPuzzles()) {
@@ -187,13 +211,14 @@ namespace ProjectLCore.GameLogic
         }
 
         /// <summary>
-        /// Determines the results of the game. <see cref="GameEnded"/> should be called before calling this function.
+        /// Determines the rank of each player based on their score, number of completed puzzles and leftover tetrominos.
+        /// If this method is called before <see cref="FinalizeGame"/>, it will not take into account the points lost for unfinished puzzles.
         /// </summary>
         /// <returns>
-        /// A dictionary containing the result order for each player. Player with order 1 wins. It is possible for multiple players to have the same order.
+        /// A dictionary containing the rank for each player. Player with rank 1 wins. It is possible for multiple players to have the same rank.
         /// </returns>
         /// <seealso cref="PlayerState.CompareTo(PlayerState?)"/>
-        public Dictionary<Player, int> GetFinalResults()
+        public Dictionary<Player, int> GetPlayerRankings()
         {
             // determine the order of players by score, completed puzzles and leftover tetrominos
             // lover index means better position
@@ -232,7 +257,6 @@ namespace ProjectLCore.GameLogic
             }
             // then about turn change
             OnTurnChanged?.Invoke(CurrentTurn);
-            
 
             return CurrentTurn;
         }

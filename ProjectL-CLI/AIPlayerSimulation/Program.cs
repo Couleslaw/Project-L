@@ -91,7 +91,7 @@
                 // check if game ended
                 if (game.CurrentGamePhase == GamePhase.Finished) {
                     Console.WriteLine("Game ended! Clearing the playing board...\n");
-                    game.GameEnded();
+                    game.FinalizeGame();
                     break;
                 }
 
@@ -138,7 +138,7 @@
             }
 
             // print final results
-            var results = game.GetFinalResults();
+            var results = game.GetPlayerRankings();
             PrintGameScreenSeparator();
             PrintFinalResults(results, game);
         }
