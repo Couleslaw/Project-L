@@ -2,6 +2,8 @@
 
 namespace ProjectL.UI.GameScene.Zones.ActionZones
 {
+    using ProjectL.UI.GameScene.Actions;
+    using ProjectLCore.GameLogic;
     using System;
     using UnityEngine;
     using UnityEngine.UI;
@@ -14,6 +16,9 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
         [SerializeField] private ActionButton? _recycleButton;
         [SerializeField] private ActionButton? _takePuzzleButton;
+
+        public void ManuallyPressRecycleButton() => _recycleButton?.ManuallySelectButton();
+        public void ManuallyPressTakePuzzleButton() => _takePuzzleButton?.ManuallySelectButton();
 
         private new void Awake()
         {
@@ -29,6 +34,19 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             );
             _recycleButton.SelectAction += OnRecycleButtonClick;
             _takePuzzleButton.SelectAction += OnTakePuzzleButtonClick;
+        }
+
+        public override void SetPlayerMode(PlayerMode mode)
+        {
+            _recycleButton!.Mode = mode;
+            _takePuzzleButton!.Mode = mode;
+        }
+
+        public override void EnabledButtonsBasedOnGameState(GameState.GameInfo gameInfo, PlayerState.PlayerInfo playerInfo)
+        {
+            bool areThereStillSomePuzzles = gameInfo.AvailableBlackPuzzles.Length > 0 || gameInfo.AvailableWhitePuzzles.Length > 0;
+            _recycleButton!.CanActionBeCreated = areThereStillSomePuzzles;
+            _takePuzzleButton!.CanActionBeCreated = areThereStillSomePuzzles;
         }
     }
 }

@@ -4,7 +4,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 {
     using UnityEngine;
     using ProjectLCore.GameLogic;
-    using ProjectLCore.GameActions;
+    using ProjectL.UI.GameScene.Actions;
 
     public class SharedReserveManager : GraphicsManager<SharedReserveManager>, ITetrominoActionListener
     {

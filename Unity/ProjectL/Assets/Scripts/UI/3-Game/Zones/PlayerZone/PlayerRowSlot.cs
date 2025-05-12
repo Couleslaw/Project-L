@@ -2,62 +2,97 @@
 
 namespace ProjectL.UI.GameScene.Zones.PlayerZone
 {
-    using ProjectLCore.GameActions;
+    using ProjectL.UI.Sound;
     using ProjectLCore.GamePieces;
-    using System.Threading;
-    using System.Threading.Tasks;
+    using System;
     using UnityEngine;
+    using UnityEngine.UI;
 
     public class PlayerRowSlot : MonoBehaviour
     {
-        [SerializeField] private InteractivePuzzle? puzzleCard;
-        [SerializeField] private GameObject? emptySlot;
+        #region Fields
 
-        public uint? CurrentPuzzleId => puzzleCard != null ? puzzleCard.CurrentPuzzleId : null;
+        [SerializeField] private InteractivePuzzle? _puzzleCard;
+        [SerializeField] private Image? _emptySlot;
+        [SerializeField] private Image? _puzzleFrame;
 
-        private void Awake()
-        {
-            if (puzzleCard == null || emptySlot == null) {
-                Debug.LogError("One or more UI components is not assigned!", this);
-                return;
-            }
+        #endregion
 
-            emptySlot.SetActive(true);
-        }
+        #region Properties
+
+        public uint? CurrentPuzzleId => _puzzleCard != null ? _puzzleCard.CurrentPuzzleId : null;
+
+        #endregion
+
+        #region Methods
 
         public void FinishPuzzle()
         {
-            if (puzzleCard == null || emptySlot == null) {
+            if (_puzzleCard == null || _emptySlot == null) {
                 return;
             }
-            puzzleCard.gameObject.SetActive(false);
-            emptySlot.SetActive(true);
+            SoundManager.Instance?.PlaySoftTapSoundEffect();
+            _puzzleCard.gameObject.SetActive(false);
+            _emptySlot.gameObject.SetActive(true);
         }
 
         public void PlacePuzzle(PuzzleWithGraphics puzzle)
         {
-            if (puzzleCard == null || emptySlot == null) {
+            if (_puzzleCard == null || _emptySlot == null) {
                 return;
             }
-            puzzleCard.gameObject.SetActive(true);
-            emptySlot.SetActive(false);
-            puzzleCard.SetNewPuzzle(puzzle);
+            SoundManager.Instance?.PlayTapSoundEffect();
+            _puzzleCard.gameObject.SetActive(true);
+            _emptySlot.gameObject.SetActive(false);
+            _puzzleCard.SetNewPuzzle(puzzle);
         }
 
         public void SetAsCurrentPlayer(bool current)
         {
-            if (puzzleCard == null || emptySlot == null) {
+            if (_puzzleCard == null || _emptySlot == null) {
                 return;
             }
-            puzzleCard.MakeInteractive(current);
+            _puzzleCard.MakeInteractive(current);
         }
 
         public Vector2 GetPlacementPositionFor(BinaryImage placement)
         {
-            if (puzzleCard != null) {
-                return puzzleCard.GetPlacementCenter(placement);
+            if (_puzzleCard != null) {
+                return _puzzleCard.GetPlacementCenter(placement);
             }
             return default;
+        }
+
+        private void Start()
+        {
+            if (_puzzleCard == null || _emptySlot == null || _puzzleFrame == null) {
+                Debug.LogError("One or more UI components is not assigned!", this);
+                return;
+            }
+            // make sure that
+            _emptySlot.gameObject.SetActive(true);
+            _puzzleFrame.gameObject.SetActive(false);
+            _puzzleCard.gameObject.SetActive(false);
+        }
+
+        #endregion
+
+        public TemporaryPuzzleHighlighter CreateTemporaryPuzzleHighlighter() => new(this);
+
+        public class TemporaryPuzzleHighlighter : IDisposable
+        {
+            private readonly PlayerRowSlot _slot;
+            public TemporaryPuzzleHighlighter(PlayerRowSlot slot)
+            {
+                SoundManager.Instance?.PlaySoftTapSoundEffect();
+                _slot = slot;
+                _slot._puzzleFrame!.gameObject.SetActive(true);
+            }
+
+            public void Dispose()
+            {
+                _slot._puzzleFrame!.gameObject.SetActive(false);
+            }
         }
     }
 }

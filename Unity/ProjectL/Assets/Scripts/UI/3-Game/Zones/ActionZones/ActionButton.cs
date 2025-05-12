@@ -2,7 +2,8 @@
 
 namespace ProjectL.UI.GameScene.Zones.ActionZones
 {
-    using ProjectL.UI.Utils;
+    using ProjectL.UI.GameScene.Actions;
+    using ProjectL.UI.Sound;
     using System;
     using UnityEngine;
     using UnityEngine.UI;
@@ -11,11 +12,21 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
     [RequireComponent(typeof(Button))]
     public class ActionButton : MonoBehaviour
     {
+        #region Fields
 
         private Button? _button;
 
+        private SpriteState _interactiveSprites;
 
-        #region Properties
+        private Sprite? _originalSprite;
+
+        private bool _canActionBeCreated = true;
+
+        private PlayerMode _mode = PlayerMode.NonInteractive;
+
+        #endregion
+
+        #region Events
 
         public static event Action? CancelAction;
 
@@ -23,28 +34,88 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
         #endregion
 
+        #region Properties
+
+        public PlayerMode Mode {
+            get => _mode;
+            set {
+                _mode = value;
+                UpdateUI();
+            }
+        }
+
+        public bool CanActionBeCreated {
+            get => _canActionBeCreated;
+            set {
+                _canActionBeCreated = value;
+                if (_button != null) {
+                    UpdateUI();
+                }
+            }
+        }
+
+        #endregion
+
         #region Methods
-
-        public void DisableButton()
-        {
-            if (_button == null) {
-                return;
-            }
-            RadioButtonsGroup.ForceDeselectButton(_button, nameof(ActionButton));
-            _button.interactable = false;
-        }
-
-        public void EnableButton()
-        {
-            if (_button == null) {
-                return;
-            }
-            _button.interactable = true;
-        }
 
         public static void DeselectCurrentButton()
         {
-            RadioButtonsGroup.ForceDeselectButton(nameof(ActionButton));
+            if (!RadioButtonsGroup.TryGetSelectedButton(nameof(ActionButton), out var button)) {
+                return;
+            }
+            if (!button!.gameObject.TryGetComponent<ActionButton>(out var actionButton)) {
+                Debug.LogError("ActionButton component is missing!", button);
+                return;
+            }
+
+            var newSpriteState = actionButton.GetCurrentSpriteState(selected: false);
+            RadioButtonsGroup.UpdateSpritesForButton(button, newSpriteState);
+            RadioButtonsGroup.ForceDeselectButtonInGroup(nameof(ActionButton));
+        }
+
+        public void ManuallySelectButton()
+        {
+            if (_button == null) {
+                return;
+            }
+            if (CanActionBeCreated == false) {
+                return;
+            }
+
+            var newSpriteState = GetCurrentSpriteState(selected: true);
+            RadioButtonsGroup.UpdateSpritesForButton(_button, newSpriteState);
+            _button.onClick.Invoke();
+        }
+
+        private SpriteState GetCurrentSpriteState(bool selected)
+        {
+            if (Mode == PlayerMode.Interactive) {
+                return _interactiveSprites;
+            }
+
+            // non interactive state
+            var newState = _interactiveSprites;
+            if (CanActionBeCreated) {
+                Sprite displaySprite = selected ? _interactiveSprites.selectedSprite : _originalSprite!;
+                newState.disabledSprite = displaySprite;
+            }
+            return newState;
+        }
+
+        private void UpdateUI()
+        {
+            if (_button == null) {
+                return;
+            }
+
+            // update intractability
+            _button.interactable = CanActionBeCreated && Mode == PlayerMode.Interactive;
+            if (_button.interactable == false) {
+                RadioButtonsGroup.ForceDeselectButton(_button);
+            }
+
+            bool isSelected = RadioButtonsGroup.IsButtonSelected(_button);
+            RadioButtonsGroup.UpdateSpritesForButton(_button, GetCurrentSpriteState(isSelected));
         }
 
         private void Awake()
@@ -60,7 +131,28 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
                 return;
             }
 
+            _interactiveSprites = _button.spriteState;
+            _originalSprite = _button.image.sprite;
+            if (_originalSprite == null) {
+                Debug.LogError("The buttons image has no default sprite!", this);
+                return;
+            }
+
             RadioButtonsGroup.RegisterButton(_button, nameof(ActionButton), SelectAction, CancelAction);
+        }
+
+        private void Start()
+        {
+            if (_button != null) {
+                _button.onClick.AddListener(SoundManager.Instance!.PlayButtonClickSound);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (_button != null) {
+                RadioButtonsGroup.UnregisterButton(_button);
+            }
         }
 
         #endregion

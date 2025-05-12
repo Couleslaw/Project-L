@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace ProjectL.UI.GameScene
+namespace ProjectL.UI.GameScene.Actions
 {
     using ProjectL.UI.GameScene.Zones.ActionZones;
     using ProjectLCore.GameActions;
@@ -9,6 +9,16 @@ namespace ProjectL.UI.GameScene
     using System;
     using System.Collections.Generic;
     using UnityEngine;
+
+    public enum PlayerMode
+    {
+        Interactive, NonInteractive
+    }
+
+    public enum ActionMode
+    {
+        Normal, FinishingTouches, RewardSelection
+    }
 
     public interface IHumanPlayerActionListener
     {
@@ -126,7 +136,8 @@ namespace ProjectL.UI.GameScene
             // TODO: connect to spawners
 
             ActionZonesManager.Instance.ConnectToButtons(this);
-            ActionZonesManager.Instance.SetAIPlayerMode();
+            ActionZonesManager.Instance.SetPlayerMode(PlayerMode.NonInteractive);
+            ActionZonesManager.Instance.SetActionMode(ActionMode.Normal);
         }
 
         public void ReportStateChanged()
@@ -154,6 +165,7 @@ namespace ProjectL.UI.GameScene
             }
 
             // TODO: verify if the action is valid
+            // TODO: enable / disable confirm buttons
         }
 
         public void OnActionConfirmed()
@@ -163,7 +175,7 @@ namespace ProjectL.UI.GameScene
                 return;
             }
             CurrentEventSet?.RaiseConfirmed();
-            ActionZonesManager.Instance.SetAIPlayerMode();
+            ActionZonesManager.Instance.SetPlayerMode(PlayerMode.NonInteractive);
 
             _currentPlayer.SetAction(_lastValidAction);
             _lastValidAction = null;
@@ -200,7 +212,7 @@ namespace ProjectL.UI.GameScene
             }
             _currentPlayer = player;
             _actionVerifier = e.Verifier;
-            ActionZonesManager.Instance.SetHumanPlayerMode();
+            ActionZonesManager.Instance.SetPlayerMode(PlayerMode.Interactive);
             // TODO: enable spawners
         }
 

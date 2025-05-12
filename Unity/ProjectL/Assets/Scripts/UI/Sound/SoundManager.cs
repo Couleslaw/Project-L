@@ -26,6 +26,7 @@ namespace ProjectL.UI.Sound
         [SerializeField] private AudioSource? sliderSound;
         [SerializeField] private AudioSource? errorSound;
         [SerializeField] private AudioSource? tapSoundEffect;
+        [SerializeField] private AudioSource? softTapSoundEffect;
 
         #endregion
 
@@ -40,20 +41,24 @@ namespace ProjectL.UI.Sound
 
         #region Methods
 
-        /// <summary> Plays the button click sound effect.  </summary>
+        /// <summary> Plays the "button click" sound effect.  </summary>
         public void PlayButtonClickSound() => PlaySoundEffect(buttonPressSound);
 
-        /// <summary> Plays the input line sound effect.  </summary>
+        /// <summary> Plays the "input line" sound effect.  </summary>
         public void PlayInputLineSound() => PlaySoundEffect(inputLineSound);
 
-        /// <summary> Plays the slider sound effect.  </summary>
+        /// <summary> Plays the "slider" sound effect.  </summary>
         public void PlaySliderSound() => PlaySoundEffect(sliderSound);
 
-        /// <summary> Plays the error sound effect.  </summary>
+        /// <summary> Plays the "error" sound effect.  </summary>
         public void PlayErrorSound() => PlaySoundEffect(errorSound);
 
-        /// <summary> Plays the tap sound effect.  </summary>
+        /// <summary> Plays the "tap" sound effect.  </summary>
         public void PlayTapSoundEffect() => PlaySoundEffect(tapSoundEffect);
+
+        /// <summary> Plays the "soft tap" sound effect.  </summary>
+        public void PlaySoftTapSoundEffect() => PlaySoundEffect(softTapSoundEffect);
+
 
         private void Awake()
         {

@@ -9,6 +9,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
     using System.Threading.Tasks;
     using ProjectLCore.GameActions;
     using System.Threading;
+    using System;
 
     public class PlayerZoneManager : GraphicsManager<PlayerZoneManager>, ICurrentPlayerListener
     {
@@ -53,6 +54,11 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
             var playerZoneRow = _playerZoneRows[_currentPlayer];
             return playerZoneRow.GetPlacementPositionFor(action);
+        }
+
+        public PlayerRowSlot GetCurrentPlayerPuzzleOnIndex(int index)
+        {
+            return _playerZoneRows[_currentPlayer!].GetPuzzleOnIndex(index);
         }
     }
 }

@@ -15,6 +15,8 @@ namespace ProjectL.UI.GameScene.Zones
 
         private static readonly Dictionary<string, Dictionary<Button, ButtonInfo>> _buttonGroups = new();
 
+        private static readonly Dictionary<Button, string> _buttonToGroupMap = new();
+
         private static readonly Dictionary<string, Button?> _selectedButtons = new();
 
         #endregion
@@ -36,6 +38,8 @@ namespace ProjectL.UI.GameScene.Zones
                 _selectedButtons[groupName] = null;
             }
 
+            _buttonToGroupMap[button] = groupName;
+
             // add listener
             UnityAction listener = () => OnButtonClick(button, groupName);
             button.onClick.AddListener(listener);
@@ -45,12 +49,15 @@ namespace ProjectL.UI.GameScene.Zones
             _buttonGroups[groupName].Add(button, buttonInfo);
         }
 
-        public static void UnregisterButton(Button button, string groupName)
+        public static void UnregisterButton(Button button)
         {
-            if (!_buttonGroups.ContainsKey(groupName)) {
-                Debug.LogError($"Group {groupName} not found.");
+            if (!_buttonToGroupMap.ContainsKey(button)) {
+                Debug.LogError($"Button {button.name} is not registered in any group.");
                 return;
             }
+            string groupName = _buttonToGroupMap[button];
+            _buttonToGroupMap.Remove(button);
+
             // remove listener
             if (_buttonGroups[groupName].ContainsKey(button)) {
                 button.onClick.RemoveListener(_buttonGroups[groupName][button].OnClickListener);
@@ -67,30 +74,66 @@ namespace ProjectL.UI.GameScene.Zones
         {
             if (_buttonGroups.ContainsKey(groupName)) {
                 foreach (var button in _buttonGroups[groupName].Keys) {
-                    UnregisterButton(button, groupName);
+                    UnregisterButton(button);
                 }
             }
         }
 
-        public static void ForceDeselectButton(Button button, string groupName)
+        public static void UpdateSpritesForButton(Button button, SpriteState newState)
         {
+            if (!_buttonToGroupMap.ContainsKey(button)) {
+                Debug.LogError($"Button {button.name} is not registered in any group.");
+                return;
+            }
+            string groupName = _buttonToGroupMap[button];
+            var buttonInfo = _buttonGroups[groupName][button];
+            buttonInfo.UpdateSprites(newState);
+            if (button == _selectedButtons[groupName]) {
+                button.spriteState = buttonInfo.SelectedSpriteState;
+                button.image.sprite = buttonInfo.SelectedSpriteState.selectedSprite;
+            }
+            else {
+                button.spriteState = buttonInfo.UnselectedSpriteState;
+                button.image.sprite = buttonInfo.OriginalSprite;
+            }
+        }
+
+        public static void ForceDeselectButton(Button button)
+        {
+            if (!_buttonToGroupMap.ContainsKey(button)) {
+                Debug.LogError($"Button {button.name} is not registered in any group.");
+                return;
+            }
+            string groupName = _buttonToGroupMap[button];
             TryUnselectingButton(button, groupName, deselect: true);
         }
 
-        public static void ForceDeselectButton(string groupName)
+        public static void ForceDeselectButtonInGroup(string groupName)
         {
             var selectedButton = _selectedButtons[groupName];
             if (selectedButton != null) {
-                ForceDeselectButton(selectedButton, groupName);
+                ForceDeselectButton(selectedButton);
             }
         }
 
-        public static Button? GetSelectedButton(string groupName)
+        public static bool TryGetSelectedButton(string groupName, out Button? result)
         {
             if (_selectedButtons.ContainsKey(groupName)) {
-                return _selectedButtons[groupName];
+                result = _selectedButtons[groupName];
+                return result != null;
             }
-            return null;
+            result = null;
+            return false;
+        }
+
+        public static bool IsButtonSelected(Button button)
+        {
+            if (!_buttonToGroupMap.ContainsKey(button)) {
+                Debug.LogError($"Button {button.name} is not registered in any group.");
+                return false;
+            }
+            string groupName = _buttonToGroupMap[button];
+            return _selectedButtons[groupName] == button;
         }
 
         private static void OnButtonClick(Button button, string groupName)
@@ -154,7 +197,7 @@ namespace ProjectL.UI.GameScene.Zones
 
         #endregion
 
-        private struct ButtonInfo
+        private class ButtonInfo
         {
             #region Constructors
 
@@ -166,11 +209,17 @@ namespace ProjectL.UI.GameScene.Zones
 
                 OriginalSprite = button.image.sprite;
                 UnselectedSpriteState = button.spriteState;
-                SelectedSpriteState = new SpriteState {
-                    highlightedSprite = button.spriteState.selectedSprite,
-                    pressedSprite = button.spriteState.pressedSprite,
-                    selectedSprite = button.spriteState.selectedSprite,
-                    disabledSprite = button.spriteState.disabledSprite
+                UpdateSprites(button.spriteState);
+            }
+
+            public void UpdateSprites(SpriteState newState)
+            {
+                SelectedSpriteState = newState;
+                UnselectedSpriteState = new SpriteState {
+                    highlightedSprite = newState.selectedSprite,
+                    pressedSprite = newState.pressedSprite,
+                    selectedSprite = newState.selectedSprite,
+                    disabledSprite = newState.disabledSprite
                 };
             }
 
@@ -178,17 +227,17 @@ namespace ProjectL.UI.GameScene.Zones
 
             #region Properties
 
-            public SpriteState SelectedSpriteState { get; set; }
+            public SpriteState SelectedSpriteState { get; private set; }
 
-            public SpriteState UnselectedSpriteState { get; set; }
+            public SpriteState UnselectedSpriteState { get; private set; }
 
-            public Sprite OriginalSprite { get; set; }
+            public Sprite OriginalSprite { get; private set; }
 
-            public UnityAction OnClickListener { get; set; }
+            public UnityAction OnClickListener { get; private set; }
 
-            public Action? OnSelect { get; set; }
+            public Action? OnSelect { get; private set; }
 
-            public Action? OnCancel { get; set; }
+            public Action? OnCancel { get; private set; }
 
             #endregion
         }

@@ -39,7 +39,7 @@
 ### Create main game screen
 
 - [x] create game layout
-- [ ] create game board from PlayerSelection
+- [x] create game board from PlayerSelection
   - [x] Action zone
     - [x] action buttons UI logic
     - [x] end finishes touches button
@@ -53,12 +53,31 @@
       - [x] player row collider visualization
     - [x] populate with player rows
       - [x] enable only row of selected player
-  - [ ] Piece zone
-    - [ ] populate names
-    - [ ] collection column setup
-      - [ ] add field for each shape
-    - [ ] add player collection columns
-    - [ ] add shared reserve column
-- [ ] add action buttons logic
+  - [x] Piece zone
+    - [x] populate names
+    - [x] collection column setup
+      - [x] add field for each shape
+    - [x] add player collection columns
+    - [x] add shared reserve column
+- [x] add action buttons logic
 - [ ] add logic for human actions
+  - [ ] standard actions
+    - [ ] connect TetrominoSpawners to action manager
+    - [ ] take puzzle
+    - [ ] recycle
+    - [ ] take basic piece
+    - [ ] change piece
+    - [ ] master action
+  - [ ] finishing touches action
+    - [ ] clear board
+    - [ ] end finishing touches
+  - [ ] reward selection
 - [ ] add animation for AI actions
+  - [x] puzzle finished
+    - [x] select reward
+  - [x] place piece
+  - [ ] take puzzle
+  - [ ] recycle
+  - [ ] take basic piece
+  - [ ] change piece
+  - [ ] master action

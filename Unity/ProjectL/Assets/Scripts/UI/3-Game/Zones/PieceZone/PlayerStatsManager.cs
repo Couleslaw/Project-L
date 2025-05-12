@@ -57,9 +57,9 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                     Debug.LogError("Player name label not found in the player name template.");
                     continue;
                 }
-             
+
                 // set the first letter of the name in uppercase as the player name
-                playerNameLabel.text = player.Name[0].ToString().ToUpper();
+                playerNameLabel.text = player.Name[0].ToString();
                 _playerNameLabels.Add(player, playerNameLabel);
 
                 // gray out the name and piece column

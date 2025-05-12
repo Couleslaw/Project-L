@@ -3,10 +3,13 @@
 namespace ProjectL.UI.GameScene.Zones.ActionZones
 {
     using ProjectLCore.GameLogic;
-    using ProjectLCore.Players;
     using System;
-    using Unity.VisualScripting;
     using UnityEngine;
+    using ProjectL.UI.GameScene.Actions;
+    using System.Collections.Generic;
+    using System.Linq;
+    using UnityEngine.Android;
+    using System.Runtime.CompilerServices;
 
     public class ActionZonesManager : GraphicsManager<ActionZonesManager>, ICurrentTurnListener
     {
@@ -50,24 +53,28 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             // TODO: finishing touches
         }
 
-        public void SetAIPlayerMode()
+        public void SetPlayerMode(PlayerMode mode)
         {
-            throw new NotImplementedException();
+            _pieceActionZone?.SetPlayerMode(mode);
+            _puzzleActionZone?.SetPlayerMode(mode);
         }
 
-        public void SetHumanPlayerMode()
+        public void SetActionMode(ActionMode mode)
         {
-            throw new NotImplementedException();
+            _pieceActionZone?.SetActionMode(mode);
+            _puzzleActionZone?.SetActionMode(mode);
         }
 
         public void EnableConfirmButtons()
         {
-            throw new NotImplementedException();
+            _puzzleActionZone?.EnableConfirmButton();
+            _pieceActionZone?.EnableConfirmButton();
         }
 
         public void DisableConfirmButtons()
         {
-            throw new NotImplementedException();
+            _puzzleActionZone?.DisableConfirmButton();
+            _pieceActionZone?.DisableConfirmButton();
         }
 
         void ICurrentTurnListener.OnCurrentTurnChanged(TurnInfo currentTurnInfo)
@@ -75,8 +82,76 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             var gameInfo = _game!.GameState.GetGameInfo();
             var playerInfo = _game.PlayerStates[_game.CurrentPlayer].GetPlayerInfo();
 
-            // TODO: update UI
-            throw new NotImplementedException();
+            _pieceActionZone?.EnabledButtonsBasedOnGameState(gameInfo, playerInfo);
+            _puzzleActionZone?.EnabledButtonsBasedOnGameState(gameInfo, playerInfo);
+        }
+
+        public class SimulateButtonPressDisposable : IDisposable
+        {
+            private readonly Button _button;
+
+            public SimulateButtonPressDisposable(Button button) 
+            {
+                _button = button;
+                switch (button) {
+                    case Button.TakePuzzle:
+                        Instance._puzzleActionZone?.ManuallyPressTakePuzzleButton();
+                        break;
+                    case Button.Recycle:
+                        Instance._puzzleActionZone?.ManuallyPressRecycleButton();
+                        break;
+                    case Button.TakeBasicTetromino:
+                        Instance._pieceActionZone?.ManuallyPressTakeBasicTetrominoButton();
+                        break;
+                    case Button.ChangeTetromino:
+                        Instance._pieceActionZone?.ManuallyPressChangeTetrominoButton();
+                        break;
+                    case Button.MasterAction:
+                        Instance._pieceActionZone?.ManuallyPressMasterActionButton();
+                        break;
+                    case Button.SelectReward:
+                        Instance.SetActionMode(ActionMode.RewardSelection);
+                        break;
+                    case Button.EndFinishingTouches:
+                        throw new NotImplementedException();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            public void Dispose()
+            {
+                switch (_button) {
+                    case Button.TakePuzzle:
+                    case Button.Recycle:
+                    case Button.TakeBasicTetromino:
+                    case Button.ChangeTetromino:
+                    case Button.MasterAction:
+                        ActionButton.DeselectCurrentButton();
+                        break;
+                    case Button.SelectReward:
+                        Instance.SetActionMode(ActionMode.Normal);
+                        break;
+                    case Button.EndFinishingTouches:
+                        throw new NotImplementedException();
+                        break;
+                    default:
+                        break;
+                }
+                // TODO: end finishing touches
+            }
+        }
+
+        public enum Button
+        {
+            TakePuzzle,
+            Recycle,
+            TakeBasicTetromino,
+            ChangeTetromino,
+            MasterAction,
+            EndFinishingTouches,
+            SelectReward
         }
     }
 }

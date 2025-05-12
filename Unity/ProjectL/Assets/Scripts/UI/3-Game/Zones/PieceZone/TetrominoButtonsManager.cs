@@ -2,6 +2,7 @@
 
 namespace ProjectL.UI.GameScene.Zones.PieceZone
 {
+    using ProjectL.UI.Sound;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GameManagers;
@@ -77,15 +78,51 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             _currentPieceColumn = column;
             foreach (var spawner in _tetrominoSpawners.Values) {
                 int count = column.GetDisplayCount(spawner.Shape);
-                spawner.GrayOut(count == 0);
+                spawner.IsGrayedOut = count == 0;
                 spawner.EnableSpawner(count > 0);
             }
         }
 
+
         void ITetrominoCollectionListener.OnTetrominoCollectionChanged(TetrominoShape shape, int count)
         {
-            _tetrominoSpawners[shape].GrayOut(count == 0);
+            _tetrominoSpawners[shape].IsGrayedOut = count == 0;
             _tetrominoSpawners[shape].EnableSpawner(count > 0);
+        }
+
+
+        public async Task AnimateSelectRewardAsync(List<TetrominoShape> rewardOptions, TetrominoShape selectedReward, CancellationToken cancellationToken)
+        {
+            using (new TemporaryButtonHighlighter(rewardOptions)) {
+                await GameAnimationManager.WaitForAnimationDelayFraction(1f, cancellationToken);
+                var spawner = _tetrominoSpawners[selectedReward];
+                using (spawner.CreateTemporaryButtonSelector()) {
+                    await GameAnimationManager.WaitForAnimationDelayFraction(1f, cancellationToken);
+                }
+            }
+        }
+
+        private class TemporaryButtonHighlighter : IDisposable
+        {
+            private readonly bool[] _originalSettings = new bool[TetrominoManager.NumShapes];
+
+            public TemporaryButtonHighlighter(ICollection<TetrominoShape> buttonsToHighlight)
+            {
+                SoundManager.Instance?.PlaySoftTapSoundEffect();
+                for (int i = 0; i < TetrominoManager.NumShapes; i++) {
+                    var spawner = Instance._tetrominoSpawners[(TetrominoShape)i];
+                    _originalSettings[i] = spawner.IsGrayedOut;
+                    spawner.IsGrayedOut = !buttonsToHighlight.Contains((TetrominoShape)i);
+                }
+            }
+
+            public void Dispose()
+            {
+                for (int i = 0; i < TetrominoManager.NumShapes; i++) {
+                    var spawner = Instance._tetrominoSpawners[(TetrominoShape)i];
+                    spawner.IsGrayedOut = _originalSettings[i];
+                }
+            }
         }
     }
 }

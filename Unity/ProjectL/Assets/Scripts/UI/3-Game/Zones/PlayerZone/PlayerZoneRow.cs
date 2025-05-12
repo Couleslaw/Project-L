@@ -5,6 +5,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using TMPro;
@@ -31,12 +32,12 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             playerState.AddListener(this);
         }
 
-        public void OnPuzzleFinished(int index, FinishedPuzzleInfo info)
+        void IPlayerStatePuzzleListener.OnPuzzleFinished(int index, FinishedPuzzleInfo info)
         {
             puzzlesContainer![index].FinishPuzzle();
         }
 
-        public void OnPuzzleAdded(int index, Puzzle puzzle)
+        void IPlayerStatePuzzleListener.OnPuzzleAdded(int index, Puzzle puzzle)
         {
             if (puzzle is PuzzleWithGraphics grPuzzle) {
                 puzzlesContainer![index].PlacePuzzle(grPuzzle);
@@ -63,5 +64,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
         {
             return puzzlesContainer!.GetPlacementPositionFor(action);
         }
+
+        public PlayerRowSlot GetPuzzleOnIndex(int index) => puzzlesContainer![index];
     }
 }

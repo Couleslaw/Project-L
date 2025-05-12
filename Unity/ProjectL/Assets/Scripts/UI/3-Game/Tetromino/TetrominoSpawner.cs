@@ -2,6 +2,7 @@
 
 namespace ProjectL.UI.GameScene.Zones.PieceZone
 {
+    using ProjectL.UI.Sound;
     using ProjectLCore.GameActions;
     using ProjectLCore.GamePieces;
     using System;
@@ -22,6 +23,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         #endregion
     }
 
+    [RequireComponent(typeof(RectTransform))]
     [RequireComponent(typeof(Image))]
     public class TetrominoSpawner : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
@@ -49,6 +51,18 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         public TetrominoShape Shape => draggableTetrominoPrefab!.Shape;
 
+        private bool _isGrayedOut = false;
+        public bool IsGrayedOut {
+            get => _isGrayedOut;
+            set {
+                _isGrayedOut = value;
+                if (_image != null) {
+                    _image.color = value ? Color.gray : Color.white;
+                }
+            }
+        }
+
+
         #endregion
 
         #region Methods
@@ -74,6 +88,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             if (draggableTetrominoPrefab == null) {
                 throw new InvalidOperationException("DraggableTetromino prefab is not assigned!");
             }
+            SoundManager.Instance?.PlaySliderSound();
             DraggableTetromino tetromino = Instantiate(draggableTetrominoPrefab, transform.position, Quaternion.identity);
             tetromino.Init(mainCamera!, () => TetrominoReturned?.Invoke(Shape));
             TetrominoSpawned?.Invoke(Shape);
@@ -111,19 +126,33 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             mainCamera = Camera.main; // Cache the camera
         }
 
-        public void GrayOut(bool gray)
-        {
-            if (_image == null) {
-                return;
-            }
-            _image.color = gray ? Color.gray : Color.white;
-        }
 
         public void EnableSpawner(bool enable)
         {
             _spawningEnabled = enable;
         }
 
+        public TemporaryButtonSelector CreateTemporaryButtonSelector() => new TemporaryButtonSelector(this);
+
+
         #endregion
+
+        public class TemporaryButtonSelector : IDisposable
+        {
+            private const float _temporaryScaleIncrease = 1.2f;
+            RectTransform _spawnerRectTransform;
+
+            public TemporaryButtonSelector(TetrominoSpawner spawner)
+            {
+                SoundManager.Instance?.PlaySoftTapSoundEffect();
+                _spawnerRectTransform = spawner.GetComponent<RectTransform>();
+                _spawnerRectTransform.localScale *= _temporaryScaleIncrease;
+            }
+
+            public void Dispose()
+            {
+                _spawnerRectTransform.localScale /= _temporaryScaleIncrease;
+            }
+        }
     }
 }
