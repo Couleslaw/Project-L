@@ -8,7 +8,8 @@ namespace ProjectLCore.GameLogic
     using System.IO;
     using System.Linq;
     using System.Text;
-
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Represents the resources and progress of a single <see cref="Player"/>.
@@ -55,13 +56,21 @@ namespace ProjectLCore.GameLogic
 
         #endregion
 
+        #region Delegates
+
+        private delegate Task PuzzleFinishedAsyncDelegate(int index, FinishedPuzzleInfo info, CancellationToken cancellationToken);
+
+        #endregion
+
         #region Events
 
-        private event Action<int, FinishedPuzzleInfo>? PuzzleFinished;
+        private event Action<int, FinishedPuzzleInfo>? PuzzleFinishedEventHandler;
 
-        private event Action<int, Puzzle>? PuzzleAdded;
+        private event Action<int, Puzzle>? PuzzleAddedEventHandler;
 
-        private event Action<TetrominoShape, int>? TetrominoCollectionChanged;
+        private event Action<TetrominoShape, int>? TetrominoCollectionChangedEventHandler;
+
+        private event PuzzleFinishedAsyncDelegate? PuzzleFinishedAsyncEventHandler;
 
         #endregion
 
@@ -84,8 +93,8 @@ namespace ProjectLCore.GameLogic
         /// <seealso cref="RemoveListener(IPlayerStatePuzzleListener)"/>
         public void AddListener(IPlayerStatePuzzleListener listener)
         {
-            PuzzleFinished += listener.OnPuzzleFinished;
-            PuzzleAdded += listener.OnPuzzleAdded;
+            PuzzleFinishedEventHandler += listener.OnPuzzleFinished;
+            PuzzleAddedEventHandler += listener.OnPuzzleAdded;
         }
 
         /// <summary>
@@ -95,8 +104,28 @@ namespace ProjectLCore.GameLogic
         /// <seealso cref="AddListener(IPlayerStatePuzzleListener)"/>
         public void RemoveListener(IPlayerStatePuzzleListener listener)
         {
-            PuzzleFinished -= listener.OnPuzzleFinished;
-            PuzzleAdded -= listener.OnPuzzleAdded;
+            PuzzleFinishedEventHandler -= listener.OnPuzzleFinished;
+            PuzzleAddedEventHandler -= listener.OnPuzzleAdded;
+        }
+
+        /// <summary>
+        /// Subscribes the puzzle listener to this <see cref="PlayerState"/>.
+        /// </summary>
+        /// <param name="listener">The listener to add.</param>
+        /// <seealso cref="RemoveListener(IPlayerStatePuzzleFinishedAsyncListener)"/>
+        public void AddListener(IPlayerStatePuzzleFinishedAsyncListener listener)
+        {
+            PuzzleFinishedAsyncEventHandler += listener.OnPuzzleFinishedAsync;
+        }
+
+        /// <summary>
+        /// Unsubscribes the puzzle listener from the events of this <see cref="PlayerState"/>.
+        /// </summary>
+        /// <param name="listener">The listener to remove.</param>
+        /// <seealso cref="AddListener(IPlayerStatePuzzleFinishedAsyncListener)"/>
+        public void RemoveListener(IPlayerStatePuzzleFinishedAsyncListener listener)
+        {
+            PuzzleFinishedAsyncEventHandler -= listener.OnPuzzleFinishedAsync;
         }
 
         /// <summary>
@@ -106,7 +135,7 @@ namespace ProjectLCore.GameLogic
         /// <seealso cref="RemoveListener(ITetrominoCollectionListener)"/>
         public void AddListener(ITetrominoCollectionListener listener)
         {
-            TetrominoCollectionChanged += listener.OnTetrominoCollectionChanged;
+            TetrominoCollectionChangedEventHandler += listener.OnTetrominoCollectionChanged;
         }
 
         /// <summary>
@@ -116,7 +145,7 @@ namespace ProjectLCore.GameLogic
         /// <seealso cref="AddListener(ITetrominoCollectionListener)"/>
         public void RemoveListener(ITetrominoCollectionListener listener)
         {
-            TetrominoCollectionChanged -= listener.OnTetrominoCollectionChanged;
+            TetrominoCollectionChangedEventHandler -= listener.OnTetrominoCollectionChanged;
         }
 
         /// <summary>
@@ -217,7 +246,7 @@ namespace ProjectLCore.GameLogic
             for (int i = 0; i < MaxPuzzles; i++) {
                 if (_puzzles[i] is null) {
                     _puzzles[i] = puzzle;
-                    PuzzleAdded?.Invoke(i, puzzle);
+                    PuzzleAddedEventHandler?.Invoke(i, puzzle);
                     return;
                 }
             }
@@ -232,16 +261,37 @@ namespace ProjectLCore.GameLogic
         /// <exception cref="InvalidOperationException">Puzzle not found</exception>
         public void FinishPuzzle(FinishedPuzzleInfo info)
         {
-            uint id = info.Puzzle.Id;
-            for (int i = 0; i < MaxPuzzles; i++) {
-                if (_puzzles[i] is not null && _puzzles[i]!.Id == id) {
-                    _puzzles[i] = null;
-                    _finishedPuzzleIds.Add(id);
-                    PuzzleFinished?.Invoke(i, info);
-                    return;
-                }
+            if (!TryGetIndexOfPuzzle(info.Puzzle, out int index)) {
+                throw new InvalidOperationException("Puzzle not found");
             }
-            throw new InvalidOperationException("Puzzle not found");
+            _puzzles[index] = null;
+            _finishedPuzzleIds.Add(info.Puzzle.Id);
+            PuzzleFinishedEventHandler?.Invoke(index, info);
+        }
+
+        /// <summary>
+        /// Asynchronously calls and awaits the <see cref="IPlayerStatePuzzleFinishedAsyncListener.OnPuzzleFinishedAsync(int, FinishedPuzzleInfo, CancellationToken)"/>
+        /// of all subscribed listeners. After that, it calls the <see cref="FinishPuzzle(FinishedPuzzleInfo)"/> method.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public async Task FinishPuzzleAsync(FinishedPuzzleInfo info, CancellationToken cancellationToken = default)
+        {
+            if (!TryGetIndexOfPuzzle(info.Puzzle, out int index)) {
+                throw new InvalidOperationException("Puzzle not found");
+            }
+
+            var asyncHandler = PuzzleFinishedAsyncEventHandler;
+            if (asyncHandler is null) {
+                return;
+            }
+
+            foreach (PuzzleFinishedAsyncDelegate singleHandler in asyncHandler.GetInvocationList()) {
+                await singleHandler(index, info, cancellationToken);
+            }
+            FinishPuzzle(info);
         }
 
         /// <summary>
@@ -282,7 +332,7 @@ namespace ProjectLCore.GameLogic
         public void AddTetromino(TetrominoShape shape)
         {
             _numTetrominosOwned[(int)shape]++;
-            TetrominoCollectionChanged?.Invoke(shape, _numTetrominosOwned[(int)shape]);
+            TetrominoCollectionChangedEventHandler?.Invoke(shape, _numTetrominosOwned[(int)shape]);
         }
 
         /// <summary>
@@ -296,7 +346,7 @@ namespace ProjectLCore.GameLogic
                 throw new InvalidOperationException("Cannot remove tetromino that has not been placed.");
             }
             _numTetrominosOwned[(int)shape]--;
-            TetrominoCollectionChanged?.Invoke(shape, _numTetrominosOwned[(int)shape]);
+            TetrominoCollectionChangedEventHandler?.Invoke(shape, _numTetrominosOwned[(int)shape]);
         }
 
         /// <summary>
@@ -304,6 +354,18 @@ namespace ProjectLCore.GameLogic
         /// </summary>
         /// <returns>A copy of information about the player.</returns>
         public PlayerInfo GetPlayerInfo() => new PlayerInfo(this);
+
+        private bool TryGetIndexOfPuzzle(Puzzle puzzle, out int index)
+        {
+            for (int i = 0; i < MaxPuzzles; i++) {
+                if (_puzzles[i] is not null && _puzzles[i]!.Id == puzzle.Id) {
+                    index = i;
+                    return true;
+                }
+            }
+            index = -1;
+            return false;
+        }
 
         #endregion
 

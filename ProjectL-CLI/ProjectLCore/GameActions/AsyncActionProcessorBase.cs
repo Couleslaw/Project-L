@@ -6,12 +6,26 @@
     using System.Threading.Tasks;
 
     /// <summary>
+    /// Defines an interface for asynchronously processing game actions.
+    /// </summary>
+    public interface IAsyncActionProcessor
+    {
+        /// <summary>
+        /// Processes the given <see cref="GameAction"/> asynchronously.
+        /// </summary>
+        /// <param name="action">The game action to process.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        public Task ProcessActionAsync(GameAction action, CancellationToken cancellationToken = default);
+    }
+
+    /// <summary>
     /// A base class for asynchronously processing actions using the visitor pattern.
     /// Each action should be verified by an <see cref="ActionVerifier"/> before being processed.
     /// </summary>
     /// <seealso cref="GameAction"/>
     /// <seealso cref="ActionVerifier"/>
-    public abstract class AsyncActionProcessorBase
+    public abstract class AsyncActionProcessorBase : IAsyncActionProcessor
     {
         #region Methods
 

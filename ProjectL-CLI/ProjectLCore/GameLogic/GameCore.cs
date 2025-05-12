@@ -8,6 +8,8 @@ namespace ProjectLCore.GameLogic
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Contains all the information about a game of <b>Project L</b>.
@@ -312,6 +314,19 @@ namespace ProjectLCore.GameLogic
         public void ProcessAction(GameAction action)
         {
             action.Accept(_actionProcessors[CurrentPlayer]);
+        }
+
+        /// <summary>
+        /// Asynchronously adjusts the <see cref="GameState"/> and the <see cref="PlayerState"/> of the current player based on the given action.
+        /// Doesn't check if the action is valid. Use an <see cref="ActionVerifier"/> to check if the action is valid before calling this function.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="cancellationToken">Cancellation token to observe while waiting for the task to complete.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+
+        public async Task ProcessActionAsync(GameAction action, CancellationToken cancellationToken = default)
+        {
+            await action.AcceptAsync(_actionProcessors[CurrentPlayer], cancellationToken);
         }
 
         #endregion

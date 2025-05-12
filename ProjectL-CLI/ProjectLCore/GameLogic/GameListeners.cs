@@ -2,6 +2,8 @@
 {
     using ProjectLCore.GamePieces;
     using ProjectLCore.Players;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Interface for classes that want to be notified when the next turn starts.
@@ -52,7 +54,7 @@
         #region Methods
 
         /// <summary>
-        /// Called when the set of unfinished puzzles changes.
+        /// Called when a puzzle is finished by a player, but before any changes are made to their <see cref="PlayerState"/> and the <see cref="GameState"/>.
         /// </summary>
         /// <param name="index"> The index (in the row) of the puzzle that was finished.</param>
         /// <param name="info"> The information about the finished puzzle.</param>
@@ -64,6 +66,29 @@
         /// <param name="index">The index (in the row) of the puzzle that was added.</param>
         /// <param name="puzzle">The puzzle that was added.</param>
         public void OnPuzzleAdded(int index, Puzzle puzzle);
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Interface for classes that want to be notified when a puzzle is finished by a player.
+    /// Upon finishing a puzzle, the <see cref="OnPuzzleFinishedAsync"/> method is <see langword="await"/>ed.
+    /// </summary>
+    /// <seealso cref="PlayerState.AddListener(IPlayerStatePuzzleFinishedAsyncListener)"/>
+    /// <seealso cref="PlayerState.RemoveListener(IPlayerStatePuzzleFinishedAsyncListener)"/>
+    /// <seealso cref="IPlayerStatePuzzleListener"/>
+    public interface IPlayerStatePuzzleFinishedAsyncListener
+    {
+        #region Methods
+
+        /// <summary>
+        /// Asynchronously called and awaited when a puzzle is finished by a player, but before any changes are made to their <see cref="PlayerState"/> and the <see cref="GameState"/>.
+        /// </summary>
+        /// <param name="index"> The index (in the row) of the puzzle that was finished.</param>
+        /// <param name="info"> The information about the finished puzzle.</param>
+        /// <param name="cancellationToken"> A cancellation token to observe while waiting for the task to complete.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        public Task OnPuzzleFinishedAsync(int index, FinishedPuzzleInfo info, CancellationToken cancellationToken);
 
         #endregion
     }
@@ -135,6 +160,8 @@
     /// <seealso cref="PlayerState"/>
     public interface ITetrominoCollectionNotifier
     {
+        #region Methods
+
         /// <summary>
         /// Adds a listener to be notified when the tetromino collection changes.
         /// </summary>
@@ -146,5 +173,7 @@
         /// </summary>
         /// <param name="listener">The listener to remove.</param>
         public void RemoveListener(ITetrominoCollectionListener listener);
+
+        #endregion
     }
 }

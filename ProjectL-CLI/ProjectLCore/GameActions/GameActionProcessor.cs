@@ -7,6 +7,9 @@
     using ProjectLCore.Players;
     using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
+
 
     /// <summary>
     /// Processes actions of one player in the game.
@@ -16,7 +19,7 @@
     /// <seealso cref="ActionVerifier"/>
     /// <seealso cref="GameAction"/>
     /// <seealso cref="ActionProcessorBase" />
-    public class GameActionProcessor : ActionProcessorBase
+    public class GameActionProcessor : ActionProcessorBase, IAsyncActionProcessor
     {
         #region Fields
 
@@ -62,6 +65,28 @@
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Processes the given <see cref="GameAction"/> asynchronously.
+        /// </summary>
+        /// <param name="action">The game action to process.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        public async Task ProcessActionAsync(GameAction action, CancellationToken cancellationToken = default)
+        {
+            switch (action) {
+                case PlaceTetrominoAction a:
+                    await ProcessPlaceActionAsync(a, cancellationToken);
+                    break;
+                case MasterAction a:
+                    await ProcessMasterActionAsync(a, cancellationToken);
+                    break;
+                default:
+                    ProcessAction(action);
+                    break;
+            }
+        }
+
 
         /// <summary>
         /// Does nothing.
@@ -190,31 +215,35 @@
             if (puzzle is null) {
                 throw new InvalidOperationException("The player doesn't have the puzzle specified by the action");
             }
+            _playerState.RemoveTetromino(action.Shape);
             puzzle.AddTetromino(action.Shape, action.Position);
 
-            // remove the tetromino from the player's state
-            _playerState.RemoveTetromino(action.Shape);
-
-            // handle FinishingTouches separately
-            if (_game.CurrentGamePhase == GamePhase.FinishingTouches) {
-                _playerState.Score -= 1;
-                if (puzzle.IsFinished) {
-                    var ftInfo = GetFinishedPuzzleInfo(puzzle, null, null);
-                    FinishedPuzzlesQueue.Enqueue(ftInfo);
-                    _playerState.FinishPuzzle(ftInfo);
+            // if puzzle not finished --> return
+            if (!puzzle.IsFinished) {
+                // place costs 1 point in FinishingTouches
+                if (_game.CurrentGamePhase == GamePhase.FinishingTouches) {
+                    _playerState.Score -= 1;
                 }
                 return;
             }
 
-            // that's all we have to do if the puzzle isn't finished yet
-            if (!puzzle.IsFinished) {
+            FinishedPuzzleInfo info;
+            if (_game.CurrentGamePhase == GamePhase.FinishingTouches)
+                info = new FinishedPuzzleInfo(_player.Id, puzzle, null, null);
+            else
+                info = GetPuzzleRewardFromPlayer(puzzle);
+
+            // call finishPuzzle before modifying the game state
+            FinishedPuzzlesQueue.Enqueue(info);
+            _playerState.FinishPuzzle(info);
+
+            // no reward in FinishingTouches
+            if (_game.CurrentGamePhase == GamePhase.FinishingTouches) {
                 return;
             }
 
-            // if the puzzle is finished --> reward the player
+            // if not finishing touches --> reward the player
             _playerState.Score += puzzle.RewardScore;
-
-            FinishedPuzzleInfo info = GetPuzzleReward(puzzle);
             TetrominoShape? reward = info.SelectedReward;
 
             if (reward is not null) {
@@ -226,9 +255,55 @@
             foreach (var tetromino in puzzle.GetUsedTetrominos()) {
                 _playerState.AddTetromino(tetromino);
             }
+        }
 
+        private async Task ProcessPlaceActionAsync(PlaceTetrominoAction action, CancellationToken cancellationToken)
+        {
+            // add the tetromino to the puzzle
+            Puzzle? puzzle = _playerState.GetPuzzleWithId(action.PuzzleId);
+            if (puzzle is null) {
+                throw new InvalidOperationException("The player doesn't have the puzzle specified by the action");
+            }
+            _playerState.RemoveTetromino(action.Shape);
+            puzzle.AddTetromino(action.Shape, action.Position);
+
+            // if puzzle not finished --> return
+            if (!puzzle.IsFinished) {
+                // place costs 1 point in FinishingTouches
+                if (_game.CurrentGamePhase == GamePhase.FinishingTouches) {
+                    _playerState.Score -= 1;
+                }
+                return;
+            }
+
+            FinishedPuzzleInfo info;
+            if (_game.CurrentGamePhase == GamePhase.FinishingTouches)
+                info = new FinishedPuzzleInfo(_player.Id, puzzle, null, null);
+            else
+                info = await GetPuzzleRewardFromPlayerAsync(puzzle, cancellationToken);
+
+            // call finishPuzzle before modifying the game state
             FinishedPuzzlesQueue.Enqueue(info);
-            _playerState.FinishPuzzle(info);
+            await _playerState.FinishPuzzleAsync(info, cancellationToken);
+
+            // no reward in FinishingTouches
+            if (_game.CurrentGamePhase == GamePhase.FinishingTouches) {
+                return;
+            }
+
+            // if not finishing touches --> reward the player
+            _playerState.Score += puzzle.RewardScore;
+            TetrominoShape? reward = info.SelectedReward;
+
+            if (reward is not null) {
+                _playerState.AddTetromino(reward.Value);
+                _gameState.RemoveTetromino(reward.Value);
+            }
+
+            // return the used pieces to the player
+            foreach (var tetromino in puzzle.GetUsedTetrominos()) {
+                _playerState.AddTetromino(tetromino);
+            }
         }
 
         /// <summary>
@@ -246,6 +321,14 @@
             }
         }
 
+        private async Task ProcessMasterActionAsync(MasterAction action, CancellationToken cancellationToken)
+        {
+            _signaler.PlayerUsedMasterAction();
+            foreach (var placement in action.TetrominoPlacements) {
+                await ProcessPlaceActionAsync(placement, cancellationToken);
+            }
+        }
+
         /// <summary>
         /// Gets the reward for completing a puzzle and other information about the reward selection process. If there are multiple options, the player gets to choose.
         /// If the player fails to choose a valid reward, the first available one is picked.
@@ -253,13 +336,13 @@
         /// </summary>
         /// <param name="puzzle">The puzzle the reward is for.</param>
         /// <returns>Information about se reward selection process. The selected reward is in <see cref="FinishedPuzzleInfo.SelectedReward"/>.</returns>
-        private FinishedPuzzleInfo GetPuzzleReward(Puzzle puzzle)
+        private FinishedPuzzleInfo GetPuzzleRewardFromPlayer(Puzzle puzzle)
         {
             List<TetrominoShape> rewardOptions = RewardManager.GetRewardOptions(_gameState.GetNumTetrominosLeft(), puzzle.RewardTetromino);
 
             // if there are no reward options, the player doesn't get anything
             if (rewardOptions.Count == 0) {
-                return GetFinishedPuzzleInfo(puzzle, rewardOptions, null);
+                return new FinishedPuzzleInfo(_player.Id, puzzle, rewardOptions, null);
             }
             // get reward from player
             TetrominoShape? reward;
@@ -275,12 +358,35 @@
                 reward = rewardOptions[0];
             }
 
-            return GetFinishedPuzzleInfo(puzzle, rewardOptions, reward);
+            return new FinishedPuzzleInfo(_player.Id, puzzle, rewardOptions, reward);
         }
 
-        private FinishedPuzzleInfo GetFinishedPuzzleInfo(Puzzle puzzle, List<TetrominoShape>? rewardOptions, TetrominoShape? selectedReward)
+        private async Task<FinishedPuzzleInfo> GetPuzzleRewardFromPlayerAsync(Puzzle puzzle, CancellationToken cancellationToken)
         {
-            return new FinishedPuzzleInfo(_player.Id, puzzle, rewardOptions, selectedReward);
+            List<TetrominoShape> rewardOptions = RewardManager.GetRewardOptions(_gameState.GetNumTetrominosLeft(), puzzle.RewardTetromino);
+
+            // if there are no reward options, the player doesn't get anything
+            if (rewardOptions.Count == 0) {
+                return new FinishedPuzzleInfo(_player.Id, puzzle, rewardOptions, null);
+            }
+            // get reward from player
+            TetrominoShape? reward;
+            try {
+                reward = await _player.GetRewardAsync(rewardOptions, puzzle.Clone(), cancellationToken);
+            }
+            catch (OperationCanceledException) {
+                throw;
+            }
+            catch (Exception) {
+                reward = null;
+            }
+
+            // if the chosen reward isn't valid, pick the first one
+            if (reward is null || !rewardOptions.Contains(reward.Value)) {
+                reward = rewardOptions[0];
+            }
+
+            return new FinishedPuzzleInfo(_player.Id, puzzle, rewardOptions, reward);
         }
 
         #endregion

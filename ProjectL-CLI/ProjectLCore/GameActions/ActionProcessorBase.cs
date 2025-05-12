@@ -4,13 +4,25 @@
     using System;
 
     /// <summary>
+    /// Defines an interface for processing game actions.
+    /// </summary>
+    public interface IActionProcessor
+    {
+        /// <summary>
+        /// Processes the given <see cref="GameAction"/>.
+        /// </summary>
+        /// <param name="action">The game action to process.</param>
+        public void ProcessAction(GameAction action);
+    }
+
+    /// <summary>
     /// A base class for processing actions using the visitor pattern.
     /// Each action should be verified by an <see cref="ActionVerifier"/> before being processed.
     /// </summary>
     /// <seealso cref="GameAction"/>
     /// <seealso cref="ActionVerifier"/>
     /// <seealso cref="GameActionProcessor"/>
-    public abstract class ActionProcessorBase
+    public abstract class ActionProcessorBase : IActionProcessor
     {
         #region Methods
 

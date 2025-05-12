@@ -10,10 +10,11 @@
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Represents an action that a player can take during their turn. Together with <see cref="ActionProcessorBase" /> it implements the visitor pattern.
+    /// Represents an action that a player can take during their turn. Together with <see cref="IActionProcessor"/> and <see cref="IAsyncActionProcessor"/> it implements the visitor pattern.
     /// The validity of every action should be checked by an <see cref="ActionVerifier" /> before being processed.
     /// </summary>
-    /// <seealso cref="ActionProcessorBase" />
+    /// <seealso cref="IActionProcessor" />
+    /// <seealso cref="IAsyncActionProcessor"/>
     /// <seealso cref="ActionVerifier" />
     public abstract class GameAction
     {
@@ -23,7 +24,7 @@
         /// Accepts the specified visitor by calling the appropriate method.
         /// </summary>
         /// <param name="visitor">The visitor to accept.</param>
-        public void Accept(ActionProcessorBase visitor)
+        public void Accept(IActionProcessor visitor)
         {
             visitor.ProcessAction(this);
         }
@@ -34,7 +35,7 @@
         /// <param name="visitor">The visitor to accept.</param>
         /// <param name="cancellationToken">Cancellation token to observe while waiting for the task to complete.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        public async Task AcceptAsync(AsyncActionProcessorBase visitor, CancellationToken cancellationToken = default)
+        public async Task AcceptAsync(IAsyncActionProcessor visitor, CancellationToken cancellationToken = default)
         {
             await visitor.ProcessActionAsync(this, cancellationToken).ConfigureAwait(false);
         }

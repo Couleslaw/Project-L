@@ -89,7 +89,7 @@
             }
 
             // request the action
-            var args = new GetActionEventArgs(gameInfo, playerInfo!, turnInfo, verifier);
+            var args = new GetActionEventArgs(gameInfo, playerInfo!, turnInfo, verifier, cancellationToken);
             ActionRequested?.Invoke(this, args);
 
             // wait until the action has been set from the outside
@@ -112,7 +112,7 @@
             _getRewardCompletionSource = new(cancellationToken);
 
             // request the reward
-            var args = new GetRewardEventArgs(rewardOptions, puzzle);
+            var args = new GetRewardEventArgs(rewardOptions, puzzle, cancellationToken);
             RewardChoiceRequested?.Invoke(this, args);
 
             // wait until the reward has been set from the outside
@@ -147,12 +147,14 @@
             /// <param name="playerInfo">Information about the resources of the player requesting the action.</param>
             /// <param name="turnInfo">Information about the current turn.</param>
             /// <param name="verifier">The verifier for validating the validity of actions in the current game context.</param>
-            public GetActionEventArgs(GameState.GameInfo gameInfo, PlayerState.PlayerInfo playerInfo, TurnInfo turnInfo, ActionVerifier verifier)
+            /// <param name="cancellationToken">Cancellation token to observe while waiting for the task to complete.</param>
+            public GetActionEventArgs(GameState.GameInfo gameInfo, PlayerState.PlayerInfo playerInfo, TurnInfo turnInfo, ActionVerifier verifier, CancellationToken cancellationToken)
             {
                 GameInfo = gameInfo;
                 PlayerInfo = playerInfo;
                 TurnInfo = turnInfo;
                 Verifier = verifier;
+                CancellationToken = cancellationToken;
             }
 
             #endregion
@@ -179,6 +181,11 @@
             /// </summary>
             public ActionVerifier Verifier { get; }
 
+            /// <summary>
+            /// Cancellation token to observe while waiting for the task to complete.
+            /// </summary>
+            public CancellationToken CancellationToken { get; }
+
             #endregion
         }
 
@@ -194,10 +201,12 @@
             /// </summary>
             /// <param name="rewardOptions">The list of reward options available to the player.</param>
             /// <param name="puzzle">The puzzle that was completed by the player.</param>
-            public GetRewardEventArgs(List<TetrominoShape> rewardOptions, Puzzle puzzle)
+            /// <param name="cancellationToken">Cancellation token to observe while waiting for the task to complete.</param>
+            public GetRewardEventArgs(List<TetrominoShape> rewardOptions, Puzzle puzzle, CancellationToken cancellationToken)
             {
                 RewardOptions = rewardOptions;
                 Puzzle = puzzle;
+                CancellationToken = cancellationToken;
             }
 
             #endregion
@@ -213,6 +222,11 @@
             /// The puzzle that was completed by the player.
             /// </summary>
             public Puzzle Puzzle { get; }
+
+            /// <summary>
+            /// Cancellation token to observe while waiting for the task to complete.
+            /// </summary>
+            public CancellationToken CancellationToken { get; }
 
             #endregion
         }
