@@ -29,7 +29,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _game.AddListener(this);
         }
 
-        public void ConnectToButtons(ActionCreationManager acm)
+        private void AddListener(ActionCreationManager acm)
         {
             if (_puzzleActionZone == null || _pieceActionZone == null) {
                 return;
@@ -37,15 +37,12 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
             // action canceling
             ActionButton.CancelAction += acm.OnActionCanceled;
-
             // action confirming
             _puzzleActionZone.OnConfirmButtonClick += acm.OnActionConfirmed;
             _pieceActionZone.OnConfirmButtonClick += acm.OnActionConfirmed;
-
             // action requestion
             _puzzleActionZone.OnTakePuzzleButtonClick += acm.OnTakePuzzleActionRequested;
             _puzzleActionZone.OnRecycleButtonClick += acm.OnRecycleActionRequested;
-
             _pieceActionZone.OnTakeBasicTetrominoButtonClick += acm.OnTakeBasicTetrominoActionRequested;
             _pieceActionZone.OnChangeTetrominoButtonClick += acm.OnChangeTetrominoActionRequested;
             _pieceActionZone.OnMasterActionButtonClick += acm.OnMasterActionRequested;
@@ -53,10 +50,34 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             // TODO: finishing touches
         }
 
+        private void RemoveListener(ActionCreationManager acm)
+        {
+            if (_puzzleActionZone == null || _pieceActionZone == null) {
+                return;
+            }
+
+            // action canceling
+            ActionButton.CancelAction -= acm.OnActionCanceled;
+            // action confirming
+            _puzzleActionZone.OnConfirmButtonClick -= acm.OnActionConfirmed;
+            _pieceActionZone.OnConfirmButtonClick -= acm.OnActionConfirmed;
+            // action requestion
+            _puzzleActionZone.OnTakePuzzleButtonClick -= acm.OnTakePuzzleActionRequested;
+            _puzzleActionZone.OnRecycleButtonClick -= acm.OnRecycleActionRequested;
+            _pieceActionZone.OnTakeBasicTetrominoButtonClick -= acm.OnTakeBasicTetrominoActionRequested;
+            _pieceActionZone.OnChangeTetrominoButtonClick -= acm.OnChangeTetrominoActionRequested;
+            _pieceActionZone.OnMasterActionButtonClick -= acm.OnMasterActionRequested;
+        }
+
         public void SetPlayerMode(PlayerMode mode)
         {
             _pieceActionZone?.SetPlayerMode(mode);
             _puzzleActionZone?.SetPlayerMode(mode);
+
+            if (mode == PlayerMode.Interactive)
+                AddListener(ActionCreationManager.Instance);
+            if (mode == PlayerMode.NonInteractive)
+                RemoveListener(ActionCreationManager.Instance);
         }
 
         public void SetActionMode(ActionMode mode)

@@ -133,9 +133,6 @@ namespace ProjectL.UI.GameScene.Actions
             _actionEventSets[ActionType.PlacePiece] = new();
             _actionEventSets[ActionType.Master] = new();
 
-            // TODO: connect to spawners
-
-            ActionZonesManager.Instance.ConnectToButtons(this);
             ActionZonesManager.Instance.SetPlayerMode(PlayerMode.NonInteractive);
             ActionZonesManager.Instance.SetActionMode(ActionMode.Normal);
         }
@@ -207,8 +204,7 @@ namespace ProjectL.UI.GameScene.Actions
         private void Player_ActionRequested(object? sender, HumanPlayer.GetActionEventArgs e)
         {
             if (sender is not HumanPlayer player) {
-                Debug.LogError("Sender is not a HumanPlayer!", this);
-                return;
+                throw new ApplicationException("Sender is not a HumanPlayer!");
             }
             _currentPlayer = player;
             _actionVerifier = e.Verifier;
@@ -219,8 +215,7 @@ namespace ProjectL.UI.GameScene.Actions
         private void Player_RewardChoiceRequested(object? sender, HumanPlayer.GetRewardEventArgs e)
         {
             if (sender is not HumanPlayer player) {
-                Debug.LogError("Sender is not a HumanPlayer!", this);
-                return;
+                throw new ApplicationException("Sender is not a HumanPlayer!");
             }
 
             // TODO: handle reward choice

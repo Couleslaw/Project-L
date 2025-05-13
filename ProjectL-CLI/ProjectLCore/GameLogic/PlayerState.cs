@@ -326,7 +326,7 @@ namespace ProjectLCore.GameLogic
 
         /// <summary>
         /// Adds the given tetromino to the player's personal collection.
-        /// Also calls the <see cref="IPlayerStatePuzzleListener.OnTetrominoCollectionChanged(TetrominoShape, int)"/> method of all listeners.
+        /// Also calls the <see cref="ITetrominoCollectionListener.OnTetrominoCollectionChanged(TetrominoShape, int)"/> method of all listeners.
         /// </summary>
         /// <param name="shape">The tetromino type to add.</param>
         public void AddTetromino(TetrominoShape shape)
@@ -337,7 +337,7 @@ namespace ProjectLCore.GameLogic
 
         /// <summary>
         /// Removes the tetromino from the player's personal collection.
-        /// Also calls the <see cref="IPlayerStatePuzzleListener.OnTetrominoCollectionChanged(TetrominoShape, int)"/> method of all listeners.
+        /// Also calls the <see cref="ITetrominoCollectionListener.OnTetrominoCollectionChanged(TetrominoShape, int)"/> method of all listeners.
         /// </summary>
         /// <param name="shape">The tetromino type to remove.</param>
         public void RemoveTetromino(TetrominoShape shape)

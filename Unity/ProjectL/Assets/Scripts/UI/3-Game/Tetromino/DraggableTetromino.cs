@@ -10,6 +10,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     using ProjectLCore.GameManagers;
     using ProjectLCore.GamePieces;
     using System;
+    using System.Collections;
     using System.Threading;
     using System.Threading.Tasks;
     using UnityEngine;
@@ -237,20 +238,14 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 Destroy(gameObject);
         }
 
-        public async Task ReturnToCollectionAfterDelayAsync(int delayMilliseconds, CancellationToken cancellationToken = default)
+        public void ReturnToCollectionAfterMilliseconds(int delayMilliseconds)
         {
-            if (delayMilliseconds <= 0) {
-                ReturnToCollection();
-                return;
-            }
+            StartCoroutine(Coroutine());
 
-            try {
-                await Awaitable.WaitForSecondsAsync(delayMilliseconds / 1000f, cancellationToken);
+            IEnumerator Coroutine()
+            {
+                yield return new WaitForSeconds(delayMilliseconds / 1000f);
                 ReturnToCollection();
-            }
-            catch (OperationCanceledException) {
-                ReturnToCollection();
-                throw;
             }
         }
 
@@ -355,8 +350,12 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         private void OnDestroy()
         {
+            if (GameManager.Controls == null) {
+                return;  // app quit  --> no cleanup needed
+            }
+
             ActionCreationManager.Instance?.RemoveListener(this);
-            GameManager.Controls!.Gameplay.RotateSmooth.performed -= OnRotateSmoothInputAction;
+            GameManager.Controls.Gameplay.RotateSmooth.performed -= OnRotateSmoothInputAction;
             GameManager.Controls.Gameplay.Rotate90.performed -= OnRotate90InputAction;
             GameManager.Controls.Gameplay.Flip.performed -= OnFlipInputAction;
             GameManager.Controls.Gameplay.Place.performed -= OnPlaceInputAction;

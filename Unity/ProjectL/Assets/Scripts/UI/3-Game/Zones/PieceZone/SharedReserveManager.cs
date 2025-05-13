@@ -5,6 +5,11 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     using UnityEngine;
     using ProjectLCore.GameLogic;
     using ProjectL.UI.GameScene.Actions;
+    using NUnit.Framework;
+    using System.Collections.Generic;
+    using ProjectLCore.GameManagers;
+    using System;
+    using ProjectLCore.GamePieces;
 
     public class SharedReserveManager : GraphicsManager<SharedReserveManager>, ITetrominoActionListener
     {
@@ -19,6 +24,15 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
             _sharedReserveStats.Init(game.GameState.NumInitialTetrominos, game.GameState);
             ActionCreationManager.Instance.AddListener(this);
+        }
+
+        public int[] GetNumTetrominosLeft()
+        {
+            int[] tetrominosLeft = new int[TetrominoManager.NumShapes];
+            foreach (TetrominoShape shape in Enum.GetValues(typeof(TetrominoShape))) {
+                tetrominosLeft[(int)shape] = _sharedReserveStats!.GetDisplayCount(shape);
+            }
+            return tetrominosLeft;
         }
 
 

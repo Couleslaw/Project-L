@@ -10,6 +10,8 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     using System.Linq;
     using ProjectLCore.GameActions;
     using System;
+    using System.Collections;
+    using ProjectL.Data;
 
     public class PieceCountColumn : MonoBehaviour, ITetrominoCollectionListener, ITetrominoCollectionNotifier
     {
@@ -18,10 +20,11 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         private readonly Dictionary<TetrominoShape, PieceCounter> _pieceCounters = new();
         private readonly int[] _realCounts = new int[TetrominoManager.NumShapes];
         private Color _columnColor = GameGraphicsSystem.ActiveColor;
-
-       
+        private bool _shouldColorGains;
 
         private event Action<TetrominoShape, int>? DisplayCollectionChanged;
+
+        private readonly bool[] _realValueUpdated = new bool[TetrominoManager.NumShapes];
 
         private static readonly List<TetrominoShape> _shapeOrder = new() {
             TetrominoShape.O1,
@@ -53,8 +56,9 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
         }
 
-        public void Init(int numInitialTetrominos, ITetrominoCollectionNotifier notifier)
+        public void Init(int numInitialTetrominos, ITetrominoCollectionNotifier notifier, bool shouldColorGains=false)
         {
+            _shouldColorGains = shouldColorGains;
             for (int i = 0; i < _realCounts.Length; i++) {
                 _realCounts[i] = numInitialTetrominos;
             }
@@ -70,28 +74,55 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
         }
 
-        void ITetrominoCollectionListener.OnTetrominoCollectionChanged(TetrominoShape shape, int count)
+        void ITetrominoCollectionListener.OnTetrominoCollectionChanged(TetrominoShape shape, int newCount)
         {
-            _realCounts[(int)shape] = count;
-            SetDisplayCount(shape, count);
+            int oldCount = _realCounts[(int)shape];
+            _realValueUpdated[(int)shape] = true; // mark that the real value has been updated
+
+            _realCounts[(int)shape] = newCount;
+            SetDisplayCount(shape, newCount);
+
+            if (!_shouldColorGains || newCount <= oldCount) {
+                return;
+            }
+
+            var counter = _pieceCounters[shape];
+            float delay = 0.8f * AnimationSpeed.DelayMultiplier;
+
+            counter.SetColor(PieceCounter.IncrementedDisplayColor);
+            counter.SetColorAfterSeconds(_columnColor, delay);
         }
 
         public int GetDisplayCount(TetrominoShape shape) => _pieceCounters[shape].Count;
-        public void SetDisplayCount(TetrominoShape shape, int count)
+        private void SetDisplayCount(TetrominoShape shape, int newCount)
         {
             var counter = _pieceCounters[shape];
-            if (counter.Count != count) {
-                counter.Count = count;
-                DisplayCollectionChanged?.Invoke(shape, count);
+            if (counter.Count != newCount) {
+                counter.Count = newCount;
+                DisplayCollectionChanged?.Invoke(shape, newCount);
             }
 
             int realCount = _realCounts[(int)shape];
-            if (count == realCount)
+            if (newCount == realCount)
                 counter.SetColor(_columnColor);
-            else if (count > realCount)
+            else if (newCount > realCount)
                 counter.SetColor(PieceCounter.IncrementedDisplayColor);
             else
                 counter.SetColor(PieceCounter.DecrementedDisplayColor);
+        }
+
+        private void SetDisplayCountAfterMillisecondsIfNoChange(TetrominoShape shape, int newCount, int milliseconds)
+        {
+            _realValueUpdated[(int)shape] = false;
+            StartCoroutine(Coroutine());
+
+            IEnumerator Coroutine()
+            {
+                yield return new WaitForSeconds(milliseconds / 1000f);
+                if (!_realValueUpdated[(int)shape]) {
+                    SetDisplayCount(shape, newCount);
+                }
+            }
         }
 
         public void IncrementDisplayCount(TetrominoShape shape) => SetDisplayCount(shape, GetDisplayCount(shape) + 1);

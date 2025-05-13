@@ -14,16 +14,10 @@ namespace ProjectL.UI.GameScene
         private const float _defaultAnimationDelay = 1.5f;
         public static float AnimationDelay => _defaultAnimationDelay * AnimationSpeed.DelayMultiplier;
 
-        public static async Task WaitForAnimationDelayFraction(float fraction = 1f, CancellationToken cancellationToken = default)
+        public static async Task WaitForSecondsAsync(float seconds, CancellationToken cancellationToken = default)
         {
-            if (cancellationToken.IsCancellationRequested) {
-                return;
-            }
-            try {
-                await Awaitable.WaitForSecondsAsync(AnimationDelay * fraction, cancellationToken);
-            }
-            catch (OperationCanceledException) {
-            }
+            cancellationToken.ThrowIfCancellationRequested();
+            await Awaitable.WaitForSecondsAsync(AnimationDelay * seconds, cancellationToken);
         }
     }
 }

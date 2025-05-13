@@ -80,4 +80,5 @@
   - [ ] recycle
   - [ ] take basic piece
   - [ ] change piece
-  - [ ] master action
+  - [x] master action
+  - [x] end finishing touches

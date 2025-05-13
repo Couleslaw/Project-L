@@ -6,6 +6,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     using ProjectLCore.GameActions;
     using ProjectLCore.GamePieces;
     using System;
+    using System.Collections;
     using System.Threading;
     using Unity.VisualScripting;
     using UnityEngine;
@@ -132,8 +133,10 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             _spawningEnabled = enable;
         }
 
-        public TemporaryButtonSelector CreateTemporaryButtonSelector() => new TemporaryButtonSelector(this);
-
+        public TemporaryButtonSelector CreateTemporaryButtonSelector(SelectionEffect effect = SelectionEffect.None)
+        {
+            return new TemporaryButtonSelector(this, effect);
+        }
 
         #endregion
 
@@ -141,18 +144,43 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         {
             private const float _temporaryScaleIncrease = 1.3f;
             RectTransform _spawnerRectTransform;
+            TetrominoSpawner _spawner;
+            SelectionEffect _effect;
 
-            public TemporaryButtonSelector(TetrominoSpawner spawner)
+            public TemporaryButtonSelector(TetrominoSpawner spawner, SelectionEffect effect)
             {
                 SoundManager.Instance?.PlaySoftTapSoundEffect();
                 _spawnerRectTransform = spawner.GetComponent<RectTransform>();
                 _spawnerRectTransform.localScale *= _temporaryScaleIncrease;
+
+                _effect = effect;
+                _spawner = spawner;
+                if (_effect == SelectionEffect.GiveToPlayer) {
+                    _spawner.TetrominoReturnedEventHandler?.Invoke(_spawner.Shape);
+                }
+                if (_effect == SelectionEffect.RemoveFromPlayer) {
+                    _spawner.TetrominoSpawnedEventHandler?.Invoke(_spawner.Shape);
+                }
             }
 
             public void Dispose()
             {
                 _spawnerRectTransform.localScale /= _temporaryScaleIncrease;
+
+                if (_effect == SelectionEffect.GiveToPlayer) {
+                    _spawner.TetrominoSpawnedEventHandler?.Invoke(_spawner.Shape);
+                }
+                if (_effect == SelectionEffect.RemoveFromPlayer) {
+                    _spawner.TetrominoReturnedEventHandler?.Invoke(_spawner.Shape);
+                }
             }
         }
+    }
+
+    public enum SelectionEffect
+    {
+        None,
+        GiveToPlayer,
+        RemoveFromPlayer,
     }
 }

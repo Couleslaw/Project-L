@@ -2,6 +2,7 @@
 
 namespace ProjectL.UI.GameScene.Zones.PieceZone
 {
+    using System.Collections;
     using TMPro;
     using UnityEngine;
 
@@ -10,6 +11,8 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         #region Fields
 
         [SerializeField] private TextMeshProUGUI? _countLabel;
+        private Color _colorToSet;
+        private bool _colorCoroutineRunning = false;
 
         public static Color IncrementedDisplayColor { get; } = new Color(115f / 255, 218f / 255, 69f / 255);
         public static Color DecrementedDisplayColor { get; } = new Color(224f / 255, 55f / 255, 34f / 255);
@@ -55,6 +58,11 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         public void SetColor(Color color)
         {
+            if (_colorCoroutineRunning) {
+                _colorToSet = color;
+                return;
+            }
+
             if (_countLabel != null) {
                 _countLabel.color = color;
             }
@@ -62,6 +70,25 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             // if red --> show zero, else dont show zero --> need to refresh
             if (Count == 0) {
                 Count = 0;  
+            }
+        }
+
+        public void SetColorAfterSeconds(Color color, float secondDelay)
+        {
+            if (secondDelay <= 0) {
+                SetColor(color);
+                return;
+            }
+
+            _colorToSet = color;
+            _colorCoroutineRunning = true;
+            StartCoroutine(Coroutine());
+
+            IEnumerator Coroutine()
+            {
+                yield return new WaitForSeconds(secondDelay);
+                _colorCoroutineRunning = false;
+                SetColor(_colorToSet);
             }
         }
 

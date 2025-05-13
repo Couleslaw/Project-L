@@ -46,7 +46,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 // create count column
                 var column = Instantiate(_pieceCountColumnPrefab, _tetrominoCollectionsContainer.transform);
                 column.gameObject.SetActive(true);
-                column.Init(0, game.PlayerStates[player]);  // players start with no pieces
+                column.Init(0, game.PlayerStates[player], shouldColorGains: true);  // players start with no pieces
                 _pieceColumns.Add(player, column);
 
                 // create player name - the TMPro text object is a child of the player name template

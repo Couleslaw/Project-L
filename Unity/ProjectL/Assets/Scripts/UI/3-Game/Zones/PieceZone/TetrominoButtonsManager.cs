@@ -10,6 +10,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     using ProjectLCore.Players;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using UnityEngine;
@@ -93,11 +94,45 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         public async Task AnimateSelectRewardAsync(List<TetrominoShape> rewardOptions, TetrominoShape selectedReward, CancellationToken cancellationToken)
         {
+            // highlight reward options
             using (new TemporaryButtonHighlighter(rewardOptions)) {
-                await GameAnimationManager.WaitForAnimationDelayFraction(1f, cancellationToken);
+
+                await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+
+                // highlight and select the reward
                 var spawner = _tetrominoSpawners[selectedReward];
-                using (spawner.CreateTemporaryButtonSelector()) {
-                    await GameAnimationManager.WaitForAnimationDelayFraction(1f, cancellationToken);
+                using (new TemporaryButtonHighlighter(selectedReward, playSound: false)) {
+                    using (spawner.CreateTemporaryButtonSelector(SelectionEffect.GiveToPlayer)) {
+                        await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+                    }
+                }
+            }
+        }
+
+        public async Task AnimateTakeBasicTetrominoActionAsync(CancellationToken cancellationToken)
+        {
+            // select the O1 piece
+            List<TetrominoShape> options = new() { TetrominoShape.O1 };
+            await AnimateSelectRewardAsync(options, TetrominoShape.O1, cancellationToken);
+        }
+
+        public async Task AnimateChangeTetrominoActionAsync(ChangeTetrominoAction action, CancellationToken cancellationToken)
+        {
+            var oldSpawner = _tetrominoSpawners[action.OldTetromino];
+            var newSpawner = _tetrominoSpawners[action.NewTetromino];
+
+            // select the old piece
+            using (oldSpawner.CreateTemporaryButtonSelector(SelectionEffect.RemoveFromPlayer)) {
+                // highlighting the old piece, important !!!
+                // if player had only 1 piece, the display count will decrement to 0, and so the piece would go gray
+                using (new TemporaryButtonHighlighter(action.OldTetromino, playSound: false)) {
+                    
+                    await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+
+                    // select the reward
+                    var tetrominosInShardReserve = SharedReserveManager.Instance.GetNumTetrominosLeft();
+                    var upgradeOptions = RewardManager.GetUpgradeOptions(tetrominosInShardReserve, action.OldTetromino);
+                    await AnimateSelectRewardAsync(upgradeOptions, action.NewTetromino, cancellationToken);
                 }
             }
         }
@@ -106,15 +141,29 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         {
             private readonly bool[] _originalSettings = new bool[TetrominoManager.NumShapes];
 
-            public TemporaryButtonHighlighter(ICollection<TetrominoShape> buttonsToHighlight)
+            public TemporaryButtonHighlighter(ICollection<TetrominoShape> buttonsToHighlight, bool playSound = true)
             {
-                SoundManager.Instance?.PlaySoftTapSoundEffect();
+                if (playSound) {
+                    SoundManager.Instance?.PlaySoftTapSoundEffect();
+                }
                 for (int i = 0; i < TetrominoManager.NumShapes; i++) {
                     var spawner = Instance._tetrominoSpawners[(TetrominoShape)i];
                     _originalSettings[i] = spawner.IsGrayedOut;
                     spawner.IsGrayedOut = !buttonsToHighlight.Contains((TetrominoShape)i);
                 }
             }
+
+            public TemporaryButtonHighlighter(TetrominoShape button, bool playSound = true)
+                : this(new List<TetrominoShape> { button })
+            { }
+
+            public TemporaryButtonHighlighter(TetrominoShape button1, TetrominoShape button2, bool playSound = true)
+                : this(new List<TetrominoShape> { button1, button2 })
+            { }
+
+            public TemporaryButtonHighlighter(ICollection<TetrominoShape> buttonsCollection, TetrominoShape extraButton, bool playSound = true)
+                : this(buttonsCollection.Union(new List<TetrominoShape> { extraButton }).ToList())
+            { }
 
             public void Dispose()
             {
