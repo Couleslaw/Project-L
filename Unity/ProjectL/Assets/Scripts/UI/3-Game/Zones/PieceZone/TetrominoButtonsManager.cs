@@ -113,6 +113,21 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
         }
 
+        public TetrominoShape? GetSelectedReward()
+        {
+            throw new NotImplementedException("This method is not implemented.");
+        }
+
+        public TakeBasicTetrominoAction? GetTakeBasicTetrominoAction()
+        {
+            throw new NotImplementedException("This method is not implemented.");
+        }
+
+        public ChangeTetrominoAction? GetChangeTetrominoAction()
+        {
+            throw new NotImplementedException("This method is not implemented.");
+        }
+
         protected override void Awake()
         {
             base.Awake();

@@ -43,8 +43,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
         public static void AddToRadioButtonGroup(Button button)
         {
             string groupName = nameof(PuzzleZoneManager);
-            Action callBack = ActionCreationManager.Instance.ReportStateChanged;
-            RadioButtonsGroup.RegisterButton(button, groupName, callBack, callBack);
+            RadioButtonsGroup.RegisterButton(button, groupName, onSelect: ActionCreationManager.Instance.ReportStateChanged);
         }
 
         public static void RemoveFromRadioButtonGroup(Button button)
@@ -131,6 +130,16 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
         void IHumanPlayerActionListener<RecycleAction>.OnActionCanceled() => SetMode(PuzzleZoneMode.Disabled);
 
         void IHumanPlayerActionListener<RecycleAction>.OnActionConfirmed() => SetMode(PuzzleZoneMode.Disabled);
+
+        public TakePuzzleAction? GetTakePuzzleAction()
+        {
+            throw new NotImplementedException();
+        }
+
+        public RecycleAction? GetRecycleAction()
+        {
+            throw new NotImplementedException();
+        }
 
         #endregion
     }

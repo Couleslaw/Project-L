@@ -4,6 +4,7 @@ namespace ProjectL.UI.GameScene.Actions
 {
     using ProjectL.UI.GameScene.Zones.ActionZones;
     using ProjectL.UI.GameScene.Zones.PieceZone;
+    using ProjectL.UI.GameScene.Zones.PlayerZone;
     using ProjectL.UI.GameScene.Zones.PuzzleZone;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameActions.Verification;
@@ -12,6 +13,7 @@ namespace ProjectL.UI.GameScene.Actions
     using ProjectLCore.Players;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using UnityEngine;
 
     public enum PlayerMode
@@ -83,6 +85,8 @@ namespace ProjectL.UI.GameScene.Actions
 
         private ActionType? _currentActionType;
 
+        private Queue<GameAction>? _finishingTouchesPlacements = null;
+
         #endregion
 
         private interface IActionEventSet
@@ -147,27 +151,35 @@ namespace ProjectL.UI.GameScene.Actions
 
             Debug.Log("ReportStateChanged");
 
-            // TODO: handle state changes
-            switch (_currentActionType.Value) {
-                case ActionType.SelectReward:
-                    break;
-                case ActionType.TakePuzzle:
-                    break;
-                case ActionType.Recycle:
-                    break;
-                case ActionType.TakeBasicTetromino:
-                    break;
-                case ActionType.ChangeTetromino:
-                    break;
-                case ActionType.PlacePiece:
-                    break;
-                case ActionType.Master:
-                    break;
-                default:
-                    break;
+            if (_currentActionType == ActionType.SelectReward) {
+                _lastValidReward = TetrominoButtonsManager.Instance.GetSelectedReward();
+                ActionZonesManager.Instance.CanSelectReward = _lastValidReward != null;
+                return;
             }
 
-            // get action - put to verifier and set confirm button visibility
+            if (_actionVerifier == null) {
+                Debug.LogError("Action verifier is null", this);
+                return;
+            }
+
+            GameAction? action = _currentActionType.Value switch {
+                ActionType.TakePuzzle => PuzzleZoneManager.Instance.GetTakePuzzleAction(),
+                ActionType.Recycle => PuzzleZoneManager.Instance.GetRecycleAction(),
+                ActionType.TakeBasicTetromino => TetrominoButtonsManager.Instance.GetTakeBasicTetrominoAction(),
+                ActionType.ChangeTetromino => TetrominoButtonsManager.Instance.GetChangeTetrominoAction(),
+                ActionType.PlacePiece => PlayerZoneManager.Instance.GetPlaceTetrominoAction(),
+                ActionType.Master => PlayerZoneManager.Instance.GetMasterAction(),
+                _ => null
+            };
+      
+            if (action != null && _actionVerifier.Verify(action) is VerificationSuccess) {
+                _lastValidAction = action;
+                ActionZonesManager.Instance.CanConfirmAction = true;
+            }
+            else {
+                _lastValidAction = null;
+                ActionZonesManager.Instance.CanConfirmAction = false;
+            }
         }
 
         public void OnActionCanceled()
@@ -219,7 +231,9 @@ namespace ProjectL.UI.GameScene.Actions
 
         public void OnEndFinishingTouchesActionRequested()
         {
-            SubmitAction(new EndFinishingTouchesAction());
+            _finishingTouchesPlacements = new(PlayerZoneManager.Instance.GetFinishingTouchesPlacements().Cast<GameAction>());
+            _finishingTouchesPlacements.Enqueue(new EndFinishingTouchesAction());
+            SubmitAction(_finishingTouchesPlacements.Dequeue());
         }
 
         public void OnClearBoardRequested()
@@ -278,6 +292,12 @@ namespace ProjectL.UI.GameScene.Actions
                 throw new ApplicationException("Sender is not a HumanPlayer!");
             }
             Debug.Log($"Action requested by {player.Name}");
+
+            if (_finishingTouchesPlacements != null) {
+                SubmitAction(_finishingTouchesPlacements.Dequeue());
+                return;
+            }
+
             _currentPlayer = player;
             _actionVerifier = e.Verifier;
             SetPlayerMode(PlayerMode.Interactive);

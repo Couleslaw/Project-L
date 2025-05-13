@@ -9,6 +9,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
     using ProjectL.UI.GameScene.Actions;
+    using ProjectL.UI.Sound;
 
     [RequireComponent(typeof(Button))]
     public class DeckCoverCard : MonoBehaviour
@@ -33,6 +34,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
                 Debug.LogError("One or more UI components is not assigned!", this);
                 return;
             }
+            _button.onClick.AddListener(SoundManager.Instance!.PlaySoftTapSoundEffect);
         }
 
         public void Init(bool isBlack)

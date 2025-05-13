@@ -60,5 +60,20 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
         {
             return _playerZoneRows[_currentPlayer!].GetPuzzleOnIndex(index);
         }
+
+        public PlaceTetrominoAction? GetPlaceTetrominoAction()
+        {
+            throw new NotImplementedException();
+        }
+
+        public MasterAction? GetMasterAction()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<PlaceTetrominoAction> GetFinishingTouchesPlacements()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
