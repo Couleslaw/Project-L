@@ -28,9 +28,9 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
         #region Events
 
-        public static event Action? CancelAction;
+        public static event Action? CancelActionEventHandler;
 
-        public event Action? SelectAction;
+        public event Action? SelectActionEventHandler;
 
         #endregion
 
@@ -70,6 +70,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
             var newSpriteState = actionButton.GetCurrentSpriteState(selected: false);
             RadioButtonsGroup.UpdateSpritesForButton(button, newSpriteState);
+            button.spriteState = newSpriteState;
             RadioButtonsGroup.ForceDeselectButtonInGroup(nameof(ActionButton));
         }
 
@@ -84,6 +85,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
             var newSpriteState = GetCurrentSpriteState(selected: true);
             RadioButtonsGroup.UpdateSpritesForButton(_button, newSpriteState);
+            _button.spriteState = newSpriteState;
             _button.onClick.Invoke();
         }
 
@@ -116,6 +118,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
             bool isSelected = RadioButtonsGroup.IsButtonSelected(_button);
             RadioButtonsGroup.UpdateSpritesForButton(_button, GetCurrentSpriteState(isSelected));
+            _button.spriteState = GetCurrentSpriteState(isSelected);
         }
 
         private void Awake()
@@ -138,7 +141,9 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
                 return;
             }
 
-            RadioButtonsGroup.RegisterButton(_button, nameof(ActionButton), SelectAction, CancelAction);
+            Action onSelect = () => SelectActionEventHandler?.Invoke();
+            Action onCancel = () => CancelActionEventHandler?.Invoke();
+            RadioButtonsGroup.RegisterButton(_button, nameof(ActionButton), onSelect, onCancel);
         }
 
         private void Start()

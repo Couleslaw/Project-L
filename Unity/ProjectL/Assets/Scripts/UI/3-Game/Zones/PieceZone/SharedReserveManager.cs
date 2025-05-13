@@ -11,7 +11,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     using System;
     using ProjectLCore.GamePieces;
 
-    public class SharedReserveManager : GraphicsManager<SharedReserveManager>, ITetrominoActionListener
+    public class SharedReserveManager : GraphicsManager<SharedReserveManager>
     {
         [SerializeField] private PieceCountColumn? _sharedReserveStats;
         
@@ -23,7 +23,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
 
             _sharedReserveStats.Init(game.GameState.NumInitialTetrominos, game.GameState);
-            ActionCreationManager.Instance.AddListener(this);
         }
 
         public int[] GetNumTetrominosLeft()
@@ -34,12 +33,5 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
             return tetrominosLeft;
         }
-
-
-        void IHumanPlayerActionListener.OnActionCanceled() => _sharedReserveStats!.ResetColumn();
-
-        void IHumanPlayerActionListener.OnActionConfirmed() => _sharedReserveStats!.ResetColumn();
-
-        void IHumanPlayerActionListener.OnActionRequested() { }
     }
 }

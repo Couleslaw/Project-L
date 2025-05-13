@@ -3,8 +3,12 @@
 namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 {
     using ProjectL.Data;
+    using ProjectL.UI.GameScene.Actions;
+    using ProjectL.UI.Sound;
+    using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
     using System;
+    using System.Runtime.CompilerServices;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -18,25 +22,16 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
         private Puzzle? _puzzle = null;
 
-        private Mode _mode = Mode.Normal;
+        private PuzzleZoneMode _mode = PuzzleZoneMode.Disabled;
 
         private bool _isRecycleSelected = false;
+        private bool _isBlack;
 
         #endregion
-
-        public enum Mode
-        {
-            Normal,
-            Recycle
-        }
 
         #region Properties
 
         public Button? Button => _button;
-
-        public Action<Puzzle>? OnRecyclePuzzleSelect { get; set; }
-
-        public Action<Puzzle>? OnRecyclePuzzleUnselect { get; set; }
 
         public bool IsEmpty => _puzzle == null;
 
@@ -46,33 +41,39 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
         public void SetPuzzle(Puzzle? puzzle)
         {
-            if (puzzle == null) {
-                DisableCard();
-            }
             _puzzle = puzzle;
             UpdateUI();
         }
 
-        public void SetMode(Mode mode)
+        public void SetMode(PuzzleZoneMode mode, TurnInfo turnInfo)
         {
             _mode = mode;
-            if (mode == Mode.Recycle) {
+            _button!.interactable = mode != PuzzleZoneMode.Disabled;
+
+            if (mode == PuzzleZoneMode.TakePuzzle && CanTakePuzzle()) {
+                PuzzleZoneManager.AddToRadioButtonGroup(_button);
+            }
+            else {
+                PuzzleZoneManager.RemoveFromRadioButtonGroup(_button);
+            }
+
+            if (mode == PuzzleZoneMode.Recycle) {
                 _isRecycleSelected = false;
             }
             UpdateUI();
-        }
 
-        public void DisableCard()
-        {
-            if (_button != null) {
-                _button.interactable = false;
-            }
-        }
+            bool CanTakePuzzle()
+            {
+                if (_puzzle == null)
+                    return false;
 
-        public void EnableCard()
-        {
-            if (_button != null) {
-                _button.interactable = true;
+                if (!_isBlack)
+                    return true;
+
+                if (turnInfo.GamePhase == GamePhase.EndOfTheGame && turnInfo.TookBlackPuzzle)
+                    return false;
+
+                return true;
             }
         }
 
@@ -83,14 +84,15 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
                 return;
             }
 
+            _button.onClick.AddListener(SoundManager.Instance!.PlaySoftTapSoundEffect);   
+
             _button.onClick.AddListener(OnRecycleButtonClick);
-            DisableCard();
             UpdateUI();
         }
 
         private void OnRecycleButtonClick()
         {
-            if (_mode != Mode.Recycle) {
+            if (_mode != PuzzleZoneMode.Recycle) {
                 return;
             }
             if (_puzzle == null) {
@@ -101,10 +103,10 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             _isRecycleSelected = !_isRecycleSelected;
             UpdateUI();
             if (_isRecycleSelected) {
-                OnRecyclePuzzleSelect?.Invoke(_puzzle);
+                ActionCreationManager.Instance.ReportStateChanged();
             }
             else {
-                OnRecyclePuzzleUnselect?.Invoke(_puzzle);
+                ActionCreationManager.Instance.ReportStateChanged();
             }
         }
 
@@ -134,7 +136,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
             // set the sprite and transition
             _button.image.type = Image.Type.Simple;
-            if (_mode == Mode.Recycle && _isRecycleSelected) {
+            if (_mode == PuzzleZoneMode.Recycle && _isRecycleSelected) {
                 _button.image.sprite = borderBright;
             }
             else {
@@ -143,20 +145,31 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
             _button.transition = Selectable.Transition.SpriteSwap;
             _button.spriteState = _mode switch {
-                Mode.Normal => new SpriteState {
+                PuzzleZoneMode.TakePuzzle => new SpriteState {
                     highlightedSprite = highlighted,
                     pressedSprite = borderBright,
                     selectedSprite = borderBright,
                     disabledSprite = borderBright
                 },
-                Mode.Recycle => new SpriteState {
+                PuzzleZoneMode.Recycle => new SpriteState {
                     highlightedSprite = _isRecycleSelected ? borderBright : highlighted,
                     pressedSprite = borderBright,
                     selectedSprite = borderBright,
                     disabledSprite = borderDim
                 },
+                PuzzleZoneMode.Disabled => new SpriteState {
+                    highlightedSprite = highlighted,
+                    pressedSprite = borderBright,
+                    selectedSprite = borderBright,
+                    disabledSprite = borderBright
+                },
                 _ => throw new ArgumentOutOfRangeException(nameof(_mode), _mode, null)
             };
+        }
+
+        internal void Init(bool isBlack)
+        {
+            _isBlack = isBlack;
         }
 
         #endregion

@@ -62,15 +62,15 @@
 - [x] add action buttons logic
 - [ ] add logic for human actions
   - [ ] standard actions
-    - [ ] connect TetrominoSpawners to action manager
+    - [x] connect TetrominoSpawners to action manager
     - [ ] take puzzle
     - [ ] recycle
     - [ ] take basic piece
     - [ ] change piece
     - [ ] master action
-  - [ ] finishing touches action
-    - [ ] clear board
-    - [ ] end finishing touches
+  - [x] finishing touches action
+    - [x] clear board
+    - [x] end finishing touches
   - [ ] reward selection
 - [ ] add animation for AI actions
   - [x] puzzle finished
@@ -78,7 +78,7 @@
   - [x] place piece
   - [ ] take puzzle
   - [ ] recycle
-  - [ ] take basic piece
-  - [ ] change piece
+  - [x] take basic piece
+  - [x] change piece
   - [x] master action
   - [x] end finishing touches

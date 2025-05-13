@@ -6,6 +6,9 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
     using System;
     using UnityEngine;
     using UnityEngine.UI;
+    using ProjectLCore.GameLogic;
+    using ProjectLCore.GamePieces;
+    using ProjectL.UI.GameScene.Actions;
 
     [RequireComponent(typeof(Button))]
     public class DeckCoverCard : MonoBehaviour
@@ -15,9 +18,13 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
         [SerializeField] private TextMeshProUGUI? _label;
         private Button? _button;
 
+        private int _deckSize;
+        private bool _isBlack;
+
         #endregion
 
         #region Methods
+
 
         private void Awake()
         {
@@ -26,38 +33,50 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
                 Debug.LogError("One or more UI components is not assigned!", this);
                 return;
             }
+        }
 
-            DisableCard();
+        public void Init(bool isBlack)
+        {
+            _isBlack = isBlack;
         }
 
         #endregion
 
         public void SetDeckSize(int n)
         {
+            if (n < 0) {
+                throw new ArgumentOutOfRangeException(nameof(n), "Deck size cannot be negative.");
+            }
+            _deckSize = n;
             if (_label == null) {
                 return;
             }
             _label.text = n.ToString();
         }
 
-        public void DisableCard()
+        public void SetMode(PuzzleZoneMode mode, TurnInfo turnInfo)
         {
-            if (_button != null) {
-                _button.interactable = false;
-            }
-        }
+            _button!.interactable = mode != PuzzleZoneMode.Disabled;
 
-        public void EnableCard()
-        {
-            if (_button != null) {
-                _button.interactable = true;
+            if (mode == PuzzleZoneMode.TakePuzzle && CanTakePuzzle()) {
+                PuzzleZoneManager.AddToRadioButtonGroup(_button);
             }
-        }
+            else {
+                PuzzleZoneManager.RemoveFromRadioButtonGroup(_button);
+            }
 
-        public void AddToRadioButtonGroup(string groupName, Action? onSelect = null, Action? onCancel = null)
-        {
-            if (_button != null) {
-                RadioButtonsGroup.RegisterButton(_button, groupName, onSelect, onCancel);
+            bool CanTakePuzzle()
+            {
+                if (_deckSize == 0)
+                    return false;
+
+                if (!_isBlack)
+                    return true;
+
+                if (turnInfo.GamePhase == GamePhase.EndOfTheGame && turnInfo.TookBlackPuzzle)
+                    return false;
+
+                return true;
             }
         }
     }

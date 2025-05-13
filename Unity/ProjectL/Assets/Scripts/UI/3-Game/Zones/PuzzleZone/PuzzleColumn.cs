@@ -30,48 +30,17 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             }
         }
 
-        public void Initialize(Action<Puzzle> onRecyclePuzzleSelect, Action<Puzzle> onRecyclePuzzleUnselect)
+        public void Init(bool isBlack)
         {
             foreach (PuzzleCard puzzleCard in _puzzleCards) {
-                puzzleCard.OnRecyclePuzzleSelect = onRecyclePuzzleSelect;
-                puzzleCard.OnRecyclePuzzleUnselect = onRecyclePuzzleUnselect;
+                puzzleCard.Init(isBlack);
             }
         }
 
-        public void DisableColumn()
+        public void SetMode(PuzzleZoneMode mode, TurnInfo turnInfo)
         {
             foreach (PuzzleCard puzzleCard in _puzzleCards) {
-                puzzleCard.DisableCard();
-            }
-        }
-
-        public void EnableColumn()
-        {
-            foreach (PuzzleCard puzzleCard in _puzzleCards) {
-                puzzleCard.EnableCard();
-            }
-        }
-
-        public void SetRecycleMode()
-        {
-            foreach (PuzzleCard puzzleCard in _puzzleCards) {
-                puzzleCard.SetMode(PuzzleCard.Mode.Recycle);
-            }
-        }
-
-        public void SetNormalMode()
-        {
-            foreach (PuzzleCard puzzleCard in _puzzleCards) {
-                puzzleCard.SetMode(PuzzleCard.Mode.Normal);
-            }
-        }
-
-        public void AddToRadioButtonGroup(string groupName, Action? onSelect = null, Action? onCancel = null)
-        {
-            foreach (PuzzleCard puzzleCard in _puzzleCards) {
-                if (puzzleCard.Button != null) {
-                    RadioButtonsGroup.RegisterButton(puzzleCard.Button, groupName, onSelect, onCancel);
-                }
+                puzzleCard.SetMode(mode, turnInfo);
             }
         }
 
@@ -86,7 +55,6 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
                 _puzzleCards[i] = Instantiate(puzzleCardPrefab, transform);
                 _puzzleCards[i].gameObject.SetActive(true);
                 _puzzleCards[i].gameObject.name = $"PuzzleCard_{i + 1}";
-                _puzzleCards[i].SetMode(PuzzleCard.Mode.Normal);
                 _puzzleCards[i].SetPuzzle(null);
             }
         }

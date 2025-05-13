@@ -11,17 +11,23 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
     public class PieceActionZone : ActionZoneBase
     {
+        #region Fields
+
         [SerializeField] private ActionButton? _takeBasicTetrominoButton;
+
         [SerializeField] private ActionButton? _changeTetrominoButton;
+
         [SerializeField] private ActionButton? _masterActionButton;
 
-        public event Action? OnEndFinishingTouchesButtonClick;
-        public event Action? OnTakeBasicTetrominoButtonClick;
-        public event Action? OnChangeTetrominoButtonClick;
-        public event Action? OnMasterActionButtonClick;
+        #endregion
+
+
+        #region Methods
 
         public void ManuallyClickTakeBasicTetrominoButton() => _takeBasicTetrominoButton?.ManuallySelectButton();
+
         public void ManuallyClickChangeTetrominoButton() => _changeTetrominoButton?.ManuallySelectButton();
+
         public void ManuallyClickMasterActionButton() => _masterActionButton?.ManuallySelectButton();
 
         public override void EnabledButtonsBasedOnGameState(GameState.GameInfo gameInfo, PlayerState.PlayerInfo playerInfo)
@@ -29,6 +35,41 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _takeBasicTetrominoButton!.CanActionBeCreated = CanTakeBasicTetromino(gameInfo);
             _changeTetrominoButton!.CanActionBeCreated = CanChangeTetromino(gameInfo, playerInfo);
             _masterActionButton!.CanActionBeCreated = CanMasterAction(playerInfo);
+        }
+
+        public bool CanMasterAction(PlayerState.PlayerInfo playerInfo)
+        {
+            for (int i = 0; i < TetrominoManager.NumShapes; i++) {
+                if (playerInfo.NumTetrominosOwned[i] > 0) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public override void SetPlayerMode(PlayerMode mode)
+        {
+            _takeBasicTetrominoButton!.Mode = mode;
+            _changeTetrominoButton!.Mode = mode;
+            _masterActionButton!.Mode = mode;
+        }
+
+        public override void AddListener(ActionCreationManager acm)
+        {
+            base.AddListener(acm);
+            _finishingTouchesButton!.onClick.AddListener(acm.OnEndFinishingTouchesActionRequested);
+            _takeBasicTetrominoButton!.SelectActionEventHandler += acm.OnTakeBasicTetrominoActionRequested;
+            _changeTetrominoButton!.SelectActionEventHandler += acm.OnChangeTetrominoActionRequested;
+            _masterActionButton!.SelectActionEventHandler += acm.OnMasterActionRequested;
+        }
+
+        public override void RemoveListener(ActionCreationManager acm)
+        {
+            base.RemoveListener(acm);
+            _finishingTouchesButton!.onClick.RemoveListener(acm.OnEndFinishingTouchesActionRequested);
+            _takeBasicTetrominoButton!.SelectActionEventHandler -= acm.OnTakeBasicTetrominoActionRequested;
+            _changeTetrominoButton!.SelectActionEventHandler -= acm.OnChangeTetrominoActionRequested;
+            _masterActionButton!.SelectActionEventHandler -= acm.OnMasterActionRequested;
         }
 
         private bool CanTakeBasicTetromino(GameState.GameInfo gameInfo)
@@ -49,39 +90,14 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             return false;
         }
 
-        public bool CanMasterAction(PlayerState.PlayerInfo playerInfo)
-        {
-            for (int i = 0; i < TetrominoManager.NumShapes; i++) {
-                if (playerInfo.NumTetrominosOwned[i] > 0) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public override void SetPlayerMode(PlayerMode mode)
-        {
-            _takeBasicTetrominoButton!.Mode = mode;
-            _changeTetrominoButton!.Mode = mode;
-            _masterActionButton!.Mode = mode;
-        }
-
-        private new void Awake()
+        protected override void Awake()
         {
             base.Awake();
-
             if (_takeBasicTetrominoButton == null || _changeTetrominoButton == null || _masterActionButton == null) {
-                Debug.LogError("One or more buttons are not assigned in the inspector", this);
-                return;
+                Debug.LogError("Action buttons are not assigned in the inspector!", this);
             }
-
-            _finishingTouchesButton!.onClick.AddListener(
-                () => OnEndFinishingTouchesButtonClick?.Invoke()
-            );
-
-            _takeBasicTetrominoButton.SelectAction += OnTakeBasicTetrominoButtonClick;
-            _changeTetrominoButton.SelectAction += OnChangeTetrominoButtonClick;
-            _masterActionButton.SelectAction += OnMasterActionButtonClick;
         }
+
+        #endregion
     }
 }

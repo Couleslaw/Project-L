@@ -52,7 +52,6 @@ namespace ProjectL.UI.GameScene.Zones
         public static void UnregisterButton(Button button)
         {
             if (!_buttonToGroupMap.ContainsKey(button)) {
-                Debug.LogError($"Button {button.name} is not registered in any group.");
                 return;
             }
             string groupName = _buttonToGroupMap[button];
@@ -87,13 +86,13 @@ namespace ProjectL.UI.GameScene.Zones
             }
             string groupName = _buttonToGroupMap[button];
             var buttonInfo = _buttonGroups[groupName][button];
-            buttonInfo.UpdateSprites(newState);
+            buttonInfo.SpriteState = newState;
+            button.spriteState = buttonInfo.SpriteState;
+
             if (button == _selectedButtons[groupName]) {
-                button.spriteState = buttonInfo.SelectedSpriteState;
-                button.image.sprite = buttonInfo.SelectedSpriteState.selectedSprite;
+                button.image.sprite = buttonInfo.SpriteState.selectedSprite;
             }
             else {
-                button.spriteState = buttonInfo.UnselectedSpriteState;
                 button.image.sprite = buttonInfo.OriginalSprite;
             }
         }
@@ -160,8 +159,8 @@ namespace ProjectL.UI.GameScene.Zones
             // set selected sprite setting
             _selectedButtons[groupName] = button;
             var buttonInfo = _buttonGroups[groupName][button];
-            button.spriteState = buttonInfo.SelectedSpriteState;
-            button.image.sprite = buttonInfo.SelectedSpriteState.selectedSprite;
+            button.spriteState = buttonInfo.SpriteState;
+            button.image.sprite = buttonInfo.SpriteState.selectedSprite;
 
             // invoke connected methods
             buttonInfo.OnSelect?.Invoke();
@@ -183,7 +182,6 @@ namespace ProjectL.UI.GameScene.Zones
             // restore original sprite setting
             _selectedButtons[groupName] = null;
             var buttonInfo = _buttonGroups[groupName][selectedButton];
-            selectedButton.spriteState = buttonInfo.UnselectedSpriteState;
             selectedButton.image.sprite = buttonInfo.OriginalSprite;
 
             // deselect the button in the event system
@@ -201,43 +199,29 @@ namespace ProjectL.UI.GameScene.Zones
         {
             #region Constructors
 
-            public ButtonInfo(Button button, UnityAction onClickListener, Action? onSelect, Action? onCancel)
+            public ButtonInfo(Button button, UnityAction onClickListener, Action? onSelect = null, Action? onCancel = null)
             {
                 OnClickListener = onClickListener;
                 OnSelect = onSelect;
                 OnCancel = onCancel;
 
                 OriginalSprite = button.image.sprite;
-                UnselectedSpriteState = button.spriteState;
-                UpdateSprites(button.spriteState);
-            }
-
-            public void UpdateSprites(SpriteState newState)
-            {
-                SelectedSpriteState = newState;
-                UnselectedSpriteState = new SpriteState {
-                    highlightedSprite = newState.selectedSprite,
-                    pressedSprite = newState.pressedSprite,
-                    selectedSprite = newState.selectedSprite,
-                    disabledSprite = newState.disabledSprite
-                };
+                SpriteState = button.spriteState;
             }
 
             #endregion
 
             #region Properties
 
-            public SpriteState SelectedSpriteState { get; private set; }
+            public SpriteState SpriteState { get; set; }
 
-            public SpriteState UnselectedSpriteState { get; private set; }
+            public Sprite OriginalSprite { get; set; }
 
-            public Sprite OriginalSprite { get; private set; }
+            public UnityAction OnClickListener { get; set; }
 
-            public UnityAction OnClickListener { get; private set; }
+            public Action? OnSelect { get; set; }
 
-            public Action? OnSelect { get; private set; }
-
-            public Action? OnCancel { get; private set; }
+            public Action? OnCancel { get; set; }
 
             #endregion
         }

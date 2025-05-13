@@ -2,16 +2,20 @@
 
 namespace ProjectL.UI.GameScene.Zones.PieceZone
 {
+    using ProjectL.UI.GameScene.Actions;
     using ProjectL.UI.Sound;
-    using ProjectLCore.GameActions;
     using ProjectLCore.GamePieces;
     using System;
-    using System.Collections;
-    using System.Threading;
-    using Unity.VisualScripting;
     using UnityEngine;
     using UnityEngine.EventSystems;
     using UnityEngine.UI;
+
+    public enum SelectionEffect
+    {
+        None,
+        GiveToPlayer,
+        RemoveFromPlayer,
+    }
 
     public interface ITetrominoSpawnerListener
     {
@@ -26,17 +30,25 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
     [RequireComponent(typeof(RectTransform))]
     [RequireComponent(typeof(Image))]
-    public class TetrominoSpawner : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+    [RequireComponent(typeof(Button))]
+    public class TetrominoSpawner : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IGameActionController
     {
         #region Fields
 
         [SerializeField] private DraggableTetromino? draggableTetrominoPrefab;
 
-        private Camera? mainCamera;
+        private Camera? _mainCamera;
 
         private DraggableTetromino? _currentTetromino = null;
+
         private Image? _image;
-        private bool _spawningEnabled = false;
+
+        private Button? _button;
+
+        private PlayerMode _playerMode = PlayerMode.NonInteractive;
+        private ActionMode _actionMode = ActionMode.Normal;
+
+        private bool _isGrayedOut = false;
 
         #endregion
 
@@ -52,7 +64,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         public TetrominoShape Shape => draggableTetrominoPrefab!.Shape;
 
-        private bool _isGrayedOut = false;
         public bool IsGrayedOut {
             get => _isGrayedOut;
             set {
@@ -60,9 +71,12 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 if (_image != null) {
                     _image.color = value ? GameGraphicsSystem.InactiveColor : Color.white;
                 }
+                _button!.interactable = !value && _playerMode == PlayerMode.Interactive;
             }
         }
 
+        private bool CanBeUsed => _playerMode == PlayerMode.Interactive && !IsGrayedOut;
+        private bool CanSpawn => CanBeUsed && _actionMode != ActionMode.RewardSelection;
 
         #endregion
 
@@ -71,13 +85,13 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         // Called by EventSystem when pointer presses down ON THIS BUTTON
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (_spawningEnabled == false) {
+            if (CanSpawn == false) {
                 return;
             }
 
             // --- Instantiate the Draggable Object ---
             // Convert mouse screen position to world position
-            Vector3 spawnPosition = mainCamera!.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y, mainCamera.nearClipPlane + 10f)); // Adjust Z as needed
+            Vector3 spawnPosition = _mainCamera!.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y, _mainCamera.nearClipPlane + 10f)); // Adjust Z as needed
             spawnPosition.z = 0; // Ensure Z is appropriate for 2D
 
             _currentTetromino = SpawnTetromino();
@@ -91,7 +105,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
             SoundManager.Instance?.PlaySliderSound();
             DraggableTetromino tetromino = Instantiate(draggableTetrominoPrefab, transform.position, Quaternion.identity);
-            tetromino.Init(mainCamera!, TetrominoReturnedEventHandler);
+            tetromino.Init(_mainCamera!, TetrominoReturnedEventHandler);
             TetrominoSpawnedEventHandler?.Invoke(Shape);
             return tetromino;
         }
@@ -117,20 +131,16 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             TetrominoReturnedEventHandler -= listener.OnTetrominoReturned;
         }
 
-        internal void Start()
+        public void SetPlayerMode(PlayerMode mode)
         {
-            if (draggableTetrominoPrefab == null) {
-                Debug.LogError("DraggableTetromino prefab is not assigned!", this);
-                return;
-            }
-            _image = GetComponent<Image>();
-            mainCamera = Camera.main; // Cache the camera
+            _playerMode = mode;
+            _button!.interactable = CanBeUsed;
         }
 
-
-        public void EnableSpawner(bool enable)
+        public void SetActionMode(ActionMode mode)
         {
-            _spawningEnabled = enable;
+            _actionMode = mode;
+            _button!.enabled = mode == ActionMode.RewardSelection;
         }
 
         public TemporaryButtonSelector CreateTemporaryButtonSelector(SelectionEffect effect = SelectionEffect.None)
@@ -138,14 +148,38 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             return new TemporaryButtonSelector(this, effect);
         }
 
+        private void Awake()
+        {
+            if (draggableTetrominoPrefab == null) {
+                Debug.LogError("DraggableTetromino prefab is not assigned!", this);
+                return;
+            }
+            _image = GetComponent<Image>();
+            _button = GetComponent<Button>();
+            _mainCamera = Camera.main; // Cache the camera
+        }
+
         #endregion
 
         public class TemporaryButtonSelector : IDisposable
         {
+            #region Constants
+
             private const float _temporaryScaleIncrease = 1.3f;
-            RectTransform _spawnerRectTransform;
-            TetrominoSpawner _spawner;
-            SelectionEffect _effect;
+
+            #endregion
+
+            #region Fields
+
+            internal RectTransform _spawnerRectTransform;
+
+            internal TetrominoSpawner _spawner;
+
+            internal SelectionEffect _effect;
+
+            #endregion
+
+            #region Constructors
 
             public TemporaryButtonSelector(TetrominoSpawner spawner, SelectionEffect effect)
             {
@@ -163,6 +197,10 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 }
             }
 
+            #endregion
+
+            #region Methods
+
             public void Dispose()
             {
                 _spawnerRectTransform.localScale /= _temporaryScaleIncrease;
@@ -174,13 +212,8 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                     _spawner.TetrominoReturnedEventHandler?.Invoke(_spawner.Shape);
                 }
             }
-        }
-    }
 
-    public enum SelectionEffect
-    {
-        None,
-        GiveToPlayer,
-        RemoveFromPlayer,
+            #endregion
+        }
     }
 }

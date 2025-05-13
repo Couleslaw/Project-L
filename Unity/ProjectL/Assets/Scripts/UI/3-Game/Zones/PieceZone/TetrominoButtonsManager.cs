@@ -2,12 +2,13 @@
 
 namespace ProjectL.UI.GameScene.Zones.PieceZone
 {
+    using ProjectL.UI.GameScene.Actions;
+    using ProjectL.UI.GameScene.Zones.ActionZones;
     using ProjectL.UI.Sound;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GameManagers;
     using ProjectLCore.GamePieces;
-    using ProjectLCore.Players;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -15,43 +16,29 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     using System.Threading.Tasks;
     using UnityEngine;
 
-
-
-    public class TetrominoButtonsManager : StaticInstance<TetrominoButtonsManager>, ITetrominoCollectionListener
+    public class TetrominoButtonsManager : StaticInstance<TetrominoButtonsManager>, ITetrominoCollectionListener, IGameActionController
     {
+        #region Fields
+
         private Dictionary<TetrominoShape, TetrominoSpawner> _tetrominoSpawners = new();
+
         private PieceCountColumn? _currentPieceColumn;
 
-        private Dictionary<TetrominoShape, TetrominoSpawner> FindSpawners()
+        #endregion
+
+        #region Methods
+
+        public void SetPlayerMode(PlayerMode mode)
         {
-            Dictionary<TetrominoShape, TetrominoSpawner> spawners = new();
-
-            // loop through all children of this GameObject
-            // in each child, look for a child with a TetrominoSpawner component
-            foreach (Transform child in transform) {
-                TetrominoSpawner? spawner = child.GetComponentInChildren<TetrominoSpawner>();
-                if (spawner != null) {
-                    TetrominoShape shape = spawner.Shape;
-                    if (!spawners.ContainsKey(shape)) {
-                        spawners.Add(shape, spawner);
-                    }
-                    else {
-                        Debug.LogError($"Duplicate TetrominoSpawner found for shape {shape}", this);
-                    }
-                }
+            foreach (var spawner in _tetrominoSpawners.Values) {
+                spawner.SetPlayerMode(mode);
             }
-
-            return spawners;
         }
 
-        protected override void Awake()
+        public void SetActionMode(ActionMode mode)
         {
-            base.Awake();
-            _tetrominoSpawners = FindSpawners();
-
-            // check that there is a 1-1 mapping between TetrominoShape and TetrominoSpawner
-            if (_tetrominoSpawners.Count != TetrominoManager.NumShapes) {
-                Debug.LogError($"Number of TetrominoSpawners ({_tetrominoSpawners.Count}) does not match TetrominoShape count ({TetrominoManager.NumShapes})", this);
+            foreach (var spawner in _tetrominoSpawners.Values) {
+                spawner.SetActionMode(mode);
             }
         }
 
@@ -63,7 +50,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
             return spawner.SpawnTetromino();
         }
-
 
         public void RegisterListener(ITetrominoSpawnerListener listener)
         {
@@ -80,17 +66,8 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             foreach (var spawner in _tetrominoSpawners.Values) {
                 int count = column.GetDisplayCount(spawner.Shape);
                 spawner.IsGrayedOut = count == 0;
-                spawner.EnableSpawner(count > 0);
             }
         }
-
-
-        void ITetrominoCollectionListener.OnTetrominoCollectionChanged(TetrominoShape shape, int count)
-        {
-            _tetrominoSpawners[shape].IsGrayedOut = count == 0;
-            _tetrominoSpawners[shape].EnableSpawner(count > 0);
-        }
-
 
         public async Task AnimateSelectRewardAsync(List<TetrominoShape> rewardOptions, TetrominoShape selectedReward, CancellationToken cancellationToken)
         {
@@ -119,14 +96,13 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         public async Task AnimateChangeTetrominoActionAsync(ChangeTetrominoAction action, CancellationToken cancellationToken)
         {
             var oldSpawner = _tetrominoSpawners[action.OldTetromino];
-            var newSpawner = _tetrominoSpawners[action.NewTetromino];
 
             // select the old piece
             using (oldSpawner.CreateTemporaryButtonSelector(SelectionEffect.RemoveFromPlayer)) {
                 // highlighting the old piece, important !!!
                 // if player had only 1 piece, the display count will decrement to 0, and so the piece would go gray
                 using (new TemporaryButtonHighlighter(action.OldTetromino, playSound: false)) {
-                    
+
                     await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
 
                     // select the reward
@@ -137,9 +113,55 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
         }
 
+        protected override void Awake()
+        {
+            base.Awake();
+            _tetrominoSpawners = FindSpawners();
+
+            // check that there is a 1-1 mapping between TetrominoShape and TetrominoSpawner
+            if (_tetrominoSpawners.Count != TetrominoManager.NumShapes) {
+                Debug.LogError($"Number of TetrominoSpawners ({_tetrominoSpawners.Count}) does not match TetrominoShape count ({TetrominoManager.NumShapes})", this);
+            }
+        }
+
+        private Dictionary<TetrominoShape, TetrominoSpawner> FindSpawners()
+        {
+            Dictionary<TetrominoShape, TetrominoSpawner> spawners = new();
+
+            // loop through all children of this GameObject
+            // in each child, look for a child with a TetrominoSpawner component
+            foreach (Transform child in transform) {
+                TetrominoSpawner? spawner = child.GetComponentInChildren<TetrominoSpawner>();
+                if (spawner != null) {
+                    TetrominoShape shape = spawner.Shape;
+                    if (!spawners.ContainsKey(shape)) {
+                        spawners.Add(shape, spawner);
+                    }
+                    else {
+                        Debug.LogError($"Duplicate TetrominoSpawner found for shape {shape}", this);
+                    }
+                }
+            }
+
+            return spawners;
+        }
+
+        void ITetrominoCollectionListener.OnTetrominoCollectionChanged(TetrominoShape shape, int count)
+        {
+            _tetrominoSpawners[shape].IsGrayedOut = count == 0;
+        }
+
+        #endregion
+
         private class TemporaryButtonHighlighter : IDisposable
         {
+            #region Fields
+
             private readonly bool[] _originalSettings = new bool[TetrominoManager.NumShapes];
+
+            #endregion
+
+            #region Constructors
 
             public TemporaryButtonHighlighter(ICollection<TetrominoShape> buttonsToHighlight, bool playSound = true)
             {
@@ -155,15 +177,22 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
             public TemporaryButtonHighlighter(TetrominoShape button, bool playSound = true)
                 : this(new List<TetrominoShape> { button })
-            { }
+            {
+            }
 
             public TemporaryButtonHighlighter(TetrominoShape button1, TetrominoShape button2, bool playSound = true)
                 : this(new List<TetrominoShape> { button1, button2 })
-            { }
+            {
+            }
 
             public TemporaryButtonHighlighter(ICollection<TetrominoShape> buttonsCollection, TetrominoShape extraButton, bool playSound = true)
                 : this(buttonsCollection.Union(new List<TetrominoShape> { extraButton }).ToList())
-            { }
+            {
+            }
+
+            #endregion
+
+            #region Methods
 
             public void Dispose()
             {
@@ -172,6 +201,8 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                     spawner.IsGrayedOut = _originalSettings[i];
                 }
             }
+
+            #endregion
         }
     }
 }

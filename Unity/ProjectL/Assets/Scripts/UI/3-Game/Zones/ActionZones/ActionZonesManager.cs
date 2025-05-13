@@ -11,7 +11,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
     using UnityEngine.Android;
     using System.Runtime.CompilerServices;
 
-    public class ActionZonesManager : GraphicsManager<ActionZonesManager>, ICurrentTurnListener
+    public class ActionZonesManager : GraphicsManager<ActionZonesManager>, ICurrentTurnListener, IGameActionController
     {
         private GameCore? _game;
 
@@ -29,25 +29,33 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _game.AddListener(this);
         }
 
+        public bool CanConfirmAction {
+            set {
+                if (_pieceActionZone != null && _puzzleActionZone != null) {
+                    _pieceActionZone!.CanConfirmAction = value;
+                    _puzzleActionZone!.CanConfirmAction = value;
+                }
+            }
+        }
+
+        public bool CanSelectReward {
+            set {
+                if (_pieceActionZone != null && _puzzleActionZone != null) {
+                    _pieceActionZone!.CanSelectReward = value;
+                    _puzzleActionZone!.CanSelectReward = value;
+                }
+            }
+        }
+
         private void AddListener(ActionCreationManager acm)
         {
             if (_puzzleActionZone == null || _pieceActionZone == null) {
                 return;
             }
 
-            // action canceling
-            ActionButton.CancelAction += acm.OnActionCanceled;
-            // action confirming
-            _puzzleActionZone.OnConfirmButtonClick += acm.OnActionConfirmed;
-            _pieceActionZone.OnConfirmButtonClick += acm.OnActionConfirmed;
-            // action requestion
-            _puzzleActionZone.OnTakePuzzleButtonClick += acm.OnTakePuzzleActionRequested;
-            _puzzleActionZone.OnRecycleButtonClick += acm.OnRecycleActionRequested;
-            _pieceActionZone.OnTakeBasicTetrominoButtonClick += acm.OnTakeBasicTetrominoActionRequested;
-            _pieceActionZone.OnChangeTetrominoButtonClick += acm.OnChangeTetrominoActionRequested;
-            _pieceActionZone.OnMasterActionButtonClick += acm.OnMasterActionRequested;
-
-            // TODO: finishing touches
+            ActionButton.CancelActionEventHandler += acm.OnActionCanceled;
+            _pieceActionZone.AddListener(acm);
+            _puzzleActionZone.AddListener(acm);
         }
 
         private void RemoveListener(ActionCreationManager acm)
@@ -56,17 +64,9 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
                 return;
             }
 
-            // action canceling
-            ActionButton.CancelAction -= acm.OnActionCanceled;
-            // action confirming
-            _puzzleActionZone.OnConfirmButtonClick -= acm.OnActionConfirmed;
-            _pieceActionZone.OnConfirmButtonClick -= acm.OnActionConfirmed;
-            // action requestion
-            _puzzleActionZone.OnTakePuzzleButtonClick -= acm.OnTakePuzzleActionRequested;
-            _puzzleActionZone.OnRecycleButtonClick -= acm.OnRecycleActionRequested;
-            _pieceActionZone.OnTakeBasicTetrominoButtonClick -= acm.OnTakeBasicTetrominoActionRequested;
-            _pieceActionZone.OnChangeTetrominoButtonClick -= acm.OnChangeTetrominoActionRequested;
-            _pieceActionZone.OnMasterActionButtonClick -= acm.OnMasterActionRequested;
+            ActionButton.CancelActionEventHandler -= acm.OnActionCanceled;
+            _pieceActionZone.RemoveListener(acm);
+            _puzzleActionZone.RemoveListener(acm);
         }
 
         public void SetPlayerMode(PlayerMode mode)
@@ -74,6 +74,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _pieceActionZone?.SetPlayerMode(mode);
             _puzzleActionZone?.SetPlayerMode(mode);
 
+            Debug.Log($"ActionZonesManager: SetPlayerMode {mode}");
             if (mode == PlayerMode.Interactive)
                 AddListener(ActionCreationManager.Instance);
             if (mode == PlayerMode.NonInteractive)
@@ -86,24 +87,9 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _puzzleActionZone?.SetActionMode(mode);
         }
 
-        public void EnableConfirmButtons()
-        {
-            _puzzleActionZone?.EnableConfirmButton();
-            _pieceActionZone?.EnableConfirmButton();
-        }
-
-        public void DisableConfirmButtons()
-        {
-            _puzzleActionZone?.DisableConfirmButton();
-            _pieceActionZone?.DisableConfirmButton();
-        }
 
         void ICurrentTurnListener.OnCurrentTurnChanged(TurnInfo currentTurnInfo)
         {
-            if (currentTurnInfo.GamePhase == GamePhase.FinishingTouches) {
-                SetActionMode(ActionMode.FinishingTouches);
-                return;
-            }
             var gameInfo = _game!.GameState.GetGameInfo();
             var playerInfo = _game.PlayerStates[_game.CurrentPlayer].GetPlayerInfo();
 

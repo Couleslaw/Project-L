@@ -20,7 +20,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(SpriteRenderer))]
     [RequireComponent(typeof(Collider2D))]
-    public class DraggableTetromino : MonoBehaviour, IPlacePieceActionListener
+    public class DraggableTetromino : MonoBehaviour, IHumanPlayerActionListener<PlaceTetrominoAction>
     {
         #region Constants
 
@@ -399,13 +399,10 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
         }
 
-        void IHumanPlayerActionListener.OnActionRequested()
-        {
-        }
 
-        void IHumanPlayerActionListener.OnActionCanceled() => ReturnToCollection();
-
-        void IHumanPlayerActionListener.OnActionConfirmed() => ReturnToCollection();
+        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionRequested() { }
+        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionCanceled() => ReturnToCollection();
+        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionConfirmed() => ReturnToCollection();
 
         #endregion
     }
