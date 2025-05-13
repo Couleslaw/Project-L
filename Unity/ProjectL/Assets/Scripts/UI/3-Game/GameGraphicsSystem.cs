@@ -35,8 +35,8 @@ namespace ProjectL.UI.GameScene
 
     public class GameGraphicsSystem : StaticInstance<GameGraphicsSystem>
     {
-        public static Color ActivePlayerColor { get; } = Color.white;
-        public static Color InactivePlayerColor { get; } = Color.gray;
+        public static Color ActiveColor { get; } = Color.white;
+        public static Color InactiveColor { get; } = new Color(0.27f, 0.27f, 0.27f);
 
         private GameCore? _game;
 

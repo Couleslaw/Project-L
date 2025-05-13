@@ -20,7 +20,7 @@ namespace ProjectL.UI.GameScene.Actions
         protected override async Task ProcessActionAsync(EndFinishingTouchesAction action, CancellationToken cancellationToken)
         {
             await GameAnimationManager.WaitForAnimationDelayFraction(0.5f, cancellationToken);
-            using (new ActionZonesManager.SimulateButtonPressDisposable(ActionZonesManager.Button.EndFinishingTouches)) {
+            using (new ActionZonesManager.SimulateButtonClickDisposable(ActionZonesManager.Button.EndFinishingTouches)) {
                 await GameAnimationManager.WaitForAnimationDelayFraction(1f, cancellationToken);
             }
         }
@@ -28,7 +28,7 @@ namespace ProjectL.UI.GameScene.Actions
         protected override async Task ProcessActionAsync(TakePuzzleAction action, CancellationToken cancellationToken)
         {
             await GameAnimationManager.WaitForAnimationDelayFraction(0.5f, cancellationToken);
-            using (new ActionZonesManager.SimulateButtonPressDisposable(ActionZonesManager.Button.TakePuzzle)) {
+            using (new ActionZonesManager.SimulateButtonClickDisposable(ActionZonesManager.Button.TakePuzzle)) {
                 await GameAnimationManager.WaitForAnimationDelayFraction(1f, cancellationToken);
             }
         }
@@ -36,7 +36,7 @@ namespace ProjectL.UI.GameScene.Actions
         protected override async Task ProcessActionAsync(RecycleAction action, CancellationToken cancellationToken)
         {
             await GameAnimationManager.WaitForAnimationDelayFraction(0.5f, cancellationToken);
-            using (new ActionZonesManager.SimulateButtonPressDisposable(ActionZonesManager.Button.Recycle)) {
+            using (new ActionZonesManager.SimulateButtonClickDisposable(ActionZonesManager.Button.Recycle)) {
                 await GameAnimationManager.WaitForAnimationDelayFraction(1f, cancellationToken);
             }
         }
@@ -44,7 +44,7 @@ namespace ProjectL.UI.GameScene.Actions
         protected override async Task ProcessActionAsync(TakeBasicTetrominoAction action, CancellationToken cancellationToken)
         {
             await GameAnimationManager.WaitForAnimationDelayFraction(0.5f, cancellationToken);
-            using (new ActionZonesManager.SimulateButtonPressDisposable(ActionZonesManager.Button.TakeBasicTetromino)) {
+            using (new ActionZonesManager.SimulateButtonClickDisposable(ActionZonesManager.Button.TakeBasicTetromino)) {
                 await GameAnimationManager.WaitForAnimationDelayFraction(1f, cancellationToken);
             }
         }
@@ -52,7 +52,7 @@ namespace ProjectL.UI.GameScene.Actions
         protected override async Task ProcessActionAsync(ChangeTetrominoAction action, CancellationToken cancellationToken)
         {
             await GameAnimationManager.WaitForAnimationDelayFraction(0.5f, cancellationToken);
-            using (new ActionZonesManager.SimulateButtonPressDisposable(ActionZonesManager.Button.ChangeTetromino)) {
+            using (new ActionZonesManager.SimulateButtonClickDisposable(ActionZonesManager.Button.ChangeTetromino)) {
                 await GameAnimationManager.WaitForAnimationDelayFraction(1f, cancellationToken);
             }
         }
@@ -64,20 +64,20 @@ namespace ProjectL.UI.GameScene.Actions
             Vector2 center = PlayerZoneManager.Instance.GetPlacementPositionFor(action);
             await tetromino.AnimateAIPlayerPlaceActionAsync(center, action, cancellationToken);
             await GameAnimationManager.WaitForAnimationDelayFraction(0.5f, cancellationToken);
-            tetromino.ReturnToCollection();
+            _ = tetromino.ReturnToCollectionAfterDelayAsync(20);
         }
 
         protected override async Task ProcessActionAsync(MasterAction action, CancellationToken cancellationToken)
         {
             await GameAnimationManager.WaitForAnimationDelayFraction(0.5f, cancellationToken);
-            using (new ActionZonesManager.SimulateButtonPressDisposable(ActionZonesManager.Button.MasterAction)) {
+            using (new ActionZonesManager.SimulateButtonClickDisposable(ActionZonesManager.Button.MasterAction)) {
                 await GameAnimationManager.WaitForAnimationDelayFraction(1f, cancellationToken);
             }
         }
 
         protected override async Task ProcessActionAsync(DoNothingAction action, CancellationToken cancellationToken)
         {
-            await GameAnimationManager.WaitForAnimationDelayFraction(1f, cancellationToken);
+            await GameAnimationManager.WaitForAnimationDelayFraction(0.5f, cancellationToken);
         }
 
         async Task IPlayerStatePuzzleFinishedAsyncListener.OnPuzzleFinishedAsync(int index, FinishedPuzzleInfo info, CancellationToken cancellationToken)
@@ -87,16 +87,16 @@ namespace ProjectL.UI.GameScene.Actions
             }
             await GameAnimationManager.WaitForAnimationDelayFraction(0.5f, cancellationToken);
             
+            cancellationToken.ThrowIfCancellationRequested();
             var puzzleSlot = PlayerZoneManager.Instance.GetCurrentPlayerPuzzleOnIndex(index);
             using (puzzleSlot.CreateTemporaryPuzzleHighlighter()) {
                 await GameAnimationManager.WaitForAnimationDelayFraction(1f, cancellationToken);
 
-                if (info.RewardOptions == null || info.SelectedReward == null) {
-                    return;
-                }
-
-                using (new ActionZonesManager.SimulateButtonPressDisposable(ActionZonesManager.Button.SelectReward)) {
-                    await TetrominoButtonsManager.Instance.AnimateSelectRewardAsync(info.RewardOptions, info.SelectedReward.Value, cancellationToken);
+                if (info.RewardOptions != null && info.SelectedReward != null) {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    using (new ActionZonesManager.SimulateButtonClickDisposable(ActionZonesManager.Button.SelectReward)) {
+                        await TetrominoButtonsManager.Instance.AnimateSelectRewardAsync(info.RewardOptions, info.SelectedReward.Value, cancellationToken);
+                    }
                 }
             }
             await GameAnimationManager.WaitForAnimationDelayFraction(0.5f, cancellationToken);

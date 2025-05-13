@@ -63,19 +63,19 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 _playerNameLabels.Add(player, playerNameLabel);
 
                 // gray out the name and piece column
-                SetPlayerColumnColor(player, GameGraphicsSystem.InactivePlayerColor);
+                SetPlayerColumnColor(player, GameGraphicsSystem.InactiveColor);
             }
         }
 
-        public void OnCurrentPlayerChanged(Player currentPlayer)
+        void ICurrentPlayerListener.OnCurrentPlayerChanged(Player currentPlayer)
         {
             _currentPlayer = currentPlayer;
             foreach (var player in _pieceColumns.Keys) {
                 if (player == currentPlayer) {
-                    SetPlayerColumnColor(player, GameGraphicsSystem.ActivePlayerColor);
+                    SetPlayerColumnColor(player, GameGraphicsSystem.ActiveColor);
                 }
                 else {
-                    SetPlayerColumnColor(player, GameGraphicsSystem.InactivePlayerColor);
+                    SetPlayerColumnColor(player, GameGraphicsSystem.InactiveColor);
                 }
             }
             TetrominoButtonsManager.Instance.SetCurrentPieceColumn(_pieceColumns[currentPlayer]);
@@ -100,12 +100,12 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
         }
 
-        public void OnTetrominoSpawned(TetrominoShape tetromino)
+        void ITetrominoSpawnerListener.OnTetrominoSpawned(TetrominoShape tetromino)
         {
             _pieceColumns[_currentPlayer!].DecrementDisplayCount(tetromino);
         }
 
-        public void OnTetrominoReturned(TetrominoShape tetromino)
+        void ITetrominoSpawnerListener.OnTetrominoReturned(TetrominoShape tetromino)
         {
             _pieceColumns[_currentPlayer!].IncrementDisplayCount(tetromino);
         }

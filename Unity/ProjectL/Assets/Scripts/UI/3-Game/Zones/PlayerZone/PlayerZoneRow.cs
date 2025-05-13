@@ -51,7 +51,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
         {
             // make name white / gray
             if (playerNameLabel != null) {
-                playerNameLabel.color = current ? GameGraphicsSystem.ActivePlayerColor : GameGraphicsSystem.InactivePlayerColor;
+                playerNameLabel.color = current ? GameGraphicsSystem.ActiveColor : GameGraphicsSystem.InactiveColor;
             }
 
             // enable / disable puzzles container

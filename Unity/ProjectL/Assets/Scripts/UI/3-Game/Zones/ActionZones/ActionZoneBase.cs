@@ -3,9 +3,12 @@
 namespace ProjectL.UI.GameScene.Zones.ActionZones
 {
     using ProjectL.UI.GameScene.Actions;
+    using ProjectL.UI.Sound;
     using ProjectLCore.GameLogic;
     using System;
+    using System.Collections;
     using UnityEngine;
+    using UnityEngine.EventSystems;
     using UnityEngine.UI;
 
     public abstract class ActionZoneBase : MonoBehaviour
@@ -31,6 +34,17 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
         #endregion
 
         #region Methods
+
+        public void ManuallyClickSelectRewardButton()
+        {
+            if (_selectRewardButton != null)
+                _selectRewardButton!.onClick.Invoke();
+        }
+        public void ManuallyClickFinishingTouchesButton()
+        {
+            if (_finishingTouchesButton != null)
+                StartCoroutine(SimulateClickCoroutine(_finishingTouchesButton));
+        }
 
         public void DisableConfirmButton()
         {
@@ -78,10 +92,17 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _confirmButton.onClick.AddListener(
                 () => OnConfirmButtonClick?.Invoke()
             );
-
             _selectRewardButton.onClick.AddListener(
                 () => OnSelectRewardButtonClick?.Invoke()
             );
+            _finishingTouchesButton.onClick.AddListener(
+                () => Debug.Log("On click triggered")
+                );
+
+            _confirmButton.onClick.AddListener(SoundManager.Instance!.PlayButtonClickSound);
+            _selectRewardButton.onClick.AddListener(SoundManager.Instance!.PlayButtonClickSound);
+            _finishingTouchesButton.onClick.AddListener(SoundManager.Instance!.PlayButtonClickSound);
+
 
             SetNormalMode();
         }
@@ -115,6 +136,22 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _finishingTouchesButton.gameObject.SetActive(false);
             _selectRewardButton.gameObject.SetActive(true);
             _actionButtonsPanel.SetActive(false);
+        }
+
+        private IEnumerator SimulateClickCoroutine(Button targetButton)
+        {
+            PointerEventData pointerData = new PointerEventData(EventSystem.current);
+
+            // Simulate PointerDown (Press)
+            ExecuteEvents.Execute(targetButton.gameObject, pointerData, ExecuteEvents.pointerDownHandler);
+            
+            // Simulate click - this also calls button.onClick.Invoke()
+            yield return new WaitForSeconds(0.1f);
+            ExecuteEvents.Execute(targetButton.gameObject, pointerData, ExecuteEvents.pointerClickHandler);
+            yield return new WaitForSeconds(0.1f);
+
+            // Simulate PointerUp (Release)
+            ExecuteEvents.Execute(targetButton.gameObject, pointerData, ExecuteEvents.pointerUpHandler);
         }
 
         #endregion

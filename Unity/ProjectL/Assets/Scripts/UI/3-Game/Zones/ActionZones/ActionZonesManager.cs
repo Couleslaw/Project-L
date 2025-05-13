@@ -79,6 +79,10 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
         void ICurrentTurnListener.OnCurrentTurnChanged(TurnInfo currentTurnInfo)
         {
+            if (currentTurnInfo.GamePhase == GamePhase.FinishingTouches) {
+                SetActionMode(ActionMode.FinishingTouches);
+                return;
+            }
             var gameInfo = _game!.GameState.GetGameInfo();
             var playerInfo = _game.PlayerStates[_game.CurrentPlayer].GetPlayerInfo();
 
@@ -86,34 +90,34 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _puzzleActionZone?.EnabledButtonsBasedOnGameState(gameInfo, playerInfo);
         }
 
-        public class SimulateButtonPressDisposable : IDisposable
+        public class SimulateButtonClickDisposable : IDisposable
         {
             private readonly Button _button;
 
-            public SimulateButtonPressDisposable(Button button) 
+            public SimulateButtonClickDisposable(Button button) 
             {
                 _button = button;
                 switch (button) {
                     case Button.TakePuzzle:
-                        Instance._puzzleActionZone?.ManuallyPressTakePuzzleButton();
+                        Instance._puzzleActionZone?.ManuallyClickTakePuzzleButton();
                         break;
                     case Button.Recycle:
-                        Instance._puzzleActionZone?.ManuallyPressRecycleButton();
+                        Instance._puzzleActionZone?.ManuallyClickRecycleButton();
                         break;
                     case Button.TakeBasicTetromino:
-                        Instance._pieceActionZone?.ManuallyPressTakeBasicTetrominoButton();
+                        Instance._pieceActionZone?.ManuallyClickTakeBasicTetrominoButton();
                         break;
                     case Button.ChangeTetromino:
-                        Instance._pieceActionZone?.ManuallyPressChangeTetrominoButton();
+                        Instance._pieceActionZone?.ManuallyClickChangeTetrominoButton();
                         break;
                     case Button.MasterAction:
-                        Instance._pieceActionZone?.ManuallyPressMasterActionButton();
+                        Instance._pieceActionZone?.ManuallyClickMasterActionButton();
                         break;
                     case Button.SelectReward:
                         Instance.SetActionMode(ActionMode.RewardSelection);
                         break;
                     case Button.EndFinishingTouches:
-                        throw new NotImplementedException();
+                        Instance._pieceActionZone?.ManuallyClickFinishingTouchesButton();
                         break;
                     default:
                         break;
@@ -134,7 +138,6 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
                         Instance.SetActionMode(ActionMode.Normal);
                         break;
                     case Button.EndFinishingTouches:
-                        throw new NotImplementedException();
                         break;
                     default:
                         break;

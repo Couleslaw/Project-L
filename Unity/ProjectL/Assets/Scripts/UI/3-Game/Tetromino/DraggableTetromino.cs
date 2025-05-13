@@ -65,7 +65,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         private bool _isAnimating = false;
 
-        private Action? _onReturnToCollection;
+        private Action<TetrominoShape>? _onReturnToCollectionCallback;
 
         #endregion
 
@@ -82,16 +82,17 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         #region Methods
 
         // Called by the ButtonShapeSpawner after instantiation
-        public void Init(Camera cam, Action onReturnToCollection)
+        public void Init(Camera cam, Action<TetrominoShape>? onReturnToCollection)
         {
             mainCamera = cam;
-            _onReturnToCollection = onReturnToCollection;
+            _onReturnToCollectionCallback += onReturnToCollection;
             ActionCreationManager.Instance.AddListener(this);
         }
 
         public async Task AnimateAIPlayerPlaceActionAsync(Vector2 goalPosition, PlaceTetrominoAction action, CancellationToken cancellationToken = default)
         {
             _isAnimating = true;
+            gameObject.layer = _placedTetrominoLayer;
             // rotate and flip the tetromino to match the placement
             var transformation = GetTransformation(TetrominoManager.GetImageOf(Shape), action.Position);
             if (transformation.Item1) {
@@ -124,7 +125,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                         }
                         start = start.RotateLeft();
                     }
-                    start = start.FlipVertically();
+                    start = start.FlipHorizontally();
                 }
                 return (false, 0);
             }
@@ -230,7 +231,28 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             _isMouseOver = false;
         }
 
-        public void ReturnToCollection() => Destroy(gameObject);
+        public void ReturnToCollection()
+        {
+            if (this != null && this.gameObject != null)
+                Destroy(gameObject);
+        }
+
+        public async Task ReturnToCollectionAfterDelayAsync(int delayMilliseconds, CancellationToken cancellationToken = default)
+        {
+            if (delayMilliseconds <= 0) {
+                ReturnToCollection();
+                return;
+            }
+
+            try {
+                await Awaitable.WaitForSecondsAsync(delayMilliseconds / 1000f, cancellationToken);
+                ReturnToCollection();
+            }
+            catch (OperationCanceledException) {
+                ReturnToCollection();
+                throw;
+            }
+        }
 
         internal void Awake()
         {
@@ -259,7 +281,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             if (_isAnimating) {
                 if (SelectedTetromino != this) {
                     SelectedTetromino = this;
-                    gameObject.layer = _selectedTetrominoLayer;
                 }
                 return;
             }
@@ -334,13 +355,13 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         private void OnDestroy()
         {
-            ActionCreationManager.Instance.RemoveListener(this);
+            ActionCreationManager.Instance?.RemoveListener(this);
             GameManager.Controls!.Gameplay.RotateSmooth.performed -= OnRotateSmoothInputAction;
             GameManager.Controls.Gameplay.Rotate90.performed -= OnRotate90InputAction;
             GameManager.Controls.Gameplay.Flip.performed -= OnFlipInputAction;
             GameManager.Controls.Gameplay.Place.performed -= OnPlaceInputAction;
             if (gameObject.layer != _placedTetrominoLayer) {
-                _onReturnToCollection?.Invoke();
+                _onReturnToCollectionCallback?.Invoke(Shape);
             }
         }
 

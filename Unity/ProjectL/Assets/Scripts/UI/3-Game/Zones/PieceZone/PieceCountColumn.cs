@@ -17,7 +17,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         private readonly Dictionary<TetrominoShape, PieceCounter> _pieceCounters = new();
         private readonly int[] _realCounts = new int[TetrominoManager.NumShapes];
-        private Color _columnColor = GameGraphicsSystem.ActivePlayerColor;
+        private Color _columnColor = GameGraphicsSystem.ActiveColor;
 
        
 
@@ -70,7 +70,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
         }
 
-        public void OnTetrominoCollectionChanged(TetrominoShape shape, int count)
+        void ITetrominoCollectionListener.OnTetrominoCollectionChanged(TetrominoShape shape, int count)
         {
             _realCounts[(int)shape] = count;
             SetDisplayCount(shape, count);
@@ -80,12 +80,10 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         public void SetDisplayCount(TetrominoShape shape, int count)
         {
             var counter = _pieceCounters[shape];
-            if (counter.Count == count)
-                return; // no change
-
-
-            counter.Count = count;
-            DisplayCollectionChanged?.Invoke(shape, count);
+            if (counter.Count != count) {
+                counter.Count = count;
+                DisplayCollectionChanged?.Invoke(shape, count);
+            }
 
             int realCount = _realCounts[(int)shape];
             if (count == realCount)

@@ -41,9 +41,9 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         #region Events
 
-        private event Action<TetrominoShape>? TetrominoSpawned;
+        private event Action<TetrominoShape>? TetrominoSpawnedEventHandler;
 
-        private event Action<TetrominoShape>? TetrominoReturned;
+        private event Action<TetrominoShape>? TetrominoReturnedEventHandler;
 
         #endregion
 
@@ -57,7 +57,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             set {
                 _isGrayedOut = value;
                 if (_image != null) {
-                    _image.color = value ? Color.gray : Color.white;
+                    _image.color = value ? GameGraphicsSystem.InactiveColor : Color.white;
                 }
             }
         }
@@ -90,8 +90,8 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
             SoundManager.Instance?.PlaySliderSound();
             DraggableTetromino tetromino = Instantiate(draggableTetrominoPrefab, transform.position, Quaternion.identity);
-            tetromino.Init(mainCamera!, () => TetrominoReturned?.Invoke(Shape));
-            TetrominoSpawned?.Invoke(Shape);
+            tetromino.Init(mainCamera!, TetrominoReturnedEventHandler);
+            TetrominoSpawnedEventHandler?.Invoke(Shape);
             return tetromino;
         }
 
@@ -106,14 +106,14 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         public void AddListener(ITetrominoSpawnerListener listener)
         {
-            TetrominoSpawned += listener.OnTetrominoSpawned;
-            TetrominoReturned += listener.OnTetrominoReturned;
+            TetrominoSpawnedEventHandler += listener.OnTetrominoSpawned;
+            TetrominoReturnedEventHandler += listener.OnTetrominoReturned;
         }
 
         public void RemoveListener(ITetrominoSpawnerListener listener)
         {
-            TetrominoSpawned -= listener.OnTetrominoSpawned;
-            TetrominoReturned -= listener.OnTetrominoReturned;
+            TetrominoSpawnedEventHandler -= listener.OnTetrominoSpawned;
+            TetrominoReturnedEventHandler -= listener.OnTetrominoReturned;
         }
 
         internal void Start()
@@ -139,7 +139,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         public class TemporaryButtonSelector : IDisposable
         {
-            private const float _temporaryScaleIncrease = 1.2f;
+            private const float _temporaryScaleIncrease = 1.3f;
             RectTransform _spawnerRectTransform;
 
             public TemporaryButtonSelector(TetrominoSpawner spawner)

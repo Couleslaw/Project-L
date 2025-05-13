@@ -17,8 +17,8 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
         [SerializeField] private ActionButton? _recycleButton;
         [SerializeField] private ActionButton? _takePuzzleButton;
 
-        public void ManuallyPressRecycleButton() => _recycleButton?.ManuallySelectButton();
-        public void ManuallyPressTakePuzzleButton() => _takePuzzleButton?.ManuallySelectButton();
+        public void ManuallyClickRecycleButton() => _recycleButton?.ManuallySelectButton();
+        public void ManuallyClickTakePuzzleButton() => _takePuzzleButton?.ManuallySelectButton();
 
         private new void Awake()
         {

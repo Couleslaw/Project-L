@@ -91,6 +91,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
             public void Dispose()
             {
+                SoundManager.Instance?.PlaySoftTapSoundEffect();
                 _slot._puzzleFrame!.gameObject.SetActive(false);
             }
         }

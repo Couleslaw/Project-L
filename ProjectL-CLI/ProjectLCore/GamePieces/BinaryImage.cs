@@ -269,7 +269,7 @@ namespace ProjectLCore.GamePieces
         }
 
         /// <summary>
-        /// Flips the image horizontally.
+        /// Flips the image about the Y axis.
         /// </summary>
         /// <returns>The transformed image.</returns>
         public BinaryImage FlipHorizontally()
@@ -285,7 +285,7 @@ namespace ProjectLCore.GamePieces
         }
 
         /// <summary>
-        /// Flips the image vertically.
+        /// Flips the image about the X axis.
         /// </summary>
         /// <returns>The transformed image.</returns>
         public BinaryImage FlipVertically()

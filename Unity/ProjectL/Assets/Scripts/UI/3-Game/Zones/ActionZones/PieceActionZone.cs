@@ -20,9 +20,9 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
         public event Action? OnChangeTetrominoButtonClick;
         public event Action? OnMasterActionButtonClick;
 
-        public void ManuallyPressTakeBasicTetrominoButton() => _takeBasicTetrominoButton?.ManuallySelectButton();
-        public void ManuallyPressChangeTetrominoButton() => _changeTetrominoButton?.ManuallySelectButton();
-        public void ManuallyPressMasterActionButton() => _masterActionButton?.ManuallySelectButton();
+        public void ManuallyClickTakeBasicTetrominoButton() => _takeBasicTetrominoButton?.ManuallySelectButton();
+        public void ManuallyClickChangeTetrominoButton() => _changeTetrominoButton?.ManuallySelectButton();
+        public void ManuallyClickMasterActionButton() => _masterActionButton?.ManuallySelectButton();
 
         public override void EnabledButtonsBasedOnGameState(GameState.GameInfo gameInfo, PlayerState.PlayerInfo playerInfo)
         {
