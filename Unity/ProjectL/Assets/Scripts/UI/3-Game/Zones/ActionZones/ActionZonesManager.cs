@@ -47,7 +47,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             }
         }
 
-        public void ConnectToButtons(HumanPlayerActionCreationManager acm)
+        public void ConnectToButtons(HumanPlayerActionCreator acm)
         {
             if (_puzzleActionZone == null || _pieceActionZone == null) {
                 return;
@@ -58,7 +58,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _puzzleActionZone.AddListener(acm);
         }
 
-        public void DisconnectFromButtons(HumanPlayerActionCreationManager acm)
+        public void DisconnectFromButtons(HumanPlayerActionCreator acm)
         {
             if (_puzzleActionZone == null || _pieceActionZone == null) {
                 return;

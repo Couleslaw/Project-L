@@ -108,7 +108,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             tetromino.Init(_mainCamera!, TetrominoReturnedEventHandler);
             TetrominoSpawnedEventHandler?.Invoke(Shape);
             if (_mode != PieceZoneMode.Disabled) {
-                HumanPlayerActionCreationManager.Instance?.OnPlacePieceActionRequested();
+                HumanPlayerActionCreator.Instance?.OnPlacePieceActionRequested();
             }
             return tetromino;
         }

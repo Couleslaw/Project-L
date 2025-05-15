@@ -89,12 +89,12 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
         public abstract void EnabledButtonsBasedOnGameState(GameState.GameInfo gameInfo, PlayerState.PlayerInfo playerInfo, TurnInfo turnInfo);
 
-        public virtual void AddListener(HumanPlayerActionCreationManager acm)
+        public virtual void AddListener(HumanPlayerActionCreator acm)
         {
             _confirmButton!.onClick.AddListener(acm.OnActionConfirmed);
             _selectRewardButton!.onClick.AddListener(acm.OnRewardSelected);
         }
-        public virtual void RemoveListener(HumanPlayerActionCreationManager acm)
+        public virtual void RemoveListener(HumanPlayerActionCreator acm)
         {
             _confirmButton!.onClick.RemoveListener(acm.OnActionConfirmed);
             _selectRewardButton!.onClick.RemoveListener(acm.OnRewardSelected);
@@ -114,7 +114,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
         private void Start()
         {
-            HumanPlayerActionCreationManager.RegisterController(this);
+            HumanPlayerActionCreator.RegisterController(this);
             GameManager.Controls!.Gameplay.ConfirmAction.performed += SimulateConfirmClick;
         }
 

@@ -86,7 +86,7 @@ namespace ProjectL.UI.GameScene.Actions
         #endregion
     }
 
-    public class HumanPlayerActionCreationManager : GraphicsManager<HumanPlayerActionCreationManager>, ICurrentTurnListener
+    public class HumanPlayerActionCreator : GraphicsManager<HumanPlayerActionCreator>, ICurrentTurnListener
     {
         #region Fields
 

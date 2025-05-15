@@ -12,7 +12,6 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using Unity.VisualScripting;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -25,10 +24,17 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
     public interface IPuzzleZoneCard
     {
+        #region Methods
+
         public void Init(bool isBlack);
+
         public void SetMode(PuzzleZoneMode mode, TurnInfo turnInfo);
+
         public PuzzleZoneManager.TemporarySpriteReplacer CreateCardHighlighter();
+
         public PuzzleZoneManager.TemporarySpriteReplacer CreateCardDimmer();
+
+        #endregion
     }
 
     public class PuzzleZoneManager : GraphicsManager<PuzzleZoneManager>,
@@ -38,17 +44,14 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
         IAIPlayerActionAnimator<TakePuzzleAction>, IAIPlayerActionAnimator<RecycleAction>
 
     {
-        #region Fields
 
         [Header("Puzzle columns")]
         [SerializeField] private PuzzleColumn? _whiteColumn;
-
         [SerializeField] private PuzzleColumn? _blackColumn;
 
         private TurnInfo _currentTurnInfo;
 
         private event Action<IActionChange<TakePuzzleAction>>? TakePuzzleStateChangedEventHandler;
-
         event Action<IActionChange<TakePuzzleAction>>? IHumanPlayerActionListener<TakePuzzleAction>.StateChangedEventHandler {
             add => TakePuzzleStateChangedEventHandler += value;
             remove => TakePuzzleStateChangedEventHandler -= value;
@@ -59,11 +62,6 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             add => RecycleStateChangedEventHandler += value;
             remove => RecycleStateChangedEventHandler -= value;
         }
-
-
-        #endregion
-
-        #region Methods
 
         public void ReportTakePuzzleChange(TakePuzzleActionChange change) => TakePuzzleStateChangedEventHandler?.Invoke(change);
         public void ReportRecycleChange(RecycleActionChange change) => RecycleStateChangedEventHandler?.Invoke(change);
@@ -88,13 +86,13 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             game.GameState.AddListener(this);
             game.AddListener(this);
 
-            HumanPlayerActionCreationManager.Instance.AddListener<TakePuzzleAction>(this);
-            HumanPlayerActionCreationManager.Instance.AddListener<RecycleAction>(this);
+            HumanPlayerActionCreator.Instance.AddListener<TakePuzzleAction>(this);
+            HumanPlayerActionCreator.Instance.AddListener<RecycleAction>(this);
 
             _whiteColumn.Init(isBlack: false);
             _blackColumn.Init(isBlack: true);
 
-            HumanPlayerActionCreationManager.RegisterController(this);
+            HumanPlayerActionCreator.RegisterController(this);
         }
 
         void IGameActionController.SetPlayerMode(PlayerMode mode)
@@ -135,7 +133,6 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             }
         }
 
-
         void IGameStatePuzzleListener.OnWhitePuzzleDeckChanged(int deckSize)
         {
             if (_whiteColumn != null) {
@@ -160,7 +157,6 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
         void IHumanPlayerActionListener<RecycleAction>.OnActionCanceled() => SetMode(PuzzleZoneMode.Disabled);
 
         void IHumanPlayerActionListener<RecycleAction>.OnActionConfirmed() => SetMode(PuzzleZoneMode.Disabled);
-
 
         async Task IAIPlayerActionAnimator<TakePuzzleAction>.Animate(TakePuzzleAction action, CancellationToken cancellationToken)
         {
@@ -223,7 +219,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
                     List<uint> puzzleIds = new();
                     foreach (uint puzzleId in action.Order) {
                         cancellationToken.ThrowIfCancellationRequested();
-                        
+
                         puzzleIds.Add(puzzleId);
                         using (column.CreatePuzzleHighlighter(puzzleIds)) {
                             await GameAnimationManager.WaitForScaledDelayAsync(1f, cancellationToken);
@@ -232,7 +228,6 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
                 }
             }
         }
-
 
         private bool TryGetPuzzleCardWithId(uint puzzleId, out PuzzleCard? puzzleCard)
         {
@@ -245,8 +240,6 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             puzzleCard = null;
             return false;
         }
-
-        #endregion
 
         public class TemporarySpriteReplacer : IDisposable
         {

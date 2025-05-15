@@ -13,7 +13,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
         [SerializeField] private ActionButton? _recycleButton;
         [SerializeField] private ActionButton? _takePuzzleButton;
 
-        public override void AddListener(HumanPlayerActionCreationManager acm)
+        public override void AddListener(HumanPlayerActionCreator acm)
         {
             base.AddListener(acm);
             _finishingTouchesButton!.onClick.AddListener(acm.OnClearBoardRequested);
@@ -21,7 +21,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _recycleButton!.SelectActionEventHandler += acm.OnRecycleActionRequested;
         }
 
-        public override void RemoveListener(HumanPlayerActionCreationManager acm)
+        public override void RemoveListener(HumanPlayerActionCreator acm)
         {
             base.RemoveListener(acm);
             _finishingTouchesButton!.onClick.RemoveListener(acm.OnClearBoardRequested);
