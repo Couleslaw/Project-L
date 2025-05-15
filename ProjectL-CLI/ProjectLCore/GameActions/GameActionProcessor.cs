@@ -81,12 +81,17 @@
                 case MasterAction a:
                     await ProcessMasterActionAsync(a, cancellationToken);
                     break;
+                case TakePuzzleAction a:
+                    await ProcessTakePuzzleActionAsync(a, cancellationToken);
+                    break;
+                case RecycleAction a:
+                    await ProcessRecycleActionAsync(a, cancellationToken);
+                    break;
                 default:
                     ProcessAction(action);
                     break;
             }
         }
-
 
         /// <summary>
         /// Does nothing.
@@ -130,7 +135,6 @@
                         break;
                     }
                     _gameState.RemovePuzzleWithId(action.PuzzleId!.Value);
-                    _gameState.RefillPuzzles();
                     break;
                 }
             }
@@ -152,7 +156,55 @@
 
             // add the puzzle to the player's state
             _playerState.PlaceNewPuzzle(puzzle!);
+
+            // refill the missing puzzle
+            _gameState.RefillPuzzles();
         }
+
+        private async Task ProcessTakePuzzleActionAsync(TakePuzzleAction action, CancellationToken cancellationToken)
+        {
+            Puzzle? puzzle = null;
+            switch (action.Option) {
+                case TakePuzzleAction.Options.TopWhite: {
+                    puzzle = _gameState.TakeTopWhitePuzzle();
+                    break;
+                }
+                case TakePuzzleAction.Options.TopBlack: {
+                    puzzle = _gameState.TakeTopBlackPuzzle();
+                    break;
+                }
+                case TakePuzzleAction.Options.Normal: {
+                    puzzle = _gameState.GetPuzzleWithId(action.PuzzleId!.Value);
+                    if (puzzle is null) {
+                        break;
+                    }
+                    _gameState.RemovePuzzleWithId(action.PuzzleId!.Value);
+                    break;
+                }
+            }
+
+            // check if the puzzle was found
+            if (puzzle is null) {
+                throw new InvalidOperationException("The specified puzzle was not found");
+            }
+
+            // signal if the player took a black puzzle
+            if (puzzle.IsBlack) {
+                _signaler.PlayerTookBlackPuzzle();
+            }
+
+            // signal if the black deck is empty
+            if (_gameState.NumBlackPuzzlesLeft == 0) {
+                _signaler.BlackDeckIsEmpty();
+            }
+
+            // add the puzzle to the player's state
+            _playerState.PlaceNewPuzzle(puzzle!);
+
+            // refill the missing puzzle
+            await _gameState.RefillPuzzlesAsync(cancellationToken);
+        }
+
 
         /// <summary>
         /// Removes the puzzles from the <see cref="GameCore.GameState"/> puzzle rows and puts them to the bottom of the deck.
@@ -172,6 +224,20 @@
             }
             _gameState.RefillPuzzles();
         }
+
+        private async Task ProcessRecycleActionAsync(RecycleAction action, CancellationToken cancellationToken)
+        {
+            foreach (var id in action.Order) {
+                Puzzle? puzzle = _gameState.GetPuzzleWithId(id);
+                if (puzzle is null) {
+                    throw new InvalidOperationException($"Puzzle with id={id} not found");
+                }
+                _gameState.RemovePuzzleWithId(id);
+                _gameState.PutPuzzleToTheBottomOfDeck(puzzle);
+            }
+            await _gameState.RefillPuzzlesAsync(cancellationToken);
+        }
+
 
         /// <summary>
         /// Removes a <see cref="TetrominoShape.O1"/> tetromino from the <see cref="GameCore.GameState"/> and adds it to the appropirate <see cref="PlayerState"/>.

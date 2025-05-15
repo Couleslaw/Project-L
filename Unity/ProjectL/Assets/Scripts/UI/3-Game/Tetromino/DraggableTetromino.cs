@@ -401,7 +401,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 await Awaitable.FixedUpdateAsync();
             }
 
-            await GameAnimationManager.WaitForSecondsAsync(0.5f, cancellationToken);
+            await GameAnimationManager.WaitForScaledDelayAsync(0.5f, cancellationToken);
             StartCoroutine(ReturnToCollectionAfterMilliseconds(20));
 
             // returns [shouldFlip], angle

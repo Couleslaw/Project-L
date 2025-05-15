@@ -279,6 +279,8 @@ namespace ProjectLCore.GameLogic
         /// <exception cref="InvalidOperationException"></exception>
         public async Task FinishPuzzleAsync(FinishedPuzzleInfo info, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             if (!TryGetIndexOfPuzzle(info.Puzzle, out int index)) {
                 throw new InvalidOperationException("Puzzle not found");
             }
@@ -288,8 +290,8 @@ namespace ProjectLCore.GameLogic
                 return;
             }
 
-            foreach (PuzzleFinishedAsyncDelegate singleHandler in asyncHandler.GetInvocationList()) {
-                await singleHandler(index, info, cancellationToken);
+            foreach (PuzzleFinishedAsyncDelegate handler in asyncHandler.GetInvocationList()) {
+                await handler(index, info, cancellationToken);
             }
             FinishPuzzle(info);
         }

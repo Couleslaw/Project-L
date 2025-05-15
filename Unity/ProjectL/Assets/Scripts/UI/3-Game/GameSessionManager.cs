@@ -213,9 +213,9 @@ namespace ProjectL.UI.GameScene.Management
                 await Task.Delay(10);
             }
 
-            _aIPlayerActionAnimator.Init();
+            _aIPlayerActionAnimator.Init(_game);
             GameGraphicsSystem.Instance.Init(_game);
-            _game.InitializeGame();
+            await _game.InitializeGameAsync();
         }
 
         /// <summary>

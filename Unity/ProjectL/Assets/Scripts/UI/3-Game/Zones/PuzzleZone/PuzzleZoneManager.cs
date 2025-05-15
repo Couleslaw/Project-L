@@ -4,6 +4,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 {
     using ProjectL.UI.GameScene.Actions;
     using ProjectL.UI.GameScene.Actions.Constructing;
+    using ProjectL.UI.Sound;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
@@ -130,6 +131,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
         {
             if (_blackColumn != null) {
                 _blackColumn.DeckCard.SetDeckSize(deckSize);
+                SoundManager.Instance?.PlaySoftTapSoundEffect();
             }
         }
 
@@ -138,6 +140,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
         {
             if (_whiteColumn != null) {
                 _whiteColumn.DeckCard.SetDeckSize(deckSize);
+                SoundManager.Instance?.PlaySoftTapSoundEffect();
             }
         }
 
@@ -165,30 +168,32 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
                 return;
             }
 
+            float delay = 0.7f;
+
             // dim all cards
             using (_whiteColumn.CreateColumnDimmer()) {
                 using (_blackColumn.CreateColumnDimmer()) {
 
                     // wait a bit
-                    await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+                    await GameAnimationManager.WaitForScaledDelayAsync(1f, cancellationToken);
                     cancellationToken.ThrowIfCancellationRequested();
 
                     // select the taken puzzle card
                     switch (action.Option) {
                         case TakePuzzleAction.Options.TopWhite:
                             using (_whiteColumn.DeckCard.CreateCardHighlighter()) {
-                                await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+                                await GameAnimationManager.WaitForScaledDelayAsync(delay, cancellationToken);
                             }
                             break;
                         case TakePuzzleAction.Options.TopBlack:
                             using (_blackColumn.DeckCard.CreateCardHighlighter()) {
-                                await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+                                await GameAnimationManager.WaitForScaledDelayAsync(delay, cancellationToken);
                             }
                             break;
                         case TakePuzzleAction.Options.Normal:
                             if (TryGetPuzzleCardWithId(action.PuzzleId!.Value, out var puzzleCard)) {
                                 using (puzzleCard!.CreateCardHighlighter()) {
-                                    await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+                                    await GameAnimationManager.WaitForScaledDelayAsync(delay, cancellationToken);
                                 }
                             }
                             break;
@@ -210,7 +215,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
                 using (_blackColumn.CreateColumnDimmer(shouldDimCoverCard: false)) {
 
                     // wait a bit
-                    await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+                    await GameAnimationManager.WaitForScaledDelayAsync(1f, cancellationToken);
                     cancellationToken.ThrowIfCancellationRequested();
 
                     PuzzleColumn column = action.Option == RecycleAction.Options.White ? _whiteColumn : _blackColumn;
@@ -221,7 +226,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
                         
                         puzzleIds.Add(puzzleId);
                         using (column.CreatePuzzleHighlighter(puzzleIds)) {
-                            await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+                            await GameAnimationManager.WaitForScaledDelayAsync(1f, cancellationToken);
                         }
                     }
                 }

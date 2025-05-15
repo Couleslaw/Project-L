@@ -7,7 +7,8 @@ namespace ProjectLCore.GameLogic
     using System.IO;
     using System.Linq;
     using System.Text;
-
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Represents the current state of the shared resources in the game.
@@ -60,9 +61,6 @@ namespace ProjectLCore.GameLogic
 
         private readonly List<Puzzle> _allPuzzlesInGame = new();
 
-        /// <summary> The amount of tetrominos of each shape in the shared reserve at the beginning of the game.  </summary>
-        public int NumInitialTetrominos { get; }
-
         #endregion
 
         #region Constructors
@@ -113,36 +111,50 @@ namespace ProjectLCore.GameLogic
 
         #endregion
 
+        #region Delegates
+
+        private delegate Task PuzzleRefilledDelegate(int index, CancellationToken cancellationToken);
+
+        #endregion
+
         #region Events
 
         /// <summary>
         /// Occurs when the number of tetrominos in the shared reserve changes. The parameters are the type of the tetromino and the number of tetrominos of this type in the reserve after the change.
         /// </summary>
-        private event Action<TetrominoShape, int>? TetrominosReserveChanged;
+        private event Action<TetrominoShape, int>? TetrominosReserveChangedEventHandler;
 
         /// <summary>
         /// Occurs when the white puzzle row changes. The parameters are the position of the change and the new puzzle.
         /// </summary>
-        private event Action<int, Puzzle?>? WhitePuzzleRowChanged;
+        private event Action<int, Puzzle?>? WhitePuzzleRowChangedEventHandler;
 
         /// <summary>
         /// Occurs when the black puzzle row changes. The parameters are the position of the change and the new puzzle.
         /// </summary>
-        private event Action<int, Puzzle?>? BlackPuzzleRowChanged;
+        private event Action<int, Puzzle?>? BlackPuzzleRowChangedEventHandler;
 
         /// <summary>
         /// Occurs when the white puzzle deck changes. The parameter is the number of puzzles left in the deck.
         /// </summary>
-        private event Action<int>? WhitePuzzleDeckChanged;
+        private event Action<int>? WhitePuzzleDeckChangedEventHandler;
 
         /// <summary>
         /// Occurs when the black puzzle deck changes. The parameter is the number of puzzles left in the deck.
         /// </summary>
-        private event Action<int>? BlackPuzzleDeckChanged;
+        private event Action<int>? BlackPuzzleDeckChangedEventHandler;
+
+        /// <summary>
+        /// Occurs when a puzzle is refilled.
+        /// </summary>
+        private event PuzzleRefilledDelegate PuzzleRefilledEventHandler;
 
         #endregion
 
         #region Properties
+
+        /// <summary> The amount of tetrominos of each shape in the shared reserve at the beginning of the game.  </summary>
+        public int NumInitialTetrominos { get; }
 
         /// <summary>
         /// Called when the number of tetrominos in the shared reserve changes. The parameters are the type of the tetromino and the number of tetrominos of this type in the reserve after the change.
@@ -172,7 +184,7 @@ namespace ProjectLCore.GameLogic
         /// <returns>Initialized <see cref="GameState"/>.</returns>
         /// <seealso cref="GameStateBuilder"/>
         /// <seealso cref="PuzzleParser{T}"/>
-        public static GameState CreateFromFile<T>(string puzzlesFilePath, int numInitialTetrominos = 15, int numWhitePuzzles = int.MaxValue, int numBlackPuzzles = int.MaxValue) 
+        public static GameState CreateFromFile<T>(string puzzlesFilePath, int numInitialTetrominos = 15, int numWhitePuzzles = int.MaxValue, int numBlackPuzzles = int.MaxValue)
             where T : Puzzle
         {
             if (string.IsNullOrWhiteSpace(puzzlesFilePath)) {
@@ -199,14 +211,14 @@ namespace ProjectLCore.GameLogic
         /// <returns>Initialized <see cref="GameState"/>.</returns>
         /// <seealso cref="GameStateBuilder"/>"
         /// <seealso cref="PuzzleParser{T}"/>
-        public static GameState CreateFromStream<T>(Stream puzzleStream, int numInitialTetrominos = 15, int numWhitePuzzles = int.MaxValue, int numBlackPuzzles = int.MaxValue) 
+        public static GameState CreateFromStream<T>(Stream puzzleStream, int numInitialTetrominos = 15, int numWhitePuzzles = int.MaxValue, int numBlackPuzzles = int.MaxValue)
             where T : Puzzle
         {
             // parse the puzzles
             List<Puzzle> whitePuzzles = new();
             List<Puzzle> blackPuzzles = new();
 
-            using (PuzzleParser<T>puzzleParser = new(puzzleStream)) {
+            using (PuzzleParser<T> puzzleParser = new(puzzleStream)) {
                 while (true) {
                     T? puzzle = puzzleParser.GetNextPuzzle();
                     if (puzzle is null) {
@@ -244,10 +256,10 @@ namespace ProjectLCore.GameLogic
         /// <seealso cref="RemoveListener(IGameStatePuzzleListener)"/>
         public void AddListener(IGameStatePuzzleListener listener)
         {
-            WhitePuzzleRowChanged += listener.OnWhitePuzzleRowChanged;
-            BlackPuzzleRowChanged += listener.OnBlackPuzzleRowChanged;
-            WhitePuzzleDeckChanged += listener.OnWhitePuzzleDeckChanged;
-            BlackPuzzleDeckChanged += listener.OnBlackPuzzleDeckChanged;
+            WhitePuzzleRowChangedEventHandler += listener.OnWhitePuzzleRowChanged;
+            BlackPuzzleRowChangedEventHandler += listener.OnBlackPuzzleRowChanged;
+            WhitePuzzleDeckChangedEventHandler += listener.OnWhitePuzzleDeckChanged;
+            BlackPuzzleDeckChangedEventHandler += listener.OnBlackPuzzleDeckChanged;
         }
 
         /// <summary>
@@ -257,10 +269,10 @@ namespace ProjectLCore.GameLogic
         /// <seealso cref="AddListener(IGameStatePuzzleListener)"/>
         public void RemoveListener(IGameStatePuzzleListener listener)
         {
-            WhitePuzzleRowChanged -= listener.OnWhitePuzzleRowChanged;
-            BlackPuzzleRowChanged -= listener.OnBlackPuzzleRowChanged;
-            WhitePuzzleDeckChanged -= listener.OnWhitePuzzleDeckChanged;
-            BlackPuzzleDeckChanged -= listener.OnBlackPuzzleDeckChanged;
+            WhitePuzzleRowChangedEventHandler -= listener.OnWhitePuzzleRowChanged;
+            BlackPuzzleRowChangedEventHandler -= listener.OnBlackPuzzleRowChanged;
+            WhitePuzzleDeckChangedEventHandler -= listener.OnWhitePuzzleDeckChanged;
+            BlackPuzzleDeckChangedEventHandler -= listener.OnBlackPuzzleDeckChanged;
         }
 
         /// <summary>
@@ -270,7 +282,7 @@ namespace ProjectLCore.GameLogic
         /// <seealso cref="RemoveListener(ITetrominoCollectionListener)"/>
         public void AddListener(ITetrominoCollectionListener listener)
         {
-            TetrominosReserveChanged += listener.OnTetrominoCollectionChanged;
+            TetrominosReserveChangedEventHandler += listener.OnTetrominoCollectionChanged;
         }
 
         /// <summary>
@@ -280,7 +292,27 @@ namespace ProjectLCore.GameLogic
         /// <seealso cref="RemoveListener(ITetrominoCollectionListener)"/>
         public void RemoveListener(ITetrominoCollectionListener listener)
         {
-            TetrominosReserveChanged -= listener.OnTetrominoCollectionChanged;
+            TetrominosReserveChangedEventHandler -= listener.OnTetrominoCollectionChanged;
+        }
+
+        /// <summary>
+        /// Subscribes the given tetromino listener to the events of this <see cref="GameState"/>.
+        /// </summary>
+        /// <param name="listener">The listener to add.</param>
+        /// <seealso cref="RemoveListener(IGameStatePuzzleAsyncListener)"/>
+        public void AddListener(IGameStatePuzzleAsyncListener listener)
+        {
+            PuzzleRefilledEventHandler += listener.OnPuzzleRefilledAsync;
+        }
+
+        /// <summary>
+        /// Unsubscribes the tetromino listener from the events of this <see cref="GameState"/>.
+        /// </summary>
+        /// <param name="listener">The listener to remove.</param>
+        /// <seealso cref="RemoveListener(IGameStatePuzzleAsyncListener)"/>
+        public void RemoveListener(IGameStatePuzzleAsyncListener listener)
+        {
+            PuzzleRefilledEventHandler -= listener.OnPuzzleRefilledAsync;
         }
 
         /// <summary>
@@ -326,7 +358,7 @@ namespace ProjectLCore.GameLogic
                 return null;
             }
             var result = _whitePuzzlesDeck.Dequeue();
-            WhitePuzzleDeckChanged?.Invoke(_whitePuzzlesDeck.Count);
+            WhitePuzzleDeckChangedEventHandler?.Invoke(_whitePuzzlesDeck.Count);
             return result;
         }
 
@@ -340,7 +372,7 @@ namespace ProjectLCore.GameLogic
                 return null;
             }
             var result = _blackPuzzlesDeck.Dequeue();
-            BlackPuzzleDeckChanged?.Invoke(_blackPuzzlesDeck.Count);
+            BlackPuzzleDeckChangedEventHandler?.Invoke(_blackPuzzlesDeck.Count);
             return result;
         }
 
@@ -373,14 +405,14 @@ namespace ProjectLCore.GameLogic
             for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
                 if (_whitePuzzlesRow[i] is not null && _whitePuzzlesRow[i]!.Id == id) {
                     _whitePuzzlesRow[i] = null;
-                    WhitePuzzleRowChanged?.Invoke(i, null);
+                    WhitePuzzleRowChangedEventHandler?.Invoke(i, null);
                     return;
                 }
             }
             for (int i = 0; i < _blackPuzzlesRow.Length; i++) {
                 if (_blackPuzzlesRow[i] is not null && _blackPuzzlesRow[i]!.Id == id) {
                     _blackPuzzlesRow[i] = null;
-                    BlackPuzzleRowChanged?.Invoke(i, null);
+                    BlackPuzzleRowChangedEventHandler?.Invoke(i, null);
                     return;
                 }
             }
@@ -394,13 +426,53 @@ namespace ProjectLCore.GameLogic
             for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
                 if (_whitePuzzlesRow[i] is null && _whitePuzzlesDeck.Count > 0) {
                     _whitePuzzlesRow[i] = TakeTopWhitePuzzle();
-                    WhitePuzzleRowChanged?.Invoke(i, _whitePuzzlesRow[i]);
+                    WhitePuzzleRowChangedEventHandler?.Invoke(i, _whitePuzzlesRow[i]);
                 }
             }
             for (int i = 0; i < _blackPuzzlesRow.Length; i++) {
                 if (_blackPuzzlesRow[i] is null && _blackPuzzlesDeck.Count > 0) {
                     _blackPuzzlesRow[i] = TakeTopBlackPuzzle();
-                    BlackPuzzleRowChanged?.Invoke(i, _blackPuzzlesRow[i]);
+                    BlackPuzzleRowChangedEventHandler?.Invoke(i, _blackPuzzlesRow[i]);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Refills the blank spots in the puzzle rows with puzzles from the decks.
+        /// Before a puzzle is refilled, the <see cref="IGameStatePuzzleAsyncListener.OnPuzzleRefilledAsync"/>
+        /// method of all subscribed listeners is called and awaited.
+        /// </summary>
+        /// <param name="cancellationToken"> A cancellation token to observe while waiting for the task to complete.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        public async Task RefillPuzzlesAsync(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var asyncHandler = PuzzleRefilledEventHandler;
+            if (asyncHandler is null) {
+                return;
+            }
+
+            for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
+                if (_whitePuzzlesRow[i] is null && _whitePuzzlesDeck.Count > 0) {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    
+                    foreach (PuzzleRefilledDelegate handler in asyncHandler.GetInvocationList()) {
+                        await handler(i, cancellationToken);
+                    }
+                    _whitePuzzlesRow[i] = TakeTopWhitePuzzle()!;
+                    WhitePuzzleRowChangedEventHandler?.Invoke(i, _whitePuzzlesRow[i]);
+                }
+            }
+            for (int i = 0; i < _blackPuzzlesRow.Length; i++) {
+                if (_blackPuzzlesRow[i] is null && _blackPuzzlesDeck.Count > 0) {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    foreach (PuzzleRefilledDelegate handler in asyncHandler.GetInvocationList()) {
+                        await handler(i, cancellationToken);
+                    }
+                    _blackPuzzlesRow[i] = TakeTopBlackPuzzle()!;
+                    BlackPuzzleRowChangedEventHandler?.Invoke(i, _blackPuzzlesRow[i]);
                 }
             }
         }
@@ -413,11 +485,11 @@ namespace ProjectLCore.GameLogic
         {
             if (puzzle.IsBlack) {
                 _blackPuzzlesDeck.Enqueue(puzzle);
-                BlackPuzzleDeckChanged?.Invoke(_blackPuzzlesDeck.Count);
+                BlackPuzzleDeckChangedEventHandler?.Invoke(_blackPuzzlesDeck.Count);
             }
             else {
                 _whitePuzzlesDeck.Enqueue(puzzle);
-                WhitePuzzleDeckChanged?.Invoke(_whitePuzzlesDeck.Count);
+                WhitePuzzleDeckChangedEventHandler?.Invoke(_whitePuzzlesDeck.Count);
             }
         }
 
@@ -441,7 +513,7 @@ namespace ProjectLCore.GameLogic
                 throw new InvalidOperationException($"No tetrominos of type {shape} left");
             }
             _numTetrominosLeft[(int)shape]--;
-            TetrominosReserveChanged?.Invoke(shape, _numTetrominosLeft[(int)shape]);
+            TetrominosReserveChangedEventHandler?.Invoke(shape, _numTetrominosLeft[(int)shape]);
         }
 
         /// <summary>
@@ -455,7 +527,7 @@ namespace ProjectLCore.GameLogic
                 throw new InvalidOperationException($"Too many tetrominos of type {shape}");
             }
             _numTetrominosLeft[(int)shape]++;
-            TetrominosReserveChanged?.Invoke(shape, _numTetrominosLeft[(int)shape]);
+            TetrominosReserveChangedEventHandler?.Invoke(shape, _numTetrominosLeft[(int)shape]);
         }
 
         /// <summary>

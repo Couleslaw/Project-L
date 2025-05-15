@@ -120,8 +120,8 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
         private void Start()
         {
-            if (_button == null) {
-                Debug.LogError("Button component is missing", this);
+            if (_button == null || _emptyCardImage == null) {
+                Debug.LogError("One or more UI components are missing", this);
                 return;
             }
 
@@ -159,8 +159,12 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             // empty card
             if (_puzzle == null) {
                 _button.image.type = Image.Type.Sliced;
-                _button.image.sprite = _emptyCardImage;
-                _button.transition = Selectable.Transition.None;
+                _button.spriteState = new SpriteState {
+                    highlightedSprite = _emptyCardImage,
+                    pressedSprite = _emptyCardImage,
+                    selectedSprite = _emptyCardImage,
+                    disabledSprite = _emptyCardImage
+                };
                 return;
             }
 

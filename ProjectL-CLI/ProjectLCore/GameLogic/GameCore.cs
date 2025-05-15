@@ -192,6 +192,31 @@ namespace ProjectLCore.GameLogic
         }
 
         /// <summary>
+        /// Gives every player a <see cref="TetrominoShape.O1"/> and <see cref="TetrominoShape.I2"/> tetromino from the shared reserve.
+        /// Then asynchronously fills the black and white puzzle rows with puzzles from the decks.
+        /// Throws an exception if this method is called more than once.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Game already finalized</exception>
+        public async Task InitializeGameAsync(CancellationToken cancellationToken = default)
+        {
+            if (DidInitialize) {
+                throw new InvalidOperationException("Game already initialized");
+            }
+            DidInitialize = true;
+
+            // give all players their initial tetrominos
+            foreach (var playerState in PlayerStates.Values) {
+                playerState.AddTetromino(TetrominoShape.O1);
+                playerState.AddTetromino(TetrominoShape.I2);
+                GameState.RemoveTetromino(TetrominoShape.O1);
+                GameState.RemoveTetromino(TetrominoShape.I2);
+            }
+
+            // fill puzzle rows with puzzles
+            await GameState.RefillPuzzlesAsync(cancellationToken);
+        }
+
+        /// <summary>
         /// Finishes up internal game state and prepares for evaluating the results of the game.
         /// Should be called after <see cref="CurrentGamePhase"/> changes to <see cref="GamePhase.Finished"/>.
         /// Throws an exception if this method is called more than once.
@@ -323,7 +348,6 @@ namespace ProjectLCore.GameLogic
         /// <param name="action">The action.</param>
         /// <param name="cancellationToken">Cancellation token to observe while waiting for the task to complete.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-
         public async Task ProcessActionAsync(GameAction action, CancellationToken cancellationToken = default)
         {
             await action.AcceptAsync(_actionProcessors[CurrentPlayer], cancellationToken);

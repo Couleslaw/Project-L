@@ -117,13 +117,13 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             // highlight reward options
             using (new TemporaryButtonHighlighter(action.RewardOptions!)) {
 
-                await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+                await GameAnimationManager.WaitForScaledDelayAsync(1f, cancellationToken);
 
                 // highlight and select the reward
                 var spawner = _tetrominoSpawners[action.SelectedReward];
                 using (new TemporaryButtonHighlighter(action.SelectedReward, playSound: false)) {
                     using (spawner.CreateTemporaryButtonSelector(SelectionEffect.GiveToPlayer)) {
-                        await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+                        await GameAnimationManager.WaitForScaledDelayAsync(1f, cancellationToken);
                     }
                 }
             }
@@ -147,7 +147,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 // if player had only 1 piece, the display count will decrement to 0, and so the piece would go gray
                 using (new TemporaryButtonHighlighter(action.OldTetromino, playSound: false)) {
 
-                    await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+                    await GameAnimationManager.WaitForScaledDelayAsync(1f, cancellationToken);
 
                     // select the reward
                     var tetrominosInShardReserve = SharedReserveManager.Instance.GetNumTetrominosLeft();

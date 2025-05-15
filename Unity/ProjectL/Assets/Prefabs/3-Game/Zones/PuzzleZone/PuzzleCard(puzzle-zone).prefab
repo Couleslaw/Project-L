@@ -65,7 +65,7 @@ GameObject:
   - component: {fileID: 3558271053753139332}
   - component: {fileID: 6194329620701095530}
   m_Layer: 5
-  m_Name: puzzle
+  m_Name: Puzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

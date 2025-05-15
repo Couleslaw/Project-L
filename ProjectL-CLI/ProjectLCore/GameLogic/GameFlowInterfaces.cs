@@ -133,6 +133,20 @@
     }
 
     /// <summary>
+    /// Interface for classes that want to be notified asynchronously when a puzzle is refilled in the game state.
+    /// </summary>
+    public interface IGameStatePuzzleAsyncListener
+    {
+        /// <summary>
+        /// Asynchronously called and awaited when a puzzle is refilled in the game state.
+        /// </summary>
+        /// <param name="index"> The index (in the row) of the puzzle that was refilled.</param>
+        /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        public Task OnPuzzleRefilledAsync(int index, CancellationToken cancellationToken);
+    }
+
+    /// <summary>
     /// Interface for classes that want to be notified about tetromino changes in a <see cref="GameState"/>.
     /// </summary>
     /// <seealso cref="ITetrominoCollectionNotifier.AddListener(ITetrominoCollectionListener)"/>
