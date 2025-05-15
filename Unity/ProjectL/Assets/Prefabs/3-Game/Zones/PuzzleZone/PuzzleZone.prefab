@@ -236,8 +236,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _whitePuzzleColumn: {fileID: 6692298110638863586}
   _blackPuzzleColumn: {fileID: 6339065804785623613}
-  _whiteDeckCoverCard: {fileID: 7496660465681036646}
-  _blackDeckCoverCard: {fileID: 3958411403438734262}
 --- !u!1 &7249836876779200657
 GameObject:
   m_ObjectHideFlags: 0
@@ -435,6 +433,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puzzles
       objectReference: {fileID: 0}
+    - target: {fileID: 9080428798643428540, guid: feac7c9e87ea55b4ea4b0d01114b36fc, type: 3}
+      propertyPath: _deckCoverCard
+      value: 
+      objectReference: {fileID: 7496660465681036646}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -568,6 +570,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puzzles
       objectReference: {fileID: 0}
+    - target: {fileID: 9080428798643428540, guid: feac7c9e87ea55b4ea4b0d01114b36fc, type: 3}
+      propertyPath: _deckCoverCard
+      value: 
+      objectReference: {fileID: 3958411403438734262}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

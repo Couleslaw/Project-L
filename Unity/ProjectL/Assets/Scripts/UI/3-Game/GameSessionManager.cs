@@ -38,7 +38,7 @@ namespace ProjectL.UI.GameScene.Management
         [SerializeField] private TextBasedGame? textGame;
 
         private GameCore? _game;
-        private AIPlayerActionAnimator _aIPlayerActionAnimator = new();
+        private AIPlayerActionCreationAnimator _aIPlayerActionAnimator = new();
 
         protected override void Awake()
         {
@@ -213,6 +213,7 @@ namespace ProjectL.UI.GameScene.Management
                 await Task.Delay(10);
             }
 
+            _aIPlayerActionAnimator.Init();
             GameGraphicsSystem.Instance.Init(_game);
             _game.InitializeGame();
         }
@@ -230,7 +231,7 @@ namespace ProjectL.UI.GameScene.Management
 
             foreach (Player player in players) {
                 if (player is HumanPlayer humanPlayer) {
-                    ActionCreationManager.Instance.RegisterPlayer(humanPlayer);
+                    HumanPlayerActionCreationManager.Instance.RegisterPlayer(humanPlayer);
                 }
                 else if (player is AIPlayerBase aiPlayer) {
                     // initialize AI player

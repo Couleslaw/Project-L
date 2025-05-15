@@ -2,6 +2,7 @@
 
 namespace ProjectL.UI.GameScene.Actions
 {
+    using ProjectL.UI.GameScene.Actions.Constructing;
     using ProjectL.UI.GameScene.Zones.ActionZones;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameActions.Verification;
@@ -11,9 +12,6 @@ namespace ProjectL.UI.GameScene.Actions
     using System;
     using System.Collections.Generic;
     using UnityEngine;
-    using ProjectL.UI.GameScene.Actions.Constructing;
-    using System.Linq;
-    using ProjectL.UI.GameScene.Zones.PieceZone;
 
     public enum PlayerMode
     {
@@ -88,9 +86,7 @@ namespace ProjectL.UI.GameScene.Actions
         #endregion
     }
 
-
-
-    public class ActionCreationManager : GraphicsManager<ActionCreationManager>, ICurrentTurnListener
+    public class HumanPlayerActionCreationManager : GraphicsManager<HumanPlayerActionCreationManager>, ICurrentTurnListener
     {
         #region Fields
 
@@ -108,9 +104,9 @@ namespace ProjectL.UI.GameScene.Actions
 
         private readonly Dictionary<ActionType, IActionConstructor> _actionConstructors = new();
 
-        private Queue<GameAction>? _finishingTouchesPlacements = null;
+        private static readonly List<IGameActionController> _actionControllers = new();
 
-        private readonly List<IGameActionController> _actionControllers = new();
+        private Queue<GameAction>? _finishingTouchesPlacements = null;
 
         private HumanPlayer? _currentPlayer;
 
@@ -118,11 +114,10 @@ namespace ProjectL.UI.GameScene.Actions
 
         private ActionType? _currentActionType;
 
-        private ActionMode _currentActionMode;
+        private ActionMode _currentActionMode = ActionMode.ActionCreation;
+        private PlayerMode _currentPlayerMode = PlayerMode.NonInteractive;
 
         #endregion
-
-      
 
         #region Properties
 
@@ -148,7 +143,12 @@ namespace ProjectL.UI.GameScene.Actions
             listener.StateChangedEventHandler -= OnActionStateChanged;
         }
 
-        public void RegisterController(IGameActionController controller) => _actionControllers.Add(controller);
+        public static void RegisterController(IGameActionController controller)
+        {
+            _actionControllers.Add(controller);
+            controller.SetPlayerMode(Instance._currentPlayerMode);
+            controller.SetActionMode(Instance._currentActionMode);
+        }
 
         public void RegisterPlayer(HumanPlayer player)
         {
@@ -162,7 +162,6 @@ namespace ProjectL.UI.GameScene.Actions
             CurrentEventSet?.RaiseCanceled();
             CurrentActionConstructor?.Reset();
             _currentActionType = null;
-            TetrominoSpawner.Mode = TetrominoSpawner.SpawnerMode.Spawning;
         }
 
         public void OnActionConfirmed()
@@ -183,7 +182,7 @@ namespace ProjectL.UI.GameScene.Actions
             else {
                 action = CurrentActionConstructor!.GetAction<GameAction>();
             }
-            
+
             if (action == null) {
                 Debug.LogError("Action is null", this);
                 return;
@@ -267,13 +266,6 @@ namespace ProjectL.UI.GameScene.Actions
             _actionConstructors[ActionType.EndFinishingTouches] = placeConstructor;
         }
 
-        protected override void Start()
-        {
-            base.Start();
-            SetPlayerMode(PlayerMode.NonInteractive);
-            SetActionMode(ActionMode.ActionCreation);
-        }
-
         private void OnActionStateChanged(IActionChange<GameAction> change)
         {
             if (_currentActionType == null) {
@@ -309,6 +301,7 @@ namespace ProjectL.UI.GameScene.Actions
                         action = CurrentActionConstructor.GetAction<GameAction>();
                     }
 
+                    Debug.Log($"Action state changed... action: {action}");
                     ActionZonesManager.Instance.CanConfirmAction = action != null && _actionVerifier.Verify(action) is VerificationSuccess;
                     return;
                 }
@@ -326,7 +319,6 @@ namespace ProjectL.UI.GameScene.Actions
 
             SetPlayerMode(PlayerMode.NonInteractive);
 
- 
             CurrentEventSet?.RaiseConfirmed();
             CurrentActionConstructor?.Reset();
             _currentActionType = null;
@@ -395,10 +387,6 @@ namespace ProjectL.UI.GameScene.Actions
             if (_currentActionType != null) {
                 OnActionCanceled();
             }
-            
-            if (newType != ActionType.PlacePiece && newType != ActionType.MasterAction && newType != ActionType.EndFinishingTouches) {
-                TetrominoSpawner.Mode = TetrominoSpawner.SpawnerMode.Disabled;
-            }
 
             _currentActionType = newType;
             CurrentEventSet!.RaiseRequested();
@@ -410,6 +398,12 @@ namespace ProjectL.UI.GameScene.Actions
                 SetActionMode(ActionMode.FinishingTouches);
                 SetNewActionType(ActionType.EndFinishingTouches);
             }
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            _actionControllers.Clear();
         }
 
         #endregion

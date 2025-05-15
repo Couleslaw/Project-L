@@ -2,48 +2,38 @@
 
 namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 {
-    using TMPro;
-    using System;
-    using UnityEngine;
-    using UnityEngine.UI;
-    using ProjectLCore.GameLogic;
-    using ProjectLCore.GamePieces;
-    using ProjectL.UI.GameScene.Actions;
     using ProjectL.UI.Sound;
     using ProjectLCore.GameActions;
+    using ProjectLCore.GameLogic;
+    using System;
+    using TMPro;
+    using UnityEngine;
+    using UnityEngine.UI;
 
     [RequireComponent(typeof(Button))]
-    public class DeckCoverCard : MonoBehaviour
+    [RequireComponent(typeof(Image))]
+    public class DeckCoverCard : MonoBehaviour, IPuzzleZoneCard
     {
         #region Fields
 
         [SerializeField] private TextMeshProUGUI? _label;
+
         private Button? _button;
 
         private int _deckSize;
+
         private bool _isBlack;
+
+        private Sprite? _dimmedSprite;
 
         #endregion
 
         #region Methods
 
-
-        private void Awake()
-        {
-            _button = GetComponent<Button>();
-            if (_button == null || _label == null) {
-                Debug.LogError("One or more UI components is not assigned!", this);
-                return;
-            }
-            _button.onClick.AddListener(SoundManager.Instance!.PlaySoftTapSoundEffect);
-        }
-
         public void Init(bool isBlack)
         {
             _isBlack = isBlack;
         }
-
-        #endregion
 
         public void SetDeckSize(int n)
         {
@@ -55,22 +45,26 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
                 return;
             }
             _label.text = n.ToString();
+            if (n == 0) {
+                _button!.image.sprite = _dimmedSprite!;
+                _button.transition = Selectable.Transition.None;
+            }
         }
 
         public void SetMode(PuzzleZoneMode mode, TurnInfo turnInfo)
         {
-            _button!.interactable = mode != PuzzleZoneMode.Disabled;
+            _button!.interactable = false;
 
             if (mode == PuzzleZoneMode.TakePuzzle && CanTakePuzzle()) {
-                Action onSelect = () => {
+                void onSelect()
+                {
                     TakePuzzleAction.Options option = _isBlack ? TakePuzzleAction.Options.TopBlack : TakePuzzleAction.Options.TopWhite;
                     var action = new TakePuzzleAction(option);
                     PuzzleZoneManager.Instance!.ReportTakePuzzleChange(new(action));
-                };
-                Action onCancel = () => {
-                    PuzzleZoneManager.Instance!.ReportTakePuzzleChange(new(null));
-                };
+                }
+                void onCancel() => PuzzleZoneManager.Instance!.ReportTakePuzzleChange(new(null));
                 PuzzleZoneManager.AddToRadioButtonGroup(_button, onSelect, onCancel);
+                _button!.interactable = true;
             }
             else {
                 PuzzleZoneManager.RemoveFromRadioButtonGroup(_button);
@@ -90,5 +84,41 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
                 return true;
             }
         }
+
+        public PuzzleZoneManager.TemporarySpriteReplacer CreateCardHighlighter()
+        {
+            if (_button == null) {
+                return null!;
+            }
+            Sprite? selectedSprite = null;
+            if (_button.transition == Selectable.Transition.SpriteSwap) {
+                selectedSprite = _button.spriteState.selectedSprite;
+            }
+            if (selectedSprite != null) {
+                SoundManager.Instance!.PlaySoftTapSoundEffect();
+            }
+            return new(_button, selectedSprite);
+        }
+
+        public PuzzleZoneManager.TemporarySpriteReplacer CreateCardDimmer()
+        {
+            if (_button == null) {
+                return null!;
+            }
+            return new(_button, _dimmedSprite);
+        }
+
+        private void Start()
+        {
+            _button = GetComponent<Button>();
+            if (_button == null || _label == null) {
+                Debug.LogError("One or more UI components is not assigned!", this);
+                return;
+            }
+            _button.onClick.AddListener(SoundManager.Instance!.PlaySoftTapSoundEffect);
+            _dimmedSprite = _button.image.sprite;
+        }
+
+        #endregion
     }
 }

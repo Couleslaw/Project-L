@@ -31,7 +31,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     [RequireComponent(typeof(RectTransform))]
     [RequireComponent(typeof(Image))]
     [RequireComponent(typeof(Button))]
-    public class TetrominoSpawner : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IGameActionController
+    public class TetrominoSpawner : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         #region Fields
 
@@ -45,7 +45,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         private Button? _button;
 
-        private PlayerMode _playerMode = PlayerMode.NonInteractive;
+        private PieceZoneMode _mode = PieceZoneMode.Disabled;
 
         private bool _isGrayedOut = false;
 
@@ -61,16 +61,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         #region Properties
 
-        public enum SpawnerMode
-        {
-            Disabled,
-            Spawning,
-            TakeBasicTetromino,
-            ChangeTetromino,
-            SelectReward,
-        }
-
-        public static SpawnerMode Mode { get; set; } = SpawnerMode.Spawning;
 
         public TetrominoShape Shape => draggableTetrominoPrefab!.Shape;
 
@@ -81,12 +71,12 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 if (_image != null) {
                     _image.color = value ? GameGraphicsSystem.InactiveColor : Color.white;
                 }
-                _button!.interactable = !value && _playerMode == PlayerMode.Interactive;
+                _button!.interactable = !value && _mode != PieceZoneMode.Disabled;
             }
         }
 
-        private bool CanBeUsed => _playerMode == PlayerMode.Interactive && !IsGrayedOut;
-        private bool CanSpawn => CanBeUsed  && Mode == SpawnerMode.Spawning;
+        private bool CanBeUsed => _mode != PieceZoneMode.Disabled && !IsGrayedOut;
+        private bool CanSpawn => CanBeUsed  && _mode == PieceZoneMode.Spawning;
 
         #endregion
 
@@ -117,8 +107,8 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             DraggableTetromino tetromino = Instantiate(draggableTetrominoPrefab, transform.position, Quaternion.identity);
             tetromino.Init(_mainCamera!, TetrominoReturnedEventHandler);
             TetrominoSpawnedEventHandler?.Invoke(Shape);
-            if (_playerMode == PlayerMode.Interactive) {
-                ActionCreationManager.Instance?.OnPlacePieceActionRequested();
+            if (_mode != PieceZoneMode.Disabled) {
+                HumanPlayerActionCreationManager.Instance?.OnPlacePieceActionRequested();
             }
             return tetromino;
         }
@@ -144,21 +134,21 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             TetrominoReturnedEventHandler -= listener.OnTetrominoReturned;
         }
 
-        void IGameActionController.SetPlayerMode(PlayerMode mode)
-        {
-            _playerMode = mode;
-            _button!.interactable = CanBeUsed;
-        }
 
-        void IGameActionController.SetActionMode(ActionMode mode)
+        public void SetMode(PieceZoneMode mode)
         {
+            _mode = mode;
             switch (mode) {
-                case ActionMode.ActionCreation:
-                case ActionMode.FinishingTouches:
-                    Mode = SpawnerMode.Spawning;
+                case PieceZoneMode.Disabled:
+                    _button!.interactable = CanBeUsed;
                     break;
-                case ActionMode.RewardSelection:
-                    Mode = SpawnerMode.SelectReward;
+                case PieceZoneMode.Spawning:
+                    break;
+                case PieceZoneMode.TakeBasicTetromino:
+                    break;
+                case PieceZoneMode.ChangeTetromino:
+                    break;
+                case PieceZoneMode.SelectReward:
                     break;
                 default:
                     break;
@@ -179,11 +169,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             _image = GetComponent<Image>();
             _button = GetComponent<Button>();
             _mainCamera = Camera.main; // Cache the camera
-        }
-
-        private void Start()
-        {
-            ActionCreationManager.Instance.RegisterController(this);
         }
 
         #endregion

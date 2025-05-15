@@ -8,6 +8,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Unity.VisualScripting;
@@ -21,24 +22,27 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
         Recycle
     }
 
+    public interface IPuzzleZoneCard
+    {
+        public void Init(bool isBlack);
+        public void SetMode(PuzzleZoneMode mode, TurnInfo turnInfo);
+        public PuzzleZoneManager.TemporarySpriteReplacer CreateCardHighlighter();
+        public PuzzleZoneManager.TemporarySpriteReplacer CreateCardDimmer();
+    }
+
     public class PuzzleZoneManager : GraphicsManager<PuzzleZoneManager>,
         ICurrentTurnListener, IGameStatePuzzleListener,
         IGameActionController,
         IHumanPlayerActionListener<TakePuzzleAction>, IHumanPlayerActionListener<RecycleAction>,
         IAIPlayerActionAnimator<TakePuzzleAction>, IAIPlayerActionAnimator<RecycleAction>
-        
+
     {
         #region Fields
 
         [Header("Puzzle columns")]
-        [SerializeField] private PuzzleColumn? _whitePuzzleColumn;
+        [SerializeField] private PuzzleColumn? _whiteColumn;
 
-        [SerializeField] private PuzzleColumn? _blackPuzzleColumn;
-
-        [Header("Deck cover cards")]
-        [SerializeField] private DeckCoverCard? _whiteDeckCoverCard;
-
-        [SerializeField] private DeckCoverCard? _blackDeckCoverCard;
+        [SerializeField] private PuzzleColumn? _blackColumn;
 
         private TurnInfo _currentTurnInfo;
 
@@ -76,23 +80,20 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
         public override void Init(GameCore game)
         {
-            if (_whitePuzzleColumn == null || _blackPuzzleColumn == null ||
-                _whiteDeckCoverCard == null || _blackDeckCoverCard == null) {
+            if (_whiteColumn == null || _blackColumn == null) {
                 Debug.LogError("One or more UI components is not assigned!", this);
                 return;
             }
             game.GameState.AddListener(this);
             game.AddListener(this);
 
-            ActionCreationManager.Instance.AddListener<TakePuzzleAction>(this);
-            ActionCreationManager.Instance.AddListener<RecycleAction>(this);
+            HumanPlayerActionCreationManager.Instance.AddListener<TakePuzzleAction>(this);
+            HumanPlayerActionCreationManager.Instance.AddListener<RecycleAction>(this);
 
-            _whitePuzzleColumn.Init(isBlack: false);
-            _blackPuzzleColumn.Init(isBlack: true);
-            _whiteDeckCoverCard.Init(isBlack: false);
-            _blackDeckCoverCard.Init(isBlack: true);
+            _whiteColumn.Init(isBlack: false);
+            _blackColumn.Init(isBlack: true);
 
-            ActionCreationManager.Instance.RegisterController(this);
+            HumanPlayerActionCreationManager.RegisterController(this);
         }
 
         void IGameActionController.SetPlayerMode(PlayerMode mode)
@@ -107,34 +108,37 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
         private void SetMode(PuzzleZoneMode mode)
         {
-            _whiteDeckCoverCard!.SetMode(mode, _currentTurnInfo);
-            _whitePuzzleColumn!.SetMode(mode, _currentTurnInfo);
-            _blackDeckCoverCard!.SetMode(mode, _currentTurnInfo);
-            _blackPuzzleColumn!.SetMode(mode, _currentTurnInfo);
+            _whiteColumn!.SetMode(mode, _currentTurnInfo);
+            _blackColumn!.SetMode(mode, _currentTurnInfo);
         }
 
         void IGameStatePuzzleListener.OnWhitePuzzleRowChanged(int index, Puzzle? puzzle)
         {
-            if (_whitePuzzleColumn != null) {
-                _whitePuzzleColumn[index] = puzzle;
+            if (_whiteColumn != null) {
+                _whiteColumn[index]?.SetPuzzle(puzzle);
             }
         }
 
         void IGameStatePuzzleListener.OnBlackPuzzleRowChanged(int index, Puzzle? puzzle)
         {
-            if (_blackPuzzleColumn != null) {
-                _blackPuzzleColumn[index] = puzzle;
+            if (_blackColumn != null) {
+                _blackColumn[index]?.SetPuzzle(puzzle);
             }
         }
 
         void IGameStatePuzzleListener.OnBlackPuzzleDeckChanged(int deckSize)
         {
-            _blackDeckCoverCard?.SetDeckSize(deckSize);
+            if (_blackColumn != null) {
+                _blackColumn.DeckCard.SetDeckSize(deckSize);
+            }
         }
+
 
         void IGameStatePuzzleListener.OnWhitePuzzleDeckChanged(int deckSize)
         {
-            _whiteDeckCoverCard?.SetDeckSize(deckSize);
+            if (_whiteColumn != null) {
+                _whiteColumn.DeckCard.SetDeckSize(deckSize);
+            }
         }
 
         void ICurrentTurnListener.OnCurrentTurnChanged(TurnInfo currentTurnInfo)
@@ -155,17 +159,117 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
         void IHumanPlayerActionListener<RecycleAction>.OnActionConfirmed() => SetMode(PuzzleZoneMode.Disabled);
 
 
-        Task IAIPlayerActionAnimator<TakePuzzleAction>.Animate(TakePuzzleAction action, CancellationToken cancellationToken)
+        async Task IAIPlayerActionAnimator<TakePuzzleAction>.Animate(TakePuzzleAction action, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (_whiteColumn == null || _blackColumn == null) {
+                return;
+            }
+
+            // dim all cards
+            using (_whiteColumn.CreateColumnDimmer()) {
+                using (_blackColumn.CreateColumnDimmer()) {
+
+                    // wait a bit
+                    await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    // select the taken puzzle card
+                    switch (action.Option) {
+                        case TakePuzzleAction.Options.TopWhite:
+                            using (_whiteColumn.DeckCard.CreateCardHighlighter()) {
+                                await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+                            }
+                            break;
+                        case TakePuzzleAction.Options.TopBlack:
+                            using (_blackColumn.DeckCard.CreateCardHighlighter()) {
+                                await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+                            }
+                            break;
+                        case TakePuzzleAction.Options.Normal:
+                            if (TryGetPuzzleCardWithId(action.PuzzleId!.Value, out var puzzleCard)) {
+                                using (puzzleCard!.CreateCardHighlighter()) {
+                                    await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
         }
 
-        Task IAIPlayerActionAnimator<RecycleAction>.Animate(RecycleAction action, CancellationToken cancellationToken)
+        async Task IAIPlayerActionAnimator<RecycleAction>.Animate(RecycleAction action, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (_whiteColumn == null || _blackColumn == null) {
+                return;
+            }
+
+            // dim all cards - except the deck cards
+            using (_whiteColumn.CreateColumnDimmer(shouldDimCoverCard: false)) {
+                using (_blackColumn.CreateColumnDimmer(shouldDimCoverCard: false)) {
+
+                    // wait a bit
+                    await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    PuzzleColumn column = action.Option == RecycleAction.Options.White ? _whiteColumn : _blackColumn;
+
+                    List<uint> puzzleIds = new();
+                    foreach (uint puzzleId in action.Order) {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        
+                        puzzleIds.Add(puzzleId);
+                        using (column.CreatePuzzleHighlighter(puzzleIds)) {
+                            await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+                        }
+                    }
+                }
+            }
         }
 
+
+        private bool TryGetPuzzleCardWithId(uint puzzleId, out PuzzleCard? puzzleCard)
+        {
+            if (_whiteColumn!.TryGetPuzzleCardWithId(puzzleId, out puzzleCard)) {
+                return true;
+            }
+            if (_blackColumn!.TryGetPuzzleCardWithId(puzzleId, out puzzleCard)) {
+                return true;
+            }
+            puzzleCard = null;
+            return false;
+        }
 
         #endregion
+
+        public class TemporarySpriteReplacer : IDisposable
+        {
+            private Button? _button;
+            private SpriteState _originalSpriteState;
+
+            public TemporarySpriteReplacer(Button button, Sprite? tempSprite)
+            {
+                if (button.transition != Selectable.Transition.SpriteSwap || tempSprite == null) {
+                    return;
+                }
+                _button = button;
+                _originalSpriteState = button.spriteState;
+                Debug.Log($"Button {button.name} is diabled: {!button.enabled}");
+                button.spriteState = new SpriteState {
+                    highlightedSprite = tempSprite,
+                    pressedSprite = tempSprite,
+                    selectedSprite = tempSprite,
+                    disabledSprite = tempSprite
+                };
+            }
+
+            public void Dispose()
+            {
+                if (_button != null && _button.transition == Selectable.Transition.SpriteSwap) {
+                    _button.spriteState = _originalSpriteState;
+                }
+            }
+        }
     }
 }

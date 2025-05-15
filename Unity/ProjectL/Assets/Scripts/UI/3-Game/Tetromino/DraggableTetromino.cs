@@ -96,7 +96,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         {
             mainCamera = cam;
             _onReturnToCollectionCallback += onReturnToCollection;
-            ActionCreationManager.Instance.AddListener(this);
+            HumanPlayerActionCreationManager.Instance.AddListener(this);
         }
 
         public void StartDragging()
@@ -321,7 +321,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 return;  // app quit  --> no cleanup needed
             }
 
-            ActionCreationManager.Instance?.RemoveListener(this);
+            HumanPlayerActionCreationManager.Instance?.RemoveListener(this);
             GameManager.Controls.Gameplay.RotateSmooth.performed -= OnRotateSmoothInputAction;
             GameManager.Controls.Gameplay.Rotate90.performed -= OnRotate90InputAction;
             GameManager.Controls.Gameplay.Flip.performed -= OnFlipInputAction;

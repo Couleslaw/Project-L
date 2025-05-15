@@ -15,11 +15,22 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     using System.Threading.Tasks;
     using UnityEngine;
 
-    public class TetrominoButtonsManager : StaticInstance<TetrominoButtonsManager>, ITetrominoCollectionListener,
+    public enum PieceZoneMode
+    {
+        Disabled,
+        Spawning,
+        TakeBasicTetromino,
+        ChangeTetromino,
+        SelectReward,
+    }
+
+    public class PieceZoneManager : StaticInstance<PieceZoneManager>, 
+        ITetrominoCollectionListener,
+        IGameActionController,
         IAIPlayerActionAnimator<TakeBasicTetrominoAction>,
         IAIPlayerActionAnimator<ChangeTetrominoAction>,
-        IAIPlayerActionAnimator<SelectRewardAction>
-    {
+        IAIPlayerActionAnimator<SelectRewardAction>  
+        {
         #region Fields
 
         private Dictionary<TetrominoShape, TetrominoSpawner> _tetrominoSpawners = new();
@@ -29,6 +40,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         #endregion
 
         #region Methods
+
 
         public DraggableTetromino SpawnTetromino(TetrominoShape shape)
         {
@@ -66,6 +78,11 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             if (_tetrominoSpawners.Count != TetrominoManager.NumShapes) {
                 Debug.LogError($"Number of TetrominoSpawners ({_tetrominoSpawners.Count}) does not match TetrominoShape count ({TetrominoManager.NumShapes})", this);
             }
+        }
+
+        private void Start()
+        {
+            HumanPlayerActionCreationManager.RegisterController(this);
         }
 
         private Dictionary<TetrominoShape, TetrominoSpawner> FindSpawners()
@@ -138,6 +155,30 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                     SelectRewardAction selectAction = new(upgradeOptions, action.NewTetromino);
                     await (this as IAIPlayerActionAnimator<SelectRewardAction>).Animate(selectAction, cancellationToken);
                 }
+            }
+        }
+
+        void IGameActionController.SetPlayerMode(PlayerMode mode)
+        {
+            foreach (var spawner in _tetrominoSpawners.Values) {
+                if (mode == PlayerMode.NonInteractive)
+                    spawner.SetMode(PieceZoneMode.Disabled);
+                else
+                    spawner.SetMode(PieceZoneMode.Spawning);
+            }
+        }
+
+        void IGameActionController.SetActionMode(ActionMode mode)
+        {
+            PieceZoneMode buttonMode = mode switch {
+                ActionMode.ActionCreation => PieceZoneMode.Spawning,
+                ActionMode.RewardSelection => PieceZoneMode.SelectReward,
+                ActionMode.FinishingTouches => PieceZoneMode.Spawning,
+                _ => throw new ArgumentOutOfRangeException(nameof(mode)),
+            };
+
+            foreach (var spawner in _tetrominoSpawners.Values) {
+                spawner.SetMode(buttonMode);
             }
         }
 

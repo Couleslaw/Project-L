@@ -21,23 +21,23 @@ namespace ProjectL.UI.GameScene.Actions
         Task Animate(T action, CancellationToken cancellationToken);
     }
 
-    public class AIPlayerActionAnimator : AsyncActionProcessorBase, IPlayerStatePuzzleFinishedAsyncListener
+    public class AIPlayerActionCreationAnimator : AsyncActionProcessorBase, IPlayerStatePuzzleFinishedAsyncListener
     {
         const float _initialDelay = 0.6f;
-        private readonly IAIPlayerActionAnimator<TakePuzzleAction> _takePuzzleAnimator;
-        private readonly IAIPlayerActionAnimator<RecycleAction> _recycleAnimator;
-        private readonly IAIPlayerActionAnimator<TakeBasicTetrominoAction> _takeBasicTetrominoAnimator;
-        private readonly IAIPlayerActionAnimator<ChangeTetrominoAction> _changeTetrominoActionAnimator;
-        private readonly IAIPlayerActionAnimator<SelectRewardAction> _selectRewardActionAnimator;
+        private IAIPlayerActionAnimator<TakePuzzleAction>? _takePuzzleAnimator;
+        private IAIPlayerActionAnimator<RecycleAction>? _recycleAnimator;
+        private IAIPlayerActionAnimator<TakeBasicTetrominoAction>? _takeBasicTetrominoAnimator;
+        private IAIPlayerActionAnimator<ChangeTetrominoAction>? _changeTetrominoActionAnimator;
+        private IAIPlayerActionAnimator<SelectRewardAction>? _selectRewardActionAnimator;
 
 
-        public AIPlayerActionAnimator()
+        public void Init()
         {
             _takePuzzleAnimator = PuzzleZoneManager.Instance;
             _recycleAnimator = PuzzleZoneManager.Instance;
-            _takeBasicTetrominoAnimator = TetrominoButtonsManager.Instance;
-            _changeTetrominoActionAnimator = TetrominoButtonsManager.Instance;
-            _selectRewardActionAnimator = TetrominoButtonsManager.Instance;
+            _takeBasicTetrominoAnimator = PieceZoneManager.Instance;
+            _changeTetrominoActionAnimator = PieceZoneManager.Instance;
+            _selectRewardActionAnimator = PieceZoneManager.Instance;
         }
 
         protected override async Task ProcessActionAsync(EndFinishingTouchesAction action, CancellationToken cancellationToken)
@@ -50,6 +50,9 @@ namespace ProjectL.UI.GameScene.Actions
 
         protected override async Task ProcessActionAsync(TakePuzzleAction action, CancellationToken cancellationToken)
         {
+            if (_takePuzzleAnimator == null) {
+                return;
+            }
             await GameAnimationManager.WaitForSecondsAsync(_initialDelay, cancellationToken);
             using (new ActionZonesManager.SimulateButtonClickDisposable(ActionZonesManager.Button.TakePuzzle)) {
                 await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
@@ -59,6 +62,9 @@ namespace ProjectL.UI.GameScene.Actions
 
         protected override async Task ProcessActionAsync(RecycleAction action, CancellationToken cancellationToken)
         {
+            if (_recycleAnimator == null) {
+                return;
+            }
             await GameAnimationManager.WaitForSecondsAsync(_initialDelay, cancellationToken);
             using (new ActionZonesManager.SimulateButtonClickDisposable(ActionZonesManager.Button.Recycle)) {
                 await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
@@ -68,6 +74,9 @@ namespace ProjectL.UI.GameScene.Actions
 
         protected override async Task ProcessActionAsync(TakeBasicTetrominoAction action, CancellationToken cancellationToken)
         {
+            if (_takeBasicTetrominoAnimator == null) {
+                return;
+            }
             await GameAnimationManager.WaitForSecondsAsync(_initialDelay, cancellationToken);
             using (new ActionZonesManager.SimulateButtonClickDisposable(ActionZonesManager.Button.TakeBasicTetromino)) {
                 await _takeBasicTetrominoAnimator.Animate(action, cancellationToken);
@@ -76,6 +85,9 @@ namespace ProjectL.UI.GameScene.Actions
 
         protected override async Task ProcessActionAsync(ChangeTetrominoAction action, CancellationToken cancellationToken)
         {
+            if (_changeTetrominoActionAnimator == null) {
+                return;
+            }
             await GameAnimationManager.WaitForSecondsAsync(_initialDelay, cancellationToken);
             using (new ActionZonesManager.SimulateButtonClickDisposable(ActionZonesManager.Button.ChangeTetromino)) {
                 await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
@@ -87,7 +99,7 @@ namespace ProjectL.UI.GameScene.Actions
         {
             await GameAnimationManager.WaitForSecondsAsync(_initialDelay, cancellationToken);
             
-            IAIPlayerActionAnimator<PlaceTetrominoAction> tetromino = TetrominoButtonsManager.Instance.SpawnTetromino(action.Shape);
+            IAIPlayerActionAnimator<PlaceTetrominoAction> tetromino = PieceZoneManager.Instance.SpawnTetromino(action.Shape);
             await tetromino.Animate(action, cancellationToken);
         }
 
@@ -109,7 +121,7 @@ namespace ProjectL.UI.GameScene.Actions
 
         async Task IPlayerStatePuzzleFinishedAsyncListener.OnPuzzleFinishedAsync(int index, FinishedPuzzleInfo info, CancellationToken cancellationToken)
         {
-            if (cancellationToken.IsCancellationRequested) {
+            if (_selectRewardActionAnimator == null) {
                 return;
             }
             await GameAnimationManager.WaitForSecondsAsync(0.5f, cancellationToken);

@@ -3,17 +3,16 @@
 namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 {
     using ProjectL.Data;
-    using ProjectL.UI.GameScene.Actions;
     using ProjectL.UI.Sound;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
     using System;
-    using System.Runtime.CompilerServices;
     using UnityEngine;
+    using UnityEngine.EventSystems;
     using UnityEngine.UI;
 
-    public class PuzzleCard : MonoBehaviour
+    public class PuzzleCard : MonoBehaviour, IPuzzleZoneCard
     {
         #region Fields
 
@@ -26,15 +25,14 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
         private PuzzleZoneMode _mode = PuzzleZoneMode.Disabled;
 
         private bool _isRecycleSelected = false;
+
         private bool _isBlack;
 
         #endregion
 
         #region Properties
 
-        public Button? Button => _button;
-
-        public bool IsEmpty => _puzzle == null;
+        public uint? PuzzleId => _puzzle?.Id;
 
         #endregion
 
@@ -49,26 +47,29 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
         public void SetMode(PuzzleZoneMode mode, TurnInfo turnInfo)
         {
             _mode = mode;
-            _button!.interactable = mode != PuzzleZoneMode.Disabled;
+            _button!.interactable = false;
 
             if (mode == PuzzleZoneMode.TakePuzzle && CanTakePuzzle()) {
-                Action onCancel = () => {
-                    PuzzleZoneManager.Instance.ReportTakePuzzleChange(new(null));
-                };
-                Action onSelect = () => {
-                    TakePuzzleAction action = new TakePuzzleAction(TakePuzzleAction.Options.Normal, _puzzle!.Id);
+                void onCancel() => PuzzleZoneManager.Instance.ReportTakePuzzleChange(new(null));
+                void onSelect()
+                {
+                    var action = new TakePuzzleAction(TakePuzzleAction.Options.Normal, _puzzle!.Id);
                     PuzzleZoneManager.Instance.ReportTakePuzzleChange(new(action));
-                };
+                }
                 PuzzleZoneManager.AddToRadioButtonGroup(_button, onSelect, onCancel);
+                _button!.interactable = true;
             }
             else {
                 PuzzleZoneManager.RemoveFromRadioButtonGroup(_button);
             }
 
-            if (mode == PuzzleZoneMode.Recycle) {
+            if (mode == PuzzleZoneMode.Recycle && CanRecycle()) {
                 _isRecycleSelected = false;
+                _button.interactable = true;
             }
             UpdateUI();
+
+            bool CanRecycle() => _puzzle != null;
 
             bool CanTakePuzzle()
             {
@@ -85,14 +86,46 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             }
         }
 
-        private void Awake()
+        public void Init(bool isBlack)
+        {
+            _isBlack = isBlack;
+        }
+
+        public PuzzleZoneManager.TemporarySpriteReplacer CreateCardHighlighter()
+        {
+            if (_button == null) {
+                return null!;
+            }
+            Sprite? selectedSprite = null;
+            if (_puzzle != null) {
+                ResourcesLoader.TryGetPuzzleSprite(_puzzle, PuzzleSpriteType.BorderBright, out selectedSprite);
+            }
+            if (selectedSprite != null) {
+                SoundManager.Instance!.PlaySoftTapSoundEffect();
+            }
+            return new(_button, selectedSprite);
+        }
+
+        public PuzzleZoneManager.TemporarySpriteReplacer CreateCardDimmer()
+        {
+            if (_button == null) {
+                return null!;
+            }
+            Sprite? dimmedSprite = null;
+            if (_puzzle != null) {
+                ResourcesLoader.TryGetPuzzleSprite(_puzzle, PuzzleSpriteType.BorderDim, out dimmedSprite);
+            }
+            return new(_button, dimmedSprite);
+        }
+
+        private void Start()
         {
             if (_button == null) {
                 Debug.LogError("Button component is missing", this);
                 return;
             }
 
-            _button.onClick.AddListener(SoundManager.Instance!.PlaySoftTapSoundEffect);   
+            _button.onClick.AddListener(SoundManager.Instance!.PlaySoftTapSoundEffect);
 
             _button.onClick.AddListener(OnRecycleButtonClick);
             UpdateUI();
@@ -109,6 +142,10 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             }
 
             _isRecycleSelected = !_isRecycleSelected;
+            if (!_isRecycleSelected) {
+                EventSystem.current.SetSelectedGameObject(null!);
+            }
+
             UpdateUI();
             PuzzleZoneManager.Instance.ReportRecycleChange(new(_puzzle, _isRecycleSelected));
         }
@@ -168,11 +205,6 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
                 },
                 _ => throw new ArgumentOutOfRangeException(nameof(_mode), _mode, null)
             };
-        }
-
-        internal void Init(bool isBlack)
-        {
-            _isBlack = isBlack;
         }
 
         #endregion

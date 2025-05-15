@@ -179,15 +179,15 @@ namespace ProjectL.UI.GameScene.Zones
                 return;
             }
 
-            // restore original sprite setting
-            _selectedButtons[groupName] = null;
-            var buttonInfo = _buttonGroups[groupName][selectedButton];
-            selectedButton.image.sprite = buttonInfo.OriginalSprite;
-
             // deselect the button in the event system
             if (deselect && EventSystem.current != null) {
                 EventSystem.current.SetSelectedGameObject(null!);
             }
+
+            // restore original sprite setting
+            _selectedButtons[groupName] = null;
+            var buttonInfo = _buttonGroups[groupName][selectedButton];
+            selectedButton.image.sprite = buttonInfo.OriginalSprite;
 
             // invoke connected methods
             buttonInfo.OnCancel?.Invoke();

@@ -39,7 +39,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 return;
             }
 
-            TetrominoButtonsManager.Instance.RegisterListener(this);
+            PieceZoneManager.Instance.RegisterListener(this);
             game.AddListener(this);
 
             foreach (Player player in game.Players) {
@@ -78,7 +78,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                     SetPlayerColumnColor(player, GameGraphicsSystem.InactiveColor);
                 }
             }
-            TetrominoButtonsManager.Instance.SetCurrentPieceColumn(_pieceColumns[currentPlayer]);
+            PieceZoneManager.Instance.SetCurrentPieceColumn(_pieceColumns[currentPlayer]);
         }
 
         private void SetPlayerColumnColor(Player player, Color color)
