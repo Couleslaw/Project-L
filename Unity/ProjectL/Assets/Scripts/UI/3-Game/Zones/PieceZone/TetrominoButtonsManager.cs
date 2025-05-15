@@ -3,7 +3,6 @@
 namespace ProjectL.UI.GameScene.Zones.PieceZone
 {
     using ProjectL.UI.GameScene.Actions;
-    using ProjectL.UI.GameScene.Zones.ActionZones;
     using ProjectL.UI.Sound;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
@@ -16,7 +15,10 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     using System.Threading.Tasks;
     using UnityEngine;
 
-    public class TetrominoButtonsManager : StaticInstance<TetrominoButtonsManager>, ITetrominoCollectionListener, IGameActionController
+    public class TetrominoButtonsManager : StaticInstance<TetrominoButtonsManager>, ITetrominoCollectionListener,
+        IAIPlayerActionAnimator<TakeBasicTetrominoAction>,
+        IAIPlayerActionAnimator<ChangeTetrominoAction>,
+        IAIPlayerActionAnimator<SelectRewardAction>
     {
         #region Fields
 
@@ -27,20 +29,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         #endregion
 
         #region Methods
-
-        public void SetPlayerMode(PlayerMode mode)
-        {
-            foreach (var spawner in _tetrominoSpawners.Values) {
-                spawner.SetPlayerMode(mode);
-            }
-        }
-
-        public void SetActionMode(ActionMode mode)
-        {
-            foreach (var spawner in _tetrominoSpawners.Values) {
-                spawner.SetActionMode(mode);
-            }
-        }
 
         public DraggableTetromino SpawnTetromino(TetrominoShape shape)
         {
@@ -67,65 +55,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 int count = column.GetDisplayCount(spawner.Shape);
                 spawner.IsGrayedOut = count == 0;
             }
-        }
-
-        public async Task AnimateSelectRewardAsync(List<TetrominoShape> rewardOptions, TetrominoShape selectedReward, CancellationToken cancellationToken)
-        {
-            // highlight reward options
-            using (new TemporaryButtonHighlighter(rewardOptions)) {
-
-                await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
-
-                // highlight and select the reward
-                var spawner = _tetrominoSpawners[selectedReward];
-                using (new TemporaryButtonHighlighter(selectedReward, playSound: false)) {
-                    using (spawner.CreateTemporaryButtonSelector(SelectionEffect.GiveToPlayer)) {
-                        await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
-                    }
-                }
-            }
-        }
-
-        public async Task AnimateTakeBasicTetrominoActionAsync(CancellationToken cancellationToken)
-        {
-            // select the O1 piece
-            List<TetrominoShape> options = new() { TetrominoShape.O1 };
-            await AnimateSelectRewardAsync(options, TetrominoShape.O1, cancellationToken);
-        }
-
-        public async Task AnimateChangeTetrominoActionAsync(ChangeTetrominoAction action, CancellationToken cancellationToken)
-        {
-            var oldSpawner = _tetrominoSpawners[action.OldTetromino];
-
-            // select the old piece
-            using (oldSpawner.CreateTemporaryButtonSelector(SelectionEffect.RemoveFromPlayer)) {
-                // highlighting the old piece, important !!!
-                // if player had only 1 piece, the display count will decrement to 0, and so the piece would go gray
-                using (new TemporaryButtonHighlighter(action.OldTetromino, playSound: false)) {
-
-                    await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
-
-                    // select the reward
-                    var tetrominosInShardReserve = SharedReserveManager.Instance.GetNumTetrominosLeft();
-                    var upgradeOptions = RewardManager.GetUpgradeOptions(tetrominosInShardReserve, action.OldTetromino);
-                    await AnimateSelectRewardAsync(upgradeOptions, action.NewTetromino, cancellationToken);
-                }
-            }
-        }
-
-        public TetrominoShape? GetSelectedReward()
-        {
-            throw new NotImplementedException("This method is not implemented.");
-        }
-
-        public TakeBasicTetrominoAction? GetTakeBasicTetrominoAction()
-        {
-            throw new NotImplementedException("This method is not implemented.");
-        }
-
-        public ChangeTetrominoAction? GetChangeTetrominoAction()
-        {
-            throw new NotImplementedException("This method is not implemented.");
         }
 
         protected override void Awake()
@@ -164,6 +93,52 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         void ITetrominoCollectionListener.OnTetrominoCollectionChanged(TetrominoShape shape, int count)
         {
             _tetrominoSpawners[shape].IsGrayedOut = count == 0;
+        }
+
+        async Task IAIPlayerActionAnimator<SelectRewardAction>.Animate(SelectRewardAction action, CancellationToken cancellationToken)
+        {
+            // highlight reward options
+            using (new TemporaryButtonHighlighter(action.RewardOptions!)) {
+
+                await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+
+                // highlight and select the reward
+                var spawner = _tetrominoSpawners[action.SelectedReward];
+                using (new TemporaryButtonHighlighter(action.SelectedReward, playSound: false)) {
+                    using (spawner.CreateTemporaryButtonSelector(SelectionEffect.GiveToPlayer)) {
+                        await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+                    }
+                }
+            }
+        }
+
+        async Task IAIPlayerActionAnimator<TakeBasicTetrominoAction>.Animate(TakeBasicTetrominoAction action, CancellationToken cancellationToken)
+        {
+            // select the O1 piece
+            List<TetrominoShape> options = new() { TetrominoShape.O1 };
+            SelectRewardAction selectAction = new(options, TetrominoShape.O1);
+            await (this as IAIPlayerActionAnimator<SelectRewardAction>).Animate(selectAction, cancellationToken);
+        }
+
+        async Task IAIPlayerActionAnimator<ChangeTetrominoAction>.Animate(ChangeTetrominoAction action, CancellationToken cancellationToken)
+        {
+            var oldSpawner = _tetrominoSpawners[action.OldTetromino];
+
+            // select the old piece
+            using (oldSpawner.CreateTemporaryButtonSelector(SelectionEffect.RemoveFromPlayer)) {
+                // highlighting the old piece, important !!!
+                // if player had only 1 piece, the display count will decrement to 0, and so the piece would go gray
+                using (new TemporaryButtonHighlighter(action.OldTetromino, playSound: false)) {
+
+                    await GameAnimationManager.WaitForSecondsAsync(1f, cancellationToken);
+
+                    // select the reward
+                    var tetrominosInShardReserve = SharedReserveManager.Instance.GetNumTetrominosLeft();
+                    var upgradeOptions = RewardManager.GetUpgradeOptions(tetrominosInShardReserve, action.OldTetromino);
+                    SelectRewardAction selectAction = new(upgradeOptions, action.NewTetromino);
+                    await (this as IAIPlayerActionAnimator<SelectRewardAction>).Animate(selectAction, cancellationToken);
+                }
+            }
         }
 
         #endregion

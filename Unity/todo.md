@@ -63,7 +63,7 @@
 - [ ] add logic for human actions
   - [ ] standard actions
     - [x] connect TetrominoSpawners to action manager
-    - [ ] take puzzle
+    - [x] take puzzle
     - [ ] recycle
     - [ ] take basic piece
     - [ ] change piece

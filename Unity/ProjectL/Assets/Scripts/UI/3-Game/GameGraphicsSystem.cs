@@ -17,7 +17,7 @@ namespace ProjectL.UI.GameScene
         protected override void Awake()
         {
             base.Awake();
-            GameGraphicsSystem.NewManagerCreated();
+            GameGraphicsSystem.ReportNewManagerCreated();
         }
 
         protected virtual void Start()
@@ -47,7 +47,7 @@ namespace ProjectL.UI.GameScene
 
         public bool IsReadyForInitialization => _numTotalManagers == _numRegisteredManagers;
 
-        public static void NewManagerCreated()
+        public static void ReportNewManagerCreated()
         {
             _numTotalManagers++;
         }

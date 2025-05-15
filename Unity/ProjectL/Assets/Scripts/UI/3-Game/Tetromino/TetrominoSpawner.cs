@@ -46,7 +46,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         private Button? _button;
 
         private PlayerMode _playerMode = PlayerMode.NonInteractive;
-        private ActionMode _actionMode = ActionMode.Normal;
 
         private bool _isGrayedOut = false;
 
@@ -62,6 +61,17 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         #region Properties
 
+        public enum SpawnerMode
+        {
+            Disabled,
+            Spawning,
+            TakeBasicTetromino,
+            ChangeTetromino,
+            SelectReward,
+        }
+
+        public static SpawnerMode Mode { get; set; } = SpawnerMode.Spawning;
+
         public TetrominoShape Shape => draggableTetrominoPrefab!.Shape;
 
         public bool IsGrayedOut {
@@ -76,7 +86,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         }
 
         private bool CanBeUsed => _playerMode == PlayerMode.Interactive && !IsGrayedOut;
-        private bool CanSpawn => CanBeUsed && _actionMode != ActionMode.RewardSelection;
+        private bool CanSpawn => CanBeUsed  && Mode == SpawnerMode.Spawning;
 
         #endregion
 
@@ -107,6 +117,9 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             DraggableTetromino tetromino = Instantiate(draggableTetrominoPrefab, transform.position, Quaternion.identity);
             tetromino.Init(_mainCamera!, TetrominoReturnedEventHandler);
             TetrominoSpawnedEventHandler?.Invoke(Shape);
+            if (_playerMode == PlayerMode.Interactive) {
+                ActionCreationManager.Instance?.OnPlacePieceActionRequested();
+            }
             return tetromino;
         }
 
@@ -131,16 +144,25 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             TetrominoReturnedEventHandler -= listener.OnTetrominoReturned;
         }
 
-        public void SetPlayerMode(PlayerMode mode)
+        void IGameActionController.SetPlayerMode(PlayerMode mode)
         {
             _playerMode = mode;
             _button!.interactable = CanBeUsed;
         }
 
-        public void SetActionMode(ActionMode mode)
+        void IGameActionController.SetActionMode(ActionMode mode)
         {
-            _actionMode = mode;
-            _button!.enabled = mode == ActionMode.RewardSelection;
+            switch (mode) {
+                case ActionMode.ActionCreation:
+                case ActionMode.FinishingTouches:
+                    Mode = SpawnerMode.Spawning;
+                    break;
+                case ActionMode.RewardSelection:
+                    Mode = SpawnerMode.SelectReward;
+                    break;
+                default:
+                    break;
+            }
         }
 
         public TemporaryButtonSelector CreateTemporaryButtonSelector(SelectionEffect effect = SelectionEffect.None)
@@ -157,6 +179,11 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             _image = GetComponent<Image>();
             _button = GetComponent<Button>();
             _mainCamera = Camera.main; // Cache the camera
+        }
+
+        private void Start()
+        {
+            ActionCreationManager.Instance.RegisterController(this);
         }
 
         #endregion

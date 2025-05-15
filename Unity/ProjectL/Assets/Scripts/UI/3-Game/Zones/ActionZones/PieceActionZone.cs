@@ -30,15 +30,18 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
         public void ManuallyClickMasterActionButton() => _masterActionButton?.ManuallySelectButton();
 
-        public override void EnabledButtonsBasedOnGameState(GameState.GameInfo gameInfo, PlayerState.PlayerInfo playerInfo)
+        public override void EnabledButtonsBasedOnGameState(GameState.GameInfo gameInfo, PlayerState.PlayerInfo playerInfo, TurnInfo turnInfo)
         {
             _takeBasicTetrominoButton!.CanActionBeCreated = CanTakeBasicTetromino(gameInfo);
             _changeTetrominoButton!.CanActionBeCreated = CanChangeTetromino(gameInfo, playerInfo);
-            _masterActionButton!.CanActionBeCreated = CanMasterAction(playerInfo);
+            _masterActionButton!.CanActionBeCreated = CanMasterAction(playerInfo, turnInfo);
         }
 
-        public bool CanMasterAction(PlayerState.PlayerInfo playerInfo)
+        public bool CanMasterAction(PlayerState.PlayerInfo playerInfo, TurnInfo turnInfo)
         {
+            if (turnInfo.UsedMasterAction) {
+                return false;
+            }
             for (int i = 0; i < TetrominoManager.NumShapes; i++) {
                 if (playerInfo.NumTetrominosOwned[i] > 0) {
                     return true;
@@ -49,6 +52,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
         public override void SetPlayerMode(PlayerMode mode)
         {
+            base.SetPlayerMode(mode);
             _takeBasicTetrominoButton!.Mode = mode;
             _changeTetrominoButton!.Mode = mode;
             _masterActionButton!.Mode = mode;

@@ -11,7 +11,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
     using UnityEngine.Android;
     using System.Runtime.CompilerServices;
 
-    public class ActionZonesManager : GraphicsManager<ActionZonesManager>, ICurrentTurnListener, IGameActionController
+    public class ActionZonesManager : GraphicsManager<ActionZonesManager>, ICurrentTurnListener
     {
         private GameCore? _game;
 
@@ -47,7 +47,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             }
         }
 
-        private void AddListener(ActionCreationManager acm)
+        public void ConnectToButtons(ActionCreationManager acm)
         {
             if (_puzzleActionZone == null || _pieceActionZone == null) {
                 return;
@@ -58,7 +58,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _puzzleActionZone.AddListener(acm);
         }
 
-        private void RemoveListener(ActionCreationManager acm)
+        public void DisconnectFromButtons(ActionCreationManager acm)
         {
             if (_puzzleActionZone == null || _pieceActionZone == null) {
                 return;
@@ -69,32 +69,13 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _puzzleActionZone.RemoveListener(acm);
         }
 
-        public void SetPlayerMode(PlayerMode mode)
-        {
-            _pieceActionZone?.SetPlayerMode(mode);
-            _puzzleActionZone?.SetPlayerMode(mode);
-
-            Debug.Log($"ActionZonesManager: SetPlayerMode {mode}");
-            if (mode == PlayerMode.Interactive)
-                AddListener(ActionCreationManager.Instance);
-            if (mode == PlayerMode.NonInteractive)
-                RemoveListener(ActionCreationManager.Instance);
-        }
-
-        public void SetActionMode(ActionMode mode)
-        {
-            _pieceActionZone?.SetActionMode(mode);
-            _puzzleActionZone?.SetActionMode(mode);
-        }
-
-
         void ICurrentTurnListener.OnCurrentTurnChanged(TurnInfo currentTurnInfo)
         {
             var gameInfo = _game!.GameState.GetGameInfo();
             var playerInfo = _game.PlayerStates[_game.CurrentPlayer].GetPlayerInfo();
 
-            _pieceActionZone?.EnabledButtonsBasedOnGameState(gameInfo, playerInfo);
-            _puzzleActionZone?.EnabledButtonsBasedOnGameState(gameInfo, playerInfo);
+            _pieceActionZone?.EnabledButtonsBasedOnGameState(gameInfo, playerInfo, currentTurnInfo);
+            _puzzleActionZone?.EnabledButtonsBasedOnGameState(gameInfo, playerInfo, currentTurnInfo);
         }
 
         public class SimulateButtonClickDisposable : IDisposable
@@ -121,7 +102,8 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
                         Instance._pieceActionZone?.ManuallyClickMasterActionButton();
                         break;
                     case Button.SelectReward:
-                        Instance.SetActionMode(ActionMode.RewardSelection);
+                        Instance._pieceActionZone?.SetActionMode(ActionMode.RewardSelection);
+                        Instance._puzzleActionZone?.SetActionMode(ActionMode.RewardSelection);
                         break;
                     case Button.EndFinishingTouches:
                         Instance._pieceActionZone?.ManuallyClickFinishingTouchesButton();
@@ -142,14 +124,14 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
                         ActionButton.DeselectCurrentButton();
                         break;
                     case Button.SelectReward:
-                        Instance.SetActionMode(ActionMode.Normal);
+                        Instance._pieceActionZone?.SetActionMode(ActionMode.ActionCreation);
+                        Instance._puzzleActionZone?.SetActionMode(ActionMode.ActionCreation);
                         break;
                     case Button.EndFinishingTouches:
                         break;
                     default:
                         break;
                 }
-                // TODO: end finishing touches
             }
         }
 

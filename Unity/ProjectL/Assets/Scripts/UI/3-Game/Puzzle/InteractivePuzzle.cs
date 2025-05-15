@@ -4,6 +4,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 {
     using ProjectL.Data;
     using ProjectL.UI.GameScene.Zones.PieceZone;
+    using ProjectLCore.GameActions;
     using ProjectLCore.GameManagers;
     using ProjectLCore.GamePieces;
     using System;
@@ -51,7 +52,9 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             }
 
             if (puzzle!._temporaryCopy!.CanPlaceTetromino(position)) {
-                tetromino.PlaceToPuzzle(puzzle!.GetCollisionCenter());
+                var action = new PlaceTetrominoAction(puzzle._logicalPuzzle!.Id, tetromino.Shape, position);
+
+                tetromino.PlaceToPuzzle(puzzle!.GetCollisionCenter(), action);
                 puzzle._placedTetrominos.Add(tetromino, position);
                 puzzle._temporaryCopy!.AddTetromino(tetromino.Shape, position);
                 tetromino.OnStartDragging += puzzle.RemoveTetromino;

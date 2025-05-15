@@ -230,7 +230,7 @@ namespace ProjectL.UI.GameScene.Management
 
             foreach (Player player in players) {
                 if (player is HumanPlayer humanPlayer) {
-                    ActionCreationManager.Instance.Register(humanPlayer);
+                    ActionCreationManager.Instance.RegisterPlayer(humanPlayer);
                 }
                 else if (player is AIPlayerBase aiPlayer) {
                     // initialize AI player

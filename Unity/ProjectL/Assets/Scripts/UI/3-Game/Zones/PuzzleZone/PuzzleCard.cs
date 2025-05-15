@@ -5,6 +5,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
     using ProjectL.Data;
     using ProjectL.UI.GameScene.Actions;
     using ProjectL.UI.Sound;
+    using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
     using System;
@@ -51,7 +52,14 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             _button!.interactable = mode != PuzzleZoneMode.Disabled;
 
             if (mode == PuzzleZoneMode.TakePuzzle && CanTakePuzzle()) {
-                PuzzleZoneManager.AddToRadioButtonGroup(_button);
+                Action onCancel = () => {
+                    PuzzleZoneManager.Instance.ReportTakePuzzleChange(new(null));
+                };
+                Action onSelect = () => {
+                    TakePuzzleAction action = new TakePuzzleAction(TakePuzzleAction.Options.Normal, _puzzle!.Id);
+                    PuzzleZoneManager.Instance.ReportTakePuzzleChange(new(action));
+                };
+                PuzzleZoneManager.AddToRadioButtonGroup(_button, onSelect, onCancel);
             }
             else {
                 PuzzleZoneManager.RemoveFromRadioButtonGroup(_button);
@@ -102,12 +110,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
             _isRecycleSelected = !_isRecycleSelected;
             UpdateUI();
-            if (_isRecycleSelected) {
-                ActionCreationManager.Instance.ReportStateChanged();
-            }
-            else {
-                ActionCreationManager.Instance.ReportStateChanged();
-            }
+            PuzzleZoneManager.Instance.ReportRecycleChange(new(_puzzle, _isRecycleSelected));
         }
 
         private void UpdateUI()

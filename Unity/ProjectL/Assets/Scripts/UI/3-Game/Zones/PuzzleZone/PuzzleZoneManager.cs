@@ -3,10 +3,14 @@
 namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 {
     using ProjectL.UI.GameScene.Actions;
+    using ProjectL.UI.GameScene.Actions.Constructing;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
     using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Unity.VisualScripting;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -20,7 +24,9 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
     public class PuzzleZoneManager : GraphicsManager<PuzzleZoneManager>,
         ICurrentTurnListener, IGameStatePuzzleListener,
         IGameActionController,
-        IHumanPlayerActionListener<TakePuzzleAction>, IHumanPlayerActionListener<RecycleAction>
+        IHumanPlayerActionListener<TakePuzzleAction>, IHumanPlayerActionListener<RecycleAction>,
+        IAIPlayerActionAnimator<TakePuzzleAction>, IAIPlayerActionAnimator<RecycleAction>
+        
     {
         #region Fields
 
@@ -36,14 +42,31 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
         private TurnInfo _currentTurnInfo;
 
+        private event Action<IActionChange<TakePuzzleAction>>? TakePuzzleStateChangedEventHandler;
+
+        event Action<IActionChange<TakePuzzleAction>>? IHumanPlayerActionListener<TakePuzzleAction>.StateChangedEventHandler {
+            add => TakePuzzleStateChangedEventHandler += value;
+            remove => TakePuzzleStateChangedEventHandler -= value;
+        }
+
+        private event Action<IActionChange<RecycleAction>>? RecycleStateChangedEventHandler;
+        event Action<IActionChange<RecycleAction>>? IHumanPlayerActionListener<RecycleAction>.StateChangedEventHandler {
+            add => RecycleStateChangedEventHandler += value;
+            remove => RecycleStateChangedEventHandler -= value;
+        }
+
+
         #endregion
 
         #region Methods
 
-        public static void AddToRadioButtonGroup(Button button)
+        public void ReportTakePuzzleChange(TakePuzzleActionChange change) => TakePuzzleStateChangedEventHandler?.Invoke(change);
+        public void ReportRecycleChange(RecycleActionChange change) => RecycleStateChangedEventHandler?.Invoke(change);
+
+        public static void AddToRadioButtonGroup(Button button, Action? onSelect, Action? onCancel)
         {
             string groupName = nameof(PuzzleZoneManager);
-            RadioButtonsGroup.RegisterButton(button, groupName, onSelect: ActionCreationManager.Instance.ReportStateChanged);
+            RadioButtonsGroup.RegisterButton(button, groupName, onSelect, onCancel);
         }
 
         public static void RemoveFromRadioButtonGroup(Button button)
@@ -69,15 +92,15 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             _whiteDeckCoverCard.Init(isBlack: false);
             _blackDeckCoverCard.Init(isBlack: true);
 
-            SetMode(PuzzleZoneMode.Disabled);
+            ActionCreationManager.Instance.RegisterController(this);
         }
 
-        public void SetPlayerMode(PlayerMode mode)
+        void IGameActionController.SetPlayerMode(PlayerMode mode)
         {
             SetMode(PuzzleZoneMode.Disabled);
         }
 
-        public void SetActionMode(ActionMode mode)
+        void IGameActionController.SetActionMode(ActionMode mode)
         {
             SetMode(PuzzleZoneMode.Disabled);
         }
@@ -131,15 +154,17 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
         void IHumanPlayerActionListener<RecycleAction>.OnActionConfirmed() => SetMode(PuzzleZoneMode.Disabled);
 
-        public TakePuzzleAction? GetTakePuzzleAction()
+
+        Task IAIPlayerActionAnimator<TakePuzzleAction>.Animate(TakePuzzleAction action, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public RecycleAction? GetRecycleAction()
+        Task IAIPlayerActionAnimator<RecycleAction>.Animate(RecycleAction action, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
+
 
         #endregion
     }

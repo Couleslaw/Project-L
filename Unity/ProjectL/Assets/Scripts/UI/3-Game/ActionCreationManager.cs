@@ -3,9 +3,6 @@
 namespace ProjectL.UI.GameScene.Actions
 {
     using ProjectL.UI.GameScene.Zones.ActionZones;
-    using ProjectL.UI.GameScene.Zones.PieceZone;
-    using ProjectL.UI.GameScene.Zones.PlayerZone;
-    using ProjectL.UI.GameScene.Zones.PuzzleZone;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameActions.Verification;
     using ProjectLCore.GameLogic;
@@ -13,8 +10,10 @@ namespace ProjectL.UI.GameScene.Actions
     using ProjectLCore.Players;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using UnityEngine;
+    using ProjectL.UI.GameScene.Actions.Constructing;
+    using System.Linq;
+    using ProjectL.UI.GameScene.Zones.PieceZone;
 
     public enum PlayerMode
     {
@@ -23,7 +22,7 @@ namespace ProjectL.UI.GameScene.Actions
 
     public enum ActionMode
     {
-        Normal, FinishingTouches, RewardSelection
+        ActionCreation, FinishingTouches, RewardSelection
     }
 
     public enum ActionType
@@ -33,8 +32,9 @@ namespace ProjectL.UI.GameScene.Actions
         TakeBasicTetromino,
         ChangeTetromino,
         PlacePiece,
-        Master,
-        SelectReward
+        MasterAction,
+        EndFinishingTouches,
+        SelectReward,
     }
 
     public interface IGameActionController
@@ -50,6 +50,12 @@ namespace ProjectL.UI.GameScene.Actions
 
     public interface IHumanPlayerActionListener<out T> where T : GameAction
     {
+        #region Events
+
+        event Action<IActionChange<T>>? StateChangedEventHandler;
+
+        #endregion
+
         #region Methods
 
         void OnActionRequested();
@@ -61,6 +67,29 @@ namespace ProjectL.UI.GameScene.Actions
         #endregion
     }
 
+    public class SelectRewardAction : GameAction
+    {
+        #region Constructors
+
+        public SelectRewardAction(List<TetrominoShape>? rewardOptions, TetrominoShape selectedReward)
+        {
+            SelectedReward = selectedReward;
+            RewardOptions = rewardOptions;
+        }
+
+        #endregion
+
+        #region Properties
+
+        public TetrominoShape SelectedReward { get; }
+
+        public List<TetrominoShape>? RewardOptions { get; }
+
+        #endregion
+    }
+
+
+
     public class ActionCreationManager : GraphicsManager<ActionCreationManager>, ICurrentTurnListener
     {
         #region Fields
@@ -71,13 +100,17 @@ namespace ProjectL.UI.GameScene.Actions
             { typeof(TakeBasicTetrominoAction), ActionType.TakeBasicTetromino },
             { typeof(ChangeTetrominoAction), ActionType.ChangeTetromino },
             { typeof(PlaceTetrominoAction), ActionType.PlacePiece },
-            { typeof(MasterAction), ActionType.Master }
+            { typeof(MasterAction), ActionType.MasterAction },
+            { typeof(SelectRewardAction), ActionType.SelectReward }
         };
 
         private readonly Dictionary<ActionType, IActionEventSet> _actionEventSets = new();
 
-        private GameAction? _lastValidAction;
-        private TetrominoShape? _lastValidReward;
+        private readonly Dictionary<ActionType, IActionConstructor> _actionConstructors = new();
+
+        private Queue<GameAction>? _finishingTouchesPlacements = null;
+
+        private readonly List<IGameActionController> _actionControllers = new();
 
         private HumanPlayer? _currentPlayer;
 
@@ -85,30 +118,17 @@ namespace ProjectL.UI.GameScene.Actions
 
         private ActionType? _currentActionType;
 
-        private Queue<GameAction>? _finishingTouchesPlacements = null;
+        private ActionMode _currentActionMode;
 
         #endregion
 
-        private interface IActionEventSet
-        {
-            #region Methods
-
-            void Subscribe<T>(IHumanPlayerActionListener<T> listener) where T : GameAction;
-
-            void Unsubscribe<T>(IHumanPlayerActionListener<T> listener) where T : GameAction;
-
-            void RaiseRequested();
-
-            void RaiseCanceled();
-
-            void RaiseConfirmed();
-
-            #endregion
-        }
+      
 
         #region Properties
 
         private IActionEventSet? CurrentEventSet => _currentActionType == null ? null : _actionEventSets[_currentActionType.Value];
+
+        private IActionConstructor? CurrentActionConstructor => _currentActionType == null ? null : _actionConstructors[_currentActionType.Value];
 
         #endregion
 
@@ -117,129 +137,90 @@ namespace ProjectL.UI.GameScene.Actions
         public void AddListener<T>(IHumanPlayerActionListener<T> listener) where T : GameAction
         {
             ActionType actionType = _typeToEnumActionType[typeof(T)];
-            if (_actionEventSets.TryGetValue(actionType, out var eventSet)) {
-                eventSet.Subscribe(listener);
-            }
-            else {
-                Debug.LogError($"No action event set found for action type {typeof(T)}");
-            }
+            _actionEventSets[actionType].Subscribe(listener);
+            listener.StateChangedEventHandler += OnActionStateChanged;
         }
 
         public void RemoveListener<T>(IHumanPlayerActionListener<T> listener) where T : GameAction
         {
             ActionType actionType = _typeToEnumActionType[typeof(T)];
-            if (_actionEventSets.TryGetValue(actionType, out var eventSet)) {
-                eventSet.Unsubscribe(listener);
-            }
-            else {
-                Debug.LogError($"No action event set found for action type {typeof(T)}");
-            }
+            _actionEventSets[actionType].Unsubscribe(listener);
+            listener.StateChangedEventHandler -= OnActionStateChanged;
         }
 
-        public void Register(HumanPlayer player)
+        public void RegisterController(IGameActionController controller) => _actionControllers.Add(controller);
+
+        public void RegisterPlayer(HumanPlayer player)
         {
-            Debug.Log($"Registered humanplayer {player.Name}");
             player.ActionRequested += Player_ActionRequested;
             player.RewardChoiceRequested += Player_RewardChoiceRequested;
         }
 
-        public void ReportStateChanged()
-        {
-            if (_currentActionType == null) {
-                return;
-            }
-
-            Debug.Log("ReportStateChanged");
-
-            if (_currentActionType == ActionType.SelectReward) {
-                _lastValidReward = TetrominoButtonsManager.Instance.GetSelectedReward();
-                ActionZonesManager.Instance.CanSelectReward = _lastValidReward != null;
-                return;
-            }
-
-            if (_actionVerifier == null) {
-                Debug.LogError("Action verifier is null", this);
-                return;
-            }
-
-            GameAction? action = _currentActionType.Value switch {
-                ActionType.TakePuzzle => PuzzleZoneManager.Instance.GetTakePuzzleAction(),
-                ActionType.Recycle => PuzzleZoneManager.Instance.GetRecycleAction(),
-                ActionType.TakeBasicTetromino => TetrominoButtonsManager.Instance.GetTakeBasicTetrominoAction(),
-                ActionType.ChangeTetromino => TetrominoButtonsManager.Instance.GetChangeTetrominoAction(),
-                ActionType.PlacePiece => PlayerZoneManager.Instance.GetPlaceTetrominoAction(),
-                ActionType.Master => PlayerZoneManager.Instance.GetMasterAction(),
-                _ => null
-            };
-      
-            if (action != null && _actionVerifier.Verify(action) is VerificationSuccess) {
-                _lastValidAction = action;
-                ActionZonesManager.Instance.CanConfirmAction = true;
-            }
-            else {
-                _lastValidAction = null;
-                ActionZonesManager.Instance.CanConfirmAction = false;
-            }
-        }
-
         public void OnActionCanceled()
         {
-            Debug.Log("Action cancellation requested");
-            CurrentEventSet?.RaiseCanceled();
-            _lastValidAction = null;
-            _currentActionType = null;
-
             ActionZonesManager.Instance.CanConfirmAction = false;
+            CurrentEventSet?.RaiseCanceled();
+            CurrentActionConstructor?.Reset();
+            _currentActionType = null;
+            TetrominoSpawner.Mode = TetrominoSpawner.SpawnerMode.Spawning;
         }
 
         public void OnActionConfirmed()
         {
-            if (_lastValidAction == null || _currentPlayer == null) {
-                Debug.LogError("Internal error", this);  // should never happen
+            if (_currentActionType == null) {
+                Debug.LogError("Current action type is null", this);
                 return;
             }
-            CurrentEventSet?.RaiseConfirmed();
-            SetPlayerMode(PlayerMode.NonInteractive);
-            SubmitAction(_lastValidAction);
-        }
 
-        private void SubmitAction(GameAction action)
-        {
-            if (_currentPlayer == null) {
-                Debug.LogError("Internal error", this);  // should never happen
+            GameAction? action;
+            if (_currentActionType == ActionType.MasterAction) {
+                if (CurrentActionConstructor is not PlaceTetrominoConstructor placeConstructor) {
+                    Debug.LogError("Current action constructor is not PlaceTetrominoConstructor", this);
+                    return;
+                }
+                action = placeConstructor.GetMasterAction();
+            }
+            else {
+                action = CurrentActionConstructor!.GetAction<GameAction>();
+            }
+            
+            if (action == null) {
+                Debug.LogError("Action is null", this);
                 return;
             }
-            _currentPlayer.SetAction(action);
-            _lastValidAction = null;
-            _currentActionType = null;
-            _currentPlayer = null;
+
+            var player = PrepareForSubmission();
+            player?.SetAction(action);
         }
 
         public void OnRewardSelected()
         {
-            if (_lastValidReward == null || _currentPlayer == null) {
-                Debug.LogError("Internal error", this);  // should never happen
+            SelectRewardAction? action = CurrentActionConstructor?.GetAction<SelectRewardAction>();
+            if (action == null) {
+                Debug.LogError("Selected reward is null", this);
                 return;
             }
-            
-            SetActionMode(ActionMode.Normal);
-            _currentPlayer.SetReward(_lastValidReward.Value);
-            _lastValidReward = null;
-            _currentActionType = null;
-            _currentPlayer = null;
+
+            SetActionMode(ActionMode.ActionCreation);
+            var player = PrepareForSubmission();
+            player?.SetReward(action.SelectedReward);
         }
 
         public void OnEndFinishingTouchesActionRequested()
         {
-            _finishingTouchesPlacements = new(PlayerZoneManager.Instance.GetFinishingTouchesPlacements().Cast<GameAction>());
+            if (CurrentActionConstructor is not PlaceTetrominoConstructor placeTetrominoConstructor) {
+                Debug.LogError("Current action constructor is not PlaceTetrominoConstructor", this);
+                return;
+            }
+
+            _finishingTouchesPlacements = new(placeTetrominoConstructor.GetPlacementsQueue());
             _finishingTouchesPlacements.Enqueue(new EndFinishingTouchesAction());
-            SubmitAction(_finishingTouchesPlacements.Dequeue());
+
+            var player = PrepareForSubmission();
+            player?.SetAction(_finishingTouchesPlacements.Dequeue());
         }
 
-        public void OnClearBoardRequested()
-        {
-            OnActionCanceled();
-        }
+        public void OnClearBoardRequested() => OnActionCanceled();
 
         public void OnTakePuzzleActionRequested() => SetNewActionType(ActionType.TakePuzzle);
 
@@ -249,41 +230,129 @@ namespace ProjectL.UI.GameScene.Actions
 
         public void OnChangeTetrominoActionRequested() => SetNewActionType(ActionType.ChangeTetromino);
 
-        public void OnPlacePieceActionRequested() => SetNewActionType(ActionType.PlacePiece);
+        public void OnPlacePieceActionRequested()
+        {
+            if (_currentActionType == ActionType.MasterAction || _currentActionType == ActionType.EndFinishingTouches) {
+                return;
+            }
+            SetNewActionType(ActionType.PlacePiece);
+        }
 
-        public void OnMasterActionRequested() => SetNewActionType(ActionType.Master);
+        public void OnMasterActionRequested() => SetNewActionType(ActionType.MasterAction);
 
         public override void Init(GameCore game)
         {
             game.AddListener(this);
+
+            _actionEventSets[ActionType.TakePuzzle] = new ActionEventSet<TakePuzzleAction>();
+            _actionEventSets[ActionType.Recycle] = new ActionEventSet<RecycleAction>();
+            _actionEventSets[ActionType.TakeBasicTetromino] = new ActionEventSet<TakeBasicTetrominoAction>();
+            _actionEventSets[ActionType.ChangeTetromino] = new ActionEventSet<ChangeTetrominoAction>();
+            _actionEventSets[ActionType.SelectReward] = new ActionEventSet<SelectRewardAction>();
+
+            var placeEventSet = new ActionEventSet<PlaceTetrominoAction>();
+            _actionEventSets[ActionType.PlacePiece] = placeEventSet;
+            _actionEventSets[ActionType.MasterAction] = placeEventSet;
+            _actionEventSets[ActionType.EndFinishingTouches] = placeEventSet;
+
+            _actionConstructors[ActionType.TakePuzzle] = new TakePuzzleConstructor();
+            _actionConstructors[ActionType.Recycle] = new RecycleConstructor();
+            _actionConstructors[ActionType.TakeBasicTetromino] = new TakeBasicConstructor();
+            _actionConstructors[ActionType.ChangeTetromino] = new ChangeTetrominoConstructor();
+            _actionConstructors[ActionType.SelectReward] = new SelectRewardConstructor();
+
+            var placeConstructor = new PlaceTetrominoConstructor();
+            _actionConstructors[ActionType.PlacePiece] = placeConstructor;
+            _actionConstructors[ActionType.MasterAction] = placeConstructor;
+            _actionConstructors[ActionType.EndFinishingTouches] = placeConstructor;
         }
 
         protected override void Start()
         {
             base.Start();
-            _actionEventSets[ActionType.TakePuzzle] = new ActionEventSet<TakePuzzleAction>();
-            _actionEventSets[ActionType.Recycle] = new ActionEventSet<RecycleAction>();
-            _actionEventSets[ActionType.TakeBasicTetromino] = new ActionEventSet<TakeBasicTetrominoAction>();
-            _actionEventSets[ActionType.ChangeTetromino] = new ActionEventSet<ChangeTetrominoAction>();
-            _actionEventSets[ActionType.PlacePiece] = new ActionEventSet<PlaceTetrominoAction>();
-            _actionEventSets[ActionType.Master] = new ActionEventSet<MasterAction>();
+            SetPlayerMode(PlayerMode.NonInteractive);
+            SetActionMode(ActionMode.ActionCreation);
+        }
+
+        private void OnActionStateChanged(IActionChange<GameAction> change)
+        {
+            if (_currentActionType == null) {
+                Debug.LogError("Current action type is null", this);
+                return;
+            }
+            CurrentActionConstructor!.ReportActionChange(change);
+
+            switch (_currentActionMode) {
+                case ActionMode.FinishingTouches: {
+                    return;
+                }
+                case ActionMode.RewardSelection: {
+                    var selectRewardAction = CurrentActionConstructor.GetAction<SelectRewardAction>();
+                    ActionZonesManager.Instance.CanSelectReward = selectRewardAction != null;
+                    return;
+                }
+                case ActionMode.ActionCreation: {
+                    if (_actionVerifier == null) {
+                        Debug.LogError("Action verifier is null", this);
+                        return;
+                    }
+
+                    GameAction? action;
+                    if (_currentActionType == ActionType.MasterAction) {
+                        if (CurrentActionConstructor is not PlaceTetrominoConstructor placeConstructor) {
+                            Debug.LogError("Current action constructor is not PlaceTetrominoConstructor", this);
+                            return;
+                        }
+                        action = placeConstructor.GetMasterAction();
+                    }
+                    else {
+                        action = CurrentActionConstructor.GetAction<GameAction>();
+                    }
+
+                    ActionZonesManager.Instance.CanConfirmAction = action != null && _actionVerifier.Verify(action) is VerificationSuccess;
+                    return;
+                }
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(_currentActionMode), _currentActionMode, null);
+            }
+        }
+
+        private HumanPlayer? PrepareForSubmission()
+        {
+            if (_currentPlayer == null) {
+                Debug.LogError("Current player is null", this);
+                return null;
+            }
 
             SetPlayerMode(PlayerMode.NonInteractive);
-            SetActionMode(ActionMode.Normal);
+
+ 
+            CurrentEventSet?.RaiseConfirmed();
+            CurrentActionConstructor?.Reset();
+            _currentActionType = null;
+
+            HumanPlayer? player = _currentPlayer;
+            _currentPlayer = null;
+            return player;
         }
 
         private void SetPlayerMode(PlayerMode mode)
         {
-            ActionZonesManager.Instance.SetPlayerMode(mode);
-            TetrominoButtonsManager.Instance.SetPlayerMode(mode);
-            PuzzleZoneManager.Instance.SetPlayerMode(mode);
+            foreach (var controller in _actionControllers) {
+                controller.SetPlayerMode(mode);
+            }
+            if (mode == PlayerMode.Interactive)
+                ActionZonesManager.Instance.ConnectToButtons(this);
+            if (mode == PlayerMode.NonInteractive)
+                ActionZonesManager.Instance.DisconnectFromButtons(this);
         }
 
         private void SetActionMode(ActionMode mode)
         {
-            ActionZonesManager.Instance.SetActionMode(mode);
-            TetrominoButtonsManager.Instance.SetActionMode(mode);
-            PuzzleZoneManager.Instance.SetActionMode(mode);
+            _currentActionMode = mode;
+            foreach (var controller in _actionControllers) {
+                controller.SetActionMode(mode);
+            }
         }
 
         private void Player_ActionRequested(object? sender, HumanPlayer.GetActionEventArgs e)
@@ -291,11 +360,12 @@ namespace ProjectL.UI.GameScene.Actions
             if (sender is not HumanPlayer player) {
                 throw new ApplicationException("Sender is not a HumanPlayer!");
             }
-            Debug.Log($"Action requested by {player.Name}");
 
-            if (_finishingTouchesPlacements != null) {
-                SubmitAction(_finishingTouchesPlacements.Dequeue());
-                return;
+            if (_currentActionMode == ActionMode.FinishingTouches) {
+                if (_finishingTouchesPlacements != null) {
+                    player.SetAction(_finishingTouchesPlacements.Dequeue());
+                    return;
+                }
             }
 
             _currentPlayer = player;
@@ -309,23 +379,26 @@ namespace ProjectL.UI.GameScene.Actions
                 throw new ApplicationException("Sender is not a HumanPlayer!");
             }
 
-            Debug.Log($"Reward requested by {player.Name}");
             _currentPlayer = player;
             _currentActionType = ActionType.SelectReward;
             SetActionMode(ActionMode.RewardSelection);
+            SetNewActionType(ActionType.SelectReward);
         }
 
         private void SetNewActionType(ActionType newType)
         {
+            if (CurrentEventSet == _actionEventSets[newType]) {
+                _currentActionType = newType;
+                return;
+            }
+
             if (_currentActionType != null) {
                 OnActionCanceled();
             }
-
-            if (newType != ActionType.PlacePiece || newType != ActionType.Master) {
-                // TODO: disable spawners
+            
+            if (newType != ActionType.PlacePiece && newType != ActionType.MasterAction && newType != ActionType.EndFinishingTouches) {
+                TetrominoSpawner.Mode = TetrominoSpawner.SpawnerMode.Disabled;
             }
-
-            Debug.Log($"Action type changed to {newType}");
 
             _currentActionType = newType;
             CurrentEventSet!.RaiseRequested();
@@ -335,72 +408,10 @@ namespace ProjectL.UI.GameScene.Actions
         {
             if (currentTurnInfo.GamePhase == GamePhase.FinishingTouches) {
                 SetActionMode(ActionMode.FinishingTouches);
+                SetNewActionType(ActionType.EndFinishingTouches);
             }
         }
 
         #endregion
-
-        private class ActionEventSet<T> : IActionEventSet where T : GameAction
-        {
-            #region Events
-
-            public event Action? OnActionRequested;
-
-            public event Action? OnActionCanceled;
-
-            public event Action? OnActionConfirmed;
-
-            #endregion
-
-            #region Methods
-
-            public void Subscribe(IHumanPlayerActionListener<T> listener)
-            {
-                OnActionRequested += listener.OnActionRequested;
-                OnActionCanceled += listener.OnActionCanceled;
-                OnActionConfirmed += listener.OnActionConfirmed;
-            }
-
-            public void Unsubscribe(IHumanPlayerActionListener<T> listener)
-            {
-                OnActionRequested -= listener.OnActionRequested;
-                OnActionCanceled -= listener.OnActionCanceled;
-                OnActionConfirmed -= listener.OnActionConfirmed;
-            }
-
-            public void RaiseRequested()
-            {
-                Debug.Log($"ActionEventSet{typeof(T).Name}: RaiseRequested");
-                OnActionRequested?.Invoke();
-            }
-
-            public void RaiseCanceled()
-            {
-                Debug.Log($"ActionEventSet{typeof(T).Name}: RaiseCanceled");
-                OnActionCanceled?.Invoke();
-            }
-
-            public void RaiseConfirmed()
-            {
-                Debug.Log($"ActionEventSet{typeof(T).Name}: RaiseConfirmed");
-                OnActionConfirmed?.Invoke();
-            }
-
-            public void Subscribe<T1>(IHumanPlayerActionListener<T1> listener) where T1 : GameAction
-            {
-                Subscribe(listener as IHumanPlayerActionListener<T> ??
-                    throw new InvalidCastException($"Cannot cast {typeof(T1)} to {typeof(T)}")
-                    );
-            }
-
-            public void Unsubscribe<T1>(IHumanPlayerActionListener<T1> listener) where T1 : GameAction
-            {
-                Subscribe(listener as IHumanPlayerActionListener<T> ??
-                    throw new InvalidCastException($"Cannot cast {typeof(T1)} to {typeof(T)}")
-                    );
-            }
-
-            #endregion
-        }
     }
 }

@@ -10,6 +10,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
     using ProjectLCore.GamePieces;
     using ProjectL.UI.GameScene.Actions;
     using ProjectL.UI.Sound;
+    using ProjectLCore.GameActions;
 
     [RequireComponent(typeof(Button))]
     public class DeckCoverCard : MonoBehaviour
@@ -61,7 +62,15 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             _button!.interactable = mode != PuzzleZoneMode.Disabled;
 
             if (mode == PuzzleZoneMode.TakePuzzle && CanTakePuzzle()) {
-                PuzzleZoneManager.AddToRadioButtonGroup(_button);
+                Action onSelect = () => {
+                    TakePuzzleAction.Options option = _isBlack ? TakePuzzleAction.Options.TopBlack : TakePuzzleAction.Options.TopWhite;
+                    var action = new TakePuzzleAction(option);
+                    PuzzleZoneManager.Instance!.ReportTakePuzzleChange(new(action));
+                };
+                Action onCancel = () => {
+                    PuzzleZoneManager.Instance!.ReportTakePuzzleChange(new(null));
+                };
+                PuzzleZoneManager.AddToRadioButtonGroup(_button, onSelect, onCancel);
             }
             else {
                 PuzzleZoneManager.RemoveFromRadioButtonGroup(_button);

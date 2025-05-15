@@ -34,11 +34,12 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
         public override void SetPlayerMode(PlayerMode mode)
         {
+            base.SetPlayerMode(mode);
             _recycleButton!.Mode = mode;
             _takePuzzleButton!.Mode = mode;
         }
 
-        public override void EnabledButtonsBasedOnGameState(GameState.GameInfo gameInfo, PlayerState.PlayerInfo playerInfo)
+        public override void EnabledButtonsBasedOnGameState(GameState.GameInfo gameInfo, PlayerState.PlayerInfo playerInfo, TurnInfo turnInfo)
         {
             bool areThereStillSomePuzzles = gameInfo.AvailableBlackPuzzles.Length > 0 || gameInfo.AvailableWhitePuzzles.Length > 0;
             _recycleButton!.CanActionBeCreated = areThereStillSomePuzzles;

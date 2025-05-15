@@ -5,6 +5,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     using ProjectL.Data;
     using ProjectL.Management;
     using ProjectL.UI.GameScene.Actions;
+    using ProjectL.UI.GameScene.Actions.Constructing;
     using ProjectL.UI.GameScene.Zones.PlayerZone;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameManagers;
@@ -20,7 +21,9 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(SpriteRenderer))]
     [RequireComponent(typeof(Collider2D))]
-    public class DraggableTetromino : MonoBehaviour, IHumanPlayerActionListener<PlaceTetrominoAction>
+    public class DraggableTetromino : MonoBehaviour,
+        IHumanPlayerActionListener<PlaceTetrominoAction>,
+        IAIPlayerActionAnimator<PlaceTetrominoAction>
     {
         #region Constants
 
@@ -57,7 +60,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         private SpriteRenderer? _spriteRenderer;
 
         private Camera? mainCamera;
-
+        private PlaceTetrominoAction? _currentPlacement = null;
         private bool _isDragging = false;
 
         private bool _isMouseOver = false;
@@ -67,6 +70,12 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         private bool _isAnimating = false;
 
         private Action<TetrominoShape>? _onReturnToCollectionCallback;
+
+        #endregion
+
+        #region Events
+
+        public event Action<IActionChange<PlaceTetrominoAction>>? StateChangedEventHandler;
 
         #endregion
 
@@ -90,50 +99,14 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             ActionCreationManager.Instance.AddListener(this);
         }
 
-        public async Task AnimateAIPlayerPlaceActionAsync(Vector2 goalPosition, PlaceTetrominoAction action, CancellationToken cancellationToken = default)
-        {
-            _isAnimating = true;
-            gameObject.layer = _placedTetrominoLayer;
-            // rotate and flip the tetromino to match the placement
-            var transformation = GetTransformation(TetrominoManager.GetImageOf(Shape), action.Position);
-            if (transformation.Item1) {
-                transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
-            }
-            transform.rotation = Quaternion.Euler(0f, 0f, transformation.Item2);
-
-            // move to the goal position
-            Vector2 currentPos = transform.position;
-
-            while (!cancellationToken.IsCancellationRequested) {
-                float delta = Time.fixedDeltaTime * _animationSpeed * AnimationSpeed.Multiplier;
-                currentPos = Vector2.MoveTowards(currentPos, goalPosition, delta);
-                SetPosition(currentPos);
-                if (Vector2.Distance(currentPos, goalPosition) < 0.1f) {
-                    SetPosition(goalPosition);
-                    break;
-                }
-                await Awaitable.FixedUpdateAsync();
-            }
-
-            // returns [shouldFlip], angle
-            static (bool, float) GetTransformation(BinaryImage start, BinaryImage goal)
-            {
-                goal = goal.MoveImageToTopLeftCorner();
-                for (int flip = 0; flip <= 1; flip++) {
-                    for (int rotate = 0; rotate <= 3; rotate++) {
-                        if (start.MoveImageToTopLeftCorner() == goal) {
-                            return (flip == 1, rotate * 90);
-                        }
-                        start = start.RotateLeft();
-                    }
-                    start = start.FlipHorizontally();
-                }
-                return (false, 0);
-            }
-        }
-
         public void StartDragging()
         {
+            if (_currentPlacement != null) {
+                var change = new PlaceTetrominoActionChange(_currentPlacement, PlaceTetrominoActionChange.Options.Removed);
+                StateChangedEventHandler?.Invoke(change);
+                _currentPlacement = null;
+            }
+
             // --- Calculate Offset --- START
             if (mainCamera != null) {
                 Vector3 mouseScreenPos = Input.mousePosition;
@@ -174,8 +147,13 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             _rb.linearVelocity = Vector2.zero;
         }
 
-        public void PlaceToPuzzle(Vector3 center)
+        public void PlaceToPuzzle(Vector3 center, PlaceTetrominoAction action)
         {
+            _currentPlacement = action;
+            var change = new PlaceTetrominoActionChange(action, PlaceTetrominoActionChange.Options.Placed);
+            StateChangedEventHandler?.Invoke(change);
+
+
             _isDragging = false; // Stop dragging when placing
 
             if (SelectedTetromino == this) {
@@ -230,23 +208,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         public void OnMouseExit()
         {
             _isMouseOver = false;
-        }
-
-        public void ReturnToCollection()
-        {
-            if (this != null && this.gameObject != null)
-                Destroy(gameObject);
-        }
-
-        public void ReturnToCollectionAfterMilliseconds(int delayMilliseconds)
-        {
-            StartCoroutine(Coroutine());
-
-            IEnumerator Coroutine()
-            {
-                yield return new WaitForSeconds(delayMilliseconds / 1000f);
-                ReturnToCollection();
-            }
         }
 
         internal void Awake()
@@ -304,6 +265,12 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             if (!_isOverPuzzleRow && gameObject.layer == _abandonedTetrominosLayer) {
                 ReturnToCollection();
             }
+        }
+
+        private void ReturnToCollection()
+        {
+            if (this != null && this.gameObject != null)
+                Destroy(gameObject);
         }
 
         private void OnTriggerEnter2D(Collider2D collision)
@@ -399,10 +366,66 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
         }
 
+        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionRequested()
+        {
+        }
 
-        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionRequested() { }
         void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionCanceled() => ReturnToCollection();
+
         void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionConfirmed() => ReturnToCollection();
+
+        async Task IAIPlayerActionAnimator<PlaceTetrominoAction>.Animate(PlaceTetrominoAction action, CancellationToken cancellationToken)
+        {
+            Vector2 goalPosition = PlayerZoneManager.Instance.GetPlacementPositionFor(action);
+
+            _isAnimating = true;
+            gameObject.layer = _placedTetrominoLayer;
+            // rotate and flip the tetromino to match the placement
+            var transformation = GetTransformation(TetrominoManager.GetImageOf(Shape), action.Position);
+            if (transformation.Item1) {
+                transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+            }
+            transform.rotation = Quaternion.Euler(0f, 0f, transformation.Item2);
+
+            // move to the goal position
+            Vector2 currentPos = transform.position;
+
+            while (!cancellationToken.IsCancellationRequested) {
+                float delta = Time.fixedDeltaTime * _animationSpeed * AnimationSpeed.Multiplier;
+                currentPos = Vector2.MoveTowards(currentPos, goalPosition, delta);
+                SetPosition(currentPos);
+                if (Vector2.Distance(currentPos, goalPosition) < 0.1f) {
+                    SetPosition(goalPosition);
+                    break;
+                }
+                await Awaitable.FixedUpdateAsync();
+            }
+
+            await GameAnimationManager.WaitForSecondsAsync(0.5f, cancellationToken);
+            StartCoroutine(ReturnToCollectionAfterMilliseconds(20));
+
+            // returns [shouldFlip], angle
+            static (bool, float) GetTransformation(BinaryImage start, BinaryImage goal)
+            {
+                goal = goal.MoveImageToTopLeftCorner();
+                for (int flip = 0; flip <= 1; flip++) {
+                    for (int rotate = 0; rotate <= 3; rotate++) {
+                        if (start.MoveImageToTopLeftCorner() == goal) {
+                            return (flip == 1, rotate * 90);
+                        }
+                        start = start.RotateLeft();
+                    }
+                    start = start.FlipHorizontally();
+                }
+                return (false, 0);
+            }
+
+            IEnumerator ReturnToCollectionAfterMilliseconds(int delayMilliseconds)
+            {
+                yield return new WaitForSeconds(delayMilliseconds / 1000f);
+                ReturnToCollection();
+            }
+        }
 
         #endregion
     }
