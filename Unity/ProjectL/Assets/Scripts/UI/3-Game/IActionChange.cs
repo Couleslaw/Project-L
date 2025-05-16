@@ -43,13 +43,12 @@ namespace ProjectL.UI.GameScene.Actions.Constructing
 
     public class ChangeTetrominoActionChange : IActionChange<ChangeTetrominoAction>
     {
-        public enum Options { Old, New }
-        public Options Option { get; }
-        public TetrominoShape? Shape { get; }
-        public ChangeTetrominoActionChange(TetrominoShape? shape, Options option)
+        public TetrominoShape? OldTetromino { get; }
+        public TetrominoShape? NewTetromino { get; }
+        public ChangeTetrominoActionChange(TetrominoShape? oldTetromino, TetrominoShape? newTetromino)
         {
-            Shape = shape;
-            Option = option;
+            OldTetromino = oldTetromino;
+            NewTetromino = newTetromino;
         }
     }
 

@@ -142,12 +142,8 @@ namespace ProjectL.UI.GameScene.Actions.Constructing
                 return;
             }
           
-            if (ch.Option == ChangeTetrominoActionChange.Options.Old) {
-                _oldTetromino = ch.Shape;
-            }
-            else {
-                _newTetromino = ch.Shape;
-            }
+            _oldTetromino = ch.OldTetromino;
+            _newTetromino = ch.NewTetromino;
         }
     }
 

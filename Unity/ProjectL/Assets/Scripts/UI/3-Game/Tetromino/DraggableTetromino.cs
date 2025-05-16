@@ -53,13 +53,15 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         [SerializeField] private TetrominoShape _shape;
 
+        private bool _isInteractable;
+
         private Rigidbody2D? _rb;
 
         private RectTransform? _rt;
 
         private SpriteRenderer? _spriteRenderer;
 
-        private Camera? mainCamera;
+        private Camera? _camera;
         private PlaceTetrominoAction? _currentPlacement = null;
         private bool _isDragging = false;
 
@@ -81,7 +83,16 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         #region Properties
 
-        public static DraggableTetromino? SelectedTetromino { get; private set; } = null;
+        private static DraggableTetromino? _lastSelectedTetromino = null;
+        private static DraggableTetromino? _selectedTetromino = null;
+        public static DraggableTetromino? SelectedTetromino {
+            get => _selectedTetromino;
+            private set {
+                if (_selectedTetromino != null)
+                    _lastSelectedTetromino = _selectedTetromino;
+                _selectedTetromino = value;
+            }
+        }
 
         public TetrominoShape Shape => _shape;
 
@@ -92,15 +103,28 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         #region Methods
 
         // Called by the ButtonShapeSpawner after instantiation
-        public void Init(Camera cam, Action<TetrominoShape>? onReturnToCollection)
+        public void Init(bool isInteractable, Action<TetrominoShape>? onReturnToCollection)
         {
-            mainCamera = cam;
+            _isInteractable = isInteractable;
             _onReturnToCollectionCallback += onReturnToCollection;
+
             HumanPlayerActionCreator.Instance.AddListener(this);
+
+            if (isInteractable) {
+                GameManager.Controls!.Gameplay.RotateSmooth.performed += OnRotateSmoothInputAction;
+                GameManager.Controls.Gameplay.Rotate90.performed += OnRotate90InputAction;
+                GameManager.Controls.Gameplay.Flip.performed += OnFlipInputAction;
+                GameManager.Controls.Gameplay.ClickPlace.performed += OnClickPlaceInputAction;
+                GameManager.Controls.Gameplay.KeyboardPlace.performed += OnKeyboardPlaceInputAction;
+            }
         }
 
         public void StartDragging()
         {
+            if (!_isInteractable) {
+                return; // Don't allow dragging if not interactable
+            }
+
             if (_currentPlacement != null) {
                 var change = new PlaceTetrominoActionChange(_currentPlacement, PlaceTetrominoActionChange.Options.Removed);
                 StateChangedEventHandler?.Invoke(change);
@@ -108,11 +132,11 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
 
             // --- Calculate Offset --- START
-            if (mainCamera != null) {
+            if (_camera != null) {
                 Vector3 mouseScreenPos = Input.mousePosition;
                 // Ensure Z is correct for accurate world point conversion
-                mouseScreenPos.z = mainCamera.WorldToScreenPoint(transform.position).z;
-                Vector2 mouseWorldPos = mainCamera.ScreenToWorldPoint(mouseScreenPos);
+                mouseScreenPos.z = _camera.WorldToScreenPoint(transform.position).z;
+                Vector2 mouseWorldPos = _camera.ScreenToWorldPoint(mouseScreenPos);
 
                 // Calculate the difference between the object's center and the mouse click position
                 _pointerOffset = (Vector2)transform.position - mouseWorldPos;
@@ -142,6 +166,9 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         public void StopDragging()
         {
+            if (!_isInteractable) {
+                return; // Don't allow stopping dragging if not interactable
+            }
             _isDragging = false;
             _rb!.bodyType = RigidbodyType2D.Dynamic; // Switch back to Dynamic
             _rb.linearVelocity = Vector2.zero;
@@ -149,6 +176,10 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         public void PlaceToPuzzle(Vector3 center, PlaceTetrominoAction action)
         {
+            if (!_isInteractable) {
+                return; // Don't allow placing if not interactable
+            }
+
             _currentPlacement = action;
             var change = new PlaceTetrominoActionChange(action, PlaceTetrominoActionChange.Options.Placed);
             StateChangedEventHandler?.Invoke(change);
@@ -215,14 +246,17 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             _rb = GetComponent<Rigidbody2D>();
             _rt = GetComponent<RectTransform>();
             _spriteRenderer = GetComponent<SpriteRenderer>();
+            _camera = Camera.main; // Cache the camera
 
             _abandonedTetrominosLayer = LayerMask.NameToLayer("AbandonedTetromino");
             _selectedTetrominoLayer = LayerMask.NameToLayer("SelectedTetromino");
             _placedTetrominoLayer = LayerMask.NameToLayer("PlacedTetromino");
             _playerPuzzleRowLayer = LayerMask.NameToLayer("PlayerPuzzleRow");
+
+            transform.localScale = TetrominoSizeManager.GetScaleFor(transform);
         }
 
-        internal void Update() // Scale can be done in Update
+        private void Update() // Scale can be done in Update
         {
             // scale the piece based on distance to the puzzle zone
 
@@ -269,8 +303,16 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         private void ReturnToCollection()
         {
-            if (this != null && this.gameObject != null)
-                Destroy(gameObject);
+            if (this == null || gameObject == null)
+                return;
+
+            if (SelectedTetromino == this) {
+                SelectedTetromino = null;
+            }
+            if (gameObject.layer != _placedTetrominoLayer) {
+                _onReturnToCollectionCallback?.Invoke(Shape);
+            }
+            Destroy(gameObject);
         }
 
         private void OnTriggerEnter2D(Collider2D collision)
@@ -287,28 +329,14 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
         }
 
-        private void Start()
-        {
-            transform.localScale = TetrominoSizeManager.GetScaleFor(transform);
-
-            if (GameManager.Controls == null) {
-                Debug.LogError("GameManager controls are not initialized.");
-                return;
-            }
-            GameManager.Controls.Gameplay.RotateSmooth.performed += OnRotateSmoothInputAction;
-            GameManager.Controls.Gameplay.Rotate90.performed += OnRotate90InputAction;
-            GameManager.Controls.Gameplay.Flip.performed += OnFlipInputAction;
-            GameManager.Controls.Gameplay.Place.performed += OnPlaceInputAction;
-        }
-
         private void FixedUpdate() // Use FixedUpdate for Rigidbody manipulation
         {
-            if (_isDragging && mainCamera != null) {
+            if (_isDragging && _camera != null) {
                 // --- Move the Object ---
                 Vector3 mouseScreenPos = Input.mousePosition;
                 // Adjust Z before converting so it's within camera view frustum but not ON the near plane
-                mouseScreenPos.z = mainCamera.WorldToScreenPoint(transform.position).z;
-                Vector2 mouseWorldPos = mainCamera.ScreenToWorldPoint(mouseScreenPos);
+                mouseScreenPos.z = _camera.WorldToScreenPoint(transform.position).z;
+                Vector2 mouseWorldPos = _camera.ScreenToWorldPoint(mouseScreenPos);
                 Vector2 targetWorldPos = mouseWorldPos + _pointerOffset; // Add the offset to the mouse position
 
                 _rb!.MovePosition(targetWorldPos); // Move kinematic body correctly
@@ -325,10 +353,8 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             GameManager.Controls.Gameplay.RotateSmooth.performed -= OnRotateSmoothInputAction;
             GameManager.Controls.Gameplay.Rotate90.performed -= OnRotate90InputAction;
             GameManager.Controls.Gameplay.Flip.performed -= OnFlipInputAction;
-            GameManager.Controls.Gameplay.Place.performed -= OnPlaceInputAction;
-            if (gameObject.layer != _placedTetrominoLayer) {
-                _onReturnToCollectionCallback?.Invoke(Shape);
-            }
+            GameManager.Controls.Gameplay.ClickPlace.performed -= OnClickPlaceInputAction;
+            GameManager.Controls.Gameplay.KeyboardPlace.performed -= OnKeyboardPlaceInputAction;
         }
 
         private void OnRotateSmoothInputAction(InputAction.CallbackContext ctx)
@@ -359,9 +385,21 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             transform.rotation = rotation;
         }
 
-        private void OnPlaceInputAction(InputAction.CallbackContext ctx)
+        private void OnClickPlaceInputAction(InputAction.CallbackContext ctx)
         {
             if (this == SelectedTetromino) {
+                InteractivePuzzle.PlaceTetrominoToPuzzle(this);
+            }
+        }
+
+        private void OnKeyboardPlaceInputAction(InputAction.CallbackContext ctx)
+        {
+            if (SelectedTetromino != null) {
+                OnClickPlaceInputAction(ctx);
+                return;
+            }
+
+            if (this == _lastSelectedTetromino) {
                 InteractivePuzzle.PlaceTetrominoToPuzzle(this);
             }
         }
@@ -370,9 +408,17 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         {
         }
 
-        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionCanceled() => ReturnToCollection();
+        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionCanceled()
+        {
+            _lastSelectedTetromino = null;
+            ReturnToCollection();
+        }
 
-        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionConfirmed() => ReturnToCollection();
+        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionConfirmed()
+        {
+            _lastSelectedTetromino = null;
+            ReturnToCollection();
+        }
 
         async Task IAIPlayerActionAnimator<PlaceTetrominoAction>.Animate(PlaceTetrominoAction action, CancellationToken cancellationToken)
         {

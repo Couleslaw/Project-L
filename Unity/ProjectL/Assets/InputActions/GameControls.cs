@@ -112,9 +112,18 @@ namespace ProjectL.InputActions
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Place"",
+                    ""name"": ""ClickPlace"",
                     ""type"": ""Button"",
                     ""id"": ""381a0ad8-9052-4750-a1bd-2d8b7a1e3e30"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""KeyboardPlace"",
+                    ""type"": ""Button"",
+                    ""id"": ""141c4429-5383-4399-8aaf-81e4b0601083"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -206,23 +215,23 @@ namespace ProjectL.InputActions
                 },
                 {
                     ""name"": """",
-                    ""id"": ""9d6ff9b9-8254-4936-b7f4-5af3a27086ce"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": ""Tap"",
+                    ""id"": ""102957bc-a549-44f8-affb-66f1f1324d06"",
+                    ""path"": ""<Keyboard>/leftCtrl"",
+                    ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Place"",
+                    ""action"": ""ConfirmAction"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""44ea8668-3399-4831-ae44-568e367f2efb"",
-                    ""path"": ""<Keyboard>/space"",
-                    ""interactions"": """",
+                    ""id"": ""9d6ff9b9-8254-4936-b7f4-5af3a27086ce"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": ""Tap"",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Place"",
+                    ""action"": ""ClickPlace"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -269,6 +278,17 @@ namespace ProjectL.InputActions
                     ""action"": ""PauseGame"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""44ea8668-3399-4831-ae44-568e367f2efb"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""KeyboardPlace"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -307,7 +327,8 @@ namespace ProjectL.InputActions
             m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
             m_Gameplay_PauseGame = m_Gameplay.FindAction("PauseGame", throwIfNotFound: true);
             m_Gameplay_ConfirmAction = m_Gameplay.FindAction("ConfirmAction", throwIfNotFound: true);
-            m_Gameplay_Place = m_Gameplay.FindAction("Place", throwIfNotFound: true);
+            m_Gameplay_ClickPlace = m_Gameplay.FindAction("ClickPlace", throwIfNotFound: true);
+            m_Gameplay_KeyboardPlace = m_Gameplay.FindAction("KeyboardPlace", throwIfNotFound: true);
             m_Gameplay_Flip = m_Gameplay.FindAction("Flip", throwIfNotFound: true);
             m_Gameplay_RotateSmooth = m_Gameplay.FindAction("RotateSmooth", throwIfNotFound: true);
             m_Gameplay_Rotate90 = m_Gameplay.FindAction("Rotate90", throwIfNotFound: true);
@@ -397,7 +418,8 @@ namespace ProjectL.InputActions
         private List<IGameplayActions> m_GameplayActionsCallbackInterfaces = new List<IGameplayActions>();
         private readonly InputAction m_Gameplay_PauseGame;
         private readonly InputAction m_Gameplay_ConfirmAction;
-        private readonly InputAction m_Gameplay_Place;
+        private readonly InputAction m_Gameplay_ClickPlace;
+        private readonly InputAction m_Gameplay_KeyboardPlace;
         private readonly InputAction m_Gameplay_Flip;
         private readonly InputAction m_Gameplay_RotateSmooth;
         private readonly InputAction m_Gameplay_Rotate90;
@@ -421,9 +443,13 @@ namespace ProjectL.InputActions
             /// </summary>
             public InputAction @ConfirmAction => m_Wrapper.m_Gameplay_ConfirmAction;
             /// <summary>
-            /// Provides access to the underlying input action "Gameplay/Place".
+            /// Provides access to the underlying input action "Gameplay/ClickPlace".
             /// </summary>
-            public InputAction @Place => m_Wrapper.m_Gameplay_Place;
+            public InputAction @ClickPlace => m_Wrapper.m_Gameplay_ClickPlace;
+            /// <summary>
+            /// Provides access to the underlying input action "Gameplay/KeyboardPlace".
+            /// </summary>
+            public InputAction @KeyboardPlace => m_Wrapper.m_Gameplay_KeyboardPlace;
             /// <summary>
             /// Provides access to the underlying input action "Gameplay/Flip".
             /// </summary>
@@ -468,9 +494,12 @@ namespace ProjectL.InputActions
                 @ConfirmAction.started += instance.OnConfirmAction;
                 @ConfirmAction.performed += instance.OnConfirmAction;
                 @ConfirmAction.canceled += instance.OnConfirmAction;
-                @Place.started += instance.OnPlace;
-                @Place.performed += instance.OnPlace;
-                @Place.canceled += instance.OnPlace;
+                @ClickPlace.started += instance.OnClickPlace;
+                @ClickPlace.performed += instance.OnClickPlace;
+                @ClickPlace.canceled += instance.OnClickPlace;
+                @KeyboardPlace.started += instance.OnKeyboardPlace;
+                @KeyboardPlace.performed += instance.OnKeyboardPlace;
+                @KeyboardPlace.canceled += instance.OnKeyboardPlace;
                 @Flip.started += instance.OnFlip;
                 @Flip.performed += instance.OnFlip;
                 @Flip.canceled += instance.OnFlip;
@@ -497,9 +526,12 @@ namespace ProjectL.InputActions
                 @ConfirmAction.started -= instance.OnConfirmAction;
                 @ConfirmAction.performed -= instance.OnConfirmAction;
                 @ConfirmAction.canceled -= instance.OnConfirmAction;
-                @Place.started -= instance.OnPlace;
-                @Place.performed -= instance.OnPlace;
-                @Place.canceled -= instance.OnPlace;
+                @ClickPlace.started -= instance.OnClickPlace;
+                @ClickPlace.performed -= instance.OnClickPlace;
+                @ClickPlace.canceled -= instance.OnClickPlace;
+                @KeyboardPlace.started -= instance.OnKeyboardPlace;
+                @KeyboardPlace.performed -= instance.OnKeyboardPlace;
+                @KeyboardPlace.canceled -= instance.OnKeyboardPlace;
                 @Flip.started -= instance.OnFlip;
                 @Flip.performed -= instance.OnFlip;
                 @Flip.canceled -= instance.OnFlip;
@@ -660,12 +692,19 @@ namespace ProjectL.InputActions
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnConfirmAction(InputAction.CallbackContext context);
             /// <summary>
-            /// Method invoked when associated input action "Place" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// Method invoked when associated input action "ClickPlace" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
             /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnPlace(InputAction.CallbackContext context);
+            void OnClickPlace(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "KeyboardPlace" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnKeyboardPlace(InputAction.CallbackContext context);
             /// <summary>
             /// Method invoked when associated input action "Flip" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>

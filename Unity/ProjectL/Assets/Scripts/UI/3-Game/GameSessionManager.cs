@@ -64,10 +64,9 @@ namespace ProjectL.UI.GameScene.Management
 
             var cancellationToken = destroyCancellationToken;
 
-
-            await InitializeGameAsync();
             InitializeAIPlayerAnimator();
             InitializePlayersAsync(_game.Players, _game.GameState, cancellationToken);
+            await InitializeGameAsync(cancellationToken);
 
             // game loop
             GameSummary.Clear();
@@ -198,7 +197,7 @@ namespace ProjectL.UI.GameScene.Management
             return new GameCore(gameState, players, GameSettings.ShufflePlayers);
         }
 
-        private async Task InitializeGameAsync()
+        private async Task InitializeGameAsync(CancellationToken cancellationToken)
         {
             if (_game == null) {
                 Debug.LogError("GameCore is null. Cannot prepare end game stats.");
@@ -210,12 +209,12 @@ namespace ProjectL.UI.GameScene.Management
 
             // wait until the graphics system is ready
             while (!GameGraphicsSystem.Instance.IsReadyForInitialization) {
-                await Task.Delay(10);
+                await Task.Delay(10, cancellationToken);
             }
 
             _aIPlayerActionAnimator.Init(_game);
             GameGraphicsSystem.Instance.Init(_game);
-            await _game.InitializeGameAsync();
+            await _game.InitializeGameAsync(cancellationToken);
         }
 
         /// <summary>
@@ -236,7 +235,8 @@ namespace ProjectL.UI.GameScene.Management
                 else if (player is AIPlayerBase aiPlayer) {
                     // initialize AI player
                     string? initPath = GameSettings.Players[player.Name].InitPath;
-                    Debug.Log($"Initializing AI player {player.Name}. Init file: {initPath}");
+                    string pathStr = string.IsNullOrEmpty(initPath) ? "None" : initPath;
+                    Debug.Log($"Initializing AI player {player.Name}. Init file: {pathStr}");
                     
                     aiPlayer.InitAsync(players.Length, gameState.GetAllPuzzlesInGame(), initPath, cancellationToken)
                         .ContinueWith(t => {

@@ -20,9 +20,9 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     {
         Disabled,
         Spawning,
-        TakeBasicTetromino,
-        ChangeTetromino,
         SelectReward,
+        TakeBasic,
+        ChangeTetromino,
     }
 
     public class PieceZoneManager : StaticInstance<PieceZoneManager>,
@@ -34,12 +34,15 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         IHumanPlayerActionListener<TakeBasicTetrominoAction>,
         IHumanPlayerActionListener<ChangeTetrominoAction>,
         IHumanPlayerActionListener<SelectRewardAction>
-
     {
 
-        private Dictionary<TetrominoShape, TetrominoSpawner> _tetrominoSpawners = new();
+        private Dictionary<TetrominoShape, TetrominoButton> _tetrominoButtons = new();
 
         private PieceCountColumn? _currentPieceColumn;
+        private PieceZoneMode _mode;
+
+        private SelectRewardActionCreator? _selectRewardActionCreator;
+        private ChangeTetrominoActionCreator? _changeTetrominoActionCreator;
 
         private event Action<IActionChange<TakeBasicTetrominoAction>>? TakeBasicStateChangedEventHandler;
         event Action<IActionChange<TakeBasicTetrominoAction>>? IHumanPlayerActionListener<TakeBasicTetrominoAction>.StateChangedEventHandler {
@@ -66,15 +69,15 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         public DraggableTetromino SpawnTetromino(TetrominoShape shape)
         {
             // find the spawner for the tetromino shape
-            if (!_tetrominoSpawners.TryGetValue(shape, out TetrominoSpawner? spawner)) {
+            if (!_tetrominoButtons.TryGetValue(shape, out TetrominoButton? spawner)) {
                 throw new InvalidOperationException($"No spawner found for tetromino shape {shape}");
             }
-            return spawner.SpawnTetromino();
+            return spawner.SpawnTetromino(isInteractable: false);
         }
 
         public void RegisterListener(ITetrominoSpawnerListener listener)
         {
-            foreach (var spawner in _tetrominoSpawners.Values) {
+            foreach (var spawner in _tetrominoButtons.Values) {
                 spawner.AddListener(listener);
             }
         }
@@ -84,7 +87,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             _currentPieceColumn?.RemoveListener(this);
             column.AddListener(this);
             _currentPieceColumn = column;
-            foreach (var spawner in _tetrominoSpawners.Values) {
+            foreach (var spawner in _tetrominoButtons.Values) {
                 int count = column.GetDisplayCount(spawner.Shape);
                 spawner.IsGrayedOut = count == 0;
             }
@@ -93,11 +96,11 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         protected override void Awake()
         {
             base.Awake();
-            _tetrominoSpawners = FindSpawners();
+            _tetrominoButtons = FindSpawners();
 
             // check that there is a 1-1 mapping between TetrominoShape and TetrominoSpawner
-            if (_tetrominoSpawners.Count != TetrominoManager.NumShapes) {
-                Debug.LogError($"Number of TetrominoSpawners ({_tetrominoSpawners.Count}) does not match TetrominoShape count ({TetrominoManager.NumShapes})", this);
+            if (_tetrominoButtons.Count != TetrominoManager.NumShapes) {
+                Debug.LogError($"Number of TetrominoSpawners ({_tetrominoButtons.Count}) does not match TetrominoShape count ({TetrominoManager.NumShapes})", this);
             }
         }
 
@@ -109,14 +112,14 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             HumanPlayerActionCreator.Instance.AddListener(this as IHumanPlayerActionListener<SelectRewardAction>);
         }
 
-        private Dictionary<TetrominoShape, TetrominoSpawner> FindSpawners()
+        private Dictionary<TetrominoShape, TetrominoButton> FindSpawners()
         {
-            Dictionary<TetrominoShape, TetrominoSpawner> spawners = new();
+            Dictionary<TetrominoShape, TetrominoButton> spawners = new();
 
             // loop through all children of this GameObject
             // in each child, look for a child with a TetrominoSpawner component
             foreach (Transform child in transform) {
-                TetrominoSpawner? spawner = child.GetComponentInChildren<TetrominoSpawner>();
+                TetrominoButton? spawner = child.GetComponentInChildren<TetrominoButton>();
                 if (spawner != null) {
                     TetrominoShape shape = spawner.Shape;
                     if (!spawners.ContainsKey(shape)) {
@@ -133,7 +136,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         void ITetrominoCollectionListener.OnTetrominoCollectionChanged(TetrominoShape shape, int count)
         {
-            _tetrominoSpawners[shape].IsGrayedOut = count == 0;
+            _tetrominoButtons[shape].IsGrayedOut = count == 0;
         }
 
         async Task IAIPlayerActionAnimator<SelectRewardAction>.Animate(SelectRewardAction action, CancellationToken cancellationToken)
@@ -144,9 +147,9 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 await GameAnimationManager.WaitForScaledDelayAsync(1f, cancellationToken);
 
                 // highlight and select the reward
-                var spawner = _tetrominoSpawners[action.SelectedReward];
+                var spawner = _tetrominoButtons[action.SelectedReward];
                 using (new TemporaryButtonHighlighter(action.SelectedReward, playSound: false)) {
-                    using (spawner.CreateTemporaryButtonSelector(SelectionEffect.GiveToPlayer)) {
+                    using (spawner.CreateTemporaryButtonSelector(SelectionSideEffect.GiveToPlayer)) {
                         await GameAnimationManager.WaitForScaledDelayAsync(1f, cancellationToken);
                     }
                 }
@@ -163,10 +166,10 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         async Task IAIPlayerActionAnimator<ChangeTetrominoAction>.Animate(ChangeTetrominoAction action, CancellationToken cancellationToken)
         {
-            var oldSpawner = _tetrominoSpawners[action.OldTetromino];
+            var oldSpawner = _tetrominoButtons[action.OldTetromino];
 
             // select the old piece
-            using (oldSpawner.CreateTemporaryButtonSelector(SelectionEffect.RemoveFromPlayer)) {
+            using (oldSpawner.CreateTemporaryButtonSelector(SelectionSideEffect.RemoveFromPlayer)) {
                 // highlighting the old piece, important !!!
                 // if player had only 1 piece, the display count will decrement to 0, and so the piece would go gray
                 using (new TemporaryButtonHighlighter(action.OldTetromino, playSound: false)) {
@@ -184,12 +187,8 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         void IGameActionController.SetPlayerMode(PlayerMode mode)
         {
-            foreach (var spawner in _tetrominoSpawners.Values) {
-                if (mode == PlayerMode.NonInteractive)
-                    spawner.SetMode(PieceZoneMode.Disabled);
-                else
-                    spawner.SetMode(PieceZoneMode.Spawning);
-            }
+            PieceZoneMode buttonMode = mode == PlayerMode.NonInteractive ? PieceZoneMode.Disabled : PieceZoneMode.Spawning;
+            SetMode(buttonMode);
         }
 
         void IGameActionController.SetActionMode(ActionMode mode)
@@ -200,31 +199,93 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 ActionMode.FinishingTouches => PieceZoneMode.Spawning,
                 _ => throw new ArgumentOutOfRangeException(nameof(mode)),
             };
-
-            foreach (var spawner in _tetrominoSpawners.Values) {
-                spawner.SetMode(buttonMode);
-            }
+            SetMode(buttonMode);
         }
 
         private void SetMode(PieceZoneMode mode)
         {
-            foreach (var spawner in _tetrominoSpawners.Values) {
+            _mode = mode;
+            foreach (var spawner in _tetrominoButtons.Values) {
                 spawner.SetMode(mode);
             }
         }
 
-        void IHumanPlayerActionListener<TakeBasicTetrominoAction>.OnActionRequested() => SetMode(PieceZoneMode.TakeBasicTetromino);
-        void IHumanPlayerActionListener<TakeBasicTetrominoAction>.OnActionCanceled() => SetMode(PieceZoneMode.Spawning);
-        void IHumanPlayerActionListener<TakeBasicTetrominoAction>.OnActionConfirmed() => SetMode(PieceZoneMode.Disabled);
-
-        void IHumanPlayerActionListener<ChangeTetrominoAction>.OnActionRequested() => SetMode(PieceZoneMode.ChangeTetromino);
-        void IHumanPlayerActionListener<ChangeTetrominoAction>.OnActionCanceled() => SetMode(PieceZoneMode.Spawning);
-        void IHumanPlayerActionListener<ChangeTetrominoAction>.OnActionConfirmed() => SetMode(PieceZoneMode.Disabled);
-        
         void IHumanPlayerActionListener<SelectRewardAction>.OnActionRequested() => SetMode(PieceZoneMode.SelectReward);
-        void IHumanPlayerActionListener<SelectRewardAction>.OnActionCanceled() => SetMode(PieceZoneMode.Spawning);
-        void IHumanPlayerActionListener<SelectRewardAction>.OnActionConfirmed() => SetMode(PieceZoneMode.Disabled);
+        void IHumanPlayerActionListener<SelectRewardAction>.OnActionCanceled() => OnActionCanceled();
+        void IHumanPlayerActionListener<SelectRewardAction>.OnActionConfirmed() => OnActionConfirmed();
 
+        void IHumanPlayerActionListener<TakeBasicTetrominoAction>.OnActionRequested()
+        {
+            SetMode(PieceZoneMode.TakeBasic);
+            EnableRewardSelection(new List<TetrominoShape> { TetrominoShape.O1 });
+        }
+        void IHumanPlayerActionListener<TakeBasicTetrominoAction>.OnActionCanceled() => OnActionCanceled();
+        void IHumanPlayerActionListener<TakeBasicTetrominoAction>.OnActionConfirmed() => OnActionConfirmed();
+
+        void IHumanPlayerActionListener<ChangeTetrominoAction>.OnActionRequested()
+        {
+            SetMode(PieceZoneMode.ChangeTetromino);
+            _changeTetrominoActionCreator = new (SharedReserveManager.Instance.GetNumTetrominosLeft());
+        }
+        void IHumanPlayerActionListener<ChangeTetrominoAction>.OnActionCanceled() => OnActionCanceled();
+        void IHumanPlayerActionListener<ChangeTetrominoAction>.OnActionConfirmed() => OnActionConfirmed();
+
+
+
+        private void OnActionCanceled()
+        {
+            DisposeActionEffects();
+            SetMode(PieceZoneMode.Spawning);
+        }
+
+        private void OnActionConfirmed()
+        {
+            DisposeActionEffects();
+            SetMode(PieceZoneMode.Disabled);
+        }
+
+        public void EnableRewardSelection(List<TetrominoShape> rewardOptions)
+        {
+            _selectRewardActionCreator = new SelectRewardActionCreator(rewardOptions);
+        }
+
+        public void ReportButtonPress(TetrominoButton button)
+        {
+            Debug.Log($"Button pressed: {button.Shape}, mode={_mode}");
+
+            switch (_mode) {
+                case PieceZoneMode.Disabled:
+                case PieceZoneMode.Spawning:
+                    return;
+                case PieceZoneMode.TakeBasic:
+                    _selectRewardActionCreator!.ReportButtonPress(button);
+                    bool isSelected = _selectRewardActionCreator.SelectedReward == TetrominoShape.O1;
+                    ReportTakeBasicChange(new(isSelected));
+                    break;
+                case PieceZoneMode.SelectReward:
+                    _selectRewardActionCreator!.ReportButtonPress(button);
+                    TetrominoShape? selectedReward = _selectRewardActionCreator.SelectedReward;
+                    ReportSelectRewardChange(new(selectedReward));
+                    break;
+                case PieceZoneMode.ChangeTetromino:
+                    _changeTetrominoActionCreator!.ReportButtonPress(button);
+                    TetrominoShape? oldTetromino = _changeTetrominoActionCreator.OldTetromino;
+                    TetrominoShape? newTetromino = _changeTetrominoActionCreator.NewTetromino;
+                    ReportChangeTetrominoChange(new(oldTetromino, newTetromino));
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void DisposeActionEffects()
+        {
+            _selectRewardActionCreator?.Dispose();
+            _selectRewardActionCreator = null;
+
+            _changeTetrominoActionCreator?.Dispose();
+            _changeTetrominoActionCreator = null;
+        }
 
         private class TemporaryButtonHighlighter : IDisposable
         {
@@ -237,7 +298,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                     SoundManager.Instance?.PlaySoftTapSoundEffect();
                 }
                 for (int i = 0; i < TetrominoManager.NumShapes; i++) {
-                    var spawner = Instance._tetrominoSpawners[(TetrominoShape)i];
+                    var spawner = Instance._tetrominoButtons[(TetrominoShape)i];
                     _originalSettings[i] = spawner.IsGrayedOut;
                     spawner.IsGrayedOut = !buttonsToHighlight.Contains((TetrominoShape)i);
                 }
@@ -248,24 +309,110 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             {
             }
 
-            public TemporaryButtonHighlighter(TetrominoShape button1, TetrominoShape button2, bool playSound = true)
-                : this(new List<TetrominoShape> { button1, button2 })
+            public void Dispose()
             {
+                for (int i = 0; i < TetrominoManager.NumShapes; i++) {
+                    var spawner = Instance._tetrominoButtons[(TetrominoShape)i];
+                    spawner.IsGrayedOut = _originalSettings[i];
+                }
+            }
+        }
+
+        private class SelectRewardActionCreator : IDisposable
+        {
+            public TetrominoShape? SelectedReward { get; private set; } = null;
+
+            private readonly List<TetrominoShape> _rewardOptions;
+            private IDisposable _rewardOptionsHighlighter;
+            private IDisposable? _selectedRewardSelector;
+
+            public SelectRewardActionCreator(List<TetrominoShape> rewardOptions)
+            {
+                _rewardOptions = rewardOptions;
+                _rewardOptionsHighlighter = new TemporaryButtonHighlighter(rewardOptions, playSound: false);
             }
 
-            public TemporaryButtonHighlighter(ICollection<TetrominoShape> buttonsCollection, TetrominoShape extraButton, bool playSound = true)
-                : this(buttonsCollection.Union(new List<TetrominoShape> { extraButton }).ToList())
+            public void ReportButtonPress(TetrominoButton button)
             {
+                if (SelectedReward != null) {
+                    ResetHighlight();
+                }
+                if (SelectedReward == button.Shape) {
+                    SelectedReward = null;
+                    return;
+                }
+                SelectedReward = button.Shape;
+                _selectedRewardSelector = button.CreateTemporaryButtonSelector(SelectionSideEffect.GiveToPlayer);
+            }
+
+            private void ResetHighlight()
+            {
+                Dispose();
+                _rewardOptionsHighlighter = new TemporaryButtonHighlighter(_rewardOptions, playSound: false);
             }
 
             public void Dispose()
             {
-                for (int i = 0; i < TetrominoManager.NumShapes; i++) {
-                    var spawner = Instance._tetrominoSpawners[(TetrominoShape)i];
-                    spawner.IsGrayedOut = _originalSettings[i];
-                }
+                _selectedRewardSelector?.Dispose();
+                _rewardOptionsHighlighter?.Dispose();
+            }
+        }
+
+        private class ChangeTetrominoActionCreator : IDisposable
+        {
+            public TetrominoShape? OldTetromino { get; private set; } = null;
+            public TetrominoShape? NewTetromino { get; private set; } = null;
+
+            private IDisposable? _oldTetrominoSelector;
+            private SelectRewardActionCreator? _newTetrominoSelector;
+
+            private int[] _numTetrominosInSharedReserve;
+
+
+            public ChangeTetrominoActionCreator(int[] numTetrominosInSharedReserve)
+            {
+                _numTetrominosInSharedReserve = numTetrominosInSharedReserve;
             }
 
+            public void ReportButtonPress(TetrominoButton button)
+            {
+                // didn't have old tetromino
+                if (OldTetromino == null) {
+                    // highlight old tetromino
+                    OldTetromino = button.Shape;
+                    _oldTetrominoSelector = button.CreateTemporaryButtonSelector(SelectionSideEffect.RemoveFromPlayer, SelectionButtonEffect.MakeSmaller);
+
+                    // pick new one 
+                    var changeOptions = RewardManager.GetUpgradeOptions(_numTetrominosInSharedReserve, OldTetromino.Value);
+                    changeOptions.Add(OldTetromino.Value);
+                    _newTetrominoSelector = new SelectRewardActionCreator(changeOptions);
+
+                    return;
+                }
+
+                // did have old AND clicked the same button
+                if (OldTetromino == button.Shape) {
+                    OldTetromino = null;
+                    NewTetromino = null;
+
+                    _newTetrominoSelector?.Dispose();
+                    _newTetrominoSelector = null;
+
+                    _oldTetrominoSelector?.Dispose();
+                    _oldTetrominoSelector = null;
+                    return;
+                }
+
+                // clicked a different button --> select new tetromino
+                _newTetrominoSelector!.ReportButtonPress(button);
+                NewTetromino = _newTetrominoSelector!.SelectedReward;
+            }
+
+            public void Dispose()
+            {
+                _newTetrominoSelector?.Dispose();
+                _oldTetrominoSelector?.Dispose();
+            }
         }
     }
 }

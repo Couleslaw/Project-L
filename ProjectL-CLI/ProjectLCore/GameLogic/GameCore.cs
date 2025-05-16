@@ -31,6 +31,16 @@ namespace ProjectLCore.GameLogic
         /// <summary> Manages who's turn it currently is and what is the game phase. </summary>
         private readonly TurnManager _turnManager;
 
+        /// <summary>
+        /// <see langword="true"/> if <see cref="InitializeGame"/> was called; otherwise <see langword="false"/>.
+        /// </summary>
+        private bool _didInitialize = false;
+
+        /// <summary>
+        /// <see langword="true"/> if <see cref="FinalizeGame"/> was called; otherwise <see langword="false"/>.
+        /// </summary>
+        private bool _didFinalize = false;
+
         #endregion
 
         #region Constructors
@@ -81,16 +91,6 @@ namespace ProjectLCore.GameLogic
         #endregion
 
         #region Properties
-
-        /// <summary>
-        /// <see langword="true"/> if <see cref="InitializeGame"/> was called; otherwise <see langword="false"/>.
-        /// </summary>
-        public bool DidInitialize { get; private set; } = false;
-
-        /// <summary>
-        /// <see langword="true"/> if <see cref="FinalizeGame"/> was called; otherwise <see langword="false"/>.
-        /// </summary>
-        public bool DidFinalize { get; private set; } = false;
 
         /// <summary> Information about the current turn. </summary>
         public TurnInfo CurrentTurn { get; private set; }
@@ -174,10 +174,10 @@ namespace ProjectLCore.GameLogic
         /// <exception cref="InvalidOperationException">Game already finalized</exception>
         public void InitializeGame()
         {
-            if (DidInitialize) {
+            if (_didInitialize) {
                 throw new InvalidOperationException("Game already initialized");
             }
-            DidInitialize = true;
+            _didInitialize = true;
 
             // give all players their initial tetrominos
             foreach (var playerState in PlayerStates.Values) {
@@ -199,10 +199,12 @@ namespace ProjectLCore.GameLogic
         /// <exception cref="InvalidOperationException">Game already finalized</exception>
         public async Task InitializeGameAsync(CancellationToken cancellationToken = default)
         {
-            if (DidInitialize) {
+            if (_didInitialize) {
                 throw new InvalidOperationException("Game already initialized");
             }
-            DidInitialize = true;
+            _didInitialize = true;
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             // give all players their initial tetrominos
             foreach (var playerState in PlayerStates.Values) {
@@ -224,10 +226,10 @@ namespace ProjectLCore.GameLogic
         /// <exception cref="InvalidOperationException">Game already finalized</exception>
         public void FinalizeGame()
         {
-            if (DidFinalize) {
+            if (_didFinalize) {
                 throw new InvalidOperationException("Game already finalized");
             }
-            DidFinalize = true;
+            _didFinalize = true;
 
             // remove points for unfinished puzzles
             foreach (var playerState in PlayerStates.Values) {

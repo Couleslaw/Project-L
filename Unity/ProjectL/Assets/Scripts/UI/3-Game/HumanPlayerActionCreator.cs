@@ -4,6 +4,7 @@ namespace ProjectL.UI.GameScene.Actions
 {
     using ProjectL.UI.GameScene.Actions.Constructing;
     using ProjectL.UI.GameScene.Zones.ActionZones;
+    using ProjectL.UI.GameScene.Zones.PieceZone;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameActions.Verification;
     using ProjectLCore.GameLogic;
@@ -146,8 +147,10 @@ namespace ProjectL.UI.GameScene.Actions
         public static void RegisterController(IGameActionController controller)
         {
             _actionControllers.Add(controller);
-            controller.SetPlayerMode(Instance._currentPlayerMode);
-            controller.SetActionMode(Instance._currentActionMode);
+            if (Instance != null) {
+                controller.SetPlayerMode(Instance._currentPlayerMode);
+                controller.SetActionMode(Instance._currentActionMode);
+            }
         }
 
         public void RegisterPlayer(HumanPlayer player)
@@ -242,28 +245,8 @@ namespace ProjectL.UI.GameScene.Actions
         public override void Init(GameCore game)
         {
             game.AddListener(this);
-
-            _actionEventSets[ActionType.TakePuzzle] = new ActionEventSet<TakePuzzleAction>();
-            _actionEventSets[ActionType.Recycle] = new ActionEventSet<RecycleAction>();
-            _actionEventSets[ActionType.TakeBasicTetromino] = new ActionEventSet<TakeBasicTetrominoAction>();
-            _actionEventSets[ActionType.ChangeTetromino] = new ActionEventSet<ChangeTetrominoAction>();
-            _actionEventSets[ActionType.SelectReward] = new ActionEventSet<SelectRewardAction>();
-
-            var placeEventSet = new ActionEventSet<PlaceTetrominoAction>();
-            _actionEventSets[ActionType.PlacePiece] = placeEventSet;
-            _actionEventSets[ActionType.MasterAction] = placeEventSet;
-            _actionEventSets[ActionType.EndFinishingTouches] = placeEventSet;
-
-            _actionConstructors[ActionType.TakePuzzle] = new TakePuzzleConstructor();
-            _actionConstructors[ActionType.Recycle] = new RecycleConstructor();
-            _actionConstructors[ActionType.TakeBasicTetromino] = new TakeBasicConstructor();
-            _actionConstructors[ActionType.ChangeTetromino] = new ChangeTetrominoConstructor();
-            _actionConstructors[ActionType.SelectReward] = new SelectRewardConstructor();
-
-            var placeConstructor = new PlaceTetrominoConstructor();
-            _actionConstructors[ActionType.PlacePiece] = placeConstructor;
-            _actionConstructors[ActionType.MasterAction] = placeConstructor;
-            _actionConstructors[ActionType.EndFinishingTouches] = placeConstructor;
+            SetActionMode(ActionMode.ActionCreation);
+            SetPlayerMode(PlayerMode.NonInteractive);
         }
 
         private void OnActionStateChanged(IActionChange<GameAction> change)
@@ -334,9 +317,9 @@ namespace ProjectL.UI.GameScene.Actions
                 controller.SetPlayerMode(mode);
             }
             if (mode == PlayerMode.Interactive)
-                ActionZonesManager.Instance.ConnectToButtons(this);
+                ActionZonesManager.Instance.ConnectToActionButtons(this);
             if (mode == PlayerMode.NonInteractive)
-                ActionZonesManager.Instance.DisconnectFromButtons(this);
+                ActionZonesManager.Instance.DisconnectFromActionButtons(this);
         }
 
         private void SetActionMode(ActionMode mode)
@@ -344,6 +327,13 @@ namespace ProjectL.UI.GameScene.Actions
             _currentActionMode = mode;
             foreach (var controller in _actionControllers) {
                 controller.SetActionMode(mode);
+            }
+
+            if (mode == ActionMode.RewardSelection) {
+                ActionZonesManager.Instance.ConnectToSelectRewardButtons(this);
+            }
+            else {
+                ActionZonesManager.Instance.DisconnectFromSelectRewardButton(this);
             }
         }
 
@@ -375,6 +365,7 @@ namespace ProjectL.UI.GameScene.Actions
             _currentActionType = ActionType.SelectReward;
             SetActionMode(ActionMode.RewardSelection);
             SetNewActionType(ActionType.SelectReward);
+            PieceZoneManager.Instance.EnableRewardSelection(e.RewardOptions);
         }
 
         private void SetNewActionType(ActionType newType)
@@ -398,6 +389,32 @@ namespace ProjectL.UI.GameScene.Actions
                 SetActionMode(ActionMode.FinishingTouches);
                 SetNewActionType(ActionType.EndFinishingTouches);
             }
+        }
+
+        protected override void Awake()
+        {
+            base.Awake();
+            _actionEventSets[ActionType.TakePuzzle] = new ActionEventSet<TakePuzzleAction>();
+            _actionEventSets[ActionType.Recycle] = new ActionEventSet<RecycleAction>();
+            _actionEventSets[ActionType.TakeBasicTetromino] = new ActionEventSet<TakeBasicTetrominoAction>();
+            _actionEventSets[ActionType.ChangeTetromino] = new ActionEventSet<ChangeTetrominoAction>();
+            _actionEventSets[ActionType.SelectReward] = new ActionEventSet<SelectRewardAction>();
+
+            var placeEventSet = new ActionEventSet<PlaceTetrominoAction>();
+            _actionEventSets[ActionType.PlacePiece] = placeEventSet;
+            _actionEventSets[ActionType.MasterAction] = placeEventSet;
+            _actionEventSets[ActionType.EndFinishingTouches] = placeEventSet;
+
+            _actionConstructors[ActionType.TakePuzzle] = new TakePuzzleConstructor();
+            _actionConstructors[ActionType.Recycle] = new RecycleConstructor();
+            _actionConstructors[ActionType.TakeBasicTetromino] = new TakeBasicConstructor();
+            _actionConstructors[ActionType.ChangeTetromino] = new ChangeTetrominoConstructor();
+            _actionConstructors[ActionType.SelectReward] = new SelectRewardConstructor();
+
+            var placeConstructor = new PlaceTetrominoConstructor();
+            _actionConstructors[ActionType.PlacePiece] = placeConstructor;
+            _actionConstructors[ActionType.MasterAction] = placeConstructor;
+            _actionConstructors[ActionType.EndFinishingTouches] = placeConstructor;
         }
 
         protected override void OnDestroy()

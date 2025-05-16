@@ -47,7 +47,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             }
         }
 
-        public void ConnectToButtons(HumanPlayerActionCreator acm)
+        public void ConnectToActionButtons(HumanPlayerActionCreator acm)
         {
             if (_puzzleActionZone == null || _pieceActionZone == null) {
                 return;
@@ -58,7 +58,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _puzzleActionZone.AddListener(acm);
         }
 
-        public void DisconnectFromButtons(HumanPlayerActionCreator acm)
+        public void DisconnectFromActionButtons(HumanPlayerActionCreator acm)
         {
             if (_puzzleActionZone == null || _pieceActionZone == null) {
                 return;
@@ -67,6 +67,24 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             ActionButton.CancelActionEventHandler -= acm.OnActionCanceled;
             _pieceActionZone.RemoveListener(acm);
             _puzzleActionZone.RemoveListener(acm);
+        }
+
+        public void ConnectToSelectRewardButtons(HumanPlayerActionCreator acm)
+        {
+            if (_puzzleActionZone == null || _pieceActionZone == null) {
+                return;
+            }
+            _pieceActionZone.AddSelectRewardListener(acm);
+            _puzzleActionZone.AddSelectRewardListener(acm);
+        }
+
+        public void DisconnectFromSelectRewardButton(HumanPlayerActionCreator acm)
+        {
+            if (_puzzleActionZone == null || _pieceActionZone == null) {
+                return;
+            }
+            _pieceActionZone.RemoveSelectRewardListener(acm);
+            _puzzleActionZone.RemoveSelectRewardListener(acm);
         }
 
         void ICurrentTurnListener.OnCurrentTurnChanged(TurnInfo currentTurnInfo)

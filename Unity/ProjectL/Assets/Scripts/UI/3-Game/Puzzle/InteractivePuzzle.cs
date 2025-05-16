@@ -43,10 +43,6 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
         public static void PlaceTetrominoToPuzzle(DraggableTetromino tetromino)
         {
-            if (tetromino != DraggableTetromino.SelectedTetromino) {
-                return;
-            }
-
             if (!TryGetPuzzleWhichHasShapeOverIt(tetromino.Shape, out InteractivePuzzle? puzzle, out BinaryImage position)) {
                 return;
             }
@@ -160,7 +156,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             _puzzleCells = new PuzzleCell[25]; // 5x5 grid
             for (int i = 0; i < _puzzleCells.Length; i++) {
                 _puzzleCells[i] = Instantiate(_puzzleCellPrefab, transform);
-                _puzzleCells[i].OnCollisionStateChanged += TryDrawingTetrominoShadow;
+                _puzzleCells[i].OnCollisionStateChangedEventHandler += TryDrawingTetrominoShadow;
                 _puzzleCells[i].gameObject.name = $"PuzzleCell_{1 + i / 5}x{1 + i % 5}";
                 _puzzleCells[i].gameObject.SetActive(true);
             }

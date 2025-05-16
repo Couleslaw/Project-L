@@ -23,7 +23,7 @@ public class PuzzleCell : MonoBehaviour
 
     public bool IsColliding => _numCollisions > 0;
 
-    public event Action? OnCollisionStateChanged;
+    public event Action? OnCollisionStateChangedEventHandler;
 
 
     #endregion
@@ -60,13 +60,13 @@ public class PuzzleCell : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         _numCollisions++;
-        OnCollisionStateChanged?.Invoke();
+        OnCollisionStateChangedEventHandler?.Invoke();
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
         _numCollisions--;
-        OnCollisionStateChanged?.Invoke();
+        OnCollisionStateChangedEventHandler?.Invoke();
     }
 
     #endregion

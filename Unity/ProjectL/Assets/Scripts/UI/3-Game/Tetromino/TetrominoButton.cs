@@ -10,11 +10,18 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     using UnityEngine.EventSystems;
     using UnityEngine.UI;
 
-    public enum SelectionEffect
+    public enum SelectionSideEffect
     {
         None,
         GiveToPlayer,
         RemoveFromPlayer,
+    }
+
+    public enum SelectionButtonEffect
+    {
+        None,
+        MakeBigger,
+        MakeSmaller
     }
 
     public interface ITetrominoSpawnerListener
@@ -31,7 +38,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     [RequireComponent(typeof(RectTransform))]
     [RequireComponent(typeof(Image))]
     [RequireComponent(typeof(Button))]
-    public class TetrominoSpawner : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+    public class TetrominoButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         #region Fields
 
@@ -71,12 +78,14 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 if (_image != null) {
                     _image.color = value ? GameGraphicsSystem.InactiveColor : Color.white;
                 }
-                _button!.interactable = !value && _mode != PieceZoneMode.Disabled;
+                if (_button != null) {
+                    _button.interactable = !value && _mode != PieceZoneMode.Disabled;
+                }
             }
         }
 
         private bool CanBeUsed => _mode != PieceZoneMode.Disabled && !IsGrayedOut;
-        private bool CanSpawn => CanBeUsed  && _mode == PieceZoneMode.Spawning;
+        private bool CanSpawn => _mode == PieceZoneMode.Spawning && !IsGrayedOut;
 
         #endregion
 
@@ -85,27 +94,32 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         // Called by EventSystem when pointer presses down ON THIS BUTTON
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (CanSpawn == false) {
+            if (_mode == PieceZoneMode.Disabled) {
                 return;
             }
 
-            // --- Instantiate the Draggable Object ---
-            // Convert mouse screen position to world position
-            Vector3 spawnPosition = _mainCamera!.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y, _mainCamera.nearClipPlane + 10f)); // Adjust Z as needed
-            spawnPosition.z = 0; // Ensure Z is appropriate for 2D
+            if (CanSpawn) {
+                Vector3 spawnPosition = _mainCamera!.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y, _mainCamera.nearClipPlane));
+                spawnPosition.z = 0; // Ensure Z is appropriate for 2D
 
-            _currentTetromino = SpawnTetromino();
-            _currentTetromino.StartDragging();
+                _currentTetromino = SpawnTetromino(isInteractable: true);
+                _currentTetromino.StartDragging();
+                return;
+            }
+
+            if (CanBeUsed) {
+                PieceZoneManager.Instance.ReportButtonPress(this);
+            }
         }
 
-        public DraggableTetromino SpawnTetromino()
+        public DraggableTetromino SpawnTetromino(bool isInteractable)
         {
             if (draggableTetrominoPrefab == null) {
                 throw new InvalidOperationException("DraggableTetromino prefab is not assigned!");
             }
             SoundManager.Instance?.PlaySliderSound();
             DraggableTetromino tetromino = Instantiate(draggableTetrominoPrefab, transform.position, Quaternion.identity);
-            tetromino.Init(_mainCamera!, TetrominoReturnedEventHandler);
+            tetromino.Init(isInteractable, TetrominoReturnedEventHandler);
             TetrominoSpawnedEventHandler?.Invoke(Shape);
             if (_mode != PieceZoneMode.Disabled) {
                 HumanPlayerActionCreator.Instance?.OnPlacePieceActionRequested();
@@ -138,26 +152,12 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         public void SetMode(PieceZoneMode mode)
         {
             _mode = mode;
-            switch (mode) {
-                case PieceZoneMode.Disabled:
-                    _button!.interactable = CanBeUsed;
-                    break;
-                case PieceZoneMode.Spawning:
-                    break;
-                case PieceZoneMode.TakeBasicTetromino:
-                    break;
-                case PieceZoneMode.ChangeTetromino:
-                    break;
-                case PieceZoneMode.SelectReward:
-                    break;
-                default:
-                    break;
-            }
+            _button!.interactable = CanBeUsed;
         }
 
-        public TemporaryButtonSelector CreateTemporaryButtonSelector(SelectionEffect effect = SelectionEffect.None)
+        public TemporaryButtonSelector CreateTemporaryButtonSelector(SelectionSideEffect sideEffect = SelectionSideEffect.None, SelectionButtonEffect buttonEffect = SelectionButtonEffect.MakeBigger)
         {
-            return new TemporaryButtonSelector(this, effect);
+            return new TemporaryButtonSelector(this, sideEffect, buttonEffect);
         }
 
         private void Awake()
@@ -184,27 +184,34 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             #region Fields
 
             internal RectTransform _spawnerRectTransform;
+            private SelectionButtonEffect _buttonEffect;
+            internal TetrominoButton _spawner;
 
-            internal TetrominoSpawner _spawner;
-
-            internal SelectionEffect _effect;
+            internal SelectionSideEffect _effect;
 
             #endregion
 
             #region Constructors
 
-            public TemporaryButtonSelector(TetrominoSpawner spawner, SelectionEffect effect)
+            public TemporaryButtonSelector(TetrominoButton spawner, SelectionSideEffect sideEffect, SelectionButtonEffect buttonEffect)
             {
                 SoundManager.Instance?.PlaySoftTapSoundEffect();
                 _spawnerRectTransform = spawner.GetComponent<RectTransform>();
-                _spawnerRectTransform.localScale *= _temporaryScaleIncrease;
 
-                _effect = effect;
+                _buttonEffect = buttonEffect;
+                if (buttonEffect == SelectionButtonEffect.MakeBigger) {
+                    _spawnerRectTransform.localScale *= _temporaryScaleIncrease;
+                }
+                if (buttonEffect == SelectionButtonEffect.MakeSmaller) {
+                    _spawnerRectTransform.localScale /= _temporaryScaleIncrease;
+                }
+
+                _effect = sideEffect;
                 _spawner = spawner;
-                if (_effect == SelectionEffect.GiveToPlayer) {
+                if (_effect == SelectionSideEffect.GiveToPlayer) {
                     _spawner.TetrominoReturnedEventHandler?.Invoke(_spawner.Shape);
                 }
-                if (_effect == SelectionEffect.RemoveFromPlayer) {
+                if (_effect == SelectionSideEffect.RemoveFromPlayer) {
                     _spawner.TetrominoSpawnedEventHandler?.Invoke(_spawner.Shape);
                 }
             }
@@ -215,12 +222,17 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
             public void Dispose()
             {
-                _spawnerRectTransform.localScale /= _temporaryScaleIncrease;
+                if (_buttonEffect == SelectionButtonEffect.MakeBigger) {
+                    _spawnerRectTransform.localScale /= _temporaryScaleIncrease;
+                }
+                if (_buttonEffect == SelectionButtonEffect.MakeSmaller) {
+                    _spawnerRectTransform.localScale *= _temporaryScaleIncrease;
+                }
 
-                if (_effect == SelectionEffect.GiveToPlayer) {
+                if (_effect == SelectionSideEffect.GiveToPlayer) {
                     _spawner.TetrominoSpawnedEventHandler?.Invoke(_spawner.Shape);
                 }
-                if (_effect == SelectionEffect.RemoveFromPlayer) {
+                if (_effect == SelectionSideEffect.RemoveFromPlayer) {
                     _spawner.TetrominoReturnedEventHandler?.Invoke(_spawner.Shape);
                 }
             }

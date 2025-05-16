@@ -25,26 +25,27 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
         [SerializeField] protected Button? _confirmButton;
 
-        private PlayerMode _mode = PlayerMode.NonInteractive;
+        private PlayerMode _playerMode = PlayerMode.NonInteractive;
 
         #endregion
 
         public bool CanConfirmAction {
             set {
                 if (_confirmButton != null) {
-                    _confirmButton.interactable = value && _mode == PlayerMode.Interactive;
+                    _confirmButton.interactable = value && _playerMode == PlayerMode.Interactive;
                 }
             }
         }
 
         private bool _canSelectReward = false;
-        
+        private ActionMode _actionMode;
+
         public bool CanSelectReward {
             get => _canSelectReward;
             set {
                 _canSelectReward = value;
                 if (_selectRewardButton != null) {
-                    _selectRewardButton.interactable = value && _mode == PlayerMode.Interactive;
+                    _selectRewardButton.interactable = value && _actionMode == ActionMode.RewardSelection;
                 }
             }
         }
@@ -64,6 +65,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
         public void SetActionMode(ActionMode mode)
         {
+            _actionMode = mode;
             switch (mode) {
                 case ActionMode.ActionCreation:
                     SetNormalMode();
@@ -81,8 +83,8 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
         public virtual void SetPlayerMode(PlayerMode mode)
         {
-            _mode = mode;
-            _finishingTouchesButton!.interactable = _mode == PlayerMode.Interactive;
+            _playerMode = mode;
+            _finishingTouchesButton!.interactable = _playerMode == PlayerMode.Interactive;
             CanSelectReward = false;
             CanConfirmAction = false;
         }
@@ -92,11 +94,19 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
         public virtual void AddListener(HumanPlayerActionCreator acm)
         {
             _confirmButton!.onClick.AddListener(acm.OnActionConfirmed);
-            _selectRewardButton!.onClick.AddListener(acm.OnRewardSelected);
         }
         public virtual void RemoveListener(HumanPlayerActionCreator acm)
         {
             _confirmButton!.onClick.RemoveListener(acm.OnActionConfirmed);
+        }
+
+        public void AddSelectRewardListener(HumanPlayerActionCreator acm)
+        {
+            _selectRewardButton!.onClick.AddListener(acm.OnRewardSelected);
+        }
+
+        public void RemoveSelectRewardListener(HumanPlayerActionCreator acm)
+        {
             _selectRewardButton!.onClick.RemoveListener(acm.OnRewardSelected);
         }
 
@@ -141,7 +151,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _finishingTouchesButton.gameObject.SetActive(true);
             _selectRewardButton.gameObject.SetActive(false);
             _actionButtonsPanel.SetActive(false);
-            _finishingTouchesButton.interactable = _mode == PlayerMode.Interactive;
+            _finishingTouchesButton.interactable = _playerMode == PlayerMode.Interactive;
         }
 
         private void SetNormalMode()

@@ -286,12 +286,10 @@ namespace ProjectLCore.GameLogic
             }
 
             var asyncHandler = PuzzleFinishedAsyncEventHandler;
-            if (asyncHandler is null) {
-                return;
-            }
-
-            foreach (PuzzleFinishedAsyncDelegate handler in asyncHandler.GetInvocationList()) {
-                await handler(index, info, cancellationToken);
+            if (asyncHandler != null) {
+                foreach (PuzzleFinishedAsyncDelegate handler in asyncHandler.GetInvocationList()) {
+                    await handler(index, info, cancellationToken);
+                }
             }
             FinishPuzzle(info);
         }

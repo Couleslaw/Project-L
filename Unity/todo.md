@@ -64,21 +64,33 @@
   - [ ] standard actions
     - [x] connect TetrominoSpawners to action manager
     - [x] take puzzle
-    - [ ] recycle
-    - [ ] take basic piece
+    - [x] recycle
+    - [x] take basic piece
     - [ ] change piece
-    - [ ] master action
+    - [x] master action
   - [x] finishing touches action
     - [x] clear board
     - [x] end finishing touches
   - [ ] reward selection
-- [ ] add animation for AI actions
+    - neco se rozbije kdyz clovek hodne klika a vymenuje
+    - AI kdyz snizi na 0, tak to nezmizi, ale zustane cervena nula, tady nekde problem
+- [x] add animation for AI actions
   - [x] puzzle finished
     - [x] select reward
   - [x] place piece
-  - [ ] take puzzle
-  - [ ] recycle
+  - [x] take puzzle
+  - [x] recycle
   - [x] take basic piece
   - [x] change piece
   - [x] master action
   - [x] end finishing touches
+- [ ] async workflow
+  - [ ] add option to skip animation
+  - [ ] cleanup cancellation tokens usage
+- [ ] polishing
+  - [ ] scale dilku pro dragging
+  - [ ] animate number changes in shared reserve
+  - [ ] take puzzle action on puzzle click
+  - [ ] rework tetromino + puzzle interaction
+    - [ ] space --> place last selected piece
+  - [ ] select reward & finishing touches keyboard shortcuts
