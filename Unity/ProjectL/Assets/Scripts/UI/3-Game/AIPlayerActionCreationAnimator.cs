@@ -9,29 +9,43 @@ namespace ProjectL.UI.GameScene.Actions
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using UnityEditor;
-    using UnityEngine;
-    using UnityEngine.SocialPlatforms.GameCenter;
 
     public interface IAIPlayerActionAnimator<T> where T : GameAction
     {
+        #region Methods
+
         Task Animate(T action, CancellationToken cancellationToken);
+
+        #endregion
     }
 
-    public class AIPlayerActionCreationAnimator : AsyncActionProcessorBase, 
+    public class AIPlayerActionCreationAnimator : AsyncActionProcessorBase,
         IPlayerStatePuzzleFinishedAsyncListener,
         IGameStatePuzzleAsyncListener
     {
-        const float _initialDelay = 0.6f;
+        #region Constants
+
+        internal const float _initialDelay = 0.6f;
+
+        #endregion
+
+        #region Fields
+
         private IAIPlayerActionAnimator<TakePuzzleAction>? _takePuzzleAnimator;
+
         private IAIPlayerActionAnimator<RecycleAction>? _recycleAnimator;
+
         private IAIPlayerActionAnimator<TakeBasicTetrominoAction>? _takeBasicTetrominoAnimator;
+
         private IAIPlayerActionAnimator<ChangeTetrominoAction>? _changeTetrominoActionAnimator;
+
         private IAIPlayerActionAnimator<SelectRewardAction>? _selectRewardActionAnimator;
 
+        #endregion
+
+        #region Methods
 
         public void Init(GameCore game)
         {
@@ -101,7 +115,7 @@ namespace ProjectL.UI.GameScene.Actions
         protected override async Task ProcessActionAsync(PlaceTetrominoAction action, CancellationToken cancellationToken)
         {
             await GameAnimationManager.WaitForScaledDelayAsync(_initialDelay, cancellationToken);
-            
+
             IAIPlayerActionAnimator<PlaceTetrominoAction> tetromino = PieceZoneManager.Instance.SpawnTetromino(action.Shape);
             await tetromino.Animate(action, cancellationToken);
         }
@@ -128,7 +142,7 @@ namespace ProjectL.UI.GameScene.Actions
                 return;
             }
             await GameAnimationManager.WaitForScaledDelayAsync(0.5f, cancellationToken);
-            
+
             // highlight completed puzzle
             var puzzleSlot = PlayerZoneManager.Instance.GetCurrentPlayerPuzzleOnIndex(index);
             using (puzzleSlot.CreateTemporaryPuzzleHighlighter()) {
@@ -148,5 +162,7 @@ namespace ProjectL.UI.GameScene.Actions
         {
             await GameAnimationManager.WaitForScaledDelayAsync(0.6f, cancellationToken);
         }
+
+        #endregion
     }
 }

@@ -120,7 +120,7 @@ namespace ProjectL.UI.FinalResults
             foreach (var puzzle in _gameEndInfo.UnfinishedPuzzles) {
                 ShowIncompletePuzzles();
                 SetIncompletePuzzleSprite(puzzle);
-                UpdateScore(puzzle.RewardScore);
+                UpdateScore(-puzzle.RewardScore);
                 await FinalAnimationManager.WaitForAnimationDelayAndPlaySound(cancellationToken);
             }
         }

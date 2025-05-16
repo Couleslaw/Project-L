@@ -64,7 +64,7 @@
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PuzzleParser"/> class.
+        /// Initializes a new instance of the <see cref="PuzzleParser{T}"/> class.
         /// </summary>
         /// <param name="stream">The stream to parse the puzzles from.</param>
         public PuzzleParser(Stream stream)

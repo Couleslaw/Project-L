@@ -28,7 +28,7 @@ namespace ProjectLCore.GameLogic
         /// <summary>
         /// The minimum number initial tetrominos of each shape in the shared reserve at the beginning of the game.
         /// </summary>
-        public const int MinNumInitialTetrominos = 10;
+        public const int MinNumInitialTetrominos = 5;
 
         /// <summary>
         /// The number puzzles in a row.
@@ -147,7 +147,7 @@ namespace ProjectLCore.GameLogic
         /// <summary>
         /// Occurs when a puzzle is refilled.
         /// </summary>
-        private event PuzzleRefilledDelegate PuzzleRefilledEventHandler;
+        private event PuzzleRefilledDelegate? PuzzleRefilledEventHandler;
 
         #endregion
 
@@ -161,7 +161,7 @@ namespace ProjectLCore.GameLogic
         /// </summary>
 
         /// <summary> Contains the number of tetrominos left in the shared reserve for each shape.  </summary>
-        public int[] _numTetrominosLeft { get; } = new int[TetrominoManager.NumShapes];
+        private int[] _numTetrominosLeft = new int[TetrominoManager.NumShapes];
 
         /// <summary> The number of puzzles left in the white deck. </summary>
         public int NumWhitePuzzlesLeft => _whitePuzzlesDeck.Count;

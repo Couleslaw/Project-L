@@ -88,9 +88,28 @@
   - [ ] add option to skip animation
   - [ ] cleanup cancellation tokens usage
 - [ ] polishing
+  - [ ] when creating action - hover over selected action button makes it appear unselected
+  - [ ] I4 jiny scale
+  - [ ] make pause menu darker and parse game phase better
   - [ ] scale dilku pro dragging
+  - [ ] place animation doesnt change scale
   - [ ] animate number changes in shared reserve
   - [ ] take puzzle action on puzzle click
   - [ ] rework tetromino + puzzle interaction
     - [ ] space --> place last selected piece
   - [ ] select reward & finishing touches keyboard shortcuts
+  - [ ] master enabled - update confirm button
+  - [ ] allow multiple placements at the same time - consumes actions
+  - [ ] player row border
+    - inside not black - make a bit gray
+    - at start of game - all visible
+  - [ ] zvetsit confirm button hitbox
+
+### Finishing touches
+
+- [ ] build game
+- [ ] disable AI players feature on WebGL
+- [ ] tab navigation in player selection
+- [ ] lower min num tetrominos to 5
+- [ ] final results align names bellow each other properly
+  - [ ] 1. is a shorter tan 2,3,4 --> it is more to the left

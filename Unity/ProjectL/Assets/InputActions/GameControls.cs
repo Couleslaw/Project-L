@@ -216,7 +216,7 @@ namespace ProjectL.InputActions
                 {
                     ""name"": """",
                     ""id"": ""102957bc-a549-44f8-affb-66f1f1324d06"",
-                    ""path"": ""<Keyboard>/leftCtrl"",
+                    ""path"": ""<Keyboard>/ctrl"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

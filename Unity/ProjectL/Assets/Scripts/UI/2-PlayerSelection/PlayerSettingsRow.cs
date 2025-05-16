@@ -22,6 +22,7 @@ namespace ProjectL.UI.PlayerSelection
 
         private const string _namePlaceholder = "Enter name...";
         private const string _typePlaceholder = "Select type";
+        public const int NameCharacterLimit = 18;
 
         #endregion
 
@@ -247,7 +248,7 @@ namespace ProjectL.UI.PlayerSelection
             // this needs to be in start, so that the Logger is activated - that is done in PlayerSelectionManager.Awake()
             InitializePlayerTypeDropdownOptions();
             ResetToBlankSelection();
-
+            playerNameInput.characterLimit = NameCharacterLimit;
             _didInitialize = true;
         }
 

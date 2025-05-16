@@ -35,19 +35,27 @@ namespace ProjectL.UI.PlayerSelection
 
         private void Update()
         {
+            if (inputFields == null) {
+                return;
+            }
+
             // Check if the TAB key was pressed this frame
             if (Input.GetKeyDown(KeyCode.Tab)) {
                 // Check if any UI element is currently selected
                 GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
-                if (currentSelected == null)
+                if (currentSelected == null) {
+                    inputFields[0].ActivateInputField();
                     return;
+                }
 
                 // Try to get an InputField component from the selected object
                 TMP_InputField currentInputField = currentSelected.GetComponent<TMP_InputField>();
 
                 // If the selected object is not an input field, or our list is invalid, do nothing
-                if (currentInputField == null || inputFields == null || inputFields.Count <= 1)
+                if (currentInputField == null || inputFields.Count <= 1) {
+                    inputFields[0].ActivateInputField();
                     return;
+                }
 
                 // Find the index of the currently selected input field in our list
                 int currentIndex = inputFields.IndexOf(currentInputField);
