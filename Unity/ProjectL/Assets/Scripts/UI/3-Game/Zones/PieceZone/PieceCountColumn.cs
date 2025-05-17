@@ -22,7 +22,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         private Color _columnColor = GameGraphicsSystem.ActiveColor;
         private bool _shouldColorGains;
 
-        private event Action<TetrominoShape, int>? DisplayCollectionChanged;
+        private event Action<TetrominoShape, int>? DisplayCollectionChangedEventHandler;
 
         private readonly bool[] _realValueUpdated = new bool[TetrominoManager.NumShapes];
 
@@ -99,7 +99,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             var counter = _pieceCounters[shape];
             if (counter.Count != newCount) {
                 counter.Count = newCount;
-                DisplayCollectionChanged?.Invoke(shape, newCount);
+                DisplayCollectionChangedEventHandler?.Invoke(shape, newCount);
             }
 
             int realCount = _realCounts[(int)shape];
@@ -109,20 +109,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 counter.SetColor(PieceCounter.IncrementedDisplayColor);
             else
                 counter.SetColor(PieceCounter.DecrementedDisplayColor);
-        }
-
-        private void SetDisplayCountAfterMillisecondsIfNoChange(TetrominoShape shape, int newCount, int milliseconds)
-        {
-            _realValueUpdated[(int)shape] = false;
-            StartCoroutine(Coroutine());
-
-            IEnumerator Coroutine()
-            {
-                yield return new WaitForSeconds(milliseconds / 1000f);
-                if (!_realValueUpdated[(int)shape]) {
-                    SetDisplayCount(shape, newCount);
-                }
-            }
         }
 
         public void IncrementDisplayCount(TetrominoShape shape) => SetDisplayCount(shape, GetDisplayCount(shape) + 1);
@@ -139,12 +125,36 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         public void AddListener(ITetrominoCollectionListener listener)
         {
-            DisplayCollectionChanged += listener.OnTetrominoCollectionChanged;
+            DisplayCollectionChangedEventHandler += listener.OnTetrominoCollectionChanged;
         }
 
         public void RemoveListener(ITetrominoCollectionListener listener)
         {
-            DisplayCollectionChanged -= listener.OnTetrominoCollectionChanged;
+            DisplayCollectionChangedEventHandler -= listener.OnTetrominoCollectionChanged;
+        }
+
+        public TemporaryPieceCountChanger CreateTemporaryCountIncreaser(TetrominoShape shape) 
+            => new(this, shape, GetDisplayCount(shape) + 1);
+
+        public TemporaryPieceCountChanger CreateTemporaryCountDecreaser(TetrominoShape shape)
+            => new(this, shape, GetDisplayCount(shape) - 1);
+
+        public class TemporaryPieceCountChanger : IDisposable
+        {
+            private readonly PieceCountColumn _pieceCountColumn;
+            private readonly TetrominoShape _shape;
+            private readonly int _originalCount;
+            public TemporaryPieceCountChanger(PieceCountColumn pieceCountColumn, TetrominoShape shape, int newCount)
+            {
+                _pieceCountColumn = pieceCountColumn;
+                _shape = shape;
+                _originalCount = pieceCountColumn.GetDisplayCount(shape);
+                pieceCountColumn.SetDisplayCount(shape, newCount);
+            }
+            public void Dispose()
+            {
+                _pieceCountColumn.SetDisplayCount(_shape, _originalCount);
+            }
         }
     }
 }

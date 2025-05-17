@@ -86,13 +86,14 @@ namespace ProjectL.UI.GameScene.Zones
             }
             string groupName = _buttonToGroupMap[button];
             var buttonInfo = _buttonGroups[groupName][button];
-            buttonInfo.SpriteState = newState;
-            button.spriteState = buttonInfo.SpriteState;
+            buttonInfo.UpdateSpriteState(newState);
 
             if (button == _selectedButtons[groupName]) {
-                button.image.sprite = buttonInfo.SpriteState.selectedSprite;
+                button.spriteState = buttonInfo.SelectedSpriteState;
+                button.image.sprite = buttonInfo.UnselectedSpriteState.selectedSprite;
             }
             else {
+                button.spriteState = buttonInfo.UnselectedSpriteState;
                 button.image.sprite = buttonInfo.OriginalSprite;
             }
         }
@@ -104,7 +105,7 @@ namespace ProjectL.UI.GameScene.Zones
                 return;
             }
             string groupName = _buttonToGroupMap[button];
-            TryUnselectingButton(button, groupName, deselect: true);
+            TryUnselectingButton(button, groupName, uiDeselect: true);
         }
 
         public static void ForceDeselectButtonInGroup(string groupName)
@@ -141,7 +142,7 @@ namespace ProjectL.UI.GameScene.Zones
 
             // this button was already selected --> cancel
             if (selectedButton == button) {
-                TryUnselectingButton(button, groupName, deselect: true);
+                TryUnselectingButton(button, groupName, uiDeselect: true);
                 return;
             }
 
@@ -159,14 +160,14 @@ namespace ProjectL.UI.GameScene.Zones
             // set selected sprite setting
             _selectedButtons[groupName] = button;
             var buttonInfo = _buttonGroups[groupName][button];
-            button.spriteState = buttonInfo.SpriteState;
-            button.image.sprite = buttonInfo.SpriteState.selectedSprite;
+            button.spriteState = buttonInfo.SelectedSpriteState;
+            button.image.sprite = buttonInfo.UnselectedSpriteState.selectedSprite;
 
             // invoke connected methods
             buttonInfo.OnSelect?.Invoke();
         }
 
-        private static void TryUnselectingButton(Button? button, string groupName, bool deselect = false)
+        private static void TryUnselectingButton(Button? button, string groupName, bool uiDeselect = false)
         {
             if (!_buttonGroups.ContainsKey(groupName)) {
                 Debug.LogError($"Group {groupName} not found.");
@@ -180,7 +181,7 @@ namespace ProjectL.UI.GameScene.Zones
             }
 
             // deselect the button in the event system
-            if (deselect && EventSystem.current != null) {
+            if (uiDeselect && EventSystem.current != null) {
                 EventSystem.current.SetSelectedGameObject(null!);
             }
 
@@ -188,6 +189,7 @@ namespace ProjectL.UI.GameScene.Zones
             _selectedButtons[groupName] = null;
             var buttonInfo = _buttonGroups[groupName][selectedButton];
             selectedButton.image.sprite = buttonInfo.OriginalSprite;
+            selectedButton.spriteState = buttonInfo.UnselectedSpriteState;
 
             // invoke connected methods
             buttonInfo.OnCancel?.Invoke();
@@ -206,14 +208,26 @@ namespace ProjectL.UI.GameScene.Zones
                 OnCancel = onCancel;
 
                 OriginalSprite = button.image.sprite;
-                SpriteState = button.spriteState;
+                UpdateSpriteState(button.spriteState);
             }
 
             #endregion
 
             #region Properties
 
-            public SpriteState SpriteState { get; set; }
+            public void UpdateSpriteState(SpriteState newState)
+            {
+                UnselectedSpriteState = newState;
+                SelectedSpriteState = new SpriteState {
+                    highlightedSprite = UnselectedSpriteState.selectedSprite,
+                    pressedSprite = UnselectedSpriteState.pressedSprite,
+                    selectedSprite = UnselectedSpriteState.selectedSprite,
+                    disabledSprite = UnselectedSpriteState.disabledSprite
+                };
+            }
+
+            public SpriteState UnselectedSpriteState { get; set; }
+            public SpriteState SelectedSpriteState { get; set; }
 
             public Sprite OriginalSprite { get; set; }
 

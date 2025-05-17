@@ -10,6 +10,7 @@ namespace ProjectL.UI.Pause
     using ProjectL.Data;
     using ProjectL.Management;
     using ProjectL.UI.Sound;
+    using ProjectLCore.GameLogic;
 
     /// <summary>
     /// Manages the PauseMenu prefab.
@@ -161,8 +162,8 @@ namespace ProjectL.UI.Pause
 
             // update turn info
             currentPlayerLabel.text = gameInfo.PlayerName;
-            actionsLeftLabel.text = gameInfo.ActionsLeft.ToString();
-            gamePhaseLabel.text = gameInfo.GamePhase.ToString();
+            actionsLeftLabel.text = gameInfo.CurrentTurnInfo.NumActionsLeft.ToString();
+            gamePhaseLabel.text = GetGamePhaseString(gameInfo.CurrentTurnInfo);
 
             // update player scores
             scoreNamesLabel.text = string.Empty;
@@ -172,6 +173,17 @@ namespace ProjectL.UI.Pause
                 scoreValuesLabel.text += item.Value.ToString() + "\n";
             }
         }
+
+        private string GetGamePhaseString(TurnInfo turnInfo)
+        {
+            return turnInfo.GamePhase switch {
+                GamePhase.Normal => "Normal",
+                GamePhase.EndOfTheGame => turnInfo.LastRound ? "Final round" : "Next round is final",
+                GamePhase.FinishingTouches => "Finishing touches",
+                GamePhase.Finished => "Game ended",
+                _ => "Unknown"
+            };
+        } 
 
         #endregion
     }

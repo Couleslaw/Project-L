@@ -2,6 +2,7 @@
 
 namespace ProjectL.UI.GameScene.Actions
 {
+    using NUnit.Framework;
     using ProjectL.UI.GameScene.Zones.ActionZones;
     using ProjectL.UI.GameScene.Zones.PieceZone;
     using ProjectL.UI.GameScene.Zones.PlayerZone;
@@ -9,6 +10,7 @@ namespace ProjectL.UI.GameScene.Actions
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -123,11 +125,16 @@ namespace ProjectL.UI.GameScene.Actions
         protected override async Task ProcessActionAsync(MasterAction action, CancellationToken cancellationToken)
         {
             await GameAnimationManager.WaitForScaledDelayAsync(_initialDelay, cancellationToken);
+
+            List<Task> placeTasks = new();
+
             using (new ActionZonesManager.SimulateButtonClickDisposable(ActionZonesManager.Button.MasterAction)) {
-                await GameAnimationManager.WaitForScaledDelayAsync(0.5f, cancellationToken);
                 foreach (PlaceTetrominoAction placeAction in action.TetrominoPlacements) {
-                    await ProcessActionAsync(placeAction, cancellationToken);
+                    cancellationToken.ThrowIfCancellationRequested();
+                    placeTasks.Add(ProcessActionAsync(placeAction, cancellationToken));
+                    await GameAnimationManager.WaitForScaledDelayAsync(0.3f, cancellationToken);
                 }
+                await Task.WhenAll(placeTasks);
             }
         }
 

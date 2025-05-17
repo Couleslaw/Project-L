@@ -2,7 +2,6 @@
 
 namespace ProjectL.UI.GameScene.Zones.PlayerZone
 {
-    using ProjectL.Data;
     using ProjectL.UI.GameScene.Zones.PieceZone;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameManagers;
@@ -19,9 +18,9 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
     {
         #region Fields
 
-        [SerializeField] private PuzzleCell? _puzzleCellPrefab;
-
         private static List<InteractivePuzzle> _availablePuzzles = new();
+
+        [SerializeField] private PuzzleCell? _puzzleCellPrefab;
 
         private PuzzleCell[]? _puzzleCells;
 
@@ -35,7 +34,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
         #region Properties
 
-        public uint? CurrentPuzzleId => _logicalPuzzle?.Id;
+        public uint? PuzzleId => _logicalPuzzle?.Id;
 
         #endregion
 
@@ -67,7 +66,6 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
                 cell.SetColliderEnabled(enabled);
             }
         }
-
 
         public void SetNewPuzzle(PuzzleWithGraphics logicalPuzzle)
         {

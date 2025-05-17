@@ -47,8 +47,7 @@ namespace ProjectL.Data
             }
             result = new Info {
                 PlayerName = _game.CurrentPlayer.Name,
-                ActionsLeft = _game.CurrentTurn.NumActionsLeft,
-                GamePhase = _game.CurrentGamePhase,
+                CurrentTurnInfo = _game.CurrentTurn,
                 PlayerScores = GetPlayerScores()
             };
             return true;
@@ -75,11 +74,8 @@ namespace ProjectL.Data
             /// <summary> The name of the current player. </summary>
             public string PlayerName { get; set; }
 
-            /// <summary> The number of actions the current player can still perform this turn.  </summary>
-            public int ActionsLeft { get; set; }
-
             /// <summary> The current phase of the game. </summary>
-            public GamePhase GamePhase { get; set; }
+            public TurnInfo CurrentTurnInfo { get; set; }
 
             /// <summary> Dictionary where the key is the player's name and the value is their score.</summary>
             public Dictionary<string, int> PlayerScores { get; set; }

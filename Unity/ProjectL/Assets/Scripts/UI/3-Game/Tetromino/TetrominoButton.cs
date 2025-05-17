@@ -2,10 +2,12 @@
 
 namespace ProjectL.UI.GameScene.Zones.PieceZone
 {
+    using NUnit.Framework;
     using ProjectL.UI.GameScene.Actions;
     using ProjectL.UI.Sound;
     using ProjectLCore.GamePieces;
     using System;
+    using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.EventSystems;
     using UnityEngine.UI;
@@ -183,11 +185,12 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
             #region Fields
 
-            internal RectTransform _spawnerRectTransform;
-            private SelectionButtonEffect _buttonEffect;
-            internal TetrominoButton _spawner;
+            private RectTransform _spawnerRectTransform;
 
-            internal SelectionSideEffect _effect;
+            private SelectionButtonEffect _buttonEffect;
+            private SelectionSideEffect _effect;
+
+            private List<IDisposable> _temporaryEffects = new();
 
             #endregion
 
@@ -207,12 +210,14 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 }
 
                 _effect = sideEffect;
-                _spawner = spawner;
                 if (_effect == SelectionSideEffect.GiveToPlayer) {
-                    _spawner.TetrominoReturnedEventHandler?.Invoke(_spawner.Shape);
+                    _temporaryEffects.Add(PlayerStatsManager.Instance.CurrentPieceColumn!.CreateTemporaryCountIncreaser(spawner.Shape));
+                    _temporaryEffects.Add(SharedReserveManager.Instance.PieceColumn.CreateTemporaryCountDecreaser(spawner.Shape));
                 }
                 if (_effect == SelectionSideEffect.RemoveFromPlayer) {
-                    _spawner.TetrominoSpawnedEventHandler?.Invoke(_spawner.Shape);
+                    _temporaryEffects.Add(PlayerStatsManager.Instance.CurrentPieceColumn!.CreateTemporaryCountDecreaser(spawner.Shape));
+                    _temporaryEffects.Add(SharedReserveManager.Instance.PieceColumn.CreateTemporaryCountIncreaser(spawner.Shape));
+
                 }
             }
 
@@ -229,12 +234,10 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                     _spawnerRectTransform.localScale *= _temporaryScaleIncrease;
                 }
 
-                if (_effect == SelectionSideEffect.GiveToPlayer) {
-                    _spawner.TetrominoSpawnedEventHandler?.Invoke(_spawner.Shape);
+                foreach (var effect in _temporaryEffects) {
+                    effect.Dispose();
                 }
-                if (_effect == SelectionSideEffect.RemoveFromPlayer) {
-                    _spawner.TetrominoReturnedEventHandler?.Invoke(_spawner.Shape);
-                }
+                _temporaryEffects.Clear();
             }
 
             #endregion

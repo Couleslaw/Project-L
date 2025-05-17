@@ -20,7 +20,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
         #region Properties
 
-        public uint? CurrentPuzzleId => _puzzleCard != null ? _puzzleCard.CurrentPuzzleId : null;
+        public uint? PuzzleId => _puzzleCard != null ? _puzzleCard.PuzzleId : null;
 
         #endregion
 

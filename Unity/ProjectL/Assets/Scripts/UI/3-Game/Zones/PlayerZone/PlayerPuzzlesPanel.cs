@@ -20,10 +20,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
         private PlayerRowSlot[] _puzzles = new PlayerRowSlot[PlayerState.MaxPuzzles];
         private BoxCollider2D? _collider;
-        private Image? _image;
-
-        private readonly static Color _currentPlayerBorderColor = new Color(34f / 255, 34f / 255, 34f / 255);
-        private readonly static Color _notCurrentPlayerBorderColor = Color.black;
+        private Image? _backgroundImage;
 
         private void Awake()
         {
@@ -34,7 +31,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
             _collider = GetComponent<BoxCollider2D>();
             _collider.isTrigger = true;
-            _image = GetComponent<Image>();
+            _backgroundImage = GetComponent<Image>();
 
             for (int i = 0; i < PlayerState.MaxPuzzles; i++) {
                 var puzzle = Instantiate(playerRowSlotPrefab, transform);
@@ -54,11 +51,11 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
         public void SetAsCurrentPlayer(bool current)
         {
-            if (_image == null || _collider == null) {
+            if (_backgroundImage == null || _collider == null) {
                 return;
             }
-            _image.color = current ? _currentPlayerBorderColor : _notCurrentPlayerBorderColor;
             _collider.enabled = current;
+            ToggleBackground(current);
 
             foreach (var puzzle in _puzzles) {
                 puzzle.SetAsCurrentPlayer(current);
@@ -69,11 +66,16 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
         {
             // find puzzle with matching ID
             for (int i = 0; i < _puzzles.Length; i++) {
-                if (_puzzles[i].CurrentPuzzleId == action.PuzzleId) {
+                if (_puzzles[i].PuzzleId == action.PuzzleId) {
                     return _puzzles[i].GetPlacementPositionFor(action.Position);
                 }
             }
             return default;
         }
+
+        private void ToggleBackground(bool show)
+        {
+            _backgroundImage!.color = show ? Color.white : Color.clear;
+        } 
     }
 }

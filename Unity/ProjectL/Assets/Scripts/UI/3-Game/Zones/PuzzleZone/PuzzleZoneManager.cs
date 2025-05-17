@@ -253,7 +253,6 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
                 }
                 _button = button;
                 _originalSpriteState = button.spriteState;
-                Debug.Log($"Button {button.name} is diabled: {!button.enabled}");
                 button.spriteState = new SpriteState {
                     highlightedSprite = tempSprite,
                     pressedSprite = tempSprite,

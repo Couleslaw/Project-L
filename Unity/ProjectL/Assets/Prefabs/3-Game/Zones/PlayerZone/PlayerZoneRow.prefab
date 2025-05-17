@@ -312,14 +312,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.13207531, g: 0.13207531, b: 0.13207531, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 9080095099115850822, guid: 5ff45dad2bdfb424d90eb835e06640f4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 74c63eb2edce17a4fb0dd8eb0e560f43, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -373,7 +373,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 130.17908, y: 690}
+  m_Size: {x: 20, y: 0.0001}
   m_EdgeRadius: 0
 --- !u!114 &3422639331426141992
 MonoBehaviour:

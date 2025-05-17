@@ -125,7 +125,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
         private void Start()
         {
             HumanPlayerActionCreator.RegisterController(this);
-            GameManager.Controls!.Gameplay.ConfirmAction.performed += SimulateConfirmClick;
+            GameManager.Controls!.Gameplay.ConfirmAction.performed += SimulateConfirmActionClick;
         }
 
         private void OnDestroy()
@@ -133,13 +133,19 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             if (GameManager.Controls == null) {
                 return;  // app quit --> return
             }
-            GameManager.Controls.Gameplay.ConfirmAction.performed -= SimulateConfirmClick;
+            GameManager.Controls.Gameplay.ConfirmAction.performed -= SimulateConfirmActionClick;
         }
 
-        private void SimulateConfirmClick(InputAction.CallbackContext ctx)
+        private void SimulateConfirmActionClick(InputAction.CallbackContext ctx)
         {
             if (_confirmButton != null && _confirmButton.interactable) {
                 StartCoroutine(SimulateClickCoroutine(_confirmButton));
+            }
+            else if (_selectRewardButton != null && _selectRewardButton.interactable) {
+                StartCoroutine(SimulateClickCoroutine(_selectRewardButton));
+            }
+            else if (_finishingTouchesButton != null && _finishingTouchesButton.interactable) {
+                StartCoroutine(SimulateClickCoroutine(_finishingTouchesButton));
             }
         }
 

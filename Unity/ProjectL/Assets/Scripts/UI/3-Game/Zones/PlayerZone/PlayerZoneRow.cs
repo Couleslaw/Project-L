@@ -30,6 +30,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
                 playerNameLabel.text = playerName;
             }
             playerState.AddListener(this);
+            SetAsCurrentPlayer(false);
         }
 
         void IPlayerStatePuzzleListener.OnPuzzleFinished(int index, FinishedPuzzleInfo info)

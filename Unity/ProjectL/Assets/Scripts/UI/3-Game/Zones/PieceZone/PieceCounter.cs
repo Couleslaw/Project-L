@@ -59,8 +59,14 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         public void SetColor(Color color)
         {
             if (_colorCoroutineRunning) {
-                _colorToSet = color;
-                return;
+                // stop the coroutine if we are setting the color to red
+                if (color == DecrementedDisplayColor) {
+                    _colorCoroutineRunning = false;
+                }
+                else {
+                    _colorToSet = color;
+                    return;
+                }
             }
 
             if (_countLabel != null) {
@@ -87,8 +93,10 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             IEnumerator Coroutine()
             {
                 yield return new WaitForSeconds(secondDelay);
-                _colorCoroutineRunning = false;
-                SetColor(_colorToSet);
+                if (_colorCoroutineRunning) {
+                    _colorCoroutineRunning = false;
+                    SetColor(_colorToSet);
+                }
             }
         }
 

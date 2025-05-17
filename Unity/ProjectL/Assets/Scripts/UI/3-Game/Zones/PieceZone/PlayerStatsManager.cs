@@ -28,7 +28,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         private Player? _currentPlayer = null;
 
-        public PieceCountColumn? CurrentPlayerColumn => _currentPlayer != null ? _pieceColumns[_currentPlayer] : null;
+        public PieceCountColumn? CurrentPieceColumn => _currentPlayer != null ? _pieceColumns[_currentPlayer] : null;
 
 
         public override void Init(GameCore game)

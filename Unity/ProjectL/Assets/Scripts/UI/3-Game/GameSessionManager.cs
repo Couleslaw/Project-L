@@ -362,6 +362,7 @@ namespace ProjectL.UI.GameScene.Management
                 }
 
                 // process valid action
+                LogPlayerProvidedValidAction(action);
                 if (_game.CurrentPlayer is AIPlayerBase aiPlayer) {
                     await action.AcceptAsync(_aIPlayerActionAnimator, cancellationToken);
                 }
@@ -408,6 +409,11 @@ namespace ProjectL.UI.GameScene.Management
         private void LogDefaultFunctionAssignment(GameAction action)
         {
             Debug.LogWarning($"{_game?.CurrentPlayer.Name} provided no action. Defaulting to {action}");
+        }
+
+        private void LogPlayerProvidedValidAction(GameAction action)
+        {
+            Debug.Log($"{_game?.CurrentPlayer.Name} provided a valid {action}");
         }
 
         private void LogPlayerFinishedPuzzle(FinishedPuzzleInfo puzzleInfo)

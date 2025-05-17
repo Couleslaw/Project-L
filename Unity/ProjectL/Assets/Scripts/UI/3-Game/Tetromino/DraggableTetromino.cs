@@ -51,6 +51,10 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         private static int _playerPuzzleRowLayer;
 
+        private static DraggableTetromino? _lastSelectedTetromino = null;
+
+        private static DraggableTetromino? _selectedTetromino = null;
+
         [SerializeField] private TetrominoShape _shape;
 
         private bool _isInteractable;
@@ -62,7 +66,9 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         private SpriteRenderer? _spriteRenderer;
 
         private Camera? _camera;
+
         private PlaceTetrominoAction? _currentPlacement = null;
+
         private bool _isDragging = false;
 
         private bool _isMouseOver = false;
@@ -83,8 +89,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         #region Properties
 
-        private static DraggableTetromino? _lastSelectedTetromino = null;
-        private static DraggableTetromino? _selectedTetromino = null;
         public static DraggableTetromino? SelectedTetromino {
             get => _selectedTetromino;
             private set {
@@ -183,7 +187,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             _currentPlacement = action;
             var change = new PlaceTetrominoActionChange(action, PlaceTetrominoActionChange.Options.Placed);
             StateChangedEventHandler?.Invoke(change);
-
 
             _isDragging = false; // Stop dragging when placing
 

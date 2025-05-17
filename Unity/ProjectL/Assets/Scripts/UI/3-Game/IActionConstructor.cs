@@ -15,7 +15,7 @@ namespace ProjectL.UI.GameScene.Actions.Constructing
 
         void Reset();
 
-        void ReportActionChange<T>(IActionChange<T> change) where T : GameAction;
+        void ApplyActionChange<T>(IActionChange<T> change) where T : GameAction;
 
         T? GetAction<T>() where T : GameAction;
 
@@ -34,7 +34,7 @@ namespace ProjectL.UI.GameScene.Actions.Constructing
             return GetAction() as T1 ?? throw new InvalidCastException($"Cannot cast {typeof(T)} to {typeof(T1)}");
         }
 
-        public void ReportActionChange<T1>(IActionChange<T1> change) where T1 : GameAction
+        public void ApplyActionChange<T1>(IActionChange<T1> change) where T1 : GameAction
         {
             ReportActionChange(change as IActionChange<T> ?? throw new InvalidCastException($"Cannot cast {typeof(T1)} to {typeof(T)}"));
         }
@@ -163,7 +163,7 @@ namespace ProjectL.UI.GameScene.Actions.Constructing
             if (_placements.Count == 0) {
                 return null;
             }
-            return new MasterAction(_placements);
+            return new MasterAction(new(_placements));
         }
 
         public Queue<PlaceTetrominoAction> GetPlacementsQueue() => new(_placements);
