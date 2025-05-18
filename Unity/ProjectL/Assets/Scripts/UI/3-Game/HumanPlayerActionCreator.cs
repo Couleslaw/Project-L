@@ -217,6 +217,7 @@ namespace ProjectL.UI.GameScene.Actions
             }
 
             ActionZonesManager.Instance.CanConfirmAction = false;
+            PlayerZoneManager.Instance.CanConfirmTakePuzzleAction = false;
             CurrentEventSet?.RaiseCanceled();
             CurrentActionConstructor?.Reset();
             _currentActionType = null;
@@ -421,7 +422,12 @@ namespace ProjectL.UI.GameScene.Actions
             }
 
             Debug.Log($"Action state changed... action: {action}");
-            ActionZonesManager.Instance.CanConfirmAction = action != null && _actionVerifier.Verify(action) is VerificationSuccess;
+            bool canConfirm = action != null && _actionVerifier.Verify(action) is VerificationSuccess;
+            ActionZonesManager.Instance.CanConfirmAction = canConfirm;
+
+            if (_currentActionType == ActionType.TakePuzzle) {
+                PlayerZoneManager.Instance.CanConfirmTakePuzzleAction = canConfirm;
+            }
         }
 
         private HumanPlayer? PrepareForSubmission()
@@ -430,6 +436,9 @@ namespace ProjectL.UI.GameScene.Actions
                 Debug.LogError("Current player is null", this);
                 return null;
             }
+
+            ActionZonesManager.Instance.CanConfirmAction = false;
+            PlayerZoneManager.Instance.CanConfirmTakePuzzleAction = false;
 
             SetPlayerMode(PlayerMode.NonInteractive);
 

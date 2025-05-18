@@ -105,7 +105,7 @@
   - inside not black - make a bit gray
   - at start of game - all visible
 - [x] increase confirm button hitbox
-- [ ] place puzzle on selected slot
+- [x] place puzzle on selected slot
 
 ### Finishing touches
 

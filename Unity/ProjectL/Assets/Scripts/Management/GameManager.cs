@@ -112,7 +112,7 @@ namespace ProjectL.Management
             ResumeGame();
 
             // enable pausing iff scene is GAME or FINAL RESULTS
-            GameManager.CanGameBePaused = scene.name == SceneLoader.GameScene || scene.name == SceneLoader.FinalResultsScene;
+            CanGameBePaused = scene.name == SceneLoader.GameScene || scene.name == SceneLoader.FinalResultsScene;
 
             // hide and clear logger in main menu
             if (scene.name == SceneLoader.MainMenuScene) {

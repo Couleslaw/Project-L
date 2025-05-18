@@ -59,7 +59,6 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
         public void MakeInteractive(bool enabled)
         {
             if (_puzzleCells == null) {
-                Debug.LogError("Puzzle cells are not initialized.");
                 return;
             }
             foreach (var cell in _puzzleCells) {

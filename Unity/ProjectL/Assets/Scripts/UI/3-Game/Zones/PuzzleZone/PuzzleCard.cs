@@ -18,7 +18,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
     {
         #region Fields
 
-        [SerializeField] private Sprite? _emptyCardImage;
+        [SerializeField] private Sprite? _emptyCardImage;   
 
         [SerializeField] private Button? _button;
 

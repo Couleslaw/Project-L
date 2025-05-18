@@ -101,6 +101,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             HumanPlayerActionCreator.RegisterController(this);
 
             _requestTakePuzzleButton.onClick.AddListener(ActionZonesManager.Instance.ManuallyClickTakePuzzleButton);
+            EnableRequestTakePuzzleButton(false);
         }
 
         void IGameActionController.SetPlayerMode(PlayerMode mode)
@@ -125,8 +126,10 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             _whiteColumn!.SetMode(mode, _currentTurnInfo);
             _blackColumn!.SetMode(mode, _currentTurnInfo);
 
-            _requestTakePuzzleButton!.image.raycastTarget = mode == PuzzleZoneMode.ReadyToTakePuzzle;
+            EnableRequestTakePuzzleButton(mode == PuzzleZoneMode.ReadyToTakePuzzle);
         }
+
+        private void EnableRequestTakePuzzleButton(bool enable) => _requestTakePuzzleButton!.image.raycastTarget = enable;
 
         void IGameStatePuzzleListener.OnWhitePuzzleRowChanged(int index, Puzzle? puzzle)
         {

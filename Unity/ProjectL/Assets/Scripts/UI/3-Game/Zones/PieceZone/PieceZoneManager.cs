@@ -169,16 +169,15 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             var oldSpawner = _tetrominoButtons[action.OldTetromino];
 
             // select the old piece
-            using (oldSpawner.CreateTemporaryButtonSelector(SelectionSideEffect.RemoveFromPlayer)) {
+            using (oldSpawner.CreateTemporaryButtonSelector(SelectionSideEffect.RemoveFromPlayer, SelectionButtonEffect.MakeSmaller)) {
                 // highlighting the old piece, important !!!
                 // if player had only 1 piece, the display count will decrement to 0, and so the piece would go gray
                 using (new TemporaryButtonHighlighter(action.OldTetromino, playSound: false)) {
 
-                    await GameAnimationManager.WaitForScaledDelayAsync(1f, cancellationToken);
-
                     // select the reward
                     var tetrominosInShardReserve = SharedReserveManager.Instance.GetNumTetrominosLeft();
                     var upgradeOptions = RewardManager.GetUpgradeOptions(tetrominosInShardReserve, action.OldTetromino);
+                    upgradeOptions.Add(action.OldTetromino);  // keep the old one highlighgted
                     SelectRewardAction selectAction = new(upgradeOptions, action.NewTetromino);
                     await (this as IAIPlayerActionAnimator<SelectRewardAction>).Animate(selectAction, cancellationToken);
                 }

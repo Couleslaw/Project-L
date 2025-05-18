@@ -13,10 +13,12 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
         #region Fields
 
         [SerializeField] private InteractivePuzzle? _puzzleCard;
-        [SerializeField] private Image? _emptySlot;
+        [SerializeField] private Button? _emptySlot;
         [SerializeField] private Image? _puzzleFrame;
 
         #endregion
+
+        public event Action? OnEmptySlotClickEventHandler;
 
         #region Properties
 
@@ -70,14 +72,23 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
                 return;
             }
             // make sure that
-            _emptySlot.gameObject.SetActive(true);
             _puzzleFrame.gameObject.SetActive(false);
-            _puzzleCard.gameObject.SetActive(false);
+            _puzzleCard.gameObject.SetActive(false);   // needs to be in start so that _puzzleCard.Awake runs
+            _emptySlot.gameObject.SetActive(true);
+            EnableEmptySlotButton(false);
+
+            _emptySlot.onClick.AddListener(() =>
+            {
+                SoundManager.Instance?.PlayTapSoundEffect();
+                OnEmptySlotClickEventHandler?.Invoke();
+            });
         }
 
         #endregion
 
         public TemporaryPuzzleHighlighter CreateTemporaryPuzzleHighlighter() => new(this);
+
+        public void EnableEmptySlotButton(bool value) => _emptySlot!.interactable = value;
 
         public class TemporaryPuzzleHighlighter : IDisposable
         {

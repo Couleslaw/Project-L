@@ -6,23 +6,28 @@ namespace ProjectL.Management
     using UnityEngine;
     using UnityEngine.SceneManagement;
 
-
     /// <summary>
     /// Manages transitioning between different scenes.
     /// </summary>
     public class SceneLoader : MonoBehaviour
     {
-        #region Fields
-
-        [SerializeField] private Animator? fadeAnimator;
-
-        private const string _fadeInAnimation = "FadeIn";
-        private const string _fadeOutAnimation = "FadeOut";
+        #region Constants
 
         public const string MainMenuScene = "1-MainMenu";
         public const string PlayerSelectionScene = "2-PlayerSelection";
         public const string GameScene = "3-Game";
         public const string FinalResultsScene = "4-FinalResults";
+
+        private const string _fadeInAnimation = "FadeIn";
+        private const string _fadeOutAnimation = "FadeOut";
+
+        #endregion
+
+        #region Fields
+
+        [SerializeField] private Animator? fadeAnimator;
+
+        private string _currentScene = string.Empty;
 
         #endregion
 
@@ -42,6 +47,10 @@ namespace ProjectL.Management
         /// </summary>
         public async void LoadMainMenuAsync()
         {
+            if (_currentScene == MainMenuScene) {
+                return;
+            }
+            _currentScene = MainMenuScene;
             await FadeOutAndLoadSceneAsync(MainMenuScene);
         }
 
@@ -50,6 +59,10 @@ namespace ProjectL.Management
         /// </summary>
         public async void LoadPlayerSelectionAsync()
         {
+            if (_currentScene == PlayerSelectionScene) {
+                return;
+            }
+            _currentScene = PlayerSelectionScene;
             await FadeOutAndLoadSceneAsync(PlayerSelectionScene);
         }
 
@@ -58,6 +71,10 @@ namespace ProjectL.Management
         /// </summary>
         public async void LoadGameAsync()
         {
+            if (_currentScene == GameScene) {
+                return;
+            }
+            _currentScene = GameScene;
             await FadeOutAndLoadSceneAsync(GameScene);
         }
 
@@ -66,6 +83,10 @@ namespace ProjectL.Management
         /// </summary>
         public async void LoadFinalResultsAsync()
         {
+            if (_currentScene == FinalResultsScene) {
+                return;
+            }
+            _currentScene = FinalResultsScene;
             await FadeOutAndLoadSceneAsync(FinalResultsScene);
         }
 

@@ -13,11 +13,20 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
     public class PlayerZoneManager : GraphicsManager<PlayerZoneManager>, ICurrentPlayerListener
     {
-        [SerializeField] private PlayerZoneRow? _playerZoneRowPrefab;
+        [SerializeField] private GameObject? _playerZoneRowPrefab;
 
         private Dictionary<Player, PlayerZoneRow> _playerZoneRows = new();
 
         private Player? _currentPlayer;
+
+        public bool CanConfirmTakePuzzleAction {
+            set {
+                var currentPlayerRow = _playerZoneRows[_currentPlayer!];
+                foreach (var row in _playerZoneRows.Values) {
+                    row.CanConfirmTakePuzzleAction = value && row == currentPlayerRow;
+                }
+            }
+        }
 
         public override void Init(GameCore game)
         {
@@ -29,10 +38,12 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             game.AddListener(this);
 
             foreach (var player in game.Players) {
-                var playerZoneRow = Instantiate(_playerZoneRowPrefab, transform);
-                playerZoneRow.gameObject.SetActive(true);
-                playerZoneRow.Init(player.Name, game.PlayerStates[player]);
-                _playerZoneRows.Add(player, playerZoneRow);
+                GameObject rowParent = Instantiate(_playerZoneRowPrefab, transform);
+                rowParent.SetActive(true);
+
+                var row = rowParent.GetComponentInChildren<PlayerZoneRow>();
+                row.Init(player.Name, game.PlayerStates[player]);
+                _playerZoneRows.Add(player, row);
             }
         }
 
