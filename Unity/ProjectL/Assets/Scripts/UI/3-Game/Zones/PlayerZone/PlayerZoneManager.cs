@@ -56,9 +56,16 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             return playerZoneRow.GetPlacementPositionFor(action);
         }
 
-        public PlayerRowSlot GetCurrentPlayerPuzzleOnIndex(int index)
+
+        public PlayerRowSlot? GetPuzzleWithId(uint puzzleId)
         {
-            return _playerZoneRows[_currentPlayer!].GetPuzzleOnIndex(index);
+            PlayerRowSlot? puzzle = null;
+            foreach (PlayerZoneRow row in _playerZoneRows.Values) {
+                if (row.TryGetPuzzleWithId(puzzleId, out puzzle)) {
+                    return puzzle;
+                }
+            }
+            return null;
         }
     }
 }

@@ -38,7 +38,7 @@ namespace ProjectL.UI.GameScene.Management
         [SerializeField] private TextBasedGame? textGame;
 
         private GameCore? _game;
-        private AIPlayerActionCreationAnimator _aIPlayerActionAnimator = new();
+        private AIPlayerActionCreationAnimator _aiPlayerAnimator = new();
 
         protected override void Awake()
         {
@@ -64,7 +64,7 @@ namespace ProjectL.UI.GameScene.Management
 
             var cancellationToken = destroyCancellationToken;
 
-            InitializeAIPlayerAnimator();
+            _aiPlayerAnimator.Init(_game);
             InitializePlayersAsync(_game.Players, _game.GameState, cancellationToken);
             await InitializeGameAsync(cancellationToken);
 
@@ -80,15 +80,7 @@ namespace ProjectL.UI.GameScene.Management
             }
         }
 
-        private void InitializeAIPlayerAnimator()
-        {
-            foreach (var player in _game!.Players) {
-                if (player is AIPlayerBase aiPlayer) {
-                    _game.PlayerStates[player].AddListener(_aIPlayerActionAnimator);
-                }
-            }
-        }
-
+  
         private void Update()
         {
             if (GameErrorHandler.ShouldEndGameWithError && !GameErrorHandler.EndedGameWithError) {
@@ -212,7 +204,6 @@ namespace ProjectL.UI.GameScene.Management
                 await Task.Delay(10, cancellationToken);
             }
 
-            _aIPlayerActionAnimator.Init(_game);
             GameGraphicsSystem.Instance.Init(_game);
             await _game.InitializeGameAsync(cancellationToken);
         }
@@ -364,7 +355,7 @@ namespace ProjectL.UI.GameScene.Management
                 // process valid action
                 LogPlayerProvidedValidAction(action);
                 if (_game.CurrentPlayer is AIPlayerBase aiPlayer) {
-                    await action.AcceptAsync(_aIPlayerActionAnimator, cancellationToken);
+                    await action.AcceptAsync(_aiPlayerAnimator, cancellationToken);
                 }
                 await _game.ProcessActionAsync(action);
 

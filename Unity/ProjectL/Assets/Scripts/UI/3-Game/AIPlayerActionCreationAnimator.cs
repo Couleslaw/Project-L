@@ -10,6 +10,7 @@ namespace ProjectL.UI.GameScene.Actions
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
+    using ProjectLCore.Players;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
@@ -52,6 +53,12 @@ namespace ProjectL.UI.GameScene.Actions
         public void Init(GameCore game)
         {
             game.GameState.AddListener(this);
+            foreach (var player in game.Players) {
+                if (player is AIPlayerBase) {
+                    game.PlayerStates[player].AddListener(this);
+                }
+            }
+
             _takePuzzleAnimator = PuzzleZoneManager.Instance;
             _recycleAnimator = PuzzleZoneManager.Instance;
             _takeBasicTetrominoAnimator = PieceZoneManager.Instance;
@@ -143,7 +150,7 @@ namespace ProjectL.UI.GameScene.Actions
             await GameAnimationManager.WaitForScaledDelayAsync(_initialDelay, cancellationToken);
         }
 
-        async Task IPlayerStatePuzzleFinishedAsyncListener.OnPuzzleFinishedAsync(int index, FinishedPuzzleInfo info, CancellationToken cancellationToken)
+        async Task IPlayerStatePuzzleFinishedAsyncListener.OnPuzzleFinishedAsync(FinishedPuzzleInfo info, CancellationToken cancellationToken)
         {
             if (_selectRewardActionAnimator == null) {
                 return;
@@ -151,7 +158,7 @@ namespace ProjectL.UI.GameScene.Actions
             await GameAnimationManager.WaitForScaledDelayAsync(0.5f, cancellationToken);
 
             // highlight completed puzzle
-            var puzzleSlot = PlayerZoneManager.Instance.GetCurrentPlayerPuzzleOnIndex(index);
+            var puzzleSlot = PlayerZoneManager.Instance.GetPuzzleWithId(info.Puzzle.Id)!;
             using (puzzleSlot.CreateTemporaryPuzzleHighlighter()) {
                 await GameAnimationManager.WaitForScaledDelayAsync(1f, cancellationToken);
 

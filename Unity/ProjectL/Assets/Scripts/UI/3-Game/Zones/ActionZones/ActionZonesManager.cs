@@ -10,6 +10,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
     using System.Linq;
     using UnityEngine.Android;
     using System.Runtime.CompilerServices;
+    using UnityEditor.Build;
 
     public class ActionZonesManager : GraphicsManager<ActionZonesManager>, ICurrentTurnListener
     {
@@ -86,6 +87,8 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _pieceActionZone.RemoveSelectRewardListener(acm);
             _puzzleActionZone.RemoveSelectRewardListener(acm);
         }
+
+        public void ManuallyClickTakePuzzleButton() => _puzzleActionZone?.ManuallyClickTakePuzzleButton();
 
         void ICurrentTurnListener.OnCurrentTurnChanged(TurnInfo currentTurnInfo)
         {

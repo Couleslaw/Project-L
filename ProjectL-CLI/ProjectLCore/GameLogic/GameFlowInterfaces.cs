@@ -56,16 +56,14 @@
         /// <summary>
         /// Called when a puzzle is finished by a player, but before any changes are made to their <see cref="PlayerState"/> and the <see cref="GameState"/>.
         /// </summary>
-        /// <param name="index"> The index (in the row) of the puzzle that was finished.</param>
         /// <param name="info"> The information about the finished puzzle.</param>
-        public void OnPuzzleFinished(int index, FinishedPuzzleInfo info);
+        public void OnPuzzleFinished(FinishedPuzzleInfo info);
 
         /// <summary>
         /// Called when the player takes a new puzzle;
         /// </summary>
-        /// <param name="index">The index (in the row) of the puzzle that was added.</param>
         /// <param name="puzzle">The puzzle that was added.</param>
-        public void OnPuzzleAdded(int index, Puzzle puzzle);
+        public void OnPuzzleAdded(Puzzle puzzle);
 
         #endregion
     }
@@ -84,11 +82,10 @@
         /// <summary>
         /// Asynchronously called and awaited when a puzzle is finished by a player, but before any changes are made to their <see cref="PlayerState"/> and the <see cref="GameState"/>.
         /// </summary>
-        /// <param name="index"> The index (in the row) of the puzzle that was finished.</param>
         /// <param name="info"> The information about the finished puzzle.</param>
         /// <param name="cancellationToken"> A cancellation token to observe while waiting for the task to complete.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        public Task OnPuzzleFinishedAsync(int index, FinishedPuzzleInfo info, CancellationToken cancellationToken);
+        public Task OnPuzzleFinishedAsync(FinishedPuzzleInfo info, CancellationToken cancellationToken);
 
         #endregion
     }

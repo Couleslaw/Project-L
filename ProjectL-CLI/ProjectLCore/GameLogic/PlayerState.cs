@@ -58,15 +58,15 @@ namespace ProjectLCore.GameLogic
 
         #region Delegates
 
-        private delegate Task PuzzleFinishedAsyncDelegate(int index, FinishedPuzzleInfo info, CancellationToken cancellationToken);
+        private delegate Task PuzzleFinishedAsyncDelegate(FinishedPuzzleInfo info, CancellationToken cancellationToken);
 
         #endregion
 
         #region Events
 
-        private event Action<int, FinishedPuzzleInfo>? PuzzleFinishedEventHandler;
+        private event Action<FinishedPuzzleInfo>? PuzzleFinishedEventHandler;
 
-        private event Action<int, Puzzle>? PuzzleAddedEventHandler;
+        private event Action<Puzzle>? PuzzleAddedEventHandler;
 
         private event Action<TetrominoShape, int>? TetrominoCollectionChangedEventHandler;
 
@@ -237,7 +237,7 @@ namespace ProjectLCore.GameLogic
 
         /// <summary>
         /// Adds the puzzle to the player's unfinished puzzles.
-        /// Also calls the <see cref="IPlayerStatePuzzleListener.OnPuzzleAdded(int, Puzzle)"/> method of all listeners.
+        /// Also calls the <see cref="IPlayerStatePuzzleListener.OnPuzzleAdded(Puzzle)"/> method of all listeners.
         /// </summary>
         /// <param name="puzzle">The puzzle.</param>
         /// <exception cref="InvalidOperationException">No space for puzzle</exception>
@@ -246,7 +246,7 @@ namespace ProjectLCore.GameLogic
             for (int i = 0; i < MaxPuzzles; i++) {
                 if (_puzzles[i] is null) {
                     _puzzles[i] = puzzle;
-                    PuzzleAddedEventHandler?.Invoke(i, puzzle);
+                    PuzzleAddedEventHandler?.Invoke(puzzle);
                     return;
                 }
             }
@@ -255,7 +255,7 @@ namespace ProjectLCore.GameLogic
 
         /// <summary>
         /// Removes the puzzle specified in the <see cref="FinishedPuzzleInfo"/> from the player's unfinished puzzles and adds it to the list of finished puzzles.
-        /// Also calls the <see cref="IPlayerStatePuzzleListener.OnPuzzleFinished(int, FinishedPuzzleInfo)"/> method of all listeners.
+        /// Also calls the <see cref="IPlayerStatePuzzleListener.OnPuzzleFinished(FinishedPuzzleInfo)"/> method of all listeners.
         /// </summary>
         /// <param name="info">Information about the puzzle.</param>
         /// <exception cref="InvalidOperationException">Puzzle not found</exception>
@@ -266,11 +266,11 @@ namespace ProjectLCore.GameLogic
             }
             _puzzles[index] = null;
             _finishedPuzzleIds.Add(info.Puzzle.Id);
-            PuzzleFinishedEventHandler?.Invoke(index, info);
+            PuzzleFinishedEventHandler?.Invoke(info);
         }
 
         /// <summary>
-        /// Asynchronously calls and awaits the <see cref="IPlayerStatePuzzleFinishedAsyncListener.OnPuzzleFinishedAsync(int, FinishedPuzzleInfo, CancellationToken)"/>
+        /// Asynchronously calls and awaits the <see cref="IPlayerStatePuzzleFinishedAsyncListener.OnPuzzleFinishedAsync(FinishedPuzzleInfo, CancellationToken)"/>
         /// of all subscribed listeners. After that, it calls the <see cref="FinishPuzzle(FinishedPuzzleInfo)"/> method.
         /// </summary>
         /// <param name="info"></param>
@@ -288,7 +288,7 @@ namespace ProjectLCore.GameLogic
             var asyncHandler = PuzzleFinishedAsyncEventHandler;
             if (asyncHandler != null) {
                 foreach (PuzzleFinishedAsyncDelegate handler in asyncHandler.GetInvocationList()) {
-                    await handler(index, info, cancellationToken);
+                    await handler(info, cancellationToken);
                 }
             }
             FinishPuzzle(info);

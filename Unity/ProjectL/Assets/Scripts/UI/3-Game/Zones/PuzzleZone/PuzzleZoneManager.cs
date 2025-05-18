@@ -4,6 +4,8 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 {
     using ProjectL.UI.GameScene.Actions;
     using ProjectL.UI.GameScene.Actions.Constructing;
+    using ProjectL.UI.GameScene.Zones.ActionZones;
+    using ProjectL.UI.GameScene.Zones.PieceZone;
     using ProjectL.UI.Sound;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
@@ -12,12 +14,15 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using UnityEditor.Experimental.GraphView;
     using UnityEngine;
+    using UnityEngine.EventSystems;
     using UnityEngine.UI;
 
     public enum PuzzleZoneMode
     {
         Disabled,
+        ReadyToTakePuzzle,
         TakePuzzle,
         Recycle
     }
@@ -42,12 +47,13 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
         IGameActionController,
         IHumanPlayerActionListener<TakePuzzleAction>, IHumanPlayerActionListener<RecycleAction>,
         IAIPlayerActionAnimator<TakePuzzleAction>, IAIPlayerActionAnimator<RecycleAction>
-
     {
 
         [Header("Puzzle columns")]
         [SerializeField] private PuzzleColumn? _whiteColumn;
         [SerializeField] private PuzzleColumn? _blackColumn;
+
+        [SerializeField] private Button? _requestTakePuzzleButton;
 
         private TurnInfo _currentTurnInfo;
 
@@ -79,7 +85,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
         public override void Init(GameCore game)
         {
-            if (_whiteColumn == null || _blackColumn == null) {
+            if (_whiteColumn == null || _blackColumn == null || _requestTakePuzzleButton == null) {
                 Debug.LogError("One or more UI components is not assigned!", this);
                 return;
             }
@@ -93,22 +99,33 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             _blackColumn.Init(isBlack: true);
 
             HumanPlayerActionCreator.RegisterController(this);
+
+            _requestTakePuzzleButton.onClick.AddListener(ActionZonesManager.Instance.ManuallyClickTakePuzzleButton);
         }
 
         void IGameActionController.SetPlayerMode(PlayerMode mode)
         {
-            SetMode(PuzzleZoneMode.Disabled);
+            if (mode == PlayerMode.NonInteractive) {
+                SetMode(PuzzleZoneMode.Disabled);
+            }
         }
 
         void IGameActionController.SetActionMode(ActionMode mode)
         {
-            SetMode(PuzzleZoneMode.Disabled);
+            if (mode == ActionMode.ActionCreation) {
+                SetMode(PuzzleZoneMode.ReadyToTakePuzzle);
+            }
+            else {
+                SetMode(PuzzleZoneMode.Disabled);
+            }
         }
 
         private void SetMode(PuzzleZoneMode mode)
         {
             _whiteColumn!.SetMode(mode, _currentTurnInfo);
             _blackColumn!.SetMode(mode, _currentTurnInfo);
+
+            _requestTakePuzzleButton!.image.raycastTarget = mode == PuzzleZoneMode.ReadyToTakePuzzle;
         }
 
         void IGameStatePuzzleListener.OnWhitePuzzleRowChanged(int index, Puzzle? puzzle)
@@ -148,13 +165,13 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
         void IHumanPlayerActionListener<TakePuzzleAction>.OnActionRequested() => SetMode(PuzzleZoneMode.TakePuzzle);
 
-        void IHumanPlayerActionListener<TakePuzzleAction>.OnActionCanceled() => SetMode(PuzzleZoneMode.Disabled);
+        void IHumanPlayerActionListener<TakePuzzleAction>.OnActionCanceled() => SetMode(PuzzleZoneMode.ReadyToTakePuzzle);
 
         void IHumanPlayerActionListener<TakePuzzleAction>.OnActionConfirmed() => SetMode(PuzzleZoneMode.Disabled);
 
         void IHumanPlayerActionListener<RecycleAction>.OnActionRequested() => SetMode(PuzzleZoneMode.Recycle);
 
-        void IHumanPlayerActionListener<RecycleAction>.OnActionCanceled() => SetMode(PuzzleZoneMode.Disabled);
+        void IHumanPlayerActionListener<RecycleAction>.OnActionCanceled() => SetMode(PuzzleZoneMode.ReadyToTakePuzzle);
 
         void IHumanPlayerActionListener<RecycleAction>.OnActionConfirmed() => SetMode(PuzzleZoneMode.Disabled);
 

@@ -87,29 +87,30 @@
 - [ ] async workflow
   - [ ] add option to skip animation
   - [ ] cleanup cancellation tokens usage
-- [ ] polishing
-  - [ ] when creating action - hover over selected action button makes it appear unselected
+- [ ] rework tetromino + puzzle interaction
+  - [ ] fix: place animation doesnt change scale
   - [ ] I4 jiny scale
-  - [ ] make pause menu darker and parse game phase better
-  - [ ] scale dilku pro dragging
-  - [ ] place animation doesnt change scale
-  - [ ] animate number changes in shared reserve
-  - [ ] take puzzle action on puzzle click
-  - [ ] rework tetromino + puzzle interaction
-    - [ ] space --> place last selected piece
-  - [ ] select reward & finishing touches keyboard shortcuts
-  - [ ] master enabled - update confirm button
-  - [ ] allow multiple placements at the same time - consumes actions
-  - [ ] player row border
-    - inside not black - make a bit gray
-    - at start of game - all visible
-  - [ ] zvetsit confirm button hitbox
+  - [ ] space --> place last selected piece
+
+### Polishing
+
+- [x] fix: when creating action - hover over selected action button makes it appear unselected
+- [x] make pause menu darker and parse game phase better
+- [x] animate number changes in shared reserve
+- [x] take puzzle action on puzzle click
+- [x] select reward & finishing touches keyboard shortcuts
+- [x] master enabled - update confirm button
+- [x] allow multiple placements at the same time - consumes actions
+- [x] player row border
+  - inside not black - make a bit gray
+  - at start of game - all visible
+- [x] increase confirm button hitbox
+- [ ] place puzzle on selected slot
 
 ### Finishing touches
 
 - [ ] build game
 - [ ] disable AI players feature on WebGL
-- [ ] tab navigation in player selection
-- [ ] lower min num tetrominos to 5
+- [x] lower min num tetrominos to 5
 - [ ] final results align names bellow each other properly
   - [ ] 1. is a shorter tan 2,3,4 --> it is more to the left

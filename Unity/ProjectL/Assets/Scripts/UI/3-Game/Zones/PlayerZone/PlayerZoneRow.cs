@@ -33,18 +33,28 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             SetAsCurrentPlayer(false);
         }
 
-        void IPlayerStatePuzzleListener.OnPuzzleFinished(int index, FinishedPuzzleInfo info)
+        void IPlayerStatePuzzleListener.OnPuzzleFinished(FinishedPuzzleInfo info)
         {
-            puzzlesContainer![index].FinishPuzzle();
-        }
-
-        void IPlayerStatePuzzleListener.OnPuzzleAdded(int index, Puzzle puzzle)
-        {
-            if (puzzle is PuzzleWithGraphics grPuzzle) {
-                puzzlesContainer![index].PlacePuzzle(grPuzzle);
+            if (TryGetPuzzleWithId(info.Puzzle.Id, out var puzzleSlot)) {
+                puzzleSlot!.FinishPuzzle();
             }
             else {
+                Debug.LogError($"Puzzle with ID {info.Puzzle.Id} not found in player row.");
+            }
+        }
+
+        void IPlayerStatePuzzleListener.OnPuzzleAdded(Puzzle puzzle)
+        {
+            if (puzzle is not PuzzleWithGraphics) {
                 Debug.LogError($"Puzzle {puzzle} is not a {nameof(PuzzleWithGraphics)}.");
+                return;
+            }
+
+            foreach (var puzzleSlot in puzzlesContainer!) {
+                if (puzzleSlot.PuzzleId == null) {
+                    puzzleSlot.PlacePuzzle((PuzzleWithGraphics)puzzle);
+                    return;
+                }
             }
         }
 
@@ -66,6 +76,16 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             return puzzlesContainer!.GetPlacementPositionFor(action);
         }
 
-        public PlayerRowSlot GetPuzzleOnIndex(int index) => puzzlesContainer![index];
+        public bool TryGetPuzzleWithId(uint puzzleId, out PlayerRowSlot? result)
+        {
+            result = null;
+            foreach (var puzzle in puzzlesContainer!) {
+                if (puzzle.PuzzleId == puzzleId) {
+                    result = puzzle;
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

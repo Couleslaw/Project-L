@@ -3,6 +3,8 @@
 namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 {
     using ProjectL.Data;
+    using ProjectL.UI.GameScene.Actions;
+    using ProjectL.UI.GameScene.Zones.ActionZones;
     using ProjectL.UI.Sound;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
@@ -201,13 +203,12 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
                     selectedSprite = borderBright,
                     disabledSprite = borderDim
                 },
-                PuzzleZoneMode.Disabled => new SpriteState {
-                    highlightedSprite = highlighted,
+                _ => new SpriteState {
+                    highlightedSprite = borderBright,
                     pressedSprite = borderBright,
                     selectedSprite = borderBright,
                     disabledSprite = borderBright
                 },
-                _ => throw new ArgumentOutOfRangeException(nameof(_mode), _mode, null)
             };
         }
 

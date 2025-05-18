@@ -5,6 +5,8 @@ namespace ProjectL.UI.GameScene.Actions
     using ProjectL.UI.GameScene.Actions.Constructing;
     using ProjectL.UI.GameScene.Zones.ActionZones;
     using ProjectL.UI.GameScene.Zones.PieceZone;
+    using ProjectL.UI.GameScene.Zones.PlayerZone;
+    using ProjectL.UI.GameScene.Zones.PuzzleZone;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameActions.Verification;
     using ProjectLCore.GameLogic;
@@ -120,7 +122,9 @@ namespace ProjectL.UI.GameScene.Actions
         private ActionMode _currentActionMode = ActionMode.ActionCreation;
 
         private PlayerMode _currentPlayerMode = PlayerMode.NonInteractive;
-        private int _numActionsLeft;
+        private TurnInfo _currentTurnInfo;
+
+        private IDisposable? _finishedPuzzleHighlighter = null;
 
         #endregion
 
@@ -262,6 +266,9 @@ namespace ProjectL.UI.GameScene.Actions
                 return;
             }
 
+            _finishedPuzzleHighlighter?.Dispose();
+            _finishedPuzzleHighlighter = null;
+
             SetActionMode(ActionMode.ActionCreation);
             var player = PrepareForSubmission();
             player?.SetReward(action.SelectedReward);
@@ -327,6 +334,13 @@ namespace ProjectL.UI.GameScene.Actions
             _currentPlayer = player;
             _actionVerifier = e.Verifier;
             SetPlayerMode(PlayerMode.Interactive);
+            if (_currentTurnInfo.GamePhase == GamePhase.EndOfTheGame) {
+                SetActionMode(ActionMode.FinishingTouches);
+                SetNewActionType(ActionType.EndFinishingTouches);
+            }
+            else {
+                SetActionMode(ActionMode.ActionCreation);
+            }
         }
 
         private void Player_RewardChoiceRequested(object? sender, HumanPlayer.GetRewardEventArgs e)
@@ -340,6 +354,9 @@ namespace ProjectL.UI.GameScene.Actions
             SetActionMode(ActionMode.RewardSelection);
             SetNewActionType(ActionType.SelectReward);
             PieceZoneManager.Instance.EnableRewardSelection(e.RewardOptions);
+
+            var puzzleSlot = PlayerZoneManager.Instance.GetPuzzleWithId(e.Puzzle.Id)!;
+            _finishedPuzzleHighlighter = puzzleSlot.CreateTemporaryPuzzleHighlighter();
         }
 
         private void OnActionStateChanged(IActionChange<GameAction> change)
@@ -380,7 +397,7 @@ namespace ProjectL.UI.GameScene.Actions
                     return;
                 }
                 Queue<PlaceTetrominoAction> placements = placeConstructor.GetPlacementsQueue();
-                bool valid = placements.Count > 0 && placements.Count <= _numActionsLeft;
+                bool valid = placements.Count > 0 && placements.Count <= _currentTurnInfo.NumActionsLeft;
                 foreach (var a in placements) {
                     if (_actionVerifier.Verify(a) is not VerificationSuccess) {
                         valid = false;
@@ -468,11 +485,7 @@ namespace ProjectL.UI.GameScene.Actions
 
         void ICurrentTurnListener.OnCurrentTurnChanged(TurnInfo currentTurnInfo)
         {
-            _numActionsLeft = currentTurnInfo.NumActionsLeft;
-            if (currentTurnInfo.GamePhase == GamePhase.FinishingTouches) {
-                SetActionMode(ActionMode.FinishingTouches);
-                SetNewActionType(ActionType.EndFinishingTouches);
-            }
+            _currentTurnInfo = currentTurnInfo;
         }
 
         #endregion

@@ -14,11 +14,11 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
     [RequireComponent(typeof(Image))]
     [RequireComponent(typeof(BoxCollider2D))]
-    public class PlayerPuzzlesPanel : MonoBehaviour
+    public class PlayerPuzzlesPanel : MonoBehaviour, IEnumerable<PlayerRowSlot>
     {
         [SerializeField] private PlayerRowSlot? playerRowSlotPrefab;
 
-        private PlayerRowSlot[] _puzzles = new PlayerRowSlot[PlayerState.MaxPuzzles];
+        private readonly PlayerRowSlot[] _puzzles = new PlayerRowSlot[PlayerState.MaxPuzzles];
         private BoxCollider2D? _collider;
         private Image? _backgroundImage;
 
@@ -76,6 +76,16 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
         private void ToggleBackground(bool show)
         {
             _backgroundImage!.color = show ? Color.white : Color.clear;
-        } 
+        }
+
+        public IEnumerator<PlayerRowSlot> GetEnumerator()
+        {
+            return ((IEnumerable<PlayerRowSlot>)_puzzles).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

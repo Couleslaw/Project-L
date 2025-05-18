@@ -2,6 +2,7 @@
 
 namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 {
+    using ProjectL.UI.GameScene.Actions;
     using ProjectL.UI.Sound;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
