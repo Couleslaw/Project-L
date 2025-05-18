@@ -21,7 +21,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         Disabled,
         Spawning,
         SelectReward,
-        TakeBasic,
         ChangeTetromino,
     }
 
@@ -38,7 +37,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         private IDisposable? _finishedPuzzleHighlighter = null;
 
-
         private Dictionary<TetrominoShape, TetrominoButton> _tetrominoButtons = new();
 
         private PieceCountColumn? _currentPieceColumn;
@@ -46,6 +44,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         private SelectRewardActionCreator? _selectRewardActionCreator;
         private ChangeTetrominoActionCreator? _changeTetrominoActionCreator;
+        private TakeBasicActionCreator? _takeBasicActionCreator;
 
         private event Action<IActionModification<TakeBasicTetrominoAction>>? TakeBasicModifiedEventHandler;
         event Action<IActionModification<TakeBasicTetrominoAction>>? IHumanPlayerActionListener<TakeBasicTetrominoAction>.ActionModifiedEventHandler {
@@ -224,8 +223,12 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         void IHumanPlayerActionListener<TakeBasicTetrominoAction>.OnActionRequested()
         {
-            SetMode(PieceZoneMode.TakeBasic);
-            EnableRewardSelection(new List<TetrominoShape> { TetrominoShape.O1 });
+            SetMode(PieceZoneMode.Disabled);
+            _takeBasicActionCreator = new TakeBasicActionCreator();
+
+            // notify that the action was created
+            TakeBasicTetrominoActionModification mod = new(isSelected: true);
+            TakeBasicModifiedEventHandler?.Invoke(mod);
         }
         void IHumanPlayerActionListener<TakeBasicTetrominoAction>.OnActionCanceled() => OnActionCanceled();
         void IHumanPlayerActionListener<TakeBasicTetrominoAction>.OnActionConfirmed() => OnActionConfirmed();
@@ -255,16 +258,11 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             _selectRewardActionCreator = new SelectRewardActionCreator(rewardOptions);
         }
 
-        public void ReportButtonPress(TetrominoButton button)
+        public void ReportButtonClick(TetrominoButton button)
         {
             switch (_mode) {
                 case PieceZoneMode.Disabled:
                 case PieceZoneMode.Spawning:
-                    return;
-                case PieceZoneMode.TakeBasic:
-                    _selectRewardActionCreator!.ReportButtonPress(button);
-                    bool isSelected = _selectRewardActionCreator.SelectedReward == TetrominoShape.O1;
-                    TakeBasicModifiedEventHandler?.Invoke(new TakeBasicTetrominoActionModification(isSelected));
                     break;
                 case PieceZoneMode.SelectReward:
                     _selectRewardActionCreator!.ReportButtonPress(button);
@@ -292,6 +290,9 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
             _changeTetrominoActionCreator?.Dispose();
             _changeTetrominoActionCreator = null;
+
+            _takeBasicActionCreator?.Dispose();
+            _takeBasicActionCreator = null;
         }
 
         private class TemporaryButtonHighlighter : IDisposable
@@ -322,6 +323,25 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                     var spawner = Instance._tetrominoButtons[(TetrominoShape)i];
                     spawner.IsGrayedOut = _originalSettings[i];
                 }
+            }
+        }
+
+        private class TakeBasicActionCreator : IDisposable
+        {
+            IDisposable _highlighter;
+            IDisposable _selector;
+
+            public TakeBasicActionCreator()
+            {
+                _highlighter = new TemporaryButtonHighlighter(TetrominoShape.O1, playSound: false);
+                
+                TetrominoButton o1Button = PieceZoneManager.Instance._tetrominoButtons[TetrominoShape.O1];
+                _selector = o1Button.CreateTemporaryButtonSelector(SelectionSideEffect.GiveToPlayer, SelectionButtonEffect.MakeBigger);
+            }
+            public void Dispose()
+            {
+                _highlighter?.Dispose();
+                _selector?.Dispose();
             }
         }
 
@@ -420,5 +440,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 _oldTetrominoSelector?.Dispose();
             }
         }
+
+
     }
 }

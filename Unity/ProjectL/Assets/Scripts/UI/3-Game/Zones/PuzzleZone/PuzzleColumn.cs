@@ -55,6 +55,13 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             }
         }
 
+        public void RemoveFromRecycle()
+        {
+            foreach (PuzzleCard puzzleCard in _puzzleCards) {
+                puzzleCard.RemoveFromRecycle();
+            }
+        }
+
         private void Awake()
         {
             if (puzzleCardPrefab == null) {

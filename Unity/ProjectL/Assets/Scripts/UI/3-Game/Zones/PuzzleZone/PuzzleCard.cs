@@ -152,6 +152,17 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             PuzzleZoneManager.Instance.ReportRecycleChange(new(_puzzle, _isRecycleSelected));
         }
 
+        public void RemoveFromRecycle()
+        {
+            if (_puzzle == null || _mode != PuzzleZoneMode.Recycle || !_isRecycleSelected) {
+                return;
+            }
+
+            _isRecycleSelected = false;
+            UpdateUI();
+            PuzzleZoneManager.Instance.ReportRecycleChange(new(_puzzle, isSelected: false));
+        }
+
         private void UpdateUI()
         {
             if (_button == null || _emptyCardImage == null) {

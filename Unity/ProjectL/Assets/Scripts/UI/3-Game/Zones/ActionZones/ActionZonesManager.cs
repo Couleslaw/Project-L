@@ -103,7 +103,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
         {
             private readonly Button _button;
 
-            public SimulateButtonClickDisposable(Button button) 
+            public SimulateButtonClickDisposable(Button button)
             {
                 _button = button;
                 switch (button) {
@@ -136,6 +136,10 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
             public void Dispose()
             {
+                if (Instance == null) {
+                    return;
+                }
+
                 switch (_button) {
                     case Button.TakePuzzle:
                     case Button.Recycle:

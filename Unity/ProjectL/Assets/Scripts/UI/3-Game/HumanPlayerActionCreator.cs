@@ -167,7 +167,6 @@ namespace ProjectL.UI.GameScene.Actions
             listener.ActionModifiedEventHandler -= OnActionModified;
         }
 
- 
 
         public void OnClearBoardRequested() => OnActionCanceled();
 
@@ -184,6 +183,9 @@ namespace ProjectL.UI.GameScene.Actions
             if (_currentActionType == ActionType.MasterAction || _currentActionType == ActionType.EndFinishingTouches) {
                 return;
             }
+            // force deselect action button
+            ActionButton.DeselectCurrentButton();
+
             SetNewActionType(ActionType.PlacePiece);
         }
 
@@ -215,9 +217,10 @@ namespace ProjectL.UI.GameScene.Actions
                 UpdateConfirmButtonsIntractability();
                 return;
             }
-
+            
             ActionZonesManager.Instance.CanConfirmAction = false;
             PlayerZoneManager.Instance.CanConfirmTakePuzzleAction = false;
+            
             CurrentEventSet?.RaiseCanceled();
             CurrentActionConstructor?.Reset();
             _currentActionType = null;
@@ -422,7 +425,6 @@ namespace ProjectL.UI.GameScene.Actions
                 action = CurrentActionConstructor.GetAction<GameAction>();
             }
 
-            Debug.Log($"Action state changed... action: {action}");
             bool canConfirm = action != null && _actionVerifier.Verify(action) is VerificationSuccess;
             ActionZonesManager.Instance.CanConfirmAction = canConfirm;
 

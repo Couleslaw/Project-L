@@ -5,7 +5,6 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
     using ProjectL.UI.GameScene.Actions;
     using ProjectL.UI.GameScene.Actions.Constructing;
     using ProjectL.UI.GameScene.Zones.ActionZones;
-    using ProjectL.UI.GameScene.Zones.PieceZone;
     using ProjectL.UI.Sound;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
@@ -14,9 +13,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using UnityEditor.Experimental.GraphView;
     using UnityEngine;
-    using UnityEngine.EventSystems;
     using UnityEngine.UI;
 
     public enum PuzzleZoneMode
@@ -70,7 +67,18 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
         }
 
         public void ReportTakePuzzleChange(TakePuzzleActionModification change) => TakePuzzleModifiedEventHandler?.Invoke(change);
-        public void ReportRecycleChange(RecycleActionModification change) => RecycleModifiedEventHandler?.Invoke(change);
+        public void ReportRecycleChange(RecycleActionModification change)
+        {
+            RecycleModifiedEventHandler?.Invoke(change);
+            if (change.IsSelected) {
+                if (change.Color == RecycleAction.Options.White) {
+                    _blackColumn!.RemoveFromRecycle();
+                }
+                else {
+                    _whiteColumn!.RemoveFromRecycle();
+                }
+            }
+        }
 
         public static void AddToRadioButtonGroup(Button button, Action? onSelect, Action? onCancel)
         {

@@ -166,9 +166,9 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 return;
             }
 
-            // if we are not spawning, but the button is still usable
+            // if we are not spawning --> report click
             if (CanBeUsed) {
-                PieceZoneManager.Instance.ReportButtonPress(this);
+                PieceZoneManager.Instance.ReportButtonClick(this);
             }
         }
 
