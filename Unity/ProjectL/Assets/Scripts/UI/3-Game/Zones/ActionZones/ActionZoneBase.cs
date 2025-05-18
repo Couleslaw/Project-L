@@ -8,6 +8,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
     using ProjectLCore.GameLogic;
     using System;
     using System.Collections;
+    using System.Linq.Expressions;
     using UnityEngine;
     using UnityEngine.EventSystems;
     using UnityEngine.InputSystem;
@@ -183,14 +184,20 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
         private IEnumerator SimulateClickCoroutine(Button targetButton)
         {
+            if (!targetButton.interactable) {
+                yield return new WaitForSeconds(0.1f);
+                targetButton.onClick.Invoke();
+                yield return new WaitForSeconds(0.1f);
+                yield break;
+            }
+
             PointerEventData pointerData = new PointerEventData(EventSystem.current);
 
             // Simulate PointerDown (Press)
             ExecuteEvents.Execute(targetButton.gameObject, pointerData, ExecuteEvents.pointerDownHandler);
-            
-            // Simulate click - this also calls button.onClick.Invoke()
+
             yield return new WaitForSeconds(0.1f);
-            //ExecuteEvents.Execute(targetButton.gameObject, pointerData, ExecuteEvents.pointerClickHandler);
+            ExecuteEvents.Execute(targetButton.gameObject, pointerData, ExecuteEvents.pointerClickHandler);
             yield return new WaitForSeconds(0.1f);
 
             // Simulate PointerUp (Release)

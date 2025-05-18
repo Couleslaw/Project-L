@@ -57,20 +57,20 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
         private TurnInfo _currentTurnInfo;
 
-        private event Action<IActionChange<TakePuzzleAction>>? TakePuzzleStateChangedEventHandler;
-        event Action<IActionChange<TakePuzzleAction>>? IHumanPlayerActionListener<TakePuzzleAction>.StateChangedEventHandler {
-            add => TakePuzzleStateChangedEventHandler += value;
-            remove => TakePuzzleStateChangedEventHandler -= value;
+        private event Action<IActionModification<TakePuzzleAction>>? TakePuzzleModifiedEventHandler;
+        event Action<IActionModification<TakePuzzleAction>>? IHumanPlayerActionListener<TakePuzzleAction>.ActionModifiedEventHandler {
+            add => TakePuzzleModifiedEventHandler += value;
+            remove => TakePuzzleModifiedEventHandler -= value;
         }
 
-        private event Action<IActionChange<RecycleAction>>? RecycleStateChangedEventHandler;
-        event Action<IActionChange<RecycleAction>>? IHumanPlayerActionListener<RecycleAction>.StateChangedEventHandler {
-            add => RecycleStateChangedEventHandler += value;
-            remove => RecycleStateChangedEventHandler -= value;
+        private event Action<IActionModification<RecycleAction>>? RecycleModifiedEventHandler;
+        event Action<IActionModification<RecycleAction>>? IHumanPlayerActionListener<RecycleAction>.ActionModifiedEventHandler {
+            add => RecycleModifiedEventHandler += value;
+            remove => RecycleModifiedEventHandler -= value;
         }
 
-        public void ReportTakePuzzleChange(TakePuzzleActionChange change) => TakePuzzleStateChangedEventHandler?.Invoke(change);
-        public void ReportRecycleChange(RecycleActionChange change) => RecycleStateChangedEventHandler?.Invoke(change);
+        public void ReportTakePuzzleChange(TakePuzzleActionModification change) => TakePuzzleModifiedEventHandler?.Invoke(change);
+        public void ReportRecycleChange(RecycleActionModification change) => RecycleModifiedEventHandler?.Invoke(change);
 
         public static void AddToRadioButtonGroup(Button button, Action? onSelect, Action? onCancel)
         {

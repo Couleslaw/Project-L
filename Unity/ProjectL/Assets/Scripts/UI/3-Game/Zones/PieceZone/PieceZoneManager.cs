@@ -47,22 +47,22 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         private SelectRewardActionCreator? _selectRewardActionCreator;
         private ChangeTetrominoActionCreator? _changeTetrominoActionCreator;
 
-        private event Action<IActionChange<TakeBasicTetrominoAction>>? TakeBasicStateChangedEventHandler;
-        event Action<IActionChange<TakeBasicTetrominoAction>>? IHumanPlayerActionListener<TakeBasicTetrominoAction>.StateChangedEventHandler {
-            add => TakeBasicStateChangedEventHandler += value;
-            remove => TakeBasicStateChangedEventHandler -= value;
+        private event Action<IActionModification<TakeBasicTetrominoAction>>? TakeBasicModifiedEventHandler;
+        event Action<IActionModification<TakeBasicTetrominoAction>>? IHumanPlayerActionListener<TakeBasicTetrominoAction>.ActionModifiedEventHandler {
+            add => TakeBasicModifiedEventHandler += value;
+            remove => TakeBasicModifiedEventHandler -= value;
         }
 
-        private event Action<IActionChange<ChangeTetrominoAction>>? ChangeTetrominoStateChangedEventHandler;
-        event Action<IActionChange<ChangeTetrominoAction>>? IHumanPlayerActionListener<ChangeTetrominoAction>.StateChangedEventHandler {
-            add => ChangeTetrominoStateChangedEventHandler += value;
-            remove => ChangeTetrominoStateChangedEventHandler -= value;
+        private event Action<IActionModification<ChangeTetrominoAction>>? ChangeTetrominoModifiedEventHandler;
+        event Action<IActionModification<ChangeTetrominoAction>>? IHumanPlayerActionListener<ChangeTetrominoAction>.ActionModifiedEventHandler {
+            add => ChangeTetrominoModifiedEventHandler += value;
+            remove => ChangeTetrominoModifiedEventHandler -= value;
         }
 
-        private event Action<IActionChange<SelectRewardAction>>? SelectRewardStateChangedEventHandler;
-        event Action<IActionChange<SelectRewardAction>>? IHumanPlayerActionListener<SelectRewardAction>.StateChangedEventHandler {
-            add => SelectRewardStateChangedEventHandler += value;
-            remove => SelectRewardStateChangedEventHandler -= value;
+        private event Action<IActionModification<SelectRewardAction>>? SelectRewardModifiedEventHandler;
+        event Action<IActionModification<SelectRewardAction>>? IHumanPlayerActionListener<SelectRewardAction>.ActionModifiedEventHandler {
+            add => SelectRewardModifiedEventHandler += value;
+            remove => SelectRewardModifiedEventHandler -= value;
         }
 
         public IAIPlayerActionAnimator<PlaceTetrominoAction> GetPlaceTetrominoActionAnimator(TetrominoShape shape)
@@ -266,18 +266,18 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 case PieceZoneMode.TakeBasic:
                     _selectRewardActionCreator!.ReportButtonPress(button);
                     bool isSelected = _selectRewardActionCreator.SelectedReward == TetrominoShape.O1;
-                    TakeBasicStateChangedEventHandler?.Invoke(new TakeBasicTetrominoActionChange(isSelected));
+                    TakeBasicModifiedEventHandler?.Invoke(new TakeBasicTetrominoActionModification(isSelected));
                     break;
                 case PieceZoneMode.SelectReward:
                     _selectRewardActionCreator!.ReportButtonPress(button);
                     TetrominoShape? selectedReward = _selectRewardActionCreator.SelectedReward;
-                    SelectRewardStateChangedEventHandler?.Invoke(new SelectRewardActionChange(selectedReward));
+                    SelectRewardModifiedEventHandler?.Invoke(new SelectRewardActionModification(selectedReward));
                     break;
                 case PieceZoneMode.ChangeTetromino:
                     _changeTetrominoActionCreator!.ReportButtonPress(button);
                     TetrominoShape? oldTetromino = _changeTetrominoActionCreator.OldTetromino;
                     TetrominoShape? newTetromino = _changeTetrominoActionCreator.NewTetromino;
-                    ChangeTetrominoStateChangedEventHandler?.Invoke(new ChangeTetrominoActionChange(oldTetromino, newTetromino));
+                    ChangeTetrominoModifiedEventHandler?.Invoke(new ChangeTetrominoActionModification(oldTetromino, newTetromino));
                     break;
                 default:
                     break;

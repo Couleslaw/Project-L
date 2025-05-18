@@ -5,26 +5,26 @@ namespace ProjectL.UI.GameScene.Actions.Constructing
     using ProjectLCore.GameActions;
     using ProjectLCore.GamePieces;
 
-    public interface IActionChange<out T> where T : GameAction
+    public interface IActionModification<out T> where T : GameAction
     {
     }
 
 
-    public class TakePuzzleActionChange : IActionChange<TakePuzzleAction>
+    public class TakePuzzleActionModification : IActionModification<TakePuzzleAction>
     {
         public TakePuzzleAction? Action { get; }
-        public TakePuzzleActionChange(TakePuzzleAction? action)
+        public TakePuzzleActionModification(TakePuzzleAction? action)
         {
             Action = action;
         }
     }
 
-    public class RecycleActionChange : IActionChange<RecycleAction>
+    public class RecycleActionModification : IActionModification<RecycleAction>
     {
         public bool IsSelected { get; }
         public RecycleAction.Options Color { get; }
         public uint PuzzleId { get; }
-        public RecycleActionChange(Puzzle puzzle, bool isSelected)
+        public RecycleActionModification(Puzzle puzzle, bool isSelected)
         {
             IsSelected = isSelected;
             Color = puzzle.IsBlack ? RecycleAction.Options.Black : RecycleAction.Options.White;
@@ -32,20 +32,20 @@ namespace ProjectL.UI.GameScene.Actions.Constructing
         }
     }
 
-    public class TakeBasicTetrominoActionChange : IActionChange<TakeBasicTetrominoAction>
+    public class TakeBasicTetrominoActionModification : IActionModification<TakeBasicTetrominoAction>
     {
         public bool IsSelected { get; }
-        public TakeBasicTetrominoActionChange(bool isSelected)
+        public TakeBasicTetrominoActionModification(bool isSelected)
         {
             IsSelected = isSelected;
         }
     }
 
-    public class ChangeTetrominoActionChange : IActionChange<ChangeTetrominoAction>
+    public class ChangeTetrominoActionModification : IActionModification<ChangeTetrominoAction>
     {
         public TetrominoShape? OldTetromino { get; }
         public TetrominoShape? NewTetromino { get; }
-        public ChangeTetrominoActionChange(TetrominoShape? oldTetromino, TetrominoShape? newTetromino)
+        public ChangeTetrominoActionModification(TetrominoShape? oldTetromino, TetrominoShape? newTetromino)
         {
             OldTetromino = oldTetromino;
             NewTetromino = newTetromino;
@@ -53,22 +53,22 @@ namespace ProjectL.UI.GameScene.Actions.Constructing
     }
 
 
-    public class PlaceTetrominoActionChange : IActionChange<PlaceTetrominoAction>
+    public class PlaceTetrominoActionModification : IActionModification<PlaceTetrominoAction>
     {
         public enum Options { Placed, Removed }
         public Options Option { get; }
         public PlaceTetrominoAction Placement { get; }
-        public PlaceTetrominoActionChange(PlaceTetrominoAction action, Options option)
+        public PlaceTetrominoActionModification(PlaceTetrominoAction action, Options option)
         {
             Placement = action;
             Option = option;
         }
     }
 
-    public class SelectRewardActionChange : IActionChange<SelectRewardAction>
+    public class SelectRewardActionModification : IActionModification<SelectRewardAction>
     {
         public TetrominoShape? SelectedReward { get; }
-        public SelectRewardActionChange(TetrominoShape? selectedReward)
+        public SelectRewardActionModification(TetrominoShape? selectedReward)
         {
             SelectedReward = selectedReward;
         }

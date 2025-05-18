@@ -42,9 +42,9 @@ namespace ProjectL.UI.GameScene.Actions
     {
         #region Methods
 
-        public void SetPlayerMode(PlayerMode mode);
+        void SetPlayerMode(PlayerMode mode);
 
-        public void SetActionMode(ActionMode mode);
+        void SetActionMode(ActionMode mode);
 
         #endregion
     }
@@ -53,7 +53,7 @@ namespace ProjectL.UI.GameScene.Actions
     {
         #region Events
 
-        event Action<IActionChange<T>>? StateChangedEventHandler;
+        event Action<IActionModification<T>>? ActionModifiedEventHandler;
 
         #endregion
 
@@ -157,14 +157,14 @@ namespace ProjectL.UI.GameScene.Actions
         {
             ActionType actionType = _typeToEnumActionType[typeof(T)];
             _actionEventSets[actionType].Subscribe(listener);
-            listener.StateChangedEventHandler += OnActionStateChanged;
+            listener.ActionModifiedEventHandler += OnActionModified;
         }
 
         public void RemoveListener<T>(IHumanPlayerActionListener<T> listener) where T : GameAction
         {
             ActionType actionType = _typeToEnumActionType[typeof(T)];
             _actionEventSets[actionType].Unsubscribe(listener);
-            listener.StateChangedEventHandler -= OnActionStateChanged;
+            listener.ActionModifiedEventHandler -= OnActionModified;
         }
 
  
@@ -271,6 +271,8 @@ namespace ProjectL.UI.GameScene.Actions
 
             CurrentRewardEventArgs = null;
             var player = PrepareForSubmission();
+            SetActionMode(ActionMode.ActionCreation);
+
             player?.SetReward(action.SelectedReward);
         }
 
@@ -359,13 +361,13 @@ namespace ProjectL.UI.GameScene.Actions
             SetNewActionType(ActionType.SelectReward);
         }
 
-        private void OnActionStateChanged(IActionChange<GameAction> change)
+        private void OnActionModified(IActionModification<GameAction> change)
         {
             if (_currentActionType == null) {
                 Debug.LogError("Current action type is null", this);
                 return;
             }
-            CurrentActionConstructor!.ApplyActionChange(change);
+            CurrentActionConstructor!.ApplyActionModification(change);
 
             switch (_currentActionMode) {
                 case ActionMode.FinishingTouches: {
@@ -437,6 +439,7 @@ namespace ProjectL.UI.GameScene.Actions
             }
 
             ActionZonesManager.Instance.CanConfirmAction = false;
+            ActionZonesManager.Instance.CanSelectReward = false;
             PlayerZoneManager.Instance.CanConfirmTakePuzzleAction = false;
 
             SetPlayerMode(PlayerMode.NonInteractive);
@@ -491,9 +494,14 @@ namespace ProjectL.UI.GameScene.Actions
             CurrentEventSet!.RaiseRequested();
         }
 
-        void ICurrentTurnListener.OnCurrentTurnChanged(TurnInfo currentTurnInfo)
+        void ICurrentTurnListener.OnCurrentTurnChanged(TurnInfo turnInfo)
         {
-            _currentTurnInfo = currentTurnInfo;
+            _currentTurnInfo = turnInfo;
+
+            // update action zone if finishing touches
+            if (turnInfo.GamePhase == GamePhase.FinishingTouches) {
+                SetActionMode(ActionMode.FinishingTouches);
+            }
         }
 
         #endregion

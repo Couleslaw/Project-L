@@ -15,7 +15,7 @@ namespace ProjectL.UI.GameScene.Actions.Constructing
 
         void Reset();
 
-        void ApplyActionChange<T>(IActionChange<T> change) where T : GameAction;
+        void ApplyActionModification<T>(IActionModification<T> change) where T : GameAction;
 
         T? GetAction<T>() where T : GameAction;
 
@@ -34,16 +34,16 @@ namespace ProjectL.UI.GameScene.Actions.Constructing
             return GetAction() as T1 ?? throw new InvalidCastException($"Cannot cast {typeof(T)} to {typeof(T1)}");
         }
 
-        public void ApplyActionChange<T1>(IActionChange<T1> change) where T1 : GameAction
+        public void ApplyActionModification<T1>(IActionModification<T1> change) where T1 : GameAction
         {
-            ReportActionChange(change as IActionChange<T> ?? throw new InvalidCastException($"Cannot cast {typeof(T1)} to {typeof(T)}"));
+            ApplyActionModification(change as IActionModification<T> ?? throw new InvalidCastException($"Cannot cast {typeof(T1)} to {typeof(T)}"));
         }
 
         public abstract void Reset();
 
         protected abstract T? GetAction();
 
-        protected abstract void ReportActionChange(IActionChange<T> change);
+        protected abstract void ApplyActionModification(IActionModification<T> change);
 
         #endregion
     }
@@ -56,9 +56,9 @@ namespace ProjectL.UI.GameScene.Actions.Constructing
 
         protected override TakePuzzleAction? GetAction() => _action;
 
-        protected override void ReportActionChange(IActionChange<TakePuzzleAction> change)
+        protected override void ApplyActionModification(IActionModification<TakePuzzleAction> change)
         {
-            if (change is not TakePuzzleActionChange ch) {
+            if (change is not TakePuzzleActionModification ch) {
                 Debug.LogError($"Unknown action change type: {change.GetType().Name}");
                 return;
             }
@@ -83,9 +83,9 @@ namespace ProjectL.UI.GameScene.Actions.Constructing
             return new RecycleAction(order, color);
         }
 
-        protected override void ReportActionChange(IActionChange<RecycleAction> change)
+        protected override void ApplyActionModification(IActionModification<RecycleAction> change)
         {
-            if (change is not RecycleActionChange ch) {
+            if (change is not RecycleActionModification ch) {
                 Debug.LogError($"Unknown action change type: {change.GetType().Name}");
                 return;
             }
@@ -105,9 +105,9 @@ namespace ProjectL.UI.GameScene.Actions.Constructing
         private TakeBasicTetrominoAction? _action;
         public override void Reset() => _action = null;
         protected override TakeBasicTetrominoAction? GetAction() => _action;
-        protected override void ReportActionChange(IActionChange<TakeBasicTetrominoAction> change)
+        protected override void ApplyActionModification(IActionModification<TakeBasicTetrominoAction> change)
         {
-            if (change is not TakeBasicTetrominoActionChange takeBasicChanged) {
+            if (change is not TakeBasicTetrominoActionModification takeBasicChanged) {
                 Debug.LogError($"Unknown action change type: {change.GetType().Name}");
                 return;
             }
@@ -135,9 +135,9 @@ namespace ProjectL.UI.GameScene.Actions.Constructing
             return new ChangeTetrominoAction(_oldTetromino.Value, _newTetromino.Value);
         }
 
-        protected override void ReportActionChange(IActionChange<ChangeTetrominoAction> change)
+        protected override void ApplyActionModification(IActionModification<ChangeTetrominoAction> change)
         {
-            if (change is not ChangeTetrominoActionChange ch) {
+            if (change is not ChangeTetrominoActionModification ch) {
                 Debug.LogError($"Unknown action change type: {change.GetType().Name}");
                 return;
             }
@@ -168,14 +168,14 @@ namespace ProjectL.UI.GameScene.Actions.Constructing
 
         public Queue<PlaceTetrominoAction> GetPlacementsQueue() => new(_placements);
 
-        protected override void ReportActionChange(IActionChange<PlaceTetrominoAction> change)
+        protected override void ApplyActionModification(IActionModification<PlaceTetrominoAction> change)
         {
-            if (change is not PlaceTetrominoActionChange ch) {
+            if (change is not PlaceTetrominoActionModification ch) {
                 Debug.LogError($"Unknown action change type: {change.GetType().Name}");
                 return;
             }
 
-            if (ch.Option == PlaceTetrominoActionChange.Options.Placed) {
+            if (ch.Option == PlaceTetrominoActionModification.Options.Placed) {
                 _placements.Add(ch.Placement);
             }
             else {
@@ -194,9 +194,9 @@ namespace ProjectL.UI.GameScene.Actions.Constructing
             return _selectedShape == null ? null : new SelectRewardAction(null, _selectedShape.Value);
         }
 
-        protected override void ReportActionChange(IActionChange<SelectRewardAction> change)
+        protected override void ApplyActionModification(IActionModification<SelectRewardAction> change)
         {
-            if (change is not SelectRewardActionChange ch) {
+            if (change is not SelectRewardActionModification ch) {
                 Debug.LogError($"Unknown action change type: {change.GetType().Name}");
                 return;
             }

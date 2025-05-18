@@ -83,7 +83,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         #region Events
 
-        public event Action<IActionChange<PlaceTetrominoAction>>? StateChangedEventHandler;
+        public event Action<IActionModification<PlaceTetrominoAction>>? ActionModifiedEventHandler;
 
         #endregion
 
@@ -130,8 +130,8 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
 
             if (_currentPlacement != null) {
-                var change = new PlaceTetrominoActionChange(_currentPlacement, PlaceTetrominoActionChange.Options.Removed);
-                StateChangedEventHandler?.Invoke(change);
+                var change = new PlaceTetrominoActionModification(_currentPlacement, PlaceTetrominoActionModification.Options.Removed);
+                ActionModifiedEventHandler?.Invoke(change);
                 _currentPlacement = null;
             }
 
@@ -185,8 +185,8 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
 
             _currentPlacement = action;
-            var change = new PlaceTetrominoActionChange(action, PlaceTetrominoActionChange.Options.Placed);
-            StateChangedEventHandler?.Invoke(change);
+            var change = new PlaceTetrominoActionModification(action, PlaceTetrominoActionModification.Options.Placed);
+            ActionModifiedEventHandler?.Invoke(change);
 
             _isDragging = false; // Stop dragging when placing
 
