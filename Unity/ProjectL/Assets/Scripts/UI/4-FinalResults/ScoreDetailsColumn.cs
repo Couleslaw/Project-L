@@ -49,7 +49,7 @@ namespace ProjectL.UI.FinalResults
             await FinalAnimationManager.WaitForAnimationDelayAndPlaySound(cancellationToken);
         }
 
-        internal void Awake()
+        private void Awake()
         {
             // check that required components are assigned
             if (numCompletedPuzzlesLabel == null || numLeftoverTetrominosLabel == null) {

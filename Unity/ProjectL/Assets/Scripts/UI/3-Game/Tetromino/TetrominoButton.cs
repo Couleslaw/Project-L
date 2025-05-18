@@ -104,7 +104,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             // instantiate the tetromino prefab and initialize it
             DraggableTetromino tetromino = Instantiate(draggableTetrominoPrefab, transform.position, Quaternion.identity);
             tetromino.Init(this, isAnimation);
-            tetromino.ReturnedToCollectionEventHandler += () => TetrominoReturnedEventHandler?.Invoke(Shape);
+            tetromino.RemovedFromSceneEventHandler += () => TetrominoReturnedEventHandler?.Invoke(Shape);
 
             // notify listeners that a tetromino has been spawned
             TetrominoSpawnedEventHandler?.Invoke(Shape);

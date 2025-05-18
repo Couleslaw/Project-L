@@ -84,9 +84,9 @@ namespace ProjectLCore.GameLogic
 
         #region Events
 
-        private event Action<TurnInfo>? OnTurnChanged;
+        private event Action<TurnInfo>? OnTurnChangedEventHandler;
 
-        private event Action<Player>? CurrentPlayerChanged;
+        private event Action<Player>? CurrentPlayerChangedEventHandler;
 
         #endregion
 
@@ -124,7 +124,7 @@ namespace ProjectLCore.GameLogic
             if (listener == null) {
                 return;
             }
-            OnTurnChanged += listener.OnCurrentTurnChanged;
+            OnTurnChangedEventHandler += listener.OnCurrentTurnChanged;
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace ProjectLCore.GameLogic
             if (listener == null) {
                 return;
             }
-            OnTurnChanged -= listener.OnCurrentTurnChanged;
+            OnTurnChangedEventHandler -= listener.OnCurrentTurnChanged;
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace ProjectLCore.GameLogic
             if (listener == null) {
                 return;
             }
-            CurrentPlayerChanged += listener.OnCurrentPlayerChanged;
+            CurrentPlayerChangedEventHandler += listener.OnCurrentPlayerChanged;
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace ProjectLCore.GameLogic
             if (listener == null) {
                 return;
             }
-            CurrentPlayerChanged -= listener.OnCurrentPlayerChanged;
+            CurrentPlayerChangedEventHandler -= listener.OnCurrentPlayerChanged;
         }
 
         /// <summary>
@@ -282,10 +282,10 @@ namespace ProjectLCore.GameLogic
 
             // first notify about the current player change
             if (CurrentTurn.NumActionsLeft == TurnManager.NumActionsInTurn) {
-                CurrentPlayerChanged?.Invoke(CurrentPlayer);
+                CurrentPlayerChangedEventHandler?.Invoke(CurrentPlayer);
             }
             // then about turn change
-            OnTurnChanged?.Invoke(CurrentTurn);
+            OnTurnChangedEventHandler?.Invoke(CurrentTurn);
 
             return CurrentTurn;
         }

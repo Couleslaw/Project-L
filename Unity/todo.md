@@ -87,10 +87,10 @@
 - [ ] async workflow
   - [ ] add option to skip animation
   - [ ] cleanup cancellation tokens usage
-- [ ] rework tetromino + puzzle interaction
-  - [ ] fix: place animation doesnt change scale
-  - [ ] I4 jiny scale
-  - [ ] space --> place last selected piece
+- [x] rework tetromino + puzzle interaction
+  - [x] fix: place animation doesnt change scale
+  - [x] I4 jiny scale
+  - [x] space --> place last selected piece
 
 ### Polishing
 
@@ -114,3 +114,5 @@
 - [x] lower min num tetrominos to 5
 - [ ] final results align names bellow each other properly
   - [ ] 1. is a shorter tan 2,3,4 --> it is more to the left
+- [ ] recycle - rows act as radio buttons
+- [ ] AI place - rotate / flip while moving

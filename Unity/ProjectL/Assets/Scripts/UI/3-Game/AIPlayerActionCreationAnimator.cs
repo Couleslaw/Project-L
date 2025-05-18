@@ -30,7 +30,7 @@ namespace ProjectL.UI.GameScene.Actions
     {
         #region Constants
 
-        internal const float _initialDelay = 0.6f;
+        private const float _initialDelay = 0.6f;
 
         #endregion
 

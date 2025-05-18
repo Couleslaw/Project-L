@@ -257,8 +257,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         public void ReportButtonPress(TetrominoButton button)
         {
-            Debug.Log($"Button pressed: {button.Shape}, mode={_mode}");
-
             switch (_mode) {
                 case PieceZoneMode.Disabled:
                 case PieceZoneMode.Spawning:

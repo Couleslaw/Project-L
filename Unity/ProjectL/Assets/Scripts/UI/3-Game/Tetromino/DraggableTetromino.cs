@@ -38,7 +38,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         #region Fields
 
-        internal Vector2 _draggingPointerOffset;
+        private Vector2 _draggingPointerOffset;
 
         private static bool _initializedClass = false;
 
@@ -54,21 +54,20 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         private Camera? _camera;
 
-        private PlaceTetrominoAction? _currentPlacement = null;
-
         private bool _isDragging = false;
 
         private bool _isMouseOver = false;
+        private bool _isOverPlayerRow;
 
         #endregion
 
         #region Events
 
-        public event Action? ReturnedToCollectionEventHandler;
-
-        public event Action<IActionModification<PlaceTetrominoAction>>? ActionModifiedEventHandler;
+        public event Action? RemovedFromSceneEventHandler;
 
         public event Action<DraggableTetromino>? OnStartDraggingEventHandler;
+
+        public event Action<IActionModification<PlaceTetrominoAction>>? ActionModifiedEventHandler;
 
         #endregion
 
@@ -82,7 +81,9 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         #region Properties
 
-        public static DraggableTetromino? SelectedTetromino { get; private set; } = null;
+        private static DraggableTetromino? SelectedTetromino { get; set; } = null;
+
+        private bool IsSelectedWithMouse => _isMouseOver || _isDragging;
 
         public TetrominoShape Shape => _shape;
 
@@ -104,7 +105,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             TetrominoSizer sizer = gameObject.AddComponent<TetrominoSizer>();
             sizer.Init(spawner);
 
-            // handle animation separetly
+            // handle animation separately
             if (isAnimation) {
                 SetMode(Mode.Animation);
                 return;
@@ -119,18 +120,18 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             _isMouseOver = true;
         }
 
-        public void StopDragging() => _isDragging = false;
-
-        public void PlaceToPuzzle(PlaceTetrominoAction action, Vector3 center)
+        public void StopDragging()
+        {
+            _isDragging = false;
+            if (!_isOverPlayerRow) {
+                SetMode(Mode.Abandoned);
+            }
+        }
+        public void PlaceToPosition(Vector3 center)
         {
             if (_mode == Mode.Animation) {
                 return;
             }
-
-            // update place action and notify listeners
-            _currentPlacement = action;
-            PlaceTetrominoActionModification mod = new(action, PlaceTetrominoActionModification.Options.Placed);
-            ActionModifiedEventHandler?.Invoke(mod);
 
             // set the tetromino to placed mode
             SetMode(Mode.Placed);
@@ -149,9 +150,10 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 SelectedTetromino = null;
             }
 
-            // if not placed --> destroy immediately and return to player collection
+            RemovedFromSceneEventHandler?.Invoke();
+
+            // if not placed --> destroy immediately
             if (_mode != Mode.Placed) {
-                ReturnedToCollectionEventHandler?.Invoke();
                 Destroy(gameObject);
             }
             // if placed --> destroy after a small delay to prevent animation clipping 
@@ -168,7 +170,11 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         #region Unity Events
 
-        public void OnMouseDown() => StartDragging();
+        public void OnMouseDown()
+        {
+            _isMouseOver = true;
+            StartDragging();
+        }
 
         public void OnMouseUp() => StopDragging();
 
@@ -178,17 +184,32 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 return;
             }
             _isMouseOver = true;
-            SetMode(Mode.Selected);
+
+            // if no selected tetromino --> set this as selected
+            if (SelectedTetromino == null) {
+                SetMode(Mode.Selected);
+            }
+
+            // if not dragging selected tetromino --> set this as selected
+            else if (!SelectedTetromino._isDragging && SelectedTetromino != this) {
+                SetMode(Mode.Selected);
+            }
         }
 
         public void OnMouseExit() => _isMouseOver = false;
 
+
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            if (collision.gameObject.layer == PlayerPuzzleRowLayer) {
+                _isOverPlayerRow = true;
+            }
+        }
+
         private void OnTriggerExit2D(Collider2D collision)
         {
             if (collision.gameObject.layer == PlayerPuzzleRowLayer) {
-                if (_mode == Mode.Abandoned) {
-                    RemoveFromScene();
-                }
+                _isOverPlayerRow = false;
             }
         }
 
@@ -223,8 +244,8 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 return;
             }
 
-            if (SelectedTetromino._isMouseOver) {
-                InteractivePuzzle.TryPlacingSelectedTetrominoToPuzzle();
+            if (SelectedTetromino.IsSelectedWithMouse) {
+                InteractivePuzzle.TryPlaceToPuzzle(SelectedTetromino);
             }
         }
 
@@ -234,8 +255,8 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 return;
             }
 
-            if (SelectedTetromino._isMouseOver || PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
-                InteractivePuzzle.TryPlacingSelectedTetrominoToPuzzle();
+            if (SelectedTetromino.IsSelectedWithMouse || PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
+                InteractivePuzzle.TryPlaceToPuzzle(SelectedTetromino);
             }
         }
 
@@ -245,7 +266,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 return;
             }
 
-            if (SelectedTetromino._isMouseOver || PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
+            if (SelectedTetromino.IsSelectedWithMouse || PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
                 SelectedTetromino.transform.Rotate(0f, 0f, ctx.ReadValue<float>() * _rotationSpeed);
             }
         }
@@ -256,7 +277,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 return;
             }
 
-            if (SelectedTetromino._isMouseOver || PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
+            if (SelectedTetromino.IsSelectedWithMouse || PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
                 SelectedTetromino.SnapToNearestRightAngle();
                 SelectedTetromino.transform.Rotate(0f, 0f, 90 * Mathf.Sign(ctx.ReadValue<float>()));
             }
@@ -267,7 +288,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             if (SelectedTetromino == null) {
                 return;
             }
-            if (!SelectedTetromino._isMouseOver && !PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
+            if (!SelectedTetromino.IsSelectedWithMouse && !PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
                 return;
             }
 
@@ -300,17 +321,20 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         private void FixedUpdate()
         {
-            if (!_isDragging || _camera == null) {
+            // if abandoned tetromino is not over player row --> remove from scene
+            if (_mode == Mode.Abandoned && !_isOverPlayerRow) {
+                RemoveFromScene();
                 return;
             }
 
-            // dragging --> update tetromino position based on mouse position 
+            // if dragging --> update tetromino position based on mouse position 
+            if (_isDragging) {
+                Vector3 mouseScreenPos = Input.mousePosition;
+                mouseScreenPos.z = _camera!.WorldToScreenPoint(transform.position).z;
 
-            Vector3 mouseScreenPos = Input.mousePosition;
-            mouseScreenPos.z = _camera.WorldToScreenPoint(transform.position).z;
-
-            Vector2 mouseWorldPos = _camera.ScreenToWorldPoint(mouseScreenPos);
-            _rb!.MovePosition(mouseWorldPos + _draggingPointerOffset);
+                Vector2 mouseWorldPos = _camera.ScreenToWorldPoint(mouseScreenPos);
+                _rb!.MovePosition(mouseWorldPos + _draggingPointerOffset);
+            }
         }
 
         private void SetMode(Mode mode)
@@ -323,8 +347,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 return;
             }
             _mode = mode;
-
-            Debug.Log($"{Shape}: setting mode to {mode}");
 
             // update selected tetromino
             if (mode == Mode.Selected) {
@@ -400,13 +422,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
             // notify listeners that dragging started
             OnStartDraggingEventHandler?.Invoke(this);
-
-            // if the tetromino was placed --> notify of removal
-            if (_currentPlacement != null) {
-                PlaceTetrominoActionModification mod = new(_currentPlacement, PlaceTetrominoActionModification.Options.Removed);
-                ActionModifiedEventHandler?.Invoke(mod);
-                _currentPlacement = null;
-            }
 
             // calculate pointer offset from object center
             Vector2 mouseWorldPos = _camera!.ScreenToWorldPoint(Input.mousePosition);

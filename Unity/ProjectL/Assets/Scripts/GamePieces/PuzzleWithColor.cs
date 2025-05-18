@@ -9,6 +9,8 @@ using UnityEngine;
 public interface IPuzzleListener
 {
     void OnTetrominoPlaced(TetrominoShape tetromino, BinaryImage position);
+
+    void OnTetrominoRemoved(TetrominoShape tetromino, BinaryImage position);
 }
 
 /// <summary>
@@ -35,7 +37,8 @@ public class PuzzleWithColor : Puzzle
 
     #endregion
 
-    private event Action<TetrominoShape, BinaryImage>? TetrominoPlaced;
+    private event Action<TetrominoShape, BinaryImage>? TetrominoPlacedEventHandler;
+    private event Action<TetrominoShape, BinaryImage>? TetrominoRemovedEventHandler;
 
     #region Properties
 
@@ -51,12 +54,14 @@ public class PuzzleWithColor : Puzzle
 
     public void AddListener(IPuzzleListener listener)
     {
-        TetrominoPlaced += listener.OnTetrominoPlaced;
+        TetrominoPlacedEventHandler += listener.OnTetrominoPlaced;
+        TetrominoRemovedEventHandler += listener.OnTetrominoRemoved;
     }
 
     public void RemoveListener(IPuzzleListener listener)
     {
-        TetrominoPlaced -= listener.OnTetrominoPlaced;
+        TetrominoPlacedEventHandler -= listener.OnTetrominoPlaced;
+        TetrominoRemovedEventHandler -= listener.OnTetrominoRemoved;
     }
 
     public bool TryGetSprite(out Sprite? sprite)
@@ -73,13 +78,14 @@ public class PuzzleWithColor : Puzzle
     {
         base.AddTetromino(tetromino, position);
         ColorImage = ColorImage.AddImage((ColorImage.Color)tetromino, position);
-        TetrominoPlaced?.Invoke(tetromino, position);
+        TetrominoPlacedEventHandler?.Invoke(tetromino, position);
     }
 
     public override void RemoveTetromino(TetrominoShape tetromino, BinaryImage position)
     {
         base.RemoveTetromino(tetromino, position);
         ColorImage = ColorImage.AddImage(ColorImage.Color.Empty, position);
+        TetrominoRemovedEventHandler?.Invoke(tetromino, position);
     }
 
     /// <summary>

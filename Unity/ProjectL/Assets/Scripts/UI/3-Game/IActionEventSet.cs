@@ -66,7 +66,7 @@ namespace ProjectL.UI.GameScene.Actions.Constructing
 
         public void Unsubscribe<T1>(IHumanPlayerActionListener<T1> listener) where T1 : GameAction
         {
-            Subscribe(listener as IHumanPlayerActionListener<T> ??
+            Unsubscribe(listener as IHumanPlayerActionListener<T> ??
                 throw new InvalidCastException($"Cannot cast {typeof(T1)} to {typeof(T)}")
                 );
         }

@@ -117,17 +117,9 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             }
         }
 
-        public void OnMouseEnter()
-        {
-            Debug.Log("Mouse entered player row.");
-            IsMouseOverRow = true;
-        }
+        public void OnMouseEnter() => IsMouseOverRow = true;
 
-        public void OnMouseExit()
-        {
-            Debug.Log("Mouse exited player row.");
-            IsMouseOverRow = false;
-        }
+        public void OnMouseExit() => IsMouseOverRow = false;
 
         private void ToggleBackground(bool show)
         {
