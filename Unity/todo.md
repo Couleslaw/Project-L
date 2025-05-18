@@ -112,7 +112,7 @@
 - [ ] build game
 - [ ] disable AI players feature on WebGL
 - [x] lower min num tetrominos to 5
-- [ ] final results align names bellow each other properly
-  - [ ] 1. is a shorter tan 2,3,4 --> it is more to the left
-- [ ] recycle - rows act as radio buttons
+- [x] final results align names bellow each other properly
+  - [x] 1. is a shorter tan 2,3,4 --> it is more to the left
+- [x] recycle - rows act as radio buttons
 - [ ] AI place - rotate / flip while moving

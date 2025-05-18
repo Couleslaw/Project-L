@@ -29,7 +29,8 @@ namespace ProjectL.UI.FinalResults
 
         [Header("Final Results Panel")]
         [SerializeField] private CanvasGroup? finalResultsPanel;
-        [SerializeField] private TextMeshProUGUI? finalResultsText;
+        [SerializeField] private GameObject? finalResultsTableContainer;
+        [SerializeField] private FinalRankTableRow? finalResultsRowPrefab;
         [SerializeField] private Button? homeButton;
 
         [Header("Player Columns")]
@@ -78,8 +79,8 @@ namespace ProjectL.UI.FinalResults
         private void Awake()
         {
             // check that required components are assigned
-            if (finalResultsPanel == null || finalResultsText == null || homeButton == null ||
-                playerColumnsParent == null || playerStatsColumnPrefab == null ||
+            if (finalResultsPanel == null || finalResultsRowPrefab == null || homeButton == null ||
+                finalResultsTableContainer == null || playerColumnsParent == null || playerStatsColumnPrefab == null ||
                 detailsColumnsParent == null || detailsColumnPrefab == null || dividerLine == null || detailsPanel == null) {
                 Debug.LogError("One or more required components are not assigned in the inspector.");
                 return;
@@ -203,7 +204,7 @@ namespace ProjectL.UI.FinalResults
 
         private void SetupFinalResultsPanel()
         {
-            if (homeButton == null || finalResultsText == null || finalResultsPanel == null) {
+            if (homeButton == null || finalResultsRowPrefab == null || finalResultsTableContainer == null || finalResultsPanel == null) {
                 return;
             }
 
@@ -211,11 +212,10 @@ namespace ProjectL.UI.FinalResults
             homeButton.interactable = false;
 
             // set final results text
-            finalResultsText.text = string.Empty;
             foreach (var item in GameSummary.FinalResults) {
-                string playerName = item.Key.Name;
-                int order = item.Value;
-                finalResultsText.text += $"{order}. {playerName}\n";
+                var row = Instantiate(finalResultsRowPrefab, finalResultsTableContainer.transform);
+                row.gameObject.SetActive(true);
+                row.Init(item.Key.Name, item.Value);
             }
 
             // hide the final results panel
