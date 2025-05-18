@@ -125,23 +125,37 @@ namespace ProjectL.UI.GameScene.Actions
         {
             await GameAnimationManager.WaitForScaledDelayAsync(_initialDelay, cancellationToken);
 
+            var tetromino = await AnimatePlaceMovement(action, cancellationToken);
+            tetromino.RemoveFromScene();
+        }
+
+        private async Task<DraggableTetromino> AnimatePlaceMovement(PlaceTetrominoAction action, CancellationToken cancellationToken)
+        {
             var tetromino = PieceZoneManager.Instance.GetPlaceTetrominoActionAnimator(action.Shape);
             await tetromino.Animate(action, cancellationToken);
+            return (DraggableTetromino)tetromino;
         }
 
         protected override async Task ProcessActionAsync(MasterAction action, CancellationToken cancellationToken)
         {
             await GameAnimationManager.WaitForScaledDelayAsync(_initialDelay, cancellationToken);
 
-            List<Task> placeTasks = new();
+            List<Task<DraggableTetromino>> placeTasks = new();
 
             using (new ActionZonesManager.SimulateButtonClickDisposable(ActionZonesManager.Button.MasterAction)) {
+                await GameAnimationManager.WaitForScaledDelayAsync(0.5f, cancellationToken);
+
                 foreach (PlaceTetrominoAction placeAction in action.TetrominoPlacements) {
                     cancellationToken.ThrowIfCancellationRequested();
-                    placeTasks.Add(ProcessActionAsync(placeAction, cancellationToken));
+
+                    placeTasks.Add(AnimatePlaceMovement(placeAction, cancellationToken));
                     await GameAnimationManager.WaitForScaledDelayAsync(0.3f, cancellationToken);
                 }
                 await Task.WhenAll(placeTasks);
+            }
+
+            foreach (var tetromino in placeTasks) {
+                tetromino.Result.RemoveFromScene();
             }
         }
 

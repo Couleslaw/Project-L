@@ -2,22 +2,25 @@
 
 namespace ProjectL.UI.GameScene.Zones.PlayerZone
 {
+    using ProjectLCore.GameActions;
+    using ProjectLCore.GameLogic;
+    using ProjectLCore.Players;
     using System.Collections.Generic;
     using UnityEngine;
-    using ProjectLCore.Players;
-    using ProjectLCore.GameLogic;
-    using System.Threading.Tasks;
-    using ProjectLCore.GameActions;
-    using System.Threading;
-    using System;
 
     public class PlayerZoneManager : GraphicsManager<PlayerZoneManager>, ICurrentPlayerListener
     {
+        #region Fields
+
         [SerializeField] private GameObject? _playerZoneRowPrefab;
 
         private Dictionary<Player, PlayerZoneRow> _playerZoneRows = new();
 
         private Player? _currentPlayer;
+
+        #endregion
+
+        #region Properties
 
         public bool CanConfirmTakePuzzleAction {
             set {
@@ -27,6 +30,12 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
                 }
             }
         }
+
+        public bool IsMouseOverCurrentPlayersRow => _playerZoneRows[_currentPlayer!].IsMouseOverRow;
+
+        #endregion
+
+        #region Methods
 
         public override void Init(GameCore game)
         {
@@ -47,15 +56,6 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             }
         }
 
-        void ICurrentPlayerListener.OnCurrentPlayerChanged(Player currentPlayer)
-        {
-            _currentPlayer = currentPlayer;
-            foreach (var kvp in _playerZoneRows) {
-                var playerZoneRow = kvp.Value;
-                playerZoneRow.SetAsCurrentPlayer(kvp.Key == currentPlayer);
-            }
-        }
-
         public Vector2 GetPlacementPositionFor(PlaceTetrominoAction action)
         {
             if (_currentPlayer == null) {
@@ -67,10 +67,9 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             return playerZoneRow.GetPlacementPositionFor(action);
         }
 
-
-        public PlayerRowSlot? GetPuzzleWithId(uint puzzleId)
+        public PuzzleSlot? GetPuzzleWithId(uint puzzleId)
         {
-            PlayerRowSlot? puzzle = null;
+            PuzzleSlot? puzzle = null;
             foreach (PlayerZoneRow row in _playerZoneRows.Values) {
                 if (row.TryGetPuzzleWithId(puzzleId, out puzzle)) {
                     return puzzle;
@@ -78,5 +77,16 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             }
             return null;
         }
+
+        void ICurrentPlayerListener.OnCurrentPlayerChanged(Player currentPlayer)
+        {
+            _currentPlayer = currentPlayer;
+            foreach (var kvp in _playerZoneRows) {
+                var playerZoneRow = kvp.Value;
+                playerZoneRow.SetAsCurrentPlayer(kvp.Key == currentPlayer);
+            }
+        }
+
+        #endregion
     }
 }

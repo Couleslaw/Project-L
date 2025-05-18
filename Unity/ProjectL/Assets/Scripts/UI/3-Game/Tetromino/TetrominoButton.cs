@@ -92,7 +92,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         #region Methods
 
-        public DraggableTetromino SpawnTetromino(bool isInteractable)
+        public DraggableTetromino SpawnTetromino(bool isAnimation = false)
         {
             if (draggableTetrominoPrefab == null) {
                 throw new InvalidOperationException("DraggableTetromino prefab is not assigned!");
@@ -103,7 +103,8 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
             // instantiate the tetromino prefab and initialize it
             DraggableTetromino tetromino = Instantiate(draggableTetrominoPrefab, transform.position, Quaternion.identity);
-            tetromino.Init(this, isInteractable, TetrominoReturnedEventHandler);
+            tetromino.Init(this, isAnimation);
+            tetromino.ReturnedToCollectionEventHandler += () => TetrominoReturnedEventHandler?.Invoke(Shape);
 
             // notify listeners that a tetromino has been spawned
             TetrominoSpawnedEventHandler?.Invoke(Shape);
@@ -161,8 +162,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 Vector3 spawnPosition = _mainCamera!.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y, _mainCamera.nearClipPlane));
                 spawnPosition.z = 0; // Ensure Z is appropriate for 2D
 
-                _currentTetromino = SpawnTetromino(isInteractable: true);
-                _currentTetromino.StartDragging();
+                _currentTetromino = SpawnTetromino();
                 return;
             }
 

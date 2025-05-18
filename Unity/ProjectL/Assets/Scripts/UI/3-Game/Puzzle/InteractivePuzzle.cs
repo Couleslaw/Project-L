@@ -26,9 +26,9 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
         
         private PuzzleCell[]? _puzzleCells;
 
-        private PuzzleWithGraphics? _logicalPuzzle = null;
+        private PuzzleWithColor? _logicalPuzzle = null;
 
-        private PuzzleWithGraphics? _temporaryCopy = null;
+        private PuzzleWithColor? _temporaryCopy = null;
 
         private Dictionary<DraggableTetromino, BinaryImage> _placedTetrominos = new();
 
@@ -42,8 +42,13 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
         #region Methods
 
-        public static void PlaceTetrominoToPuzzle(DraggableTetromino tetromino)
+        public static void TryPlacingSelectedTetrominoToPuzzle()
         {
+            var tetromino = DraggableTetromino.SelectedTetromino;
+            if (tetromino == null) {
+                return;
+            }
+
             if (!TryGetPuzzleWhichHasShapeOverIt(tetromino.Shape, out InteractivePuzzle? puzzle, out BinaryImage position)) {
                 return;
             }
@@ -51,10 +56,10 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             if (puzzle!._temporaryCopy!.CanPlaceTetromino(position)) {
                 var action = new PlaceTetrominoAction(puzzle._logicalPuzzle!.Id, tetromino.Shape, position);
 
-                tetromino.PlaceToPuzzle(puzzle!.GetCollisionCenter(), action);
+                tetromino.PlaceToPuzzle(action, puzzle!.GetCollisionCenter());
                 puzzle._placedTetrominos.Add(tetromino, position);
                 puzzle._temporaryCopy!.AddTetromino(tetromino.Shape, position);
-                tetromino.OnStartDragging += puzzle.RemoveTetromino;
+                tetromino.OnStartDraggingEventHandler += puzzle.RemoveTetromino;
             }
         }
 
@@ -68,7 +73,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             }
         }
 
-        public void SetNewPuzzle(PuzzleWithGraphics logicalPuzzle)
+        public void SetNewPuzzle(PuzzleWithColor logicalPuzzle)
         {
             if (_puzzleCells == null) {
                 Debug.LogError("Puzzle cells are not initialized.");
@@ -93,7 +98,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
             // remember this puzzle
             _logicalPuzzle = logicalPuzzle;
-            _temporaryCopy = (PuzzleWithGraphics)logicalPuzzle.Clone();
+            _temporaryCopy = (PuzzleWithColor)logicalPuzzle.Clone();
         }
 
         public void RemoveTetromino(DraggableTetromino tetromino)
@@ -109,7 +114,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
                 _temporaryCopy!.RemoveTetromino(tetromino.Shape, _placedTetrominos[tetromino]);
                 _placedTetrominos.Remove(tetromino);
             }
-            tetromino.OnStartDragging -= RemoveTetromino;
+            tetromino.OnStartDraggingEventHandler -= RemoveTetromino;
             Debug.Log($"{gameObject.name}: removed tetromino {tetromino.gameObject.name}");
         }
 
@@ -119,9 +124,9 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
                 Debug.LogError("Temporary copy is null.");
                 return;
             }
-            _temporaryCopy = (PuzzleWithGraphics)_logicalPuzzle!.Clone();
+            _temporaryCopy = (PuzzleWithColor)_logicalPuzzle!.Clone();
             foreach (var tetromino in _placedTetrominos.Keys) {
-                tetromino.OnStartDragging -= RemoveTetromino;
+                tetromino.OnStartDraggingEventHandler -= RemoveTetromino;
                 Destroy(tetromino.gameObject);
             }
             _placedTetrominos.Clear();

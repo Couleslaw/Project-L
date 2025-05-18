@@ -18,17 +18,17 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
     {
         #region Fields
 
-        private readonly PlayerRowSlot[] _puzzles = new PlayerRowSlot[PlayerState.MaxPuzzles];
+        private readonly PuzzleSlot[] _puzzles = new PuzzleSlot[PlayerState.MaxPuzzles];
 
         [SerializeField] private TextMeshProUGUI? _playerNameLabel;
 
-        [SerializeField] private PlayerRowSlot? playerRowSlotPrefab;
+        [SerializeField] private PuzzleSlot? playerRowSlotPrefab;
 
         private BoxCollider2D? _collider;
 
         private Image? _backgroundImage;
 
-        private PlayerRowSlot? _takePuzzleActionPlacePosition = null;
+        private PuzzleSlot? _takePuzzleActionPlacePosition = null;
 
         #endregion
 
@@ -39,6 +39,8 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
                 }
             }
         }
+
+        public bool IsMouseOverRow { get; private set; }
 
         #region Methods
 
@@ -80,7 +82,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             return default;
         }
 
-        public bool TryGetPuzzleWithId(uint puzzleId, out PlayerRowSlot? result)
+        public bool TryGetPuzzleWithId(uint puzzleId, out PuzzleSlot? result)
         {
             result = null;
             foreach (var puzzle in _puzzles) {
@@ -115,6 +117,18 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             }
         }
 
+        public void OnMouseEnter()
+        {
+            Debug.Log("Mouse entered player row.");
+            IsMouseOverRow = true;
+        }
+
+        public void OnMouseExit()
+        {
+            Debug.Log("Mouse exited player row.");
+            IsMouseOverRow = false;
+        }
+
         private void ToggleBackground(bool show)
         {
             _backgroundImage!.color = show ? Color.white : Color.clear;
@@ -132,20 +146,20 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
         void IPlayerStatePuzzleListener.OnPuzzleAdded(Puzzle puzzle)
         {
-            if (puzzle is not PuzzleWithGraphics) {
-                Debug.LogError($"Puzzle {puzzle} is not a {nameof(PuzzleWithGraphics)}.");
+            if (puzzle is not PuzzleWithColor) {
+                Debug.LogError($"Puzzle {puzzle} is not a {nameof(PuzzleWithColor)}.");
                 return;
             }
 
             if (_takePuzzleActionPlacePosition != null) {
-                _takePuzzleActionPlacePosition.PlacePuzzle((PuzzleWithGraphics)puzzle);
+                _takePuzzleActionPlacePosition.PlacePuzzle((PuzzleWithColor)puzzle);
                 _takePuzzleActionPlacePosition = null;
                 return;
             }
 
             foreach (var puzzleSlot in _puzzles) {
                 if (puzzleSlot.PuzzleId == null) {
-                    puzzleSlot.PlacePuzzle((PuzzleWithGraphics)puzzle);
+                    puzzleSlot.PlacePuzzle((PuzzleWithColor)puzzle);
                     return;
                 }
             }

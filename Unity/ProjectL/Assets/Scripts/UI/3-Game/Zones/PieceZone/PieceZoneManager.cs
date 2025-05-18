@@ -71,7 +71,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             if (!_tetrominoButtons.TryGetValue(shape, out TetrominoButton? spawner)) {
                 throw new InvalidOperationException($"No spawner found for tetromino shape {shape}");
             }
-            return spawner.SpawnTetromino(isInteractable: false);
+            return spawner.SpawnTetromino(isAnimation: true);
         }
 
         public void RegisterListener(ITetrominoSpawnerListener listener)

@@ -283,7 +283,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3719377755418545412}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfafcb23ded3944448b6145d1211dd8a, type: 3}
+  m_Script: {fileID: 11500000, guid: 5edef8ad39c39af479955f681f21a8e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _puzzleCard: {fileID: 628137600253313444}

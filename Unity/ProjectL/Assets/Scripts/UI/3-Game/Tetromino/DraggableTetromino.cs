@@ -27,37 +27,24 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     {
         #region Constants
 
-        private const float _rotationSpeed = 30;// degrees per 1 mouse wheel move
-
-        private const float _animationSpeed = 5f;// units per second
+        private const float _rotationSpeed = 30;
+        private const float _animationMovementSpeed = 5f;
 
         private const int _placedTetrominoSortingOrder = 1;
-
         private const int _abandonedTetrominosSortingOrder = 2;
-
         private const int _selectedTetrominoSortingOrder = 3;
 
         #endregion
 
         #region Fields
 
-        internal Vector2 _pointerOffset;
+        internal Vector2 _draggingPointerOffset;
 
-        private static int _abandonedTetrominosLayer;
-
-        private static int _selectedTetrominoLayer;
-
-        private static int _placedTetrominoLayer;
-
-        private static int _playerPuzzleRowLayer;
-
-        private static DraggableTetromino? _lastSelectedTetromino = null;
-
-        private static DraggableTetromino? _selectedTetromino = null;
+        private static bool _initializedClass = false;
 
         [SerializeField] private TetrominoShape _shape;
 
-        private bool _isInteractable;
+        private Mode _mode;
 
         private Rigidbody2D? _rb;
 
@@ -73,147 +60,368 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         private bool _isMouseOver = false;
 
-        private bool _isOverPuzzleRow = false;
-
-        private bool _isAnimating = false;
-
-        private Action<TetrominoShape>? _onReturnToCollectionCallback;
-
         #endregion
 
         #region Events
 
+        public event Action? ReturnedToCollectionEventHandler;
+
         public event Action<IActionModification<PlaceTetrominoAction>>? ActionModifiedEventHandler;
+
+        public event Action<DraggableTetromino>? OnStartDraggingEventHandler;
 
         #endregion
 
+        private enum Mode
+        {
+            Animation,
+            Selected,
+            Abandoned,
+            Placed
+        }
+
         #region Properties
 
-        public static DraggableTetromino? SelectedTetromino {
-            get => _selectedTetromino;
-            private set {
-                if (_selectedTetromino != null)
-                    _lastSelectedTetromino = _selectedTetromino;
-                _selectedTetromino = value;
-            }
-        }
+        public static DraggableTetromino? SelectedTetromino { get; private set; } = null;
 
         public TetrominoShape Shape => _shape;
 
-        public Action<DraggableTetromino>? OnStartDragging { get; set; } = null;
+        private static int AbandonedTetrominoLayer { get; set; }
+
+        private static int SelectedTetrominoLayer { get; set; }
+
+        private static int PlacedTetrominoLayer { get; set; }
+
+        private static int PlayerPuzzleRowLayer { get; set; }
 
         #endregion
 
         #region Methods
 
-        // Called by the ButtonShapeSpawner after instantiation
-        public void Init(TetrominoButton spawner, bool isInteractable, Action<TetrominoShape>? onReturnToCollection)
+        public void Init(TetrominoButton spawner, bool isAnimation)
         {
-            _isInteractable = isInteractable;
-            _onReturnToCollectionCallback += onReturnToCollection;
-
+            // create a new tetromino sizer
             TetrominoSizer sizer = gameObject.AddComponent<TetrominoSizer>();
             sizer.Init(spawner);
 
-            HumanPlayerActionCreator.Instance.AddListener(this);
-
-            if (isInteractable) {
-                GameManager.Controls!.Gameplay.RotateSmooth.performed += OnRotateSmoothInputAction;
-                GameManager.Controls.Gameplay.Rotate90.performed += OnRotate90InputAction;
-                GameManager.Controls.Gameplay.Flip.performed += OnFlipInputAction;
-                GameManager.Controls.Gameplay.ClickPlace.performed += OnClickPlaceInputAction;
-                GameManager.Controls.Gameplay.KeyboardPlace.performed += OnKeyboardPlaceInputAction;
-            }
-        }
-
-        public void StartDragging()
-        {
-            if (!_isInteractable) {
-                return; // Don't allow dragging if not interactable
+            // handle animation separetly
+            if (isAnimation) {
+                SetMode(Mode.Animation);
+                return;
             }
 
-            if (_currentPlacement != null) {
-                var change = new PlaceTetrominoActionModification(_currentPlacement, PlaceTetrominoActionModification.Options.Removed);
-                ActionModifiedEventHandler?.Invoke(change);
-                _currentPlacement = null;
-            }
+            // listen to place action events
+            HumanPlayerActionCreator.Instance?.AddListener<PlaceTetrominoAction>(this);
 
-            // --- Calculate Offset --- START
-            if (_camera != null) {
-                Vector3 mouseScreenPos = Input.mousePosition;
-                // Ensure Z is correct for accurate world point conversion
-                mouseScreenPos.z = _camera.WorldToScreenPoint(transform.position).z;
-                Vector2 mouseWorldPos = _camera.ScreenToWorldPoint(mouseScreenPos);
-
-                // Calculate the difference between the object's center and the mouse click position
-                _pointerOffset = (Vector2)transform.position - mouseWorldPos;
-            }
-            else {
-                Debug.LogError("Main Camera is not assigned, cannot calculate drag offset.");
-                _pointerOffset = Vector2.zero; // Default to no offset if camera is missing
-            }
-            // --- Calculate Offset --- END
-
-            SelectedTetromino = this;
-            OnStartDragging?.Invoke(this);
-            _isDragging = true;
-
+            // select the puzzle and start dragging
+            SetMode(Mode.Selected);
+            StartDragging();
             _isMouseOver = true;
-            gameObject.layer = _selectedTetrominoLayer; // Set the layer to selected
-            _spriteRenderer!.sortingOrder = _selectedTetrominoSortingOrder; // Set the sorting order to selected
-            _rb!.bodyType = RigidbodyType2D.Kinematic; // Switch to Kinematic for drag
-            _rb.linearVelocity = Vector2.zero;
-            _rb.angularVelocity = 0f;
-
-            // set rotation to the closes mutliple of 90 degrees
-            float angle = transform.rotation.eulerAngles.z;
-            angle = Mathf.Round(angle / 90f) * 90f;
-            transform.rotation = Quaternion.Euler(0f, 0f, angle);
         }
 
-        public void StopDragging()
-        {
-            if (!_isInteractable) {
-                return; // Don't allow stopping dragging if not interactable
-            }
-            _isDragging = false;
-            _rb!.bodyType = RigidbodyType2D.Dynamic; // Switch back to Dynamic
-            _rb.linearVelocity = Vector2.zero;
-        }
+        public void StopDragging() => _isDragging = false;
 
-        public void PlaceToPuzzle(Vector3 center, PlaceTetrominoAction action)
+        public void PlaceToPuzzle(PlaceTetrominoAction action, Vector3 center)
         {
-            if (!_isInteractable) {
-                return; // Don't allow placing if not interactable
+            if (_mode == Mode.Animation) {
+                return;
             }
 
+            // update place action and notify listeners
             _currentPlacement = action;
-            var change = new PlaceTetrominoActionModification(action, PlaceTetrominoActionModification.Options.Placed);
-            ActionModifiedEventHandler?.Invoke(change);
+            PlaceTetrominoActionModification mod = new(action, PlaceTetrominoActionModification.Options.Placed);
+            ActionModifiedEventHandler?.Invoke(mod);
 
-            _isDragging = false; // Stop dragging when placing
-
-            if (SelectedTetromino == this) {
-                SelectedTetromino = null;
-            }
-            gameObject.layer = _placedTetrominoLayer;
-            _spriteRenderer!.sortingOrder = _placedTetrominoSortingOrder; // Set the sorting order to placed
-            _rb!.bodyType = RigidbodyType2D.Static;
-
-            // set rotation to the closes multiple of 90 degrees
-            float angle = transform.rotation.eulerAngles.z;
-            angle = Mathf.Round(angle / 90f) * 90f;
-            transform.rotation = Quaternion.Euler(0f, 0f, angle);
-
+            // set the tetromino to placed mode
+            SetMode(Mode.Placed);
             SetPosition(center);
         }
 
-        public void SetPosition(Vector3 center)
+        public void RemoveFromScene()
         {
+            if (this == null || gameObject == null)
+                return;
+
+            HumanPlayerActionCreator.Instance?.RemoveListener(this);
+
+            // unselect tetromino
+            if (SelectedTetromino == this) {
+                SelectedTetromino = null;
+            }
+
+            // if not placed --> destroy immediately and return to player collection
+            if (_mode != Mode.Placed) {
+                ReturnedToCollectionEventHandler?.Invoke();
+                Destroy(gameObject);
+            }
+            // if placed --> destroy after a small delay to prevent animation clipping 
+            else {
+                StartCoroutine(DestroyAfterMilliseconds(50f));
+            }
+
+            IEnumerator DestroyAfterMilliseconds(float milliseconds)
+            {
+                yield return new WaitForSeconds(milliseconds / 1000f);
+                Destroy(gameObject);
+            }
+        }
+
+        #region Unity Events
+
+        public void OnMouseDown() => StartDragging();
+
+        public void OnMouseUp() => StopDragging();
+
+        public void OnMouseEnter()
+        {
+            if (_mode == Mode.Animation || _mode == Mode.Placed) {
+                return;
+            }
+            _isMouseOver = true;
+            SetMode(Mode.Selected);
+        }
+
+        public void OnMouseExit() => _isMouseOver = false;
+
+        private void OnTriggerExit2D(Collider2D collision)
+        {
+            if (collision.gameObject.layer == PlayerPuzzleRowLayer) {
+                if (_mode == Mode.Abandoned) {
+                    RemoveFromScene();
+                }
+            }
+        }
+
+        #endregion
+
+
+        #region controls
+
+        private static void InitializeClass()
+        {
+            if (GameManager.Controls == null) {
+                return;
+            }
+
+            _initializedClass = true;
+
+            GameManager.Controls.Gameplay.RotateSmooth.performed += OnRotateSmoothInputAction;
+            GameManager.Controls.Gameplay.Rotate90.performed += OnRotate90InputAction;
+            GameManager.Controls.Gameplay.Flip.performed += OnFlipInputAction;
+            GameManager.Controls.Gameplay.ClickPlace.performed += OnClickPlaceInputAction;
+            GameManager.Controls.Gameplay.KeyboardPlace.performed += OnKeyboardPlaceInputAction;
+
+            AbandonedTetrominoLayer = LayerMask.NameToLayer("AbandonedTetromino");
+            SelectedTetrominoLayer = LayerMask.NameToLayer("SelectedTetromino");
+            PlacedTetrominoLayer = LayerMask.NameToLayer("PlacedTetromino");
+            PlayerPuzzleRowLayer = LayerMask.NameToLayer("PlayerPuzzleRow");
+        }
+
+        private static void OnClickPlaceInputAction(InputAction.CallbackContext ctx)
+        {
+            if (SelectedTetromino == null) {
+                return;
+            }
+
+            if (SelectedTetromino._isMouseOver) {
+                InteractivePuzzle.TryPlacingSelectedTetrominoToPuzzle();
+            }
+        }
+
+        private static void OnKeyboardPlaceInputAction(InputAction.CallbackContext ctx)
+        {
+            if (SelectedTetromino == null) {
+                return;
+            }
+
+            if (SelectedTetromino._isMouseOver || PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
+                InteractivePuzzle.TryPlacingSelectedTetrominoToPuzzle();
+            }
+        }
+
+        private static void OnRotateSmoothInputAction(InputAction.CallbackContext ctx)
+        {
+            if (SelectedTetromino == null) {
+                return;
+            }
+
+            if (SelectedTetromino._isMouseOver || PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
+                SelectedTetromino.transform.Rotate(0f, 0f, ctx.ReadValue<float>() * _rotationSpeed);
+            }
+        }
+
+        private static void OnRotate90InputAction(InputAction.CallbackContext ctx)
+        {
+            if (SelectedTetromino == null) {
+                return;
+            }
+
+            if (SelectedTetromino._isMouseOver || PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
+                SelectedTetromino.SnapToNearestRightAngle();
+                SelectedTetromino.transform.Rotate(0f, 0f, 90 * Mathf.Sign(ctx.ReadValue<float>()));
+            }
+        }
+
+        private static void OnFlipInputAction(InputAction.CallbackContext ctx)
+        {
+            if (SelectedTetromino == null) {
+                return;
+            }
+            if (!SelectedTetromino._isMouseOver && !PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
+                return;
+            }
+
+            Transform tr = SelectedTetromino.transform;
+
+            // change x scale sign
+            Vector3 scale = tr.localScale;
+            scale.x *= -1;
+            SelectedTetromino.transform.localScale = scale;
+
+            // change rotation to visually flip along y axis
+            Quaternion rotation = tr.rotation;
+            rotation.z *= -1;
+            SelectedTetromino.transform.rotation = rotation;
+        }
+
+        #endregion
+
+        private void Awake()
+        {
+            _rb = GetComponent<Rigidbody2D>();
+            _rt = GetComponent<RectTransform>();
+            _spriteRenderer = GetComponent<SpriteRenderer>();
+            _camera = Camera.main; // Cache the camera
+
+            if (!_initializedClass) {
+                InitializeClass();
+            }
+        }
+
+        private void FixedUpdate()
+        {
+            if (!_isDragging || _camera == null) {
+                return;
+            }
+
+            // dragging --> update tetromino position based on mouse position 
+
+            Vector3 mouseScreenPos = Input.mousePosition;
+            mouseScreenPos.z = _camera.WorldToScreenPoint(transform.position).z;
+
+            Vector2 mouseWorldPos = _camera.ScreenToWorldPoint(mouseScreenPos);
+            _rb!.MovePosition(mouseWorldPos + _draggingPointerOffset);
+        }
+
+        private void SetMode(Mode mode)
+        {
+            if (_rb == null || _spriteRenderer == null || _rt == null) {
+                return;
+            }
+
+            if (_mode == mode) {
+                return;
+            }
+            _mode = mode;
+
+            Debug.Log($"{Shape}: setting mode to {mode}");
+
+            // update selected tetromino
+            if (mode == Mode.Selected) {
+                SelectedTetromino?.SetMode(Mode.Abandoned);
+                SelectedTetromino = this;
+            }
+            else if (SelectedTetromino == this) {
+                SelectedTetromino = null;
+            }
+
+            switch (mode) {
+                case Mode.Animation: {
+                    // update layers
+                    gameObject.layer = PlacedTetrominoLayer;
+                    _spriteRenderer.sortingOrder = _selectedTetrominoSortingOrder;
+                    _rb.bodyType = RigidbodyType2D.Kinematic;
+                    _isDragging = false;
+                    break;
+                }
+
+                case Mode.Selected: {
+                    // update layers
+                    gameObject.layer = SelectedTetrominoLayer;
+                    _spriteRenderer.sortingOrder = _selectedTetrominoSortingOrder;
+
+                    // update rigidbody
+                    _rb.bodyType = RigidbodyType2D.Kinematic;
+                    _rb.linearVelocity = Vector2.zero;
+                    _rb.angularVelocity = 0f;
+
+                    break;
+                }
+
+                case Mode.Abandoned: {
+                    // update layers
+                    gameObject.layer = AbandonedTetrominoLayer;
+                    _spriteRenderer!.sortingOrder = _abandonedTetrominosSortingOrder;
+
+                    // update rigidbody
+                    _rb!.bodyType = RigidbodyType2D.Dynamic;
+                    break;
+                }
+
+                case Mode.Placed: {
+                    // update layers
+                    gameObject.layer = PlacedTetrominoLayer;
+                    _spriteRenderer!.sortingOrder = _placedTetrominoSortingOrder;
+
+                    // update rigidbody
+                    _rb!.bodyType = RigidbodyType2D.Static;
+                    _isDragging = false;
+                    _isMouseOver = false;
+
+                    SnapToNearestRightAngle();
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+
+        private void StartDragging()
+        {
+            if (_mode == Mode.Animation || _isDragging) {
+                return;
+            }
+
+            _isDragging = true;
+            SnapToNearestRightAngle();
+
+            // select the tetromino
+            SetMode(Mode.Selected);
+
+            // notify listeners that dragging started
+            OnStartDraggingEventHandler?.Invoke(this);
+
+            // if the tetromino was placed --> notify of removal
+            if (_currentPlacement != null) {
+                PlaceTetrominoActionModification mod = new(_currentPlacement, PlaceTetrominoActionModification.Options.Removed);
+                ActionModifiedEventHandler?.Invoke(mod);
+                _currentPlacement = null;
+            }
+
+            // calculate pointer offset from object center
+            Vector2 mouseWorldPos = _camera!.ScreenToWorldPoint(Input.mousePosition);
+            _draggingPointerOffset = (Vector2)transform.position - mouseWorldPos;
+        }
+
+        private void SetPosition(Vector3 center)
+        {
+            // calculate pivot offset
             Vector2 offset = Vector2.Scale(_rt!.sizeDelta, (0.5f * Vector2.one - _rt.pivot));
             offset = Vector2.Scale(offset, (Vector2)transform.localScale);
-            Vector2 correctedCenter = center + (Vector3)RotateVector(offset, transform.rotation.eulerAngles.z);
-            _rt!.position = correctedCenter;
+            offset = RotateVector(offset, transform.rotation.eulerAngles.z);
+
+            // correct the position with offset
+            _rt!.position = (Vector2)center + offset;
 
             static Vector2 RotateVector(Vector2 v, float degrees)
             {
@@ -225,210 +433,24 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
         }
 
-        public void OnMouseDown()
+        private void SnapToNearestRightAngle()
         {
-            StartDragging();
+            float angle = transform.rotation.eulerAngles.z;
+            angle = Mathf.Round(angle / 90f) * 90f;
+            transform.rotation = Quaternion.Euler(0f, 0f, angle);
         }
 
-        public void OnMouseUp()
-        {
-            if (_isDragging) {
-                StopDragging();
-            }
-        }
 
-        public void OnMouseEnter()
-        {
-            _isMouseOver = true;
-        }
+        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionRequested() { }
 
-        public void OnMouseExit()
-        {
-            _isMouseOver = false;
-        }
+        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionCanceled() => RemoveFromScene();
 
-        internal void Awake()
-        {
-            _rb = GetComponent<Rigidbody2D>();
-            _rt = GetComponent<RectTransform>();
-            _spriteRenderer = GetComponent<SpriteRenderer>();
-            _camera = Camera.main; // Cache the camera
-
-            _abandonedTetrominosLayer = LayerMask.NameToLayer("AbandonedTetromino");
-            _selectedTetrominoLayer = LayerMask.NameToLayer("SelectedTetromino");
-            _placedTetrominoLayer = LayerMask.NameToLayer("PlacedTetromino");
-            _playerPuzzleRowLayer = LayerMask.NameToLayer("PlayerPuzzleRow");
-
-        }
-
-        private void Update() // Scale can be done in Update
-        {
-            // scale the piece based on distance to the puzzle zone
-
-            if (gameObject.layer == _placedTetrominoLayer) {
-                return; // don't do anything if the tetromino is placed
-            }
-
-         
-
-            if (_isAnimating) {
-                if (SelectedTetromino != this) {
-                    SelectedTetromino = this;
-                }
-                return;
-            }
-
-            // --- Layer Management ---
-            if (_isDragging || _isMouseOver) {
-                if (SelectedTetromino != null && SelectedTetromino != this) {
-                    SelectedTetromino.gameObject.layer = _abandonedTetrominosLayer;
-                    SelectedTetromino._spriteRenderer!.sortingOrder = _abandonedTetrominosSortingOrder; // Set the sorting order to abandoned
-                }
-                if (SelectedTetromino != this) {
-                    gameObject.layer = _selectedTetrominoLayer;
-                    _spriteRenderer!.sortingOrder = _selectedTetrominoSortingOrder; // Set the sorting order to selected
-                    SelectedTetromino = this;
-                }
-            }
-            else {
-                gameObject.layer = _abandonedTetrominosLayer;
-                _spriteRenderer!.sortingOrder = _abandonedTetrominosSortingOrder; // Set the sorting order to abandoned
-                if (SelectedTetromino == this) {
-                    SelectedTetromino = null;
-                }
-            }
-
-            // destroy if abandoned and not over puzzle row
-            if (!_isOverPuzzleRow && gameObject.layer == _abandonedTetrominosLayer) {
-                ReturnToCollection();
-            }
-        }
-
-        private void ReturnToCollection()
-        {
-            if (this == null || gameObject == null)
-                return;
-
-            if (SelectedTetromino == this) {
-                SelectedTetromino = null;
-            }
-            if (gameObject.layer != _placedTetrominoLayer) {
-                _onReturnToCollectionCallback?.Invoke(Shape);
-            }
-            Destroy(gameObject);
-        }
-
-        private void OnTriggerEnter2D(Collider2D collision)
-        {
-            if (collision.gameObject.layer == _playerPuzzleRowLayer) {
-                _isOverPuzzleRow = true;
-            }
-        }
-
-        private void OnTriggerExit2D(Collider2D collision)
-        {
-            if (collision.gameObject.layer == _playerPuzzleRowLayer) {
-                _isOverPuzzleRow = false;
-            }
-        }
-
-        private void FixedUpdate() // Use FixedUpdate for Rigidbody manipulation
-        {
-            if (_isDragging && _camera != null) {
-                // --- Move the Object ---
-                Vector3 mouseScreenPos = Input.mousePosition;
-                // Adjust Z before converting so it's within camera view frustum but not ON the near plane
-                mouseScreenPos.z = _camera.WorldToScreenPoint(transform.position).z;
-                Vector2 mouseWorldPos = _camera.ScreenToWorldPoint(mouseScreenPos);
-                Vector2 targetWorldPos = mouseWorldPos + _pointerOffset; // Add the offset to the mouse position
-
-                _rb!.MovePosition(targetWorldPos); // Move kinematic body correctly
-            }
-        }
-
-        private void OnDestroy()
-        {
-            if (GameManager.Controls == null) {
-                return;  // app quit  --> no cleanup needed
-            }
-
-            HumanPlayerActionCreator.Instance?.RemoveListener(this);
-            GameManager.Controls.Gameplay.RotateSmooth.performed -= OnRotateSmoothInputAction;
-            GameManager.Controls.Gameplay.Rotate90.performed -= OnRotate90InputAction;
-            GameManager.Controls.Gameplay.Flip.performed -= OnFlipInputAction;
-            GameManager.Controls.Gameplay.ClickPlace.performed -= OnClickPlaceInputAction;
-            GameManager.Controls.Gameplay.KeyboardPlace.performed -= OnKeyboardPlaceInputAction;
-        }
-
-        private void OnRotateSmoothInputAction(InputAction.CallbackContext ctx)
-        {
-            if (this == SelectedTetromino) {
-                transform.Rotate(0f, 0f, ctx.ReadValue<float>() * _rotationSpeed);
-            }
-        }
-
-        private void OnRotate90InputAction(InputAction.CallbackContext ctx)
-        {
-            if (this == SelectedTetromino) {
-                transform.Rotate(0f, 0f, 90 * Mathf.Sign(ctx.ReadValue<float>()));
-            }
-        }
-
-        private void OnFlipInputAction(InputAction.CallbackContext ctx)
-        {
-            if (this != SelectedTetromino) {
-                return;
-            }
-            Vector3 scale = transform.localScale;
-            scale.x *= -1;
-            transform.localScale = scale;
-
-            Quaternion rotation = transform.rotation;
-            rotation.z *= -1;
-            transform.rotation = rotation;
-        }
-
-        private void OnClickPlaceInputAction(InputAction.CallbackContext ctx)
-        {
-            if (this == SelectedTetromino) {
-                InteractivePuzzle.PlaceTetrominoToPuzzle(this);
-            }
-        }
-
-        private void OnKeyboardPlaceInputAction(InputAction.CallbackContext ctx)
-        {
-            if (SelectedTetromino != null) {
-                OnClickPlaceInputAction(ctx);
-                return;
-            }
-
-            if (this == _lastSelectedTetromino) {
-                InteractivePuzzle.PlaceTetrominoToPuzzle(this);
-            }
-        }
-
-        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionRequested()
-        {
-        }
-
-        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionCanceled()
-        {
-            _lastSelectedTetromino = null;
-            ReturnToCollection();
-        }
-
-        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionConfirmed()
-        {
-            _lastSelectedTetromino = null;
-            ReturnToCollection();
-        }
+        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionConfirmed() => RemoveFromScene();
 
         async Task IAIPlayerActionAnimator<PlaceTetrominoAction>.Animate(PlaceTetrominoAction action, CancellationToken cancellationToken)
         {
             Vector2 goalPosition = PlayerZoneManager.Instance.GetPlacementPositionFor(action);
 
-            _isAnimating = true;
-            gameObject.layer = _placedTetrominoLayer;
             // rotate and flip the tetromino to match the placement
             var transformation = GetTransformation(TetrominoManager.GetImageOf(Shape), action.Position);
             if (transformation.Item1) {
@@ -440,7 +462,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             Vector2 currentPos = transform.position;
 
             while (!cancellationToken.IsCancellationRequested) {
-                float delta = Time.fixedDeltaTime * _animationSpeed * AnimationSpeed.Multiplier;
+                float delta = Time.fixedDeltaTime * _animationMovementSpeed * AnimationSpeed.Multiplier;
                 currentPos = Vector2.MoveTowards(currentPos, goalPosition, delta);
                 SetPosition(currentPos);
                 if (Vector2.Distance(currentPos, goalPosition) < 0.1f) {
@@ -450,8 +472,10 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 await Awaitable.FixedUpdateAsync();
             }
 
+            // place the tetromino
+            SetMode(Mode.Placed);
+
             await GameAnimationManager.WaitForScaledDelayAsync(0.5f, cancellationToken);
-            StartCoroutine(ReturnToCollectionAfterMilliseconds(20));
 
             // returns [shouldFlip], angle
             static (bool, float) GetTransformation(BinaryImage start, BinaryImage goal)
@@ -467,12 +491,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                     start = start.FlipHorizontally();
                 }
                 return (false, 0);
-            }
-
-            IEnumerator ReturnToCollectionAfterMilliseconds(int delayMilliseconds)
-            {
-                yield return new WaitForSeconds(delayMilliseconds / 1000f);
-                ReturnToCollection();
             }
         }
 

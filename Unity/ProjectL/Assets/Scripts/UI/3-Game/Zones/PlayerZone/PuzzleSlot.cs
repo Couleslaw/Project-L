@@ -8,7 +8,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
     using UnityEngine;
     using UnityEngine.UI;
 
-    public class PlayerRowSlot : MonoBehaviour
+    public class PuzzleSlot : MonoBehaviour
     {
         #region Fields
 
@@ -35,13 +35,13 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
                 return;
             }
             SoundManager.Instance?.PlaySoftTapSoundEffect();
-            _puzzleCard.FinishPuzzle();
-
             _puzzleCard.gameObject.SetActive(false);
             _emptySlot.gameObject.SetActive(true);
+
+            _puzzleCard.FinishPuzzle();
         }
 
-        public void PlacePuzzle(PuzzleWithGraphics puzzle)
+        public void PlacePuzzle(PuzzleWithColor puzzle)
         {
             if (_puzzleCard == null || _emptySlot == null) {
                 return;
@@ -49,6 +49,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             SoundManager.Instance?.PlayTapSoundEffect();
             _puzzleCard.gameObject.SetActive(true);
             _emptySlot.gameObject.SetActive(false);
+
             _puzzleCard.SetNewPuzzle(puzzle);
         }
 
@@ -78,6 +79,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             _puzzleFrame.gameObject.SetActive(false);
             _puzzleCard.gameObject.SetActive(false);   // needs to be in start so that _puzzleCard.Awake runs
             _emptySlot.gameObject.SetActive(true);
+
             EnableEmptySlotButton(false);
 
             _emptySlot.onClick.AddListener(() =>
@@ -95,8 +97,8 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
         public class TemporaryPuzzleHighlighter : IDisposable
         {
-            private readonly PlayerRowSlot _slot;
-            public TemporaryPuzzleHighlighter(PlayerRowSlot slot)
+            private readonly PuzzleSlot _slot;
+            public TemporaryPuzzleHighlighter(PuzzleSlot slot)
             {
                 SoundManager.Instance?.PlaySoftTapSoundEffect();
                 _slot = slot;

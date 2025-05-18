@@ -14,20 +14,20 @@ public interface IPuzzleListener
 /// <summary>
 /// Represents a puzzle in the game.
 /// </summary>
-public class PuzzleWithGraphics : Puzzle
+public class PuzzleWithColor : Puzzle
 {
 
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="PuzzleWithGraphics"/> class.
+    /// Initializes a new instance of the <see cref="PuzzleWithColor"/> class.
     /// </summary>
     /// <param name="image">The binary image representing the puzzle.</param>
     /// <param name="rewardScore">The score the player will receive for completing the puzzle.</param>
     /// <param name="rewardTetromino">The tetromino the player will receive for completing the puzzle.</param>
     /// <param name="isBlack">Indicates whether the puzzle is black or white</param>
     /// <param name="puzzleNumber">The order number of this puzzle. The file containing the graphics for this puzzle should have the name <c>color-number.png</c> where color is <c>black</c> or <c>white</c> and number is <paramref name="puzzleNumber"/>.</param>
-    public PuzzleWithGraphics(BinaryImage image, int rewardScore, TetrominoShape rewardTetromino, bool isBlack, uint puzzleNumber)
+    public PuzzleWithColor(BinaryImage image, int rewardScore, TetrominoShape rewardTetromino, bool isBlack, uint puzzleNumber)
         : base(image, rewardScore, rewardTetromino, isBlack, puzzleNumber)
     {
         ColorImage = new ColorImage(image);
@@ -88,7 +88,7 @@ public class PuzzleWithGraphics : Puzzle
     /// <returns>A deep copy of this instance.</returns>
     public override Puzzle Clone()
     {
-        PuzzleWithGraphics clone = (PuzzleWithGraphics)MemberwiseClone();
+        PuzzleWithColor clone = (PuzzleWithColor)MemberwiseClone();
         clone._usedTetrominos = _usedTetrominos.ToArray(); // copy array
         return clone;
     }

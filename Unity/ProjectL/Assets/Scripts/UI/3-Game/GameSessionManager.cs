@@ -111,7 +111,7 @@ namespace ProjectL.UI.GameScene.Management
 
             // try to parse the puzzles and create a game state
             try {
-                return GameState.CreateFromStream<PuzzleWithGraphics>(
+                return GameState.CreateFromStream<PuzzleWithColor>(
                     puzzleStream: GenerateStreamFromString(puzzleFileText),
                     numInitialTetrominos: GameSettings.NumInitialTetrominos,
                     numBlackPuzzles: GameSettings.NumBlackPuzzles
