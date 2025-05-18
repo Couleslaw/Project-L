@@ -191,7 +191,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
                 using (_blackColumn.CreateColumnDimmer()) {
 
                     // wait a bit
-                    await GameAnimationManager.WaitForScaledDelayAsync(1f, cancellationToken);
+                    await GameAnimationManager.WaitForScaledDelayAsync(delay, cancellationToken);
                     cancellationToken.ThrowIfCancellationRequested();
 
                     // select the taken puzzle card

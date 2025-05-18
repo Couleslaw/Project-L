@@ -2,7 +2,6 @@
 
 namespace ProjectL.UI.GameScene.Zones.PieceZone
 {
-    using NUnit.Framework;
     using ProjectL.UI.GameScene.Actions;
     using ProjectL.UI.Sound;
     using ProjectLCore.GamePieces;
@@ -70,7 +69,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         #region Properties
 
-
         public TetrominoShape Shape => draggableTetrominoPrefab!.Shape;
 
         public bool IsGrayedOut {
@@ -87,55 +85,35 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         }
 
         private bool CanBeUsed => _mode != PieceZoneMode.Disabled && !IsGrayedOut;
+
         private bool CanSpawn => _mode == PieceZoneMode.Spawning && !IsGrayedOut;
 
         #endregion
 
         #region Methods
 
-        // Called by EventSystem when pointer presses down ON THIS BUTTON
-        public void OnPointerDown(PointerEventData eventData)
-        {
-            if (_mode == PieceZoneMode.Disabled) {
-                return;
-            }
-
-            if (CanSpawn) {
-                Vector3 spawnPosition = _mainCamera!.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y, _mainCamera.nearClipPlane));
-                spawnPosition.z = 0; // Ensure Z is appropriate for 2D
-
-                _currentTetromino = SpawnTetromino(isInteractable: true);
-                _currentTetromino.StartDragging();
-                return;
-            }
-
-            if (CanBeUsed) {
-                PieceZoneManager.Instance.ReportButtonPress(this);
-            }
-        }
-
         public DraggableTetromino SpawnTetromino(bool isInteractable)
         {
             if (draggableTetrominoPrefab == null) {
                 throw new InvalidOperationException("DraggableTetromino prefab is not assigned!");
             }
-            SoundManager.Instance?.PlaySliderSound();
-            DraggableTetromino tetromino = Instantiate(draggableTetrominoPrefab, transform.position, Quaternion.identity);
-            tetromino.Init(isInteractable, TetrominoReturnedEventHandler);
-            TetrominoSpawnedEventHandler?.Invoke(Shape);
-            if (_mode != PieceZoneMode.Disabled) {
-                HumanPlayerActionCreator.Instance?.OnPlacePieceActionRequested();
-            }
-            return tetromino;
-        }
 
-        // Called by EventSystem when pointer is released ANYWHERE after pressing down on this button
-        public void OnPointerUp(PointerEventData eventData)
-        {
-            if (_currentTetromino != null) {
-                _currentTetromino.StopDragging();
-                _currentTetromino = null; // Release the reference
+            // play sound effect
+            SoundManager.Instance.PlaySliderSound();
+
+            // instantiate the tetromino prefab and initialize it
+            DraggableTetromino tetromino = Instantiate(draggableTetrominoPrefab, transform.position, Quaternion.identity);
+            tetromino.Init(this, isInteractable, TetrominoReturnedEventHandler);
+
+            // notify listeners that a tetromino has been spawned
+            TetrominoSpawnedEventHandler?.Invoke(Shape);
+
+            // notify the HumanPlayerActionCreator to handle the action
+            if (_mode != PieceZoneMode.Disabled) {
+                HumanPlayerActionCreator.Instance.OnPlacePieceActionRequested();
             }
+
+            return tetromino;
         }
 
         public void AddListener(ITetrominoSpawnerListener listener)
@@ -149,7 +127,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             TetrominoSpawnedEventHandler -= listener.OnTetrominoSpawned;
             TetrominoReturnedEventHandler -= listener.OnTetrominoReturned;
         }
-
 
         public void SetMode(PieceZoneMode mode)
         {
@@ -173,6 +150,39 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             _mainCamera = Camera.main; // Cache the camera
         }
 
+        void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
+        {
+            if (_mode == PieceZoneMode.Disabled) {
+                return;
+            }
+
+            // if we are in spawning mode, spawn a new tetromino at the clicked position
+            if (CanSpawn) {
+                Vector3 spawnPosition = _mainCamera!.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y, _mainCamera.nearClipPlane));
+                spawnPosition.z = 0; // Ensure Z is appropriate for 2D
+
+                _currentTetromino = SpawnTetromino(isInteractable: true);
+                _currentTetromino.StartDragging();
+                return;
+            }
+
+            // if we are not spawning, but the button is still usable
+            if (CanBeUsed) {
+                PieceZoneManager.Instance.ReportButtonPress(this);
+            }
+        }
+
+        void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
+        {
+            // Called by EventSystem when pointer is released ANYWHERE after pressing down on this button
+
+            // notify the last spawned tetromino to stop dragging
+            if (_currentTetromino != null) {
+                _currentTetromino.StopDragging();
+                _currentTetromino = null;
+            }
+        }
+
         #endregion
 
         public class TemporaryButtonSelector : IDisposable
@@ -188,6 +198,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             private RectTransform _spawnerRectTransform;
 
             private SelectionButtonEffect _buttonEffect;
+
             private SelectionSideEffect _effect;
 
             private List<IDisposable> _temporaryEffects = new();

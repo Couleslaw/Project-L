@@ -7,7 +7,7 @@ namespace ProjectL.UI.Sound
     /// <summary>
     /// Provides methods for playing sound effects in the game.
     /// </summary>
-    public class SoundManager : MonoBehaviour
+    public class SoundManager : Singleton<SoundManager>
     {
         #region Constants
 
@@ -30,15 +30,6 @@ namespace ProjectL.UI.Sound
 
         #endregion
 
-        #region Properties
-
-        /// <summary>
-        /// Singleton instance of the <see cref="SoundManager"/> class.
-        /// </summary>
-        public static SoundManager? Instance { get; private set; } = null;
-
-        #endregion
-
         #region Methods
 
         /// <summary> Plays the "button click" sound effect.  </summary>
@@ -58,17 +49,6 @@ namespace ProjectL.UI.Sound
 
         /// <summary> Plays the "soft tap" sound effect.  </summary>
         public void PlaySoftTapSoundEffect() => PlaySoundEffect(softTapSoundEffect);
-
-
-        private void Awake()
-        {
-            // Singleton pattern
-            if (Instance != null && Instance != this) {
-                Destroy(gameObject);
-                return;
-            }
-            Instance = this;
-        }
 
         /// <summary>
         /// Plays the specified sound effect, ensuring it adheres to the minimum duration rule. Which is that if the given <paramref name="soundEffect"/> is already playing, it will be restarted only if it has played for longer than the specified <paramref name="minSEDuration"/>.

@@ -107,10 +107,13 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         #region Methods
 
         // Called by the ButtonShapeSpawner after instantiation
-        public void Init(bool isInteractable, Action<TetrominoShape>? onReturnToCollection)
+        public void Init(TetrominoButton spawner, bool isInteractable, Action<TetrominoShape>? onReturnToCollection)
         {
             _isInteractable = isInteractable;
             _onReturnToCollectionCallback += onReturnToCollection;
+
+            TetrominoSizer sizer = gameObject.AddComponent<TetrominoSizer>();
+            sizer.Init(spawner);
 
             HumanPlayerActionCreator.Instance.AddListener(this);
 
@@ -256,7 +259,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             _placedTetrominoLayer = LayerMask.NameToLayer("PlacedTetromino");
             _playerPuzzleRowLayer = LayerMask.NameToLayer("PlayerPuzzleRow");
 
-            transform.localScale = TetrominoSizeManager.GetScaleFor(transform);
         }
 
         private void Update() // Scale can be done in Update
@@ -267,9 +269,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 return; // don't do anything if the tetromino is placed
             }
 
-            if (_isDragging || _isAnimating) {
-                transform.localScale = TetrominoSizeManager.GetScaleFor(transform);
-            }
+         
 
             if (_isAnimating) {
                 if (SelectedTetromino != this) {

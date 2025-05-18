@@ -1,75 +1,116 @@
 #nullable enable
 
-using UnityEngine;
-
-public class TetrominoSizeManager : MonoBehaviour
+namespace ProjectL.UI.GameScene.Zones.PieceZone
 {
-    #region Fields
+    using UnityEngine;
 
-    private static TetrominoSizeManager? _instance = null;
-
-    [Header("Tetromino scale settings")]
-    [Tooltip("Sample of a puzzle card to get it's scale")]
-    [SerializeField] private Transform? puzzleSample;
-
-    [Tooltip("Sample of a tetromino spawner to get it's scale")]
-    [SerializeField] private Transform? tetrominoSpawnerSample;
-
-    [Tooltip("Edge of the puzzle zone, to use as a border for scaling")]
-    [SerializeField] private Transform? puzzleZoneEdgeMarker;
-
-    #endregion
-
-    #region Methods
-
-    public static Vector3 GetScaleFor(Transform tetromino) => _instance?.GetScale(tetromino) ?? Vector3.one;
-
-    internal void Awake()
+    public class TetrominoSizeManager : StaticInstance<TetrominoSizeManager>
     {
-        // singleton pattern
-        if (_instance != null && _instance != this) {
-            Destroy(gameObject);
-            return;
-        }
-        _instance = this;
+        #region Fields
 
-        // check that all components are assigned
-        if (puzzleSample == null || tetrominoSpawnerSample == null || puzzleZoneEdgeMarker == null) {
-            Debug.LogError("One or more components are not assigned!", this);
-            return;
+        [Header("Tetromino scale settings")]
+        [Tooltip("Sample of a puzzle card to get it's scale")]
+        [SerializeField] private Transform? puzzleSample;
+
+        [Tooltip("Edge of the puzzle zone, to use as a border for scaling")]
+        [SerializeField] private Transform? puzzleZoneEdgeMarker;
+
+        #endregion
+
+        #region Properties
+
+        public float PuzzleZoneScale => puzzleSample?.localScale.x ?? 1f;
+
+        #endregion
+
+        #region Methods
+
+        public float GetDistanceToPuzzleZone(Transform tr)
+        {
+            if (puzzleZoneEdgeMarker == null) {
+                return 0f;  // safety check
+            }
+
+            // puzzle zone | marker | tetromino spawner
+
+            // if x left of marker
+            if (tr.position.x <= puzzleZoneEdgeMarker.position.x) {
+                return 0f;
+            }
+
+            // if x right of marker
+            return tr.position.x - puzzleZoneEdgeMarker.position.x;
         }
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            // check that all components are assigned
+            if (puzzleSample == null || puzzleZoneEdgeMarker == null) {
+                Debug.LogError("One or more components are not assigned!", this);
+                return;
+            }
+        }
+
+        #endregion
     }
 
-    private float DistanceToPuzzleZone(float x)
+    [RequireComponent(typeof(DraggableTetromino))]
+    [RequireComponent(typeof(RectTransform))]
+    public class TetrominoSizer : MonoBehaviour
     {
-        if (puzzleZoneEdgeMarker == null) {
-            return 0f;  // safety check
+        #region Fields
+
+        private RectTransform? _rt;
+
+        private bool _initialized = false;
+
+        private float _spawnerScale;
+
+        private float _spawnerDistanceToPuzzleZone;
+
+        #endregion
+
+        #region Methods
+
+        public void Init(TetrominoButton spawner)
+        {
+            _spawnerScale = spawner.transform.localScale.x;
+            _spawnerDistanceToPuzzleZone = TetrominoSizeManager.Instance.GetDistanceToPuzzleZone(spawner.transform);
+            _initialized = true;
+            UpdateScale();
         }
 
-        // puzzle zone - marker - tetromino spawner
-        // if x right of marker
-        if (x > puzzleZoneEdgeMarker.position.x) {
-            return x - puzzleZoneEdgeMarker.position.x;
+        private void Awake()
+        {
+            _rt = GetComponent<RectTransform>();
         }
-        return 0f; // if x left of marker
+
+        private void UpdateScale()
+        {
+            float distance = TetrominoSizeManager.Instance.GetDistanceToPuzzleZone(transform);
+
+            float t = Mathf.Clamp01(Mathf.InverseLerp(_spawnerDistanceToPuzzleZone, 0f, distance));
+            float scale = Mathf.Lerp(_spawnerScale, TetrominoSizeManager.Instance.PuzzleZoneScale, t);
+
+            transform.localScale = SignVector(transform.localScale) * scale;
+
+            static Vector3 SignVector(Vector3 v)
+            {
+                return new Vector3(Mathf.Sign(v.x), Mathf.Sign(v.y), Mathf.Sign(v.z));
+            }
+        }
+
+        private void FixedUpdate()
+        {
+            if (!_initialized) {
+                return;
+            }
+
+            UpdateScale();
+        }
+
+        #endregion
     }
-
-    private Vector3 GetScale(Transform tetromino)
-    {
-        float distance = DistanceToPuzzleZone(tetromino.position.x);
-        float maxScaleDistance = DistanceToPuzzleZone(tetrominoSpawnerSample!.position.x);
-        float maxScale = tetrominoSpawnerSample.localScale.x;
-        float minScale = puzzleSample!.localScale.x;
-        float t = Mathf.Clamp01(Mathf.InverseLerp(maxScaleDistance, 0f, distance));
-        float scale = Mathf.Lerp(maxScale, minScale, t);
-        //Debug.Log($"Scale: {scale} for distance: {distance} from puzzle zone edge marker (x={tetromino.position.x}), minScale={minScale}, maxScale={maxScale}");
-        var scaleVector = Vector3.one * scale;
-        // preserve original flip
-        if (tetromino.localScale.x < 0) {
-            scaleVector.x *= -1;
-        }
-        return scaleVector;
-    }
-
-    #endregion
 }

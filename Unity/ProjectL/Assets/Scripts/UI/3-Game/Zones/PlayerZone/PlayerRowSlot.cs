@@ -12,6 +12,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
     {
         #region Fields
 
+        [Header("Puzzle management")]
         [SerializeField] private InteractivePuzzle? _puzzleCard;
         [SerializeField] private Button? _emptySlot;
         [SerializeField] private Image? _puzzleFrame;
@@ -105,7 +106,9 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             public void Dispose()
             {
                 SoundManager.Instance?.PlaySoftTapSoundEffect();
-                _slot._puzzleFrame!.gameObject.SetActive(false);
+                if (_slot._puzzleFrame != null) {
+                    _slot._puzzleFrame.gameObject.SetActive(false);
+                }
             }
         }
     }

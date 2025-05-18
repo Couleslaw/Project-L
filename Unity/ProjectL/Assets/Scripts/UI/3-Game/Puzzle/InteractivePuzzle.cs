@@ -20,8 +20,10 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
         private static List<InteractivePuzzle> _availablePuzzles = new();
 
-        [SerializeField] private PuzzleCell? _puzzleCellPrefab;
 
+        [Header("Puzzle cells")]
+        [SerializeField] private PuzzleCell? _puzzleCellPrefab;
+        
         private PuzzleCell[]? _puzzleCells;
 
         private PuzzleWithGraphics? _logicalPuzzle = null;

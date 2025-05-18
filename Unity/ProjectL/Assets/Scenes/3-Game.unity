@@ -1093,7 +1093,7 @@ GameObject:
   - component: {fileID: 855032701}
   - component: {fileID: 855032702}
   m_Layer: 0
-  m_Name: DraggableTetrominoSizeManager
+  m_Name: TetrominoSizeManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
