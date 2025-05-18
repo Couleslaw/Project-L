@@ -4,6 +4,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 {
     using ProjectL.UI.GameScene.Actions;
     using ProjectL.UI.GameScene.Actions.Constructing;
+    using ProjectL.UI.GameScene.Zones.PlayerZone;
     using ProjectL.UI.Sound;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
@@ -11,7 +12,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     using ProjectLCore.GamePieces;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using UnityEngine;
@@ -36,6 +36,9 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         IHumanPlayerActionListener<SelectRewardAction>
     {
 
+        private IDisposable? _finishedPuzzleHighlighter = null;
+
+
         private Dictionary<TetrominoShape, TetrominoButton> _tetrominoButtons = new();
 
         private PieceCountColumn? _currentPieceColumn;
@@ -50,23 +53,19 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             remove => TakeBasicStateChangedEventHandler -= value;
         }
 
-        event Action<IActionChange<ChangeTetrominoAction>>? ChangeTetrominoStateChangedEventHandler;
+        private event Action<IActionChange<ChangeTetrominoAction>>? ChangeTetrominoStateChangedEventHandler;
         event Action<IActionChange<ChangeTetrominoAction>>? IHumanPlayerActionListener<ChangeTetrominoAction>.StateChangedEventHandler {
             add => ChangeTetrominoStateChangedEventHandler += value;
             remove => ChangeTetrominoStateChangedEventHandler -= value;
         }
 
-        event Action<IActionChange<SelectRewardAction>>? SelectRewardStateChangedEventHandler;
+        private event Action<IActionChange<SelectRewardAction>>? SelectRewardStateChangedEventHandler;
         event Action<IActionChange<SelectRewardAction>>? IHumanPlayerActionListener<SelectRewardAction>.StateChangedEventHandler {
             add => SelectRewardStateChangedEventHandler += value;
             remove => SelectRewardStateChangedEventHandler -= value;
         }
 
-        public void ReportTakeBasicChange(TakeBasicTetrominoActionChange change) => TakeBasicStateChangedEventHandler?.Invoke(change);
-        public void ReportChangeTetrominoChange(ChangeTetrominoActionChange change) => ChangeTetrominoStateChangedEventHandler?.Invoke(change);
-        public void ReportSelectRewardChange(SelectRewardActionChange change) => SelectRewardStateChangedEventHandler?.Invoke(change);
-
-        public DraggableTetromino SpawnTetromino(TetrominoShape shape)
+        public IAIPlayerActionAnimator<PlaceTetrominoAction> GetPlaceTetrominoActionAnimator(TetrominoShape shape)
         {
             // find the spawner for the tetromino shape
             if (!_tetrominoButtons.TryGetValue(shape, out TetrominoButton? spawner)) {
@@ -209,7 +208,17 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
         }
 
-        void IHumanPlayerActionListener<SelectRewardAction>.OnActionRequested() => SetMode(PieceZoneMode.SelectReward);
+        void IHumanPlayerActionListener<SelectRewardAction>.OnActionRequested()
+        {
+            var eventArgs = HumanPlayerActionCreator.Instance.CurrentRewardEventArgs!;
+
+            _currentPieceColumn!.SetColor(GameGraphicsSystem.ActiveColor);
+
+            var puzzleSlot = PlayerZoneManager.Instance.GetPuzzleWithId(eventArgs.Puzzle.Id)!;
+            _finishedPuzzleHighlighter = puzzleSlot.CreateTemporaryPuzzleHighlighter();
+
+            EnableRewardSelection(eventArgs.RewardOptions);
+        }
         void IHumanPlayerActionListener<SelectRewardAction>.OnActionCanceled() => OnActionCanceled();
         void IHumanPlayerActionListener<SelectRewardAction>.OnActionConfirmed() => OnActionConfirmed();
 
@@ -224,12 +233,10 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         void IHumanPlayerActionListener<ChangeTetrominoAction>.OnActionRequested()
         {
             SetMode(PieceZoneMode.ChangeTetromino);
-            _changeTetrominoActionCreator = new (SharedReserveManager.Instance.GetNumTetrominosLeft());
+            _changeTetrominoActionCreator = new(SharedReserveManager.Instance.GetNumTetrominosLeft());
         }
         void IHumanPlayerActionListener<ChangeTetrominoAction>.OnActionCanceled() => OnActionCanceled();
         void IHumanPlayerActionListener<ChangeTetrominoAction>.OnActionConfirmed() => OnActionConfirmed();
-
-
 
         private void OnActionCanceled()
         {
@@ -243,7 +250,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             SetMode(PieceZoneMode.Disabled);
         }
 
-        public void EnableRewardSelection(List<TetrominoShape> rewardOptions)
+        private void EnableRewardSelection(List<TetrominoShape> rewardOptions)
         {
             _selectRewardActionCreator = new SelectRewardActionCreator(rewardOptions);
         }
@@ -259,18 +266,18 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 case PieceZoneMode.TakeBasic:
                     _selectRewardActionCreator!.ReportButtonPress(button);
                     bool isSelected = _selectRewardActionCreator.SelectedReward == TetrominoShape.O1;
-                    ReportTakeBasicChange(new(isSelected));
+                    TakeBasicStateChangedEventHandler?.Invoke(new TakeBasicTetrominoActionChange(isSelected));
                     break;
                 case PieceZoneMode.SelectReward:
                     _selectRewardActionCreator!.ReportButtonPress(button);
                     TetrominoShape? selectedReward = _selectRewardActionCreator.SelectedReward;
-                    ReportSelectRewardChange(new(selectedReward));
+                    SelectRewardStateChangedEventHandler?.Invoke(new SelectRewardActionChange(selectedReward));
                     break;
                 case PieceZoneMode.ChangeTetromino:
                     _changeTetrominoActionCreator!.ReportButtonPress(button);
                     TetrominoShape? oldTetromino = _changeTetrominoActionCreator.OldTetromino;
                     TetrominoShape? newTetromino = _changeTetrominoActionCreator.NewTetromino;
-                    ReportChangeTetrominoChange(new(oldTetromino, newTetromino));
+                    ChangeTetrominoStateChangedEventHandler?.Invoke(new ChangeTetrominoActionChange(oldTetromino, newTetromino));
                     break;
                 default:
                     break;
@@ -279,6 +286,9 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         private void DisposeActionEffects()
         {
+            _finishedPuzzleHighlighter?.Dispose();
+            _finishedPuzzleHighlighter = null;
+
             _selectRewardActionCreator?.Dispose();
             _selectRewardActionCreator = null;
 
@@ -366,7 +376,6 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             private SelectRewardActionCreator? _newTetrominoSelector;
 
             private int[] _numTetrominosInSharedReserve;
-
 
             public ChangeTetrominoActionCreator(int[] numTetrominosInSharedReserve)
             {

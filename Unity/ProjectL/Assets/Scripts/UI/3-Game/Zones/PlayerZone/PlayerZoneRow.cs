@@ -47,7 +47,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             if (_playerNameLabel != null) {
                 _playerNameLabel.text = playerName;
             }
-            playerState.AddListener(this);
+            playerState.AddListener((IPlayerStatePuzzleListener)this);
             SetAsCurrentPlayer(false);
         }
 

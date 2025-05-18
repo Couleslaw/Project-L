@@ -39,8 +39,8 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 return;
             }
 
-            PieceZoneManager.Instance.RegisterListener(this);
-            game.AddListener(this);
+            PieceZoneManager.Instance.RegisterListener((ITetrominoSpawnerListener)this);
+            game.AddListener((ICurrentPlayerListener)this);
 
             foreach (Player player in game.Players) {
                 // create count column

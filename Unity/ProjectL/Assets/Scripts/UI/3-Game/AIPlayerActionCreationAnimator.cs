@@ -52,10 +52,10 @@ namespace ProjectL.UI.GameScene.Actions
 
         public void Init(GameCore game)
         {
-            game.GameState.AddListener(this);
+            game.GameState.AddListener((IGameStatePuzzleAsyncListener)this);
             foreach (var player in game.Players) {
                 if (player is AIPlayerBase) {
-                    game.PlayerStates[player].AddListener(this);
+                    game.PlayerStates[player].AddListener((IPlayerStatePuzzleFinishedAsyncListener)this);
                 }
             }
 
@@ -125,7 +125,7 @@ namespace ProjectL.UI.GameScene.Actions
         {
             await GameAnimationManager.WaitForScaledDelayAsync(_initialDelay, cancellationToken);
 
-            IAIPlayerActionAnimator<PlaceTetrominoAction> tetromino = PieceZoneManager.Instance.SpawnTetromino(action.Shape);
+            var tetromino = PieceZoneManager.Instance.GetPlaceTetrominoActionAnimator(action.Shape);
             await tetromino.Animate(action, cancellationToken);
         }
 

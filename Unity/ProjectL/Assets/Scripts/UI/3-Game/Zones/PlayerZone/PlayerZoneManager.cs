@@ -35,7 +35,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
                 return;
             }
 
-            game.AddListener(this);
+            game.AddListener((ICurrentPlayerListener)this);
 
             foreach (var player in game.Players) {
                 GameObject rowParent = Instantiate(_playerZoneRowPrefab, transform);
@@ -47,7 +47,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             }
         }
 
-        public void OnCurrentPlayerChanged(Player currentPlayer)
+        void ICurrentPlayerListener.OnCurrentPlayerChanged(Player currentPlayer)
         {
             _currentPlayer = currentPlayer;
             foreach (var kvp in _playerZoneRows) {

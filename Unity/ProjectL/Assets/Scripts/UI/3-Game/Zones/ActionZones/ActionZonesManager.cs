@@ -27,7 +27,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             }
 
             _game = game;
-            _game.AddListener(this);
+            _game.AddListener((ICurrentTurnListener)this);
         }
 
         public bool CanConfirmAction {

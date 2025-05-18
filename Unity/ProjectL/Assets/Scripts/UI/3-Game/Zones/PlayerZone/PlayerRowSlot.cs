@@ -34,6 +34,8 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
                 return;
             }
             SoundManager.Instance?.PlaySoftTapSoundEffect();
+            _puzzleCard.FinishPuzzle();
+
             _puzzleCard.gameObject.SetActive(false);
             _emptySlot.gameObject.SetActive(true);
         }

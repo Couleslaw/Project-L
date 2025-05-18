@@ -120,20 +120,18 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _confirmButton.onClick.AddListener(SoundManager.Instance!.PlayButtonClickSound);
             _selectRewardButton.onClick.AddListener(SoundManager.Instance!.PlayButtonClickSound);
             _finishingTouchesButton.onClick.AddListener(SoundManager.Instance!.PlayButtonClickSound);
-        }
 
-        private void Start()
-        {
             HumanPlayerActionCreator.RegisterController(this);
-            GameManager.Controls!.Gameplay.ConfirmAction.performed += SimulateConfirmActionClick;
+            if (GameManager.Controls != null) {
+                GameManager.Controls.Gameplay.ConfirmAction.performed += SimulateConfirmActionClick;
+            }
         }
 
         private void OnDestroy()
         {
-            if (GameManager.Controls == null) {
-                return;  // app quit --> return
+            if (GameManager.Controls != null) {
+                GameManager.Controls.Gameplay.ConfirmAction.performed -= SimulateConfirmActionClick;
             }
-            GameManager.Controls.Gameplay.ConfirmAction.performed -= SimulateConfirmActionClick;
         }
 
         private void SimulateConfirmActionClick(InputAction.CallbackContext ctx)
@@ -142,6 +140,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
                 StartCoroutine(SimulateClickCoroutine(_confirmButton));
             }
             else if (_selectRewardButton != null && _selectRewardButton.interactable) {
+                Debug.Log("Simulating click on select reward button");
                 StartCoroutine(SimulateClickCoroutine(_selectRewardButton));
             }
             else if (_finishingTouchesButton != null && _finishingTouchesButton.interactable) {
@@ -191,7 +190,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             
             // Simulate click - this also calls button.onClick.Invoke()
             yield return new WaitForSeconds(0.1f);
-            ExecuteEvents.Execute(targetButton.gameObject, pointerData, ExecuteEvents.pointerClickHandler);
+            //ExecuteEvents.Execute(targetButton.gameObject, pointerData, ExecuteEvents.pointerClickHandler);
             yield return new WaitForSeconds(0.1f);
 
             // Simulate PointerUp (Release)

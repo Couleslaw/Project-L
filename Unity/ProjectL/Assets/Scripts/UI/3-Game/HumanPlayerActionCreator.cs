@@ -124,8 +124,6 @@ namespace ProjectL.UI.GameScene.Actions
         private PlayerMode _currentPlayerMode = PlayerMode.NonInteractive;
         private TurnInfo _currentTurnInfo;
 
-        private IDisposable? _finishedPuzzleHighlighter = null;
-
         #endregion
 
         #region Properties
@@ -133,6 +131,8 @@ namespace ProjectL.UI.GameScene.Actions
         private IActionEventSet? CurrentEventSet => _currentActionType == null ? null : _actionEventSets[_currentActionType.Value];
 
         private IActionConstructor? CurrentActionConstructor => _currentActionType == null ? null : _actionConstructors[_currentActionType.Value];
+
+        public HumanPlayer.GetRewardEventArgs? CurrentRewardEventArgs { get; private set; }
 
         #endregion
 
@@ -261,23 +261,22 @@ namespace ProjectL.UI.GameScene.Actions
 
         public void OnRewardSelected()
         {
+            Debug.Log("OnRewardSelected");
             SelectRewardAction? action = CurrentActionConstructor?.GetAction<SelectRewardAction>();
             if (action == null) {
                 Debug.LogError("Selected reward is null", this);
                 return;
             }
+            Debug.Log("Selected reward: " + action.SelectedReward, this);
 
-            _finishedPuzzleHighlighter?.Dispose();
-            _finishedPuzzleHighlighter = null;
-
-            SetActionMode(ActionMode.ActionCreation);
+            CurrentRewardEventArgs = null;
             var player = PrepareForSubmission();
             player?.SetReward(action.SelectedReward);
         }
 
         public override void Init(GameCore game)
         {
-            game.AddListener(this);
+            game.AddListener((ICurrentTurnListener)this);
             SetActionMode(ActionMode.ActionCreation);
             SetPlayerMode(PlayerMode.NonInteractive);
         }
@@ -334,7 +333,9 @@ namespace ProjectL.UI.GameScene.Actions
 
             _currentPlayer = player;
             _actionVerifier = e.Verifier;
+
             SetPlayerMode(PlayerMode.Interactive);
+
             if (_currentTurnInfo.GamePhase == GamePhase.EndOfTheGame) {
                 SetActionMode(ActionMode.FinishingTouches);
                 SetNewActionType(ActionType.EndFinishingTouches);
@@ -351,13 +352,11 @@ namespace ProjectL.UI.GameScene.Actions
             }
 
             _currentPlayer = player;
-            _currentActionType = ActionType.SelectReward;
+            CurrentRewardEventArgs = e;
+
+            SetPlayerMode(PlayerMode.Interactive);
             SetActionMode(ActionMode.RewardSelection);
             SetNewActionType(ActionType.SelectReward);
-            PieceZoneManager.Instance.EnableRewardSelection(e.RewardOptions);
-
-            var puzzleSlot = PlayerZoneManager.Instance.GetPuzzleWithId(e.Puzzle.Id)!;
-            _finishedPuzzleHighlighter = puzzleSlot.CreateTemporaryPuzzleHighlighter();
         }
 
         private void OnActionStateChanged(IActionChange<GameAction> change)

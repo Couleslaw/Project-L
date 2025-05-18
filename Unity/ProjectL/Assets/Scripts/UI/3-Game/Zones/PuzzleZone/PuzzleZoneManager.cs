@@ -89,8 +89,8 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
                 Debug.LogError("One or more UI components is not assigned!", this);
                 return;
             }
-            game.GameState.AddListener(this);
-            game.AddListener(this);
+            game.GameState.AddListener((IGameStatePuzzleListener)this);
+            game.AddListener((ICurrentTurnListener)this);
 
             HumanPlayerActionCreator.Instance.AddListener<TakePuzzleAction>(this);
             HumanPlayerActionCreator.Instance.AddListener<RecycleAction>(this);

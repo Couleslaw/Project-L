@@ -272,6 +272,11 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             }
         }
 
+        public void FinishPuzzle()
+        {
+            _logicalPuzzle = null;
+        }
+
         #endregion
     }
 }
