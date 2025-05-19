@@ -24,7 +24,7 @@ namespace ProjectL.UI.GameScene.Actions
         #endregion
     }
 
-    public class AIPlayerActionCreationAnimator : AsyncActionProcessorBase,
+    public class AIPlayerActionAnimator : AsyncActionProcessorBase,
         IPlayerStatePuzzleFinishedAsyncListener,
         IGameStatePuzzleAsyncListener
     {
@@ -126,7 +126,6 @@ namespace ProjectL.UI.GameScene.Actions
             await GameAnimationManager.WaitForScaledDelayAsync(_initialDelay, cancellationToken);
 
             var tetromino = await AnimatePlaceMovement(action, cancellationToken);
-            tetromino.RemoveFromScene();
         }
 
         private async Task<DraggableTetromino> AnimatePlaceMovement(PlaceTetrominoAction action, CancellationToken cancellationToken)
@@ -152,10 +151,6 @@ namespace ProjectL.UI.GameScene.Actions
                     await GameAnimationManager.WaitForScaledDelayAsync(0.3f, cancellationToken);
                 }
                 await Task.WhenAll(placeTasks);
-            }
-
-            foreach (var tetromino in placeTasks) {
-                tetromino.Result.RemoveFromScene();
             }
         }
 

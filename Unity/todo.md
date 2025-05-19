@@ -60,20 +60,18 @@
     - [x] add player collection columns
     - [x] add shared reserve column
 - [x] add action buttons logic
-- [ ] add logic for human actions
-  - [ ] standard actions
+- [x] add logic for human actions
+  - [x] standard actions
     - [x] connect TetrominoSpawners to action manager
     - [x] take puzzle
     - [x] recycle
     - [x] take basic piece
-    - [ ] change piece
+    - [x] change piece
     - [x] master action
   - [x] finishing touches action
     - [x] clear board
     - [x] end finishing touches
-  - [ ] reward selection
-    - neco se rozbije kdyz clovek hodne klika a vymenuje
-    - AI kdyz snizi na 0, tak to nezmizi, ale zustane cervena nula, tady nekde problem
+  - [x] reward selection
 - [x] add animation for AI actions
   - [x] puzzle finished
     - [x] select reward
@@ -84,9 +82,6 @@
   - [x] change piece
   - [x] master action
   - [x] end finishing touches
-- [ ] async workflow
-  - [ ] add option to skip animation
-  - [ ] cleanup cancellation tokens usage
 - [x] rework tetromino + puzzle interaction
   - [x] fix: place animation doesnt change scale
   - [x] I4 jiny scale
@@ -106,13 +101,21 @@
   - at start of game - all visible
 - [x] increase confirm button hitbox
 - [x] place puzzle on selected slot
+- [ ] AI place - rotate / flip while moving
 
 ### Finishing touches
 
-- [ ] build game
-- [ ] disable AI players feature on WebGL
 - [x] lower min num tetrominos to 5
 - [x] final results align names bellow each other properly
   - [x] 1. is a shorter tan 2,3,4 --> it is more to the left
 - [x] recycle - rows act as radio buttons
-- [ ] AI place - rotate / flip while moving
+- [ ] disable AI players feature on WebGL
+- [ ] prefill game creation screen with last used settings
+
+### Code Cleanup
+
+- [ ] cancellation token workflow
+  - [ ] final scene
+  - [ ] main game scene
+  - [ ] add option to skip animation
+- [ ] use singleton base class

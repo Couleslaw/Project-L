@@ -38,7 +38,7 @@ namespace ProjectL.UI.GameScene.Management
         [SerializeField] private TextBasedGame? textGame;
 
         private GameCore? _game;
-        private AIPlayerActionCreationAnimator _aiPlayerAnimator = new();
+        private AIPlayerActionAnimator _aiPlayerAnimator = new();
 
         protected override void Awake()
         {

@@ -19,7 +19,7 @@ public class PuzzleCell : MonoBehaviour
 
     private bool _isColliding = false;
     private TetrominoShape _lastCollidingShape;
-    private Mode _mode;
+    private CellState _state;
     private Color? _color = null;
 
     #endregion
@@ -30,9 +30,9 @@ public class PuzzleCell : MonoBehaviour
 
     #endregion
 
-    public enum Mode
+    public enum CellState
     {
-        Fill,
+        Filled,
         Empty,
         Shadow,
         Color
@@ -42,13 +42,15 @@ public class PuzzleCell : MonoBehaviour
 
     public bool IsColliding => _isColliding && _collider != null && _collider.enabled;
 
+    public CellState State => _state;
+
     public bool Interactive {
         set {
             if (_collider == null) {
                 return;
             }
 
-            if (_mode == Mode.Fill || _mode == Mode.Color) {
+            if (_state == CellState.Filled || _state == CellState.Color) {
                 _collider.enabled = false;
                 _isColliding = false;
             }
@@ -62,31 +64,31 @@ public class PuzzleCell : MonoBehaviour
 
     #region Methods
 
-    public void SetMode(Mode mode)
+    public void SetState(CellState state)
     {
         if (_image == null || _collider == null) {
             return;
         }
 
-        _mode = mode;
+        _state = state;
 
-        switch (mode) {
-            case Mode.Fill: {
+        switch (state) {
+            case CellState.Filled: {
                 Interactive = false;
                 _image.color = Color.clear;
                 break;
             }
-            case Mode.Empty: {
+            case CellState.Empty: {
                 Interactive = true;
                 _image.color = Color.clear;
                 break;
             }
-            case Mode.Shadow: {
+            case CellState.Shadow: {
                 Interactive = true;
                 _image.color = GetCollidingTetrominoShadeColor();
                 break;
             }
-            case Mode.Color: {
+            case CellState.Color: {
                 Interactive = false;
                 if (_color == null) {
                     _color = (ColorImage.Color)_lastCollidingShape;
@@ -100,7 +102,7 @@ public class PuzzleCell : MonoBehaviour
     public void SetFillColor(Color color)
     {
         _color = color;
-        SetMode(Mode.Color);
+        SetState(CellState.Color);
     }
 
     private Color GetCollidingTetrominoShadeColor()

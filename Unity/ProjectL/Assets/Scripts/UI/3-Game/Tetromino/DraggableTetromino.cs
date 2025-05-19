@@ -15,6 +15,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     using System.Threading;
     using System.Threading.Tasks;
     using UnityEngine;
+    using UnityEngine.EventSystems;
     using UnityEngine.InputSystem;
 
     [RequireComponent(typeof(RectTransform))]
@@ -23,7 +24,8 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     [RequireComponent(typeof(Collider2D))]
     public class DraggableTetromino : MonoBehaviour,
         IHumanPlayerActionListener<PlaceTetrominoAction>,
-        IAIPlayerActionAnimator<PlaceTetrominoAction>
+        IAIPlayerActionAnimator<PlaceTetrominoAction>,
+        IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
     {
         #region Constants
 
@@ -67,8 +69,10 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         public event Action<DraggableTetromino>? OnStartDraggingEventHandler;
 
-        public event Action<IActionModification<PlaceTetrominoAction>>? ActionModifiedEventHandler;
-
+        event Action<IActionModification<PlaceTetrominoAction>>? IHumanPlayerActionListener<PlaceTetrominoAction>.ActionModifiedEventHandler {
+            add { }
+            remove { }
+        }
         #endregion
 
         private enum Mode
@@ -122,11 +126,16 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         public void StopDragging()
         {
+            if (_mode == Mode.Animation) {
+                return;
+            }
+
             _isDragging = false;
             if (!_isOverPlayerRow) {
                 SetMode(Mode.Abandoned);
             }
         }
+
         public void PlaceToPosition(Vector3 center)
         {
             if (_mode == Mode.Animation) {
@@ -138,47 +147,21 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             SetPosition(center);
         }
 
-        public void RemoveFromScene()
-        {
-            if (this == null || gameObject == null)
-                return;
-
-            HumanPlayerActionCreator.Instance?.RemoveListener(this);
-
-            // unselect tetromino
-            if (SelectedTetromino == this) {
-                SelectedTetromino = null;
-            }
-
-            RemovedFromSceneEventHandler?.Invoke();
-
-            // if not placed --> destroy immediately
-            if (_mode != Mode.Placed) {
-                Destroy(gameObject);
-            }
-            // if placed --> destroy after a small delay to prevent animation clipping 
-            else {
-                StartCoroutine(DestroyAfterMilliseconds(50f));
-            }
-
-            IEnumerator DestroyAfterMilliseconds(float milliseconds)
-            {
-                yield return new WaitForSeconds(milliseconds / 1000f);
-                Destroy(gameObject);
-            }
-        }
 
         #region Unity Events
 
-        public void OnMouseDown()
+        void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
             _isMouseOver = true;
             StartDragging();
         }
 
-        public void OnMouseUp() => StopDragging();
+        void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
+        {
+            StopDragging();
+        }
 
-        public void OnMouseEnter()
+        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
             if (_mode == Mode.Animation || _mode == Mode.Placed) {
                 return;
@@ -196,7 +179,10 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
         }
 
-        public void OnMouseExit() => _isMouseOver = false;
+        void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
+        {
+            _isMouseOver = false;
+        }
 
 
         private void OnTriggerEnter2D(Collider2D collision)
@@ -240,55 +226,44 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         private static void OnClickPlaceInputAction(InputAction.CallbackContext ctx)
         {
-            if (SelectedTetromino == null) {
+            if (SelectedTetromino == null || !SelectedTetromino.IsSelectedWithMouse) {
                 return;
             }
 
-            if (SelectedTetromino.IsSelectedWithMouse) {
-                InteractivePuzzle.TryPlaceToPuzzle(SelectedTetromino);
-            }
+            InteractivePuzzle.TryPlacingToPuzzle(SelectedTetromino);
         }
 
         private static void OnKeyboardPlaceInputAction(InputAction.CallbackContext ctx)
         {
-            if (SelectedTetromino == null) {
+            if (SelectedTetromino == null || !PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
                 return;
             }
 
-            if (SelectedTetromino.IsSelectedWithMouse || PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
-                InteractivePuzzle.TryPlaceToPuzzle(SelectedTetromino);
-            }
+            InteractivePuzzle.TryPlacingToPuzzle(SelectedTetromino);
         }
 
         private static void OnRotateSmoothInputAction(InputAction.CallbackContext ctx)
         {
-            if (SelectedTetromino == null) {
+            if (SelectedTetromino == null || !PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
                 return;
             }
 
-            if (SelectedTetromino.IsSelectedWithMouse || PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
-                SelectedTetromino.transform.Rotate(0f, 0f, ctx.ReadValue<float>() * _rotationSpeed);
-            }
+            SelectedTetromino.transform.Rotate(0f, 0f, ctx.ReadValue<float>() * _rotationSpeed);
         }
 
         private static void OnRotate90InputAction(InputAction.CallbackContext ctx)
         {
-            if (SelectedTetromino == null) {
+            if (SelectedTetromino == null || !PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
                 return;
             }
 
-            if (SelectedTetromino.IsSelectedWithMouse || PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
-                SelectedTetromino.SnapToNearestRightAngle();
-                SelectedTetromino.transform.Rotate(0f, 0f, 90 * Mathf.Sign(ctx.ReadValue<float>()));
-            }
+            SelectedTetromino.SnapToNearestRightAngle();
+            SelectedTetromino.transform.Rotate(0f, 0f, 90 * Mathf.Sign(ctx.ReadValue<float>()));
         }
 
         private static void OnFlipInputAction(InputAction.CallbackContext ctx)
         {
-            if (SelectedTetromino == null) {
-                return;
-            }
-            if (!SelectedTetromino.IsSelectedWithMouse && !PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
+            if (SelectedTetromino == null || !PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
                 return;
             }
 
@@ -343,32 +318,36 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 return;
             }
 
-            if (_mode == mode) {
-                return;
-            }
             _mode = mode;
 
             // update selected tetromino
             if (mode == Mode.Selected) {
-                SelectedTetromino?.SetMode(Mode.Abandoned);
+                // if a different tetromino is selected --> abandon it
+                if (SelectedTetromino != null && SelectedTetromino != this) {
+                    SelectedTetromino.SetMode(Mode.Abandoned);
+                }
                 SelectedTetromino = this;
             }
+            // if this tetromino is Selected, but the mode is changed to something else --> unselect it
             else if (SelectedTetromino == this) {
                 SelectedTetromino = null;
             }
 
+
             switch (mode) {
                 case Mode.Animation: {
-                    // update layers
-                    gameObject.layer = PlacedTetrominoLayer;
+                    // update layers - selected so that puzzles can detect it
+                    gameObject.layer = SelectedTetrominoLayer;
                     _spriteRenderer.sortingOrder = _selectedTetrominoSortingOrder;
+
+                    // update rigidbody
                     _rb.bodyType = RigidbodyType2D.Kinematic;
                     _isDragging = false;
                     break;
                 }
 
                 case Mode.Selected: {
-                    // update layers
+                    // update layers - selected so that puzzles can detect it
                     gameObject.layer = SelectedTetrominoLayer;
                     _spriteRenderer.sortingOrder = _selectedTetrominoSortingOrder;
 
@@ -381,7 +360,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 }
 
                 case Mode.Abandoned: {
-                    // update layers
+                    // update layers - abandoned: puzzles don't collide with it, but tetrominos do
                     gameObject.layer = AbandonedTetrominoLayer;
                     _spriteRenderer!.sortingOrder = _abandonedTetrominosSortingOrder;
 
@@ -391,7 +370,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 }
 
                 case Mode.Placed: {
-                    // update layers
+                    // update layers - placed: puzzles nor tetrominos collide with it
                     gameObject.layer = PlacedTetrominoLayer;
                     _spriteRenderer!.sortingOrder = _placedTetrominoSortingOrder;
 
@@ -455,6 +434,36 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             transform.rotation = Quaternion.Euler(0f, 0f, angle);
         }
 
+        private void RemoveFromScene()
+        {
+            if (this == null || gameObject == null)
+                return;
+
+            HumanPlayerActionCreator.Instance?.RemoveListener(this);
+
+            // unselect tetromino
+            if (SelectedTetromino == this) {
+                SelectedTetromino = null;
+            }
+
+            RemovedFromSceneEventHandler?.Invoke();
+
+            // if not placed --> destroy immediately
+            if (_mode != Mode.Placed) {
+                Destroy(gameObject);
+            }
+            // if placed --> destroy after a small delay to prevent animation clipping 
+            else {
+                StartCoroutine(DestroyAfterMilliseconds(50f));
+            }
+
+            IEnumerator DestroyAfterMilliseconds(float milliseconds)
+            {
+                yield return new WaitForSeconds(milliseconds / 1000f);
+                Destroy(gameObject);
+            }
+        }
+
 
         void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionRequested() { }
 
@@ -464,7 +473,11 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         async Task IAIPlayerActionAnimator<PlaceTetrominoAction>.Animate(PlaceTetrominoAction action, CancellationToken cancellationToken)
         {
-            Vector2 goalPosition = PlayerZoneManager.Instance.GetPlacementPositionFor(action);
+            if (!InteractivePuzzle.TryGetPuzzleWithId(action.PuzzleId, out InteractivePuzzle? puzzle)) {
+                return;
+            }
+
+            Vector2 goalPosition = puzzle!.GetPlacementCenter(action.Position);
 
             // rotate and flip the tetromino to match the placement
             var transformation = GetTransformation(TetrominoManager.GetImageOf(Shape), action.Position);
@@ -487,8 +500,14 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 await Awaitable.FixedUpdateAsync();
             }
 
-            // place the tetromino
+            // set the tetromino to placed mode - prevent collisions
+            // switch back to animation mode - prevent user modifications
             SetMode(Mode.Placed);
+            _mode = Mode.Animation;
+
+            // color cells of puzzle to match the tetromino and destroy the tetromino
+            (puzzle as IAIPlayerActionAnimator<PlaceTetrominoAction>)?.Animate(action, cancellationToken);
+            Destroy(gameObject);
 
             await GameAnimationManager.WaitForScaledDelayAsync(0.5f, cancellationToken);
 

@@ -8,13 +8,15 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
     using System;
+    using System.Runtime.CompilerServices;
     using TMPro;
     using UnityEngine;
     using UnityEngine.UI;
 
     [RequireComponent(typeof(Image))]
     [RequireComponent(typeof(BoxCollider2D))]
-    public class PlayerZoneRow : MonoBehaviour, IPlayerStatePuzzleListener
+    public class PlayerZoneRow : MonoBehaviour, IPlayerStatePuzzleListener,
+        IHumanPlayerActionListener<TakePuzzleAction>
     {
         #region Fields
 
@@ -23,7 +25,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
         [SerializeField] private TextMeshProUGUI? _playerNameLabel;
 
         [SerializeField] private PuzzleSlot? playerRowSlotPrefab;
-
+        private Camera? _mainCamera;
         private BoxCollider2D? _collider;
 
         private Image? _backgroundImage;
@@ -40,7 +42,23 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             }
         }
 
-        public bool IsMouseOverRow { get; private set; }
+        public bool IsMouseOverRow => IsMouseOver();
+
+        event Action<IActionModification<TakePuzzleAction>>? IHumanPlayerActionListener<TakePuzzleAction>.ActionModifiedEventHandler {
+            add { }
+            remove { }
+        }
+
+        private bool IsMouseOver()
+        {
+            if (_collider == null || _mainCamera == null) {
+                return false;
+            }
+
+            Vector2 mousePos = Input.mousePosition;
+            Vector2 worldPos = Camera.main!.ScreenToWorldPoint(mousePos);
+            return _collider.OverlapPoint(worldPos);
+        }
 
         #region Methods
 
@@ -66,20 +84,18 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             _collider.enabled = current;
             ToggleBackground(current);
 
+            // activate puzzles
             foreach (var puzzle in _puzzles) {
-                puzzle.SetAsCurrentPlayer(current);
+                puzzle.MakePuzzleInteractive(current);
             }
-        }
 
-        public Vector2 GetPlacementPositionFor(PlaceTetrominoAction action)
-        {
-            // find puzzle with matching ID
-            for (int i = 0; i < _puzzles.Length; i++) {
-                if (_puzzles[i].PuzzleId == action.PuzzleId) {
-                    return _puzzles[i].GetPlacementPositionFor(action.Position);
-                }
+            // listen to take puzzle action
+            if (current) {
+                HumanPlayerActionCreator.Instance.AddListener(this);
             }
-            return default;
+            else {
+                HumanPlayerActionCreator.Instance.RemoveListener(this);
+            }
         }
 
         public bool TryGetPuzzleWithId(uint puzzleId, out PuzzleSlot? result)
@@ -101,8 +117,10 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
                 return;
             }
 
+            _mainCamera = Camera.main;
             _collider = GetComponent<BoxCollider2D>();
             _collider.isTrigger = true;
+            _collider.enabled = false;
             _backgroundImage = GetComponent<Image>();
 
             for (int i = 0; i < PlayerState.MaxPuzzles; i++) {
@@ -116,10 +134,6 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
                 _puzzles[i] = puzzle;
             }
         }
-
-        public void OnMouseEnter() => IsMouseOverRow = true;
-
-        public void OnMouseExit() => IsMouseOverRow = false;
 
         private void ToggleBackground(bool show)
         {
@@ -156,6 +170,17 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
                 }
             }
         }
+
+        void IHumanPlayerActionListener<TakePuzzleAction>.OnActionRequested()
+        {
+            // don't block raycasting for empty slot buttons in the row
+            _collider!.enabled = false;
+        }
+
+        void IHumanPlayerActionListener<TakePuzzleAction>.OnActionCanceled() => _collider!.enabled = true;
+
+        void IHumanPlayerActionListener<TakePuzzleAction>.OnActionConfirmed() => _collider!.enabled = true;
+
         #endregion
     }
 }

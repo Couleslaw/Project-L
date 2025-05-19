@@ -53,20 +53,12 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             _puzzleCard.SetNewPuzzle(puzzle);
         }
 
-        public void SetAsCurrentPlayer(bool current)
+        public void MakePuzzleInteractive(bool current)
         {
             if (_puzzleCard == null || _emptySlot == null) {
                 return;
             }
             _puzzleCard.MakeInteractive(current);
-        }
-
-        public Vector2 GetPlacementPositionFor(BinaryImage placement)
-        {
-            if (_puzzleCard != null) {
-                return _puzzleCard.GetPlacementCenter(placement);
-            }
-            return default;
         }
 
         private void Start()

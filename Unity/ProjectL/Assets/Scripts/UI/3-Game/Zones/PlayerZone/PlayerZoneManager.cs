@@ -56,17 +56,6 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             }
         }
 
-        public Vector2 GetPlacementPositionFor(PlaceTetrominoAction action)
-        {
-            if (_currentPlayer == null) {
-                Debug.LogError("Current player is not set!", this);
-                return default;
-            }
-
-            var playerZoneRow = _playerZoneRows[_currentPlayer];
-            return playerZoneRow.GetPlacementPositionFor(action);
-        }
-
         public PuzzleSlot? GetPuzzleWithId(uint puzzleId)
         {
             PuzzleSlot? puzzle = null;

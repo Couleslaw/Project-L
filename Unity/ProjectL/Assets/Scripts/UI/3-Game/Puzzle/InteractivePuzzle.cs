@@ -11,6 +11,8 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -18,7 +20,8 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
     [RequireComponent(typeof(Image))]
     [RequireComponent(typeof(GridLayoutGroup))]
     public class InteractivePuzzle : MonoBehaviour, IPuzzleListener,
-        IHumanPlayerActionListener<PlaceTetrominoAction>
+        IHumanPlayerActionListener<PlaceTetrominoAction>,
+        IAIPlayerActionAnimator<PlaceTetrominoAction>
     {
         #region Fields
 
@@ -51,26 +54,32 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
         #region Methods
 
-        public static void TryPlaceToPuzzle(DraggableTetromino tetromino)
+        public static void TryPlacingToPuzzle(DraggableTetromino tetromino)
         {
             // check if the request is valid
             if (!TryGetPuzzleWhichHasShapeOverIt(tetromino.Shape, out InteractivePuzzle? puzzle, out BinaryImage position)) {
                 return;
             }
 
-            // safety check
-            if (!puzzle!._temporaryPuzzleCopy!.CanPlaceTetromino(position)) {
-                Debug.LogError($"Puzzle has collision shape {tetromino.Shape} but it can not be placed to the underlying puzzle representation", puzzle);
-                return;
-            }
-
             // set position of the tetromino
-            tetromino.PlaceToPosition(puzzle.GetCollisionCenter());
+            tetromino.PlaceToPosition(puzzle!.GetCollisionCenter());
 
             // place tetromino to the temporary copy
             var action = new PlaceTetrominoAction(puzzle._logicalPuzzle!.Id, tetromino.Shape, position);
             puzzle.AddTemporaryTetromino(tetromino, action);
             tetromino.OnStartDraggingEventHandler += puzzle.RemoveTemporaryTetromino;
+        }
+
+        public static bool TryGetPuzzleWithId(uint puzzleId, out InteractivePuzzle? result)
+        {
+            foreach (var puzzle in _availablePuzzles) {
+                if (puzzle.PuzzleId == puzzleId) {
+                    result = puzzle;
+                    return true;
+                }
+            }
+            result = null;
+            return false;
         }
 
         public void MakeInteractive(bool enabled)
@@ -93,8 +102,8 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
             // reset cells
             for (int i = 0; i < _puzzleCells.Length; i++) {
-                PuzzleCell.Mode mode = logicalPuzzle.Image[i] ? PuzzleCell.Mode.Fill : PuzzleCell.Mode.Empty;
-                _puzzleCells[i].SetMode(mode);
+                PuzzleCell.CellState mode = logicalPuzzle.Image[i] ? PuzzleCell.CellState.Filled : PuzzleCell.CellState.Empty;
+                _puzzleCells[i].SetState(mode);
             }
             MakeInteractive(true);
 
@@ -234,22 +243,20 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             BinaryImage collisionImage = GetCollisionImage();
 
             // decide whether to draw shadow or not
-            bool goodShape = TetrominoManager.CompareShapeToImage(shape, collisionImage);
-            bool tetrominoFits = _temporaryPuzzleCopy!.CanPlaceTetromino(collisionImage);
-            bool drawShadow = goodShape && tetrominoFits;
+            bool shouldDrawShadow = TetrominoManager.CompareShapeToImage(shape, collisionImage);
 
             for (int i = 0; i < _puzzleCells.Length; i++) {
-                // if already filled/colored --> continue
-                if (_logicalPuzzle!.Image[i]) {
+                // if already filled/colored --> skip
+                if (_puzzleCells[i].State == PuzzleCell.CellState.Filled || _puzzleCells[i].State == PuzzleCell.CellState.Color) {
                     continue;
                 }
 
                 // either draw shadow or set to empty
-                if (drawShadow && _puzzleCells[i].IsColliding) {
-                    _puzzleCells[i].SetMode(PuzzleCell.Mode.Shadow);
+                if (shouldDrawShadow && _puzzleCells[i].IsColliding) {
+                    _puzzleCells[i].SetState(PuzzleCell.CellState.Shadow);
                 }
                 else {
-                    _puzzleCells[i].SetMode(PuzzleCell.Mode.Empty);
+                    _puzzleCells[i].SetState(PuzzleCell.CellState.Empty);
                 }
             }
         }
@@ -269,7 +276,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             // make specified cells empty
             for (int i = 0; i < _puzzleCells.Length; i++) {
                 if (position[i]) {
-                    _puzzleCells[i].SetMode(PuzzleCell.Mode.Empty);
+                    _puzzleCells[i].SetState(PuzzleCell.CellState.Empty);
                 }
             }
         }
@@ -295,6 +302,12 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             _temporaryPlacements.Clear();
             _temporaryPuzzleCopy?.RemoveListener(this);
             _temporaryPuzzleCopy = null;
+        }
+
+        Task IAIPlayerActionAnimator<PlaceTetrominoAction>.Animate(PlaceTetrominoAction action, CancellationToken cancellationToken)
+        {
+            (this as IPuzzleListener).OnTetrominoPlaced(action.Shape, action.Position);
+            return Task.CompletedTask;
         }
 
         #endregion
