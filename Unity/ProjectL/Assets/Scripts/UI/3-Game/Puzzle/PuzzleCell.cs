@@ -26,7 +26,7 @@ public class PuzzleCell : MonoBehaviour
 
     #region Events
 
-    public event Action<TetrominoShape>? OnCollisionStateChangedEventHandler;
+    public event Action<DraggableTetromino>? OnCollisionStateChangedEventHandler;
 
     #endregion
 
@@ -128,7 +128,7 @@ public class PuzzleCell : MonoBehaviour
 
         _isColliding = true;
         _lastCollidingShape = tetromino!.Shape;
-        OnCollisionStateChangedEventHandler?.Invoke(tetromino.Shape);
+        OnCollisionStateChangedEventHandler?.Invoke(tetromino);
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -138,7 +138,7 @@ public class PuzzleCell : MonoBehaviour
         }
 
         _isColliding = false;
-        OnCollisionStateChangedEventHandler?.Invoke(tetromino!.Shape);
+        OnCollisionStateChangedEventHandler?.Invoke(tetromino!);
     }
 
     #endregion

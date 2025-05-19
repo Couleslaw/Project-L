@@ -170,6 +170,7 @@ namespace ProjectL.UI.FinalResults
 
             // show final results panel
             finalResultsPanel.alpha = 1;
+            SoundManager.Instance?.PlayTapSoundEffect();
 
             // show final results table rows
             foreach (var row in _finalResultsRows) {

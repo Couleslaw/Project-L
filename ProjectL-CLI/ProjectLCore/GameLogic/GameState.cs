@@ -28,7 +28,7 @@ namespace ProjectLCore.GameLogic
         /// <summary>
         /// The minimum number initial tetrominos of each shape in the shared reserve at the beginning of the game.
         /// </summary>
-        public const int MinNumInitialTetrominos = 5;
+        public const int MinNumInitialTetrominos = GameCore.MaxPlayers;
 
         /// <summary>
         /// The number puzzles in a row.

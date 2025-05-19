@@ -101,22 +101,28 @@
   - at start of game - all visible
 - [x] increase confirm button hitbox
 - [x] place puzzle on selected slot
-- [ ] AI place - rotate / flip while moving
-- [ ] right click should not start dragging
+- [x] AI place - rotate / flip while moving
+- [x] right click should not start dragging
+- [x] place dilek - check rotace dilku
+- [x] shortcut for cancel action
+- [x] FIX: drag tetromino when AI player is selected
+- [x] show last finishing tocuhes pice at end of final animation
+- [x] make debug log darker
 
 ### Finishing touches
 
-- [x] lower min num tetrominos to 5
+- [x] change num initial tetrominos bounds to 5 and 25
 - [x] final results align names bellow each other properly
   - [x] 1. is a shorter tan 2,3,4 --> it is more to the left
 - [x] recycle - rows act as radio buttons
 - [ ] disable AI players feature on WebGL
 - [ ] prefill game creation screen with last used settings
+- [x] make num actions left in pause menu colorful
 
 ### Code Cleanup
 
 - [ ] cancellation token workflow
-  - [ ] final scene
+  - [x] final scene
   - [ ] main game scene
   - [ ] add option to skip animation
-- [ ] use singleton base class
+- [ ] use singleton base class for all singletons

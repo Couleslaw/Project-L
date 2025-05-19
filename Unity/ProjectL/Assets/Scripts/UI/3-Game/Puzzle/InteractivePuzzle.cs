@@ -57,7 +57,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
         public static void TryPlacingToPuzzle(DraggableTetromino tetromino)
         {
             // check if the request is valid
-            if (!TryGetPuzzleWhichHasShapeOverIt(tetromino.Shape, out InteractivePuzzle? puzzle, out BinaryImage position)) {
+            if (!TryGetPuzzleWithCollisionShape(tetromino.GetConfiguration(), out InteractivePuzzle? puzzle)) {
                 return;
             }
 
@@ -65,7 +65,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             tetromino.PlaceToPosition(puzzle!.GetCollisionCenter());
 
             // place tetromino to the temporary copy
-            var action = new PlaceTetrominoAction(puzzle._logicalPuzzle!.Id, tetromino.Shape, position);
+            var action = new PlaceTetrominoAction(puzzle._logicalPuzzle!.Id, tetromino.Shape, puzzle.GetCollisionImage());
             puzzle.AddTemporaryTetromino(tetromino, action);
             tetromino.OnStartDraggingEventHandler += puzzle.RemoveTemporaryTetromino;
         }
@@ -138,8 +138,9 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             return center / count;
         }
 
-        private static bool TryGetPuzzleWhichHasShapeOverIt(TetrominoShape shape, out InteractivePuzzle? result, out BinaryImage position)
+        private static bool TryGetPuzzleWithCollisionShape(BinaryImage collisionShape, out InteractivePuzzle? result)
         {
+            BinaryImage collisionImage;
             foreach (var puzzle in _availablePuzzles) {
                 // if puzzle is not active - skip
                 if (puzzle == null || puzzle.gameObject.activeSelf == false || puzzle._logicalPuzzle == null) {
@@ -147,8 +148,8 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
                 }
 
                 // check if puzzle has the shape over it
-                position = puzzle.GetCollisionImage();
-                if (TetrominoManager.CompareShapeToImage(shape, position)) {
+                collisionImage = puzzle.GetCollisionImage().MoveImageToTopLeftCorner();
+                if (collisionShape.MoveImageToTopLeftCorner() == collisionImage) {
                     result = puzzle;
                     return true;
                 }
@@ -156,7 +157,6 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
             // no puzzle found
             result = null;
-            position = default;
             return false;
         }
 
@@ -237,13 +237,13 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             return new BinaryImage(collisions);
         }
 
-        private void TryDrawingTetrominoShadow(TetrominoShape shape)
+        private void TryDrawingTetrominoShadow(DraggableTetromino collidingTetromino)
         {
             // find collisions
-            BinaryImage collisionImage = GetCollisionImage();
+            BinaryImage collisionImage = GetCollisionImage().MoveImageToTopLeftCorner();
 
             // decide whether to draw shadow or not
-            bool shouldDrawShadow = TetrominoManager.CompareShapeToImage(shape, collisionImage);
+            bool shouldDrawShadow = collisionImage == collidingTetromino.GetConfiguration().MoveImageToTopLeftCorner();
 
             for (int i = 0; i < _puzzleCells.Length; i++) {
                 // if already filled/colored --> skip

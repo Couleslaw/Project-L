@@ -137,6 +137,30 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
         }
 
+        public BinaryImage GetConfiguration()
+        {
+            BinaryImage baseConf = TetrominoManager.GetImageOf(_shape);
+
+            // check if flipped 
+            if (transform.localScale.x < 0) {
+                baseConf = baseConf.FlipHorizontally();
+            }
+
+            // check if rotated - first 
+            int angle = (int)transform.rotation.eulerAngles.z;
+            // modulo angle to 0 - 360 degrees
+            angle = (angle % 360 + 360) % 360;
+            // get nearest right angle
+            angle = Mathf.RoundToInt(angle / 90f) * 90;
+
+            // rotate the image
+            for (int i = 0; i < angle / 90f; i++) {
+                baseConf = baseConf.RotateLeft();
+            }
+
+            return baseConf;
+        }
+
         public void PlaceToPosition(Vector3 center)
         {
             if (_mode == Mode.Animation) {
@@ -154,6 +178,22 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
             _isMouseOver = true;
+
+            // if right mouse button --> the tetromino should flip
+            // this is handled with GameManager controls
+            if (eventData.button == PointerEventData.InputButton.Right) {
+                return;
+            }
+
+            // if middle button --> remove from scene
+            if (eventData.button == PointerEventData.InputButton.Middle) {
+                // first let listeners know that the tetromino was clicked
+                OnStartDraggingEventHandler?.Invoke(this);
+                RemoveFromScene();
+                return;
+            }
+
+            // else start dragging 
             StartDragging();
         }
 
@@ -482,19 +522,51 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
             // rotate and flip the tetromino to match the placement
             var transformation = GetTransformation(TetrominoManager.GetImageOf(Shape), action.Position);
-            if (transformation.Item1) {
-                transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
-            }
-            transform.rotation = Quaternion.Euler(0f, 0f, transformation.Item2);
 
-            // move to the goal position
+            // calculate goal scale
+            Vector3 goalScale = transform.localScale;
+            if (transformation.Item1) {
+                goalScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+            }
+            // goal rotation
+            float goalRotation = transformation.Item2;
+
+            // animation plan:
+            // 0/6: start moving, 1/6 : flip, 2/6: start rotation, 5/6: end rotation, 6/6: arrive at goal position
+
+            float tFlip = 1f / 6f;
+            float tStartRotate = 2f / 6f;
+            float tEndRotate = 5f / 6f;
+
+            // remember original params
+            float originalRotation = transform.rotation.eulerAngles.z;
+            float originalDistance = Vector2.Distance(transform.position, goalPosition);
+            bool isFlipped = false;
+
             Vector2 currentPos = transform.position;
 
             while (!cancellationToken.IsCancellationRequested) {
                 float delta = Time.fixedDeltaTime * _animationMovementSpeed * AnimationSpeed.Multiplier;
                 currentPos = Vector2.MoveTowards(currentPos, goalPosition, delta);
                 SetPosition(currentPos);
-                if (Vector2.Distance(currentPos, goalPosition) < 0.1f) {
+
+                float distance = Vector2.Distance(currentPos, goalPosition);
+
+                // calculate how far in the animation are we
+                float t = Mathf.InverseLerp(originalDistance, 0f, distance);
+
+                // flip
+                if (t >= tFlip && !isFlipped) {
+                    isFlipped = true;
+                    transform.localScale = goalScale;
+                }
+
+                // rotation
+                float angle = Mathf.LerpAngle(originalRotation, goalRotation, Mathf.InverseLerp(tStartRotate, tEndRotate, t));
+                transform.rotation = Quaternion.Euler(0f, 0f, angle);
+
+                // if tetromino is close enough to the goal position --> snap to it
+                if (distance < 0.1f) {
                     SetPosition(goalPosition);
                     break;
                 }

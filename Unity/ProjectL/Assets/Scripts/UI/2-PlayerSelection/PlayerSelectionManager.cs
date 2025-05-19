@@ -21,8 +21,10 @@ namespace ProjectL.UI.PlayerSelection
         #region Constants
 
         private const int _sliderMultiplier = 5;
+        
+        private const int _minNumInitialTetrominos = 5;
 
-        private const int _maxNumInitialTetrominos = 30;
+        private const int _maxNumInitialTetrominos = 25;
 
         #endregion
 
@@ -158,9 +160,9 @@ namespace ProjectL.UI.PlayerSelection
             shuffleCheckbox.isOn = GameSettings.ShufflePlayersDefault;
 
             // number of pieces slider
-            numPiecesSlider.minValue = GameState.MinNumInitialTetrominos / _sliderMultiplier;
+            numPiecesSlider.minValue = _minNumInitialTetrominos / _sliderMultiplier;
             numPiecesSlider.maxValue = _maxNumInitialTetrominos / _sliderMultiplier;
-            numPiecesSlider.value = GameSettings.NumInitialTetrominosDefault / _sliderMultiplier;
+            numPiecesSlider.value = GameSettings.DefaultNumInitialTetrominos / _sliderMultiplier;
         }
 
         /// <summary>

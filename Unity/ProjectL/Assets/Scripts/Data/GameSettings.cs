@@ -14,7 +14,7 @@ namespace ProjectL.Data
         /// <summary>
         /// The default number of initial Tetrominos.
         /// </summary>
-        public const int NumInitialTetrominosDefault = 15;
+        public const int DefaultNumInitialTetrominos = 15;
 
         /// <summary>
         /// The default value indicating whether players should be shuffled.
@@ -37,9 +37,9 @@ namespace ProjectL.Data
         #region Properties
 
         /// <summary>
-        /// The number of initial Tetrominos. Defaults to <see cref="NumInitialTetrominosDefault"/>.
+        /// The number of initial Tetrominos. Defaults to <see cref="DefaultNumInitialTetrominos"/>.
         /// </summary>
-        public static int NumInitialTetrominos { get; set; } = NumInitialTetrominosDefault;
+        public static int NumInitialTetrominos { get; set; } = DefaultNumInitialTetrominos;
 
         /// <summary>
         /// Indicates whether players should be shuffled. Defaults to <see cref="ShufflePlayersDefault"/>.
@@ -70,7 +70,7 @@ namespace ProjectL.Data
         /// </summary>
         public static void Reset()
         {
-            NumInitialTetrominos = NumInitialTetrominosDefault;
+            NumInitialTetrominos = DefaultNumInitialTetrominos;
             ShufflePlayers = ShufflePlayersDefault;
             Players.Clear();
         }
