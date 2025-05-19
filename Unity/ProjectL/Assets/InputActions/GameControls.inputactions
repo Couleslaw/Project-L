@@ -24,6 +24,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "CancelAction",
+                    "type": "Button",
+                    "id": "15f6e7b8-3f9b-4ba9-9899-77396bb6bbd3",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "ClickPlace",
                     "type": "Button",
                     "id": "381a0ad8-9052-4750-a1bd-2d8b7a1e3e30",
@@ -133,6 +142,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "ConfirmAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1218a03a-2c16-4db3-b00a-c760f6f44557",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CancelAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0c16223a-ae61-4e7e-9ca7-4e6a8caed678",
+                    "path": "<Keyboard>/backspace",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CancelAction",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

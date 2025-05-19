@@ -5,6 +5,7 @@ namespace ProjectL.Data
     using ProjectLCore.GamePieces;
     using ProjectLCore.Players;
     using System.Collections.Generic;
+    using UnityEngine;
 
 
     /// <summary>
@@ -70,6 +71,7 @@ namespace ProjectL.Data
         /// <param name="puzzle">The puzzle that was not finished.</param>
         public static void AddUnfinishedPuzzle(Player player, Puzzle puzzle)
         {
+            Debug.Log($"Added unfinished puzzle for player {player.Name}, id={puzzle.Id}");
             if (!PlayerStats.ContainsKey(player)) {
                 PlayerStats.Add(player, new Stats());
             }
@@ -81,8 +83,9 @@ namespace ProjectL.Data
         /// </summary>
         /// <param name="player">The player who placed the tetromino.</param>
         /// <param name="tetromino">The tetromino shape.</param>
-        public static void AddFinishingTouchTetromino(Player player, TetrominoShape tetromino)
+        public static void AddFinishingTouchesTetromino(Player player, TetrominoShape tetromino)
         {
+            Debug.Log($"Added finishing touches tetromino for player {player.Name}, shape={tetromino}");
             if (!PlayerStats.ContainsKey(player)) {
                 PlayerStats.Add(player, new Stats());
             }
@@ -101,41 +104,22 @@ namespace ProjectL.Data
             /// <summary>
             /// A list of puzzles that the player has finished.
             /// </summary>
-            public List<Puzzle> FinishedPuzzles;
+            public List<Puzzle> FinishedPuzzles = new();
 
             /// <summary>
             /// A list of puzzles that the player has started but did not finished.
             /// </summary>
-            public List<Puzzle> UnfinishedPuzzles;
+            public List<Puzzle> UnfinishedPuzzles = new();
 
             /// <summary>
             /// A list of tetromino shapes that the player placed during finishing touches.
             /// </summary>
-            public List<TetrominoShape> FinishingTouchesTetrominos;
+            public List<TetrominoShape> FinishingTouchesTetrominos = new();
 
             /// <summary>
             /// The number of leftover tetrominos that the player has at the end of the game.
             /// </summary>
-            public int NumLeftoverTetrominos;
-
-            #endregion
-
-            #region Constructors
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="Stats"/> class.
-            /// </summary>
-            /// <param name="finishedPuzzles">Optional list of finished puzzles.</param>
-            /// <param name="unfinishedPuzzles">Optional list of unfinished puzzles.</param>
-            /// <param name="finishingTouchesTetrominos">Optional list of finishing touches tetrominos.</param>
-            /// <param name="numLeftoverTetrominos">Optional number of leftover tetrominos.</param>
-            public Stats(List<Puzzle>? finishedPuzzles = null, List<Puzzle>? unfinishedPuzzles = null, List<TetrominoShape>? finishingTouchesTetrominos = null, int numLeftoverTetrominos = 0)
-            {
-                FinishedPuzzles = finishedPuzzles ?? new List<Puzzle>();
-                UnfinishedPuzzles = unfinishedPuzzles ?? new List<Puzzle>();
-                FinishingTouchesTetrominos = finishingTouchesTetrominos ?? new List<TetrominoShape>();
-                NumLeftoverTetrominos = numLeftoverTetrominos;
-            }
+            public int NumLeftoverTetrominos = 0;
 
             #endregion
         }

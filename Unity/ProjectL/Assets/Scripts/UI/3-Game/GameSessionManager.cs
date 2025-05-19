@@ -23,8 +23,7 @@ namespace ProjectL.UI.GameScene.Management
     using Unity.VisualScripting;
     using System.Threading;
     using ProjectL.UI.GameScene.Actions;
-
-
+    using ProjectL.UI.Animation;
 
     public class GameSessionManager : StaticInstance<GameSessionManager>
     {
@@ -65,12 +64,14 @@ namespace ProjectL.UI.GameScene.Management
             var cancellationToken = destroyCancellationToken;
 
             _aiPlayerAnimator.Init(_game);
-            InitializePlayersAsync(_game.Players, _game.GameState, cancellationToken);
+            InitializePlayersAsync(cancellationToken);
             await InitializeGameAsync(cancellationToken);
 
             // game loop
             GameSummary.Clear();
             await GameLoopAsync(cancellationToken);
+
+            await AnimationManager.WaitForScaledDelay(1f);
 
             // final results
             if (!cancellationToken.IsCancellationRequested) {
@@ -80,7 +81,7 @@ namespace ProjectL.UI.GameScene.Management
             }
         }
 
-  
+
         private void Update()
         {
             if (GameErrorHandler.ShouldEndGameWithError && !GameErrorHandler.EndedGameWithError) {
@@ -213,23 +214,23 @@ namespace ProjectL.UI.GameScene.Management
         /// </summary>
         /// <param name="players">List of players to initialize.</param>
         /// <param name="gameState">The game state.</param>
-        private void InitializePlayersAsync(Player[] players, GameState gameState, CancellationToken cancellationToken)
+        private void InitializePlayersAsync(CancellationToken cancellationToken)
         {
             if (GameErrorHandler.ShouldEndGameWithError) {
                 return;
             }
 
-            foreach (Player player in players) {
+            foreach (Player player in _game!.Players) {
                 if (player is HumanPlayer humanPlayer) {
-                    HumanPlayerActionCreator.Instance.RegisterPlayer(humanPlayer);
+                    HumanPlayerActionCreator.Instance.RegisterPlayer(humanPlayer, _game.PlayerStates[humanPlayer]);
                 }
                 else if (player is AIPlayerBase aiPlayer) {
                     // initialize AI player
                     string? initPath = GameSettings.Players[player.Name].InitPath;
                     string pathStr = string.IsNullOrEmpty(initPath) ? "None" : initPath;
                     Debug.Log($"Initializing AI player {player.Name}. Init file: {pathStr}");
-                    
-                    aiPlayer.InitAsync(players.Length, gameState.GetAllPuzzlesInGame(), initPath, cancellationToken)
+
+                    aiPlayer.InitAsync(_game.Players.Length, _game.GameState.GetAllPuzzlesInGame(), initPath, cancellationToken)
                         .ContinueWith(t => {
                             if (t.Exception != null) {
                                 GameErrorHandler.FatalErrorOccurred($"Initialization of player {player.Name} failed: {t.Exception.InnerException?.Message}");
@@ -359,7 +360,7 @@ namespace ProjectL.UI.GameScene.Management
                 }
                 await _game.ProcessActionAsync(action);
 
-                // if not Finishing touches --> log finished puzzles
+                // if not finishing touches --> log finished puzzles
                 if (_game.CurrentGamePhase != GamePhase.FinishingTouches) {
                     while (_game.TryGetNextPuzzleFinishedBy(_game.CurrentPlayer, out var finishedPuzzleInfo)) {
                         LogPlayerFinishedPuzzle(finishedPuzzleInfo);
@@ -369,7 +370,7 @@ namespace ProjectL.UI.GameScene.Management
 
                 // if finishing touches --> log used tetrominos
                 if (_game.CurrentGamePhase == GamePhase.FinishingTouches && action is PlaceTetrominoAction a) {
-                    GameSummary.AddFinishingTouchTetromino(_game.CurrentPlayer, a.Shape);
+                    GameSummary.AddFinishingTouchesTetromino(_game.CurrentPlayer, a.Shape);
                 }
             }
 
@@ -380,7 +381,6 @@ namespace ProjectL.UI.GameScene.Management
                             : new DoNothingAction();
             }
         }
-
 
         private void LogPlayerGetActionThrownException(string message)
         {

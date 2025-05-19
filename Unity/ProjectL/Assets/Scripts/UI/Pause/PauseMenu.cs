@@ -11,6 +11,7 @@ namespace ProjectL.UI.Pause
     using ProjectL.Management;
     using ProjectL.UI.Sound;
     using ProjectLCore.GameLogic;
+    using ProjectLCore.GameManagers;
 
     /// <summary>
     /// Manages the PauseMenu prefab.
@@ -29,8 +30,9 @@ namespace ProjectL.UI.Pause
 
         [Header("Turn Info")]
         [SerializeField] private TextMeshProUGUI? currentPlayerLabel;
-        [SerializeField] private TextMeshProUGUI? actionsLeftLabel;
         [SerializeField] private TextMeshProUGUI? gamePhaseLabel;
+        [SerializeField] private TextMeshProUGUI? actionsLeftValueLabel;
+        [SerializeField] private TextMeshProUGUI? actionsLeftTitleLabel;
 
         [Header("Score Info")]
         [SerializeField] private Toggle? scoreToggle;
@@ -126,7 +128,7 @@ namespace ProjectL.UI.Pause
         private void Awake()
         {
             // check if all required components are assigned
-            if (currentPlayerLabel == null || actionsLeftLabel == null || gamePhaseLabel == null ||
+            if (currentPlayerLabel == null || actionsLeftValueLabel == null || actionsLeftTitleLabel == null || gamePhaseLabel == null ||
                 scoreToggle == null || scoreNamesLabel == null || scoreValuesLabel == null ||
                 animationSpeedSliderValueLabel == null || animationSpeedSlider == null) {
                 Debug.LogError("PauseMenuManager: One or more required UI elements are not assigned.");
@@ -146,10 +148,9 @@ namespace ProjectL.UI.Pause
 
         private void OnEnable()
         {
-            if (currentPlayerLabel == null || actionsLeftLabel == null || gamePhaseLabel == null || scoreNamesLabel == null || scoreValuesLabel == null || scorePanel == null || turnInfoPanel == null) {
+            if (currentPlayerLabel == null || actionsLeftValueLabel == null || gamePhaseLabel == null || scoreNamesLabel == null || scoreValuesLabel == null || scorePanel == null || turnInfoPanel == null) {
                 return;
             }
-
 
             // toggle visibility of game related UI elements
             scorePanel.SetActive(RuntimeGameInfo.IsGameInProgress);
@@ -160,10 +161,12 @@ namespace ProjectL.UI.Pause
                 return;
             }
 
-            // update turn info
+            // update player name and game phase
             currentPlayerLabel.text = gameInfo.PlayerName;
-            actionsLeftLabel.text = gameInfo.CurrentTurnInfo.NumActionsLeft.ToString();
             gamePhaseLabel.text = GetGamePhaseString(gameInfo.CurrentTurnInfo);
+            
+            // update number of actions left
+            UpdateNumActionsLabel(gameInfo.CurrentTurnInfo);
 
             // update player scores
             scoreNamesLabel.text = string.Empty;
@@ -183,7 +186,56 @@ namespace ProjectL.UI.Pause
                 GamePhase.Finished => "Game ended",
                 _ => "Unknown"
             };
-        } 
+        }
+
+        private void UpdateNumActionsLabel(TurnInfo turnInfo)
+        {
+            if (actionsLeftValueLabel == null || actionsLeftTitleLabel == null) {
+                return;  // safety check
+            }
+
+            // don't display actions left in finishing touches / when game is finished
+            if (turnInfo.GamePhase == GamePhase.FinishingTouches || turnInfo.GamePhase == GamePhase.Finished) {
+                actionsLeftValueLabel.gameObject.SetActive(false);
+                actionsLeftTitleLabel.gameObject.SetActive(false);
+                return;
+            }
+
+            // get number of actions left
+            // if 0 --> this means that the game has not initialized yet - dealing cards animation is playing
+            // change to max (3) - first player didn't take any actions yet
+            int numActions = turnInfo.NumActionsLeft;
+            if (numActions == 0) {
+                numActions = TurnManager.NumActionsInTurn;
+            }
+
+            // update text and color
+            actionsLeftValueLabel.gameObject.SetActive(true);
+            actionsLeftTitleLabel.gameObject.SetActive(true);
+            actionsLeftValueLabel.text = GetActionsLeftString(numActions);
+            actionsLeftValueLabel.color = GetActionsLeftColor(numActions);
+        }
+
+        private string GetActionsLeftString(int numActions)
+        {
+            if (numActions == 0) {
+                return "No actions left";
+            }
+            if (numActions == 1) {
+                return "1 Action left";
+            }
+            return numActions.ToString() + " Actions left";
+        }
+
+        private Color GetActionsLeftColor(int numActions)
+        {
+            return (numActions) switch {
+                1 => new(0.898f, 0.451f, 0.451f),  // red
+                2 => new(1.0f, 0.718f, 0.302f),    // orange
+                3 => new(0.4f, 0.792f, 0.416f),    // green
+                _ => Color.white
+            };
+        }
 
         #endregion
     }

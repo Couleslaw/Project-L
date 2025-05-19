@@ -23,6 +23,11 @@ namespace UI.GameScene
             SceneLoader.Instance?.LoadFinalResultsAsync();
         }
 
+        private void Start()
+        {
+            SoundManager.Instance?.PlaySoftTapSoundEffect();
+        }
+
         #endregion
     }
 }

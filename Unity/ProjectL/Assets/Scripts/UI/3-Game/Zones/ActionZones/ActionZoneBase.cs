@@ -27,10 +27,17 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
         [SerializeField] protected Button? _confirmButton;
 
         private PlayerMode _playerMode = PlayerMode.NonInteractive;
+        private ActionMode _actionMode;
 
         #endregion
 
         public bool CanConfirmAction {
+            get {
+                if (_confirmButton == null) {
+                    return false;
+                }
+                return _confirmButton.interactable && _playerMode == PlayerMode.Interactive;
+            }
             set {
                 if (_confirmButton != null) {
                     _confirmButton.interactable = value && _playerMode == PlayerMode.Interactive;
@@ -38,18 +45,34 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             }
         }
 
-        private bool _canSelectReward = false;
-        private ActionMode _actionMode;
-
         public bool CanSelectReward {
-            get => _canSelectReward;
+            get {
+                if (_selectRewardButton == null) {
+                    return false;
+                }
+                return _selectRewardButton.interactable && _actionMode == ActionMode.RewardSelection;
+            }
             set {
-                _canSelectReward = value;
                 if (_selectRewardButton != null) {
                     _selectRewardButton.interactable = value && _actionMode == ActionMode.RewardSelection;
                 }
             }
         }
+
+        protected bool CanUseFinishingTouchesButton {
+            get {
+                if (_finishingTouchesButton == null) {
+                    return false;
+                }
+                return _finishingTouchesButton.interactable && _actionMode == ActionMode.FinishingTouches;
+            }
+            set {
+                if (_finishingTouchesButton != null) {
+                    _finishingTouchesButton.interactable = value && _actionMode == ActionMode.FinishingTouches;
+                }
+            }
+        }
+
 
         #region Methods
 
@@ -67,6 +90,8 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
         public void SetActionMode(ActionMode mode)
         {
             _actionMode = mode;
+            SetDefaultButtonsIntractability();
+
             switch (mode) {
                 case ActionMode.ActionCreation:
                     SetNormalMode();
@@ -85,9 +110,14 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
         public virtual void SetPlayerMode(PlayerMode mode)
         {
             _playerMode = mode;
-            _finishingTouchesButton!.interactable = _playerMode == PlayerMode.Interactive;
-            CanSelectReward = false;
+            SetDefaultButtonsIntractability();
+        }
+
+        private void SetDefaultButtonsIntractability()
+        {
             CanConfirmAction = false;
+            CanSelectReward = false;
+            CanUseFinishingTouchesButton = _playerMode == PlayerMode.Interactive && _actionMode == ActionMode.FinishingTouches;
         }
 
         public abstract void EnabledButtonsBasedOnGameState(GameState.GameInfo gameInfo, PlayerState.PlayerInfo playerInfo, TurnInfo turnInfo);
@@ -123,29 +153,18 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _finishingTouchesButton.onClick.AddListener(SoundManager.Instance!.PlayButtonClickSound);
 
             HumanPlayerActionCreator.RegisterController(this);
-            if (GameManager.Controls != null) {
-                GameManager.Controls.Gameplay.ConfirmAction.performed += SimulateConfirmActionClick;
-            }
         }
 
-        private void OnDestroy()
+        public void SimulateConfirmActionClick()
         {
-            if (GameManager.Controls != null) {
-                GameManager.Controls.Gameplay.ConfirmAction.performed -= SimulateConfirmActionClick;
+            if (CanConfirmAction) {
+                StartCoroutine(SimulateClickCoroutine(_confirmButton!));
             }
-        }
-
-        private void SimulateConfirmActionClick(InputAction.CallbackContext ctx)
-        {
-            if (_confirmButton != null && _confirmButton.interactable) {
-                StartCoroutine(SimulateClickCoroutine(_confirmButton));
+            else if (CanSelectReward) {
+                StartCoroutine(SimulateClickCoroutine(_selectRewardButton!));
             }
-            else if (_selectRewardButton != null && _selectRewardButton.interactable) {
-                Debug.Log("Simulating click on select reward button");
-                StartCoroutine(SimulateClickCoroutine(_selectRewardButton));
-            }
-            else if (_finishingTouchesButton != null && _finishingTouchesButton.interactable) {
-                StartCoroutine(SimulateClickCoroutine(_finishingTouchesButton));
+            else if (CanUseFinishingTouchesButton) {
+                StartCoroutine(SimulateClickCoroutine(_finishingTouchesButton!));
             }
         }
 
@@ -157,7 +176,6 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _finishingTouchesButton.gameObject.SetActive(true);
             _selectRewardButton.gameObject.SetActive(false);
             _actionButtonsPanel.SetActive(false);
-            _finishingTouchesButton.interactable = _playerMode == PlayerMode.Interactive;
         }
 
         private void SetNormalMode()
@@ -168,7 +186,6 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _finishingTouchesButton.gameObject.SetActive(false);
             _selectRewardButton.gameObject.SetActive(false);
             _actionButtonsPanel.SetActive(true);
-            CanConfirmAction = false;
         }
 
         private void SetSelectRewardMode()
@@ -179,7 +196,6 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _finishingTouchesButton.gameObject.SetActive(false);
             _selectRewardButton.gameObject.SetActive(true);
             _actionButtonsPanel.SetActive(false);
-            CanSelectReward = false;
         }
 
         private IEnumerator SimulateClickCoroutine(Button targetButton)

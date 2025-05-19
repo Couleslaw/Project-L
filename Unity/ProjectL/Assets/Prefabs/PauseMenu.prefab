@@ -2614,8 +2614,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentPlayerLabel: {fileID: 7132836616215607181}
-  actionsLeftLabel: {fileID: 6783379729168320231}
   gamePhaseLabel: {fileID: 3986687766683412910}
+  actionsLeftValueLabel: {fileID: 6783379729168320231}
+  actionsLeftTitleLabel: {fileID: 562187531598635497}
   scoreToggle: {fileID: 7412674192047255282}
   scoreNamesLabel: {fileID: 8786126229634648714}
   scoreValuesLabel: {fileID: 491339423520274752}

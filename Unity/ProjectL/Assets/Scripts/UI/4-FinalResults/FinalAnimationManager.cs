@@ -120,11 +120,11 @@ namespace ProjectL.UI.FinalResults
             }
             await Task.WhenAll(tasks);
 
-            // animate tetrominos
+            // animate finishing touches
             tasks.Clear();
             cancellationToken.ThrowIfCancellationRequested();
             foreach (var playerColumn in _playerStatsColumns) {
-                tasks.Add(playerColumn.AnimateTetrominosAsync(cancellationToken));
+                tasks.Add(playerColumn.AnimateFinishingTouchesAsync(cancellationToken));
             }
             await Task.WhenAll(tasks);
 
@@ -171,12 +171,10 @@ namespace ProjectL.UI.FinalResults
             // show final results panel
             finalResultsPanel.alpha = 1;
 
-            // show final results table rows - starting with last player
-            float delay = 1f;
-            for (int i = _finalResultsRows.Count - 1; i >= 0; i--) {
-                await AnimationManager.WaitForScaledDelayAndPlayTapSound(delay, cancellationToken);
-                _finalResultsRows[i].Show();
-                delay += 0.3f;
+            // show final results table rows
+            foreach (var row in _finalResultsRows) {
+                await AnimationManager.WaitForScaledDelayAndPlayTapSound(1f, cancellationToken);
+                row.Show();
             }
 
             // show home button

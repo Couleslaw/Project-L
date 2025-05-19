@@ -123,7 +123,7 @@ namespace ProjectL.UI.GameScene.Actions
 
         protected override async Task ProcessActionAsync(PlaceTetrominoAction action, CancellationToken cancellationToken)
         {
-            await AnimationManager.WaitForScaledDelay(_initialDelay, cancellationToken);
+            await AnimationManager.WaitForScaledDelay(1.5f * _initialDelay, cancellationToken);
 
             var tetromino = await AnimatePlaceMovement(action, cancellationToken);
         }

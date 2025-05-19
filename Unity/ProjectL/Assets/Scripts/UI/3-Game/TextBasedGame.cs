@@ -111,7 +111,7 @@ namespace ProjectL.UI.GameScene
 
                 // if finishing touches --> log used tetrominos
                 if (game.CurrentGamePhase == GamePhase.FinishingTouches && action is PlaceTetrominoAction a) {
-                    GameSummary.AddFinishingTouchTetromino(game.CurrentPlayer, a.Shape);
+                    GameSummary.AddFinishingTouchesTetromino(game.CurrentPlayer, a.Shape);
                 }
 
                 // if interactive - await for continue button click

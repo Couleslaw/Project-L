@@ -6,11 +6,8 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
     using System;
     using UnityEngine;
     using ProjectL.UI.GameScene.Actions;
-    using System.Collections.Generic;
-    using System.Linq;
-    using UnityEngine.Android;
-    using System.Runtime.CompilerServices;
-    using UnityEditor.Build;
+    using ProjectL.Management;
+    using UnityEngine.InputSystem;
 
     public class ActionZonesManager : GraphicsManager<ActionZonesManager>, ICurrentTurnListener
     {
@@ -18,6 +15,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
         [SerializeField] private PuzzleActionZone? _puzzleActionZone;
         [SerializeField] private PieceActionZone? _pieceActionZone;
+        private GamePhase _currentGamePhase;
 
         public override void Init(GameCore game)
         {
@@ -50,24 +48,26 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
         public void ConnectToActionButtons(HumanPlayerActionCreator acm)
         {
-            if (_puzzleActionZone == null || _pieceActionZone == null) {
+            if (GameManager.Controls == null) {
                 return;
             }
-
             ActionButton.CancelActionEventHandler += acm.OnActionCanceled;
-            _pieceActionZone.AddListener(acm);
-            _puzzleActionZone.AddListener(acm);
+            GameManager.Controls.Gameplay.CancelAction.performed += OnCancelActionRequested;
+            GameManager.Controls.Gameplay.ConfirmAction.performed += OnConfirmActionRequested;
+            _pieceActionZone?.AddListener(acm);
+            _puzzleActionZone?.AddListener(acm);
         }
 
         public void DisconnectFromActionButtons(HumanPlayerActionCreator acm)
         {
-            if (_puzzleActionZone == null || _pieceActionZone == null) {
+            if (GameManager.Controls == null) {
                 return;
             }
-
+            GameManager.Controls.Gameplay.CancelAction.performed -= OnCancelActionRequested;
+            GameManager.Controls.Gameplay.ConfirmAction.performed -= OnConfirmActionRequested;
             ActionButton.CancelActionEventHandler -= acm.OnActionCanceled;
-            _pieceActionZone.RemoveListener(acm);
-            _puzzleActionZone.RemoveListener(acm);
+            _pieceActionZone?.RemoveListener(acm);
+            _puzzleActionZone?.RemoveListener(acm);
         }
 
         public void ConnectToSelectRewardButtons(HumanPlayerActionCreator acm)
@@ -90,8 +90,35 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
         public void ManuallyClickTakePuzzleButton() => _puzzleActionZone?.ManuallyClickTakePuzzleButton();
 
+        private void OnCancelActionRequested(InputAction.CallbackContext ctx)
+        {
+            if (HumanPlayerActionCreator.Instance != null) {
+                HumanPlayerActionCreator.Instance.OnActionCanceled();
+                ActionButton.DeselectCurrentButton();
+            }
+        }
+
+        private void OnConfirmActionRequested(InputAction.CallbackContext ctx)
+        {
+            GamePhase gamePhase = _currentGamePhase;
+
+            if (gamePhase == GamePhase.Finished) {
+                return;
+            }
+
+            // click CONFIRM / SELECT REWARD / ENF FINISHING TOUCHES
+            _pieceActionZone?.SimulateConfirmActionClick();
+
+            // if finishing touches - PuzzleActionZone has CLEAR BOARD --> dont click it
+            if (gamePhase != GamePhase.FinishingTouches) {
+                _puzzleActionZone?.SimulateConfirmActionClick();
+            }
+        }
+
         void ICurrentTurnListener.OnCurrentTurnChanged(TurnInfo currentTurnInfo)
         {
+            _currentGamePhase = currentTurnInfo.GamePhase;
+
             var gameInfo = _game!.GameState.GetGameInfo();
             var playerInfo = _game.PlayerStates[_game.CurrentPlayer].GetPlayerInfo();
 

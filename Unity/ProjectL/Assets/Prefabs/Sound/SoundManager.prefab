@@ -54,6 +54,7 @@ MonoBehaviour:
   inputLineSound: {fileID: 1147600417797558271}
   sliderSound: {fileID: 7882202250374689405}
   errorSound: {fileID: 7936477653451370194}
+  successSound: {fileID: 0}
   tapSoundEffect: {fileID: 5922312815489153262}
   softTapSoundEffect: {fileID: 474219561393881478}
 --- !u!82 &7166665175988050779

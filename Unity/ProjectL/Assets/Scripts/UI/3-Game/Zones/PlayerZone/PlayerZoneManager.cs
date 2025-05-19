@@ -6,6 +6,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
     using ProjectLCore.GameLogic;
     using ProjectLCore.Players;
     using System.Collections.Generic;
+    using Unity.VisualScripting;
     using UnityEngine;
 
     public class PlayerZoneManager : GraphicsManager<PlayerZoneManager>, ICurrentPlayerListener
@@ -24,7 +25,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
         public bool CanConfirmTakePuzzleAction {
             set {
-                var currentPlayerRow = _playerZoneRows[_currentPlayer!];
+                var currentPlayerRow = _currentPlayer != null ? _playerZoneRows[_currentPlayer] : null;
                 foreach (var row in _playerZoneRows.Values) {
                     row.CanConfirmTakePuzzleAction = value && row == currentPlayerRow;
                 }

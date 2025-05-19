@@ -112,6 +112,15 @@ namespace ProjectL.InputActions
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""CancelAction"",
+                    ""type"": ""Button"",
+                    ""id"": ""15f6e7b8-3f9b-4ba9-9899-77396bb6bbd3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""ClickPlace"",
                     ""type"": ""Button"",
                     ""id"": ""381a0ad8-9052-4750-a1bd-2d8b7a1e3e30"",
@@ -226,6 +235,28 @@ namespace ProjectL.InputActions
                 },
                 {
                     ""name"": """",
+                    ""id"": ""1218a03a-2c16-4db3-b00a-c760f6f44557"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CancelAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0c16223a-ae61-4e7e-9ca7-4e6a8caed678"",
+                    ""path"": ""<Keyboard>/backspace"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CancelAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""9d6ff9b9-8254-4936-b7f4-5af3a27086ce"",
                     ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": ""Tap"",
@@ -327,6 +358,7 @@ namespace ProjectL.InputActions
             m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
             m_Gameplay_PauseGame = m_Gameplay.FindAction("PauseGame", throwIfNotFound: true);
             m_Gameplay_ConfirmAction = m_Gameplay.FindAction("ConfirmAction", throwIfNotFound: true);
+            m_Gameplay_CancelAction = m_Gameplay.FindAction("CancelAction", throwIfNotFound: true);
             m_Gameplay_ClickPlace = m_Gameplay.FindAction("ClickPlace", throwIfNotFound: true);
             m_Gameplay_KeyboardPlace = m_Gameplay.FindAction("KeyboardPlace", throwIfNotFound: true);
             m_Gameplay_Flip = m_Gameplay.FindAction("Flip", throwIfNotFound: true);
@@ -418,6 +450,7 @@ namespace ProjectL.InputActions
         private List<IGameplayActions> m_GameplayActionsCallbackInterfaces = new List<IGameplayActions>();
         private readonly InputAction m_Gameplay_PauseGame;
         private readonly InputAction m_Gameplay_ConfirmAction;
+        private readonly InputAction m_Gameplay_CancelAction;
         private readonly InputAction m_Gameplay_ClickPlace;
         private readonly InputAction m_Gameplay_KeyboardPlace;
         private readonly InputAction m_Gameplay_Flip;
@@ -442,6 +475,10 @@ namespace ProjectL.InputActions
             /// Provides access to the underlying input action "Gameplay/ConfirmAction".
             /// </summary>
             public InputAction @ConfirmAction => m_Wrapper.m_Gameplay_ConfirmAction;
+            /// <summary>
+            /// Provides access to the underlying input action "Gameplay/CancelAction".
+            /// </summary>
+            public InputAction @CancelAction => m_Wrapper.m_Gameplay_CancelAction;
             /// <summary>
             /// Provides access to the underlying input action "Gameplay/ClickPlace".
             /// </summary>
@@ -494,6 +531,9 @@ namespace ProjectL.InputActions
                 @ConfirmAction.started += instance.OnConfirmAction;
                 @ConfirmAction.performed += instance.OnConfirmAction;
                 @ConfirmAction.canceled += instance.OnConfirmAction;
+                @CancelAction.started += instance.OnCancelAction;
+                @CancelAction.performed += instance.OnCancelAction;
+                @CancelAction.canceled += instance.OnCancelAction;
                 @ClickPlace.started += instance.OnClickPlace;
                 @ClickPlace.performed += instance.OnClickPlace;
                 @ClickPlace.canceled += instance.OnClickPlace;
@@ -526,6 +566,9 @@ namespace ProjectL.InputActions
                 @ConfirmAction.started -= instance.OnConfirmAction;
                 @ConfirmAction.performed -= instance.OnConfirmAction;
                 @ConfirmAction.canceled -= instance.OnConfirmAction;
+                @CancelAction.started -= instance.OnCancelAction;
+                @CancelAction.performed -= instance.OnCancelAction;
+                @CancelAction.canceled -= instance.OnCancelAction;
                 @ClickPlace.started -= instance.OnClickPlace;
                 @ClickPlace.performed -= instance.OnClickPlace;
                 @ClickPlace.canceled -= instance.OnClickPlace;
@@ -691,6 +734,13 @@ namespace ProjectL.InputActions
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnConfirmAction(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "CancelAction" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnCancelAction(InputAction.CallbackContext context);
             /// <summary>
             /// Method invoked when associated input action "ClickPlace" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>

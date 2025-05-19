@@ -2,6 +2,7 @@
 
 namespace ProjectL.UI.GameScene.Actions
 {
+    using ProjectL.UI.Animation;
     using ProjectL.UI.GameScene.Actions.Constructing;
     using ProjectL.UI.GameScene.Zones.ActionZones;
     using ProjectL.UI.GameScene.Zones.PieceZone;
@@ -14,6 +15,8 @@ namespace ProjectL.UI.GameScene.Actions
     using ProjectLCore.Players;
     using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using UnityEngine;
 
     public enum PlayerMode
@@ -34,7 +37,7 @@ namespace ProjectL.UI.GameScene.Actions
         ChangeTetromino,
         PlacePiece,
         MasterAction,
-        EndFinishingTouches,
+        FinishingTouches,
         SelectReward,
     }
 
@@ -89,7 +92,8 @@ namespace ProjectL.UI.GameScene.Actions
         #endregion
     }
 
-    public class HumanPlayerActionCreator : GraphicsManager<HumanPlayerActionCreator>, ICurrentTurnListener
+    public class HumanPlayerActionCreator : GraphicsManager<HumanPlayerActionCreator>, 
+        ICurrentTurnListener, IPlayerStatePuzzleFinishedAsyncListener
     {
         #region Fields
 
@@ -138,8 +142,9 @@ namespace ProjectL.UI.GameScene.Actions
 
         #region Methods
 
-        public void RegisterPlayer(HumanPlayer player)
+        public void RegisterPlayer(HumanPlayer player, PlayerState playerState)
         {
+            playerState.AddListener(this);
             player.ActionRequested += Player_ActionRequested;
             player.RewardChoiceRequested += Player_RewardChoiceRequested;
         }
@@ -180,7 +185,7 @@ namespace ProjectL.UI.GameScene.Actions
 
         public void OnPlacePieceActionRequested()
         {
-            if (_currentActionType == ActionType.MasterAction || _currentActionType == ActionType.EndFinishingTouches) {
+            if (_currentActionType == ActionType.MasterAction || _currentActionType == ActionType.FinishingTouches) {
                 return;
             }
             // force deselect action button
@@ -198,7 +203,7 @@ namespace ProjectL.UI.GameScene.Actions
         public void OnEndFinishingTouchesActionRequested()
         {
             if (CurrentActionConstructor is not PlaceTetrominoConstructor placeTetrominoConstructor) {
-                Debug.LogError("Current action constructor is not PlaceTetrominoConstructor", this);
+                Debug.LogError($"Current action constructor is not PlaceTetrominoConstructor but {CurrentActionConstructor?.GetType().Name}", this);
                 return;
             }
 
@@ -211,16 +216,33 @@ namespace ProjectL.UI.GameScene.Actions
 
         public void OnActionCanceled()
         {
-            // handle master action separately
+            // finishing touches --> only remove tetrominos from scene
+            if (_currentActionMode == ActionMode.FinishingTouches) {
+                CurrentEventSet?.RaiseCanceled();
+                CurrentEventSet?.RaiseRequested();
+                return;
+            }
+
+            // if reward selection --> cancel and reset
+            if (_currentActionMode == ActionMode.RewardSelection) {
+                ActionZonesManager.Instance.CanSelectReward = false;
+                CurrentEventSet?.RaiseCanceled();
+                CurrentEventSet?.RaiseRequested();
+                return;
+            }
+
+            // if master action --> DON'T remove pieces from scene, just turn off master logic
             if (_currentActionType == ActionType.MasterAction) {
                 SetNewActionType(ActionType.PlacePiece);
                 UpdateConfirmButtonsIntractability();
                 return;
             }
-            
+
+            // normal action --> disable action buttons and reset action
+
             ActionZonesManager.Instance.CanConfirmAction = false;
             PlayerZoneManager.Instance.CanConfirmTakePuzzleAction = false;
-            
+
             CurrentEventSet?.RaiseCanceled();
             CurrentActionConstructor?.Reset();
             _currentActionType = null;
@@ -298,7 +320,7 @@ namespace ProjectL.UI.GameScene.Actions
             var placeEventSet = new ActionEventSet<PlaceTetrominoAction>();
             _actionEventSets[ActionType.PlacePiece] = placeEventSet;
             _actionEventSets[ActionType.MasterAction] = placeEventSet;
-            _actionEventSets[ActionType.EndFinishingTouches] = placeEventSet;
+            _actionEventSets[ActionType.FinishingTouches] = placeEventSet;
 
             _actionConstructors[ActionType.TakePuzzle] = new TakePuzzleConstructor();
             _actionConstructors[ActionType.Recycle] = new RecycleConstructor();
@@ -309,13 +331,15 @@ namespace ProjectL.UI.GameScene.Actions
             var placeConstructor = new PlaceTetrominoConstructor();
             _actionConstructors[ActionType.PlacePiece] = placeConstructor;
             _actionConstructors[ActionType.MasterAction] = placeConstructor;
-            _actionConstructors[ActionType.EndFinishingTouches] = placeConstructor;
+            _actionConstructors[ActionType.FinishingTouches] = placeConstructor;
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
             _actionControllers.Clear();
+            ActionZonesManager.Instance.DisconnectFromActionButtons(this);
+            ActionZonesManager.Instance.DisconnectFromSelectRewardButton(this);
         }
 
         private void Player_ActionRequested(object? sender, HumanPlayer.GetActionEventArgs e)
@@ -330,7 +354,7 @@ namespace ProjectL.UI.GameScene.Actions
                     return;
                 }
             }
-            
+
             if (_placeActionsQueue.Count > 0) {
                 player.SetAction(_placeActionsQueue.Dequeue());
                 return;
@@ -341,9 +365,9 @@ namespace ProjectL.UI.GameScene.Actions
 
             SetPlayerMode(PlayerMode.Interactive);
 
-            if (_currentTurnInfo.GamePhase == GamePhase.EndOfTheGame) {
+            if (_currentTurnInfo.GamePhase == GamePhase.FinishingTouches) {
                 SetActionMode(ActionMode.FinishingTouches);
-                SetNewActionType(ActionType.EndFinishingTouches);
+                SetNewActionType(ActionType.FinishingTouches);
             }
             else {
                 SetActionMode(ActionMode.ActionCreation);
@@ -440,9 +464,6 @@ namespace ProjectL.UI.GameScene.Actions
                 return null;
             }
 
-            ActionZonesManager.Instance.CanConfirmAction = false;
-            ActionZonesManager.Instance.CanSelectReward = false;
-            PlayerZoneManager.Instance.CanConfirmTakePuzzleAction = false;
 
             SetPlayerMode(PlayerMode.NonInteractive);
 
@@ -460,10 +481,13 @@ namespace ProjectL.UI.GameScene.Actions
             foreach (var controller in _actionControllers) {
                 controller.SetPlayerMode(mode);
             }
-            if (mode == PlayerMode.Interactive)
+            if (mode == PlayerMode.Interactive) {
                 ActionZonesManager.Instance.ConnectToActionButtons(this);
-            if (mode == PlayerMode.NonInteractive)
+            }
+            if (mode == PlayerMode.NonInteractive) {
                 ActionZonesManager.Instance.DisconnectFromActionButtons(this);
+                PlayerZoneManager.Instance.CanConfirmTakePuzzleAction = false;
+            }
         }
 
         private void SetActionMode(ActionMode mode)
@@ -503,6 +527,20 @@ namespace ProjectL.UI.GameScene.Actions
             // update action zone if finishing touches
             if (turnInfo.GamePhase == GamePhase.FinishingTouches) {
                 SetActionMode(ActionMode.FinishingTouches);
+            }
+        }
+
+        async Task IPlayerStatePuzzleFinishedAsyncListener.OnPuzzleFinishedAsync(FinishedPuzzleInfo info, CancellationToken cancellationToken)
+        {
+            if (info.SelectedReward != null) {
+                return;
+            }
+
+            // highlight completed puzzle
+            await AnimationManager.WaitForScaledDelay(0.7f, cancellationToken);
+            var puzzleSlot = PlayerZoneManager.Instance.GetPuzzleWithId(info.Puzzle.Id)!;
+            using (puzzleSlot.CreateTemporaryPuzzleHighlighter()) {
+                await AnimationManager.WaitForScaledDelay(1f, cancellationToken);
             }
         }
 

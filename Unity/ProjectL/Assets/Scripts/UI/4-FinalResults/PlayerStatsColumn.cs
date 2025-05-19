@@ -91,15 +91,22 @@ namespace ProjectL.UI.FinalResults
         /// <summary>
         /// Animates the player's finishing touches tetrominos.
         /// </summary>
-        public async Task AnimateTetrominosAsync(CancellationToken cancellationToken)
+        public async Task AnimateFinishingTouchesAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            int count = 0;
+            int numTetrominos = _gameEndInfo!.FinishingTouchesTetrominos.Count;
             foreach (var tetromino in _gameEndInfo!.FinishingTouchesTetrominos) {
                 ShowFinishingTouches();
                 SetTetrominoSprite(tetromino);
                 UpdateScore(-1);
-                await AnimationManager.PlayTapSoundAndWaitForScaledDelay(1f, cancellationToken);
+                await AnimationManager.PlayTapSoundAndWaitForScaledDelay(0.8f, cancellationToken);
+                
+                if (++count != numTetrominos) {
+                    HideFinishingTouches();
+                }
+                await AnimationManager.WaitForScaledDelay(0.2f, cancellationToken);
             }
         }
 
@@ -152,6 +159,7 @@ namespace ProjectL.UI.FinalResults
             }
             if (ResourcesLoader.TryGetTetrominoSprite(tetromino, out Sprite? sprite)) {
                 tetrominoImage.sprite = sprite!;
+                tetrominoImage.SetNativeSize();
             }
         }
 
