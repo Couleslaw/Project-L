@@ -12,6 +12,7 @@ namespace ProjectL.UI.PlayerSelection
     using ProjectL.UI.Sound;
     using ProjectL.Data;
     using ProjectL.Management;
+    using System.Linq;
 
     /// <summary>
     /// Manages the "Player Selection" scene.
@@ -21,7 +22,7 @@ namespace ProjectL.UI.PlayerSelection
         #region Constants
 
         private const int _sliderMultiplier = 5;
-        
+
         private const int _minNumInitialTetrominos = 5;
 
         private const int _maxNumInitialTetrominos = 25;
@@ -47,6 +48,7 @@ namespace ProjectL.UI.PlayerSelection
         private Coroutine? _activeErrorCoroutine = null;
 
         private bool _didInitialize = false;
+        private bool _shouldShuffle;
 
         #endregion
 
@@ -62,7 +64,6 @@ namespace ProjectL.UI.PlayerSelection
             }
             int num = (int)value * _sliderMultiplier;
             numPiecesText.text = num.ToString();
-            GameSettings.NumInitialTetrominos = num;
             if (_didInitialize)
                 SoundManager.Instance?.PlaySliderSound();
         }
@@ -70,12 +71,12 @@ namespace ProjectL.UI.PlayerSelection
         /// <summary>
         /// Handles the value changed event for the "Shuffle players" checkbox.
         /// </summary>
-        /// <param name="shuffle"> <see langword="true"/> to shuffle players; otherwise, <see langword="false"/>.</param>
-        public void OnShuffleCheckboxValueChanged(bool shuffle)
+        /// <param name="toggled"> <see langword="true"/> to shuffle players; otherwise, <see langword="false"/>.</param>
+        public void OnShuffleCheckboxValueChanged(bool toggled)
         {
+            _shouldShuffle = toggled;
             if (_didInitialize)
                 SoundManager.Instance?.PlayButtonClickSound();
-            GameSettings.ShufflePlayers = shuffle;
         }
 
         /// <summary>
@@ -117,7 +118,13 @@ namespace ProjectL.UI.PlayerSelection
             if (_didInitialize)
                 SoundManager.Instance?.PlayButtonClickSound();
 
-            // populate GameStartParams with selected players
+            // get number of pieces from slider
+            GameSettings.NumInitialTetrominos = int.Parse(numPiecesText!.text.Trim());
+
+            // get shuffle players checkbox value
+            GameSettings.ShouldShufflePlayers = _shouldShuffle;
+
+            // populate GameSettings with selected players
             GameSettings.Players.Clear();
             foreach (var row in playerSelectionRows!) {
                 if (!row.IsEmpty()) {
@@ -135,7 +142,7 @@ namespace ProjectL.UI.PlayerSelection
             SceneLoader.Instance?.LoadGameAsync();
         }
 
-        private void Awake()
+        private void Start()
         {
             // check if all UI components are assigned
             if (numPiecesSlider == null || numPiecesText == null || startGameButton == null || shuffleCheckbox == null || errorTextBox == null) {
@@ -143,7 +150,6 @@ namespace ProjectL.UI.PlayerSelection
                 return;
             }
 
-            GameSettings.Reset();
             SetUpSettingDefaults();
             HideErrorMessageBox();
 
@@ -157,12 +163,30 @@ namespace ProjectL.UI.PlayerSelection
             }
 
             // shuffle players checkbox
-            shuffleCheckbox.isOn = GameSettings.ShufflePlayersDefault;
+            shuffleCheckbox.isOn = GameSettings.ShouldShufflePlayers;
 
             // number of pieces slider
             numPiecesSlider.minValue = _minNumInitialTetrominos / _sliderMultiplier;
             numPiecesSlider.maxValue = _maxNumInitialTetrominos / _sliderMultiplier;
-            numPiecesSlider.value = GameSettings.DefaultNumInitialTetrominos / _sliderMultiplier;
+            numPiecesSlider.value = GameSettings.NumInitialTetrominos / _sliderMultiplier;
+
+            // if there are already some players from last the last game played --> fill in the player selection rows
+
+            int i = 0;
+            List<string> lastPlayerNames = GameSettings.Players.Keys.ToList();
+            foreach (var row in playerSelectionRows!) {
+                // use i-th player name from last game played
+                if (lastPlayerNames.Count > i) {
+                    string playerName = lastPlayerNames[i];
+                    var playerType = GameSettings.Players[playerName];
+                    row.Init(playerName, playerType);
+                }
+                // if there were <= i players last game --> black selection
+                else {
+                    row.Init(null, null);
+                }
+                i++;
+            }
         }
 
         /// <summary>

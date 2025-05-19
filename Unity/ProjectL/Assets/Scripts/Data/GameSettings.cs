@@ -14,12 +14,12 @@ namespace ProjectL.Data
         /// <summary>
         /// The default number of initial Tetrominos.
         /// </summary>
-        public const int DefaultNumInitialTetrominos = 15;
+        private const int _defaultNumInitialTetrominos = 15;
 
         /// <summary>
         /// The default value indicating whether players should be shuffled.
         /// </summary>
-        public const bool ShufflePlayersDefault = true;
+        private const bool _defaultShouldShufflePlayers = true;
 
         #endregion
 
@@ -37,14 +37,14 @@ namespace ProjectL.Data
         #region Properties
 
         /// <summary>
-        /// The number of initial Tetrominos. Defaults to <see cref="DefaultNumInitialTetrominos"/>.
+        /// The number of initial Tetrominos. Defaults to <see cref="_defaultNumInitialTetrominos"/>.
         /// </summary>
-        public static int NumInitialTetrominos { get; set; } = DefaultNumInitialTetrominos;
+        public static int NumInitialTetrominos { get; set; } = _defaultNumInitialTetrominos;
 
         /// <summary>
-        /// Indicates whether players should be shuffled. Defaults to <see cref="ShufflePlayersDefault"/>.
+        /// Indicates whether players should be shuffled. Defaults to <see cref="_defaultShouldShufflePlayers"/>.
         /// </summary>
-        public static bool ShufflePlayers { get; set; } = ShufflePlayersDefault;
+        public static bool ShouldShufflePlayers { get; set; } = _defaultShouldShufflePlayers;
 
         /// <summary>
         /// Dictionary of player names and their associated player type information.
@@ -54,7 +54,7 @@ namespace ProjectL.Data
 
         public static int NumBlackPuzzles {
             get {
-                if (_numPlayersToNumBlackPuzzles.ContainsKey(Players.Count))
+                if (_numPlayersToNumBlackPuzzles.ContainsKey(Players.Count)) 
                     return _numPlayersToNumBlackPuzzles[Players.Count];
                 else
                     return 0;
@@ -63,18 +63,5 @@ namespace ProjectL.Data
 
         #endregion
 
-        #region Methods
-
-        /// <summary>
-        /// Resets all game start parameters to their default values and clears the player list.
-        /// </summary>
-        public static void Reset()
-        {
-            NumInitialTetrominos = DefaultNumInitialTetrominos;
-            ShufflePlayers = ShufflePlayersDefault;
-            Players.Clear();
-        }
-
-        #endregion
     }
 }

@@ -238,7 +238,7 @@ namespace ProjectL.UI.PlayerSelection
                 SoundManager.Instance?.PlayButtonClickSound();
         }
 
-        private void Start()
+        private void Awake()
         {
             if (playerTypeDropdown == null || playerNameInput == null || resetButton == null) {
                 Debug.LogError("Dropdown, input field or reset button is not assigned in the inspector.");
@@ -249,6 +249,29 @@ namespace ProjectL.UI.PlayerSelection
             InitializePlayerTypeDropdownOptions();
             ResetToBlankSelection();
             playerNameInput.characterLimit = NameCharacterLimit;
+        }
+
+        public void Init(string? playerName, PlayerTypeInfo? playerType)
+        {
+            if (playerName is null || playerType is null) {
+                _didInitialize = true;
+                return;
+            }
+
+            // set player name
+            playerNameInput!.text = playerName.Trim();
+
+            // set player type in dropdown
+            int index = _availablePlayerInfos.FindIndex(info => info.PlayerType == playerType.Value.PlayerType);
+            if (index >= 0) {
+                playerTypeDropdown!.SetValueWithoutNotify(index);
+                PlayerType = playerType;
+            }
+            else {
+                Debug.LogWarning($"Player type {playerType} not found in available player types.");
+                PlayerType = null;
+            }
+
             _didInitialize = true;
         }
 

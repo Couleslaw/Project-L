@@ -187,7 +187,7 @@ namespace ProjectL.UI.GameScene.Management
             }
             Debug.Log("Players created successfully.");
 
-            return new GameCore(gameState, players, GameSettings.ShufflePlayers);
+            return new GameCore(gameState, players, GameSettings.ShouldShufflePlayers);
         }
 
         private async Task InitializeGameAsync(CancellationToken cancellationToken)

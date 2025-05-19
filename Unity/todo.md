@@ -116,7 +116,7 @@
   - [x] 1. is a shorter tan 2,3,4 --> it is more to the left
 - [x] recycle - rows act as radio buttons
 - [ ] disable AI players feature on WebGL
-- [ ] prefill game creation screen with last used settings
+- [x] prefill game creation screen with last used settings
 - [x] make num actions left in pause menu colorful
 
 ### Code Cleanup
