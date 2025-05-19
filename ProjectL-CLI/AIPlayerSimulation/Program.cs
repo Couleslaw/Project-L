@@ -8,34 +8,30 @@
     using ProjectLCore.Players;
     using System;
     using System.Text;
-    using static ProjectLCore.GameLogic.GameState;
-    using static ProjectLCore.GameLogic.PlayerState;
 
     internal class Program
     {
         #region Constants
 
-        internal const uint FirstPlayerId = 0;
+        private const uint FirstPlayerId = 0;
 
-        internal const string PuzzleFilePath = "puzzles.txt";
-
-        internal const string AIPlayerFilePath = "aiplayers.ini";
+        private const string PuzzleFilePath = "puzzles.txt";
 
         #endregion
 
         #region Fields
 
-        internal readonly static string LargeSeparator = new String('X', 110);
+        private readonly static string LargeSeparator = new String('X', 110);
 
-        internal readonly static string SmallSeparator = new String('-', 95);
+        private readonly static string SmallSeparator = new String('-', 95);
 
-        internal static int RoundCount = 0;
+        private static int RoundCount = 0;
 
-        internal static bool IsInteractive = true;
+        private static bool IsInteractive = true;
 
-        internal static bool ShouldClearConsole = true;
+        private static bool ShouldClearConsole = true;
 
-        internal static bool ExitingGame = false;
+        private static bool ExitingGame = false;
 
         #endregion
 
@@ -58,20 +54,20 @@
             }
 
             // create players
-            List<Player>? players = LoadPlayers(simParams);
-            if (players == null) {
+            List<(Player, PlayerTypeInfo)>? playersAndTypes = LoadPlayers(simParams);
+            if (playersAndTypes == null) {
                 return;
             }
 
             // initialize players
             Console.WriteLine("Initializing players...\n");
-            foreach (Player player in players) {
-                if (player is AIPlayerBase aiPlayer) {
-                    Task initTask = aiPlayer.InitAsync(players.Count, gameState.GetAllPuzzlesInGame());
+            foreach (var info in playersAndTypes) {
+                if (info.Item1 is AIPlayerBase aiPlayer) {
+                    Task initTask = aiPlayer.InitAsync(playersAndTypes.Count, gameState.GetAllPuzzlesInGame(), info.Item2.InitPath);
                     // handle possible exception
                     initTask.ContinueWith(t => {
                         if (t.Exception != null) {
-                            ExitGame($"Initialization of player {player.Name} failed: {t.Exception.InnerException?.Message}");
+                            ExitGame($"Initialization of player {aiPlayer.Name} failed: {t.Exception.InnerException?.Message}");
                         }
                     });
                 }
@@ -79,7 +75,8 @@
 
             // create game core
             Console.WriteLine("\nInitializing game...");
-            var game = new GameCore(gameState, players, shufflePlayers: false);
+            List<Player> playerList = playersAndTypes.Select(x => x.Item1).ToList();
+            var game = new GameCore(gameState, playerList, shufflePlayers: false);
             game.InitializeGame();
             Console.WriteLine("Done! Starting game...\n");
 
@@ -91,7 +88,6 @@
                 // check if game ended
                 if (game.CurrentGamePhase == GamePhase.Finished) {
                     Console.WriteLine("Game ended! Clearing the playing board...\n");
-                    game.FinalizeGame();
                     break;
                 }
 
@@ -111,7 +107,7 @@
                 // get action from player
                 GameAction? action;
                 try {
-                    action = game.CurrentPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier).Result;
+                    action = game.CurrentPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier).GetAwaiter().GetResult();
                 }
                 catch (Exception e) {
                     PrintPlayerProvidedNoAction(game.CurrentPlayer, e.Message);
@@ -138,12 +134,13 @@
             }
 
             // print final results
+            game.FinalizeGame();
             var results = game.GetPlayerRankings();
             PrintGameScreenSeparator();
             PrintFinalResults(results, game);
         }
 
-        internal static void ExitGame(string message="")
+        private static void ExitGame(string message="")
         {
             if (ExitingGame == true)
                 return;
@@ -155,7 +152,7 @@
             Environment.Exit(0);
         }
 
-        internal static GameState? LoadGameStateFromFile(string filePath, SimulationParams simParams)
+        private static GameState? LoadGameStateFromFile(string filePath, SimulationParams simParams)
         {
             try {
                 return GameState.CreateFromFile<Puzzle>("puzzles.txt", simParams.NumInitialTetrominos, simParams.NumWhitePuzzles, simParams.NumBlackPuzzles);
@@ -166,10 +163,10 @@
             }
         }
 
-        internal static List<Player>? LoadPlayers(SimulationParams simParams)
+        private static List<(Player, PlayerTypeInfo)>? LoadPlayers(SimulationParams simParams)
         {
             try {
-                return ParamParser.GetPlayersFromStdIn(simParams.NumPlayers, AIPlayerFilePath);
+                return ParamParser.GetPlayersFromStdIn(simParams.NumPlayers);
             }
             catch (Exception e) {
                 ExitGame($"Failed to create players: {e.Message}");
@@ -177,7 +174,7 @@
             }
         }
 
-        internal static void PrintGameScreenSeparator()
+        private static void PrintGameScreenSeparator()
         {
             if (ShouldClearConsole) {
                 Console.Clear();
@@ -187,7 +184,7 @@
             }
         }
 
-        internal static void PrintTurnInfo(Player currentPlayer, TurnInfo turnInfo)
+        private static void PrintTurnInfo(Player currentPlayer, TurnInfo turnInfo)
         {
             // check if new round
             if (currentPlayer.Id == FirstPlayerId && turnInfo.NumActionsLeft == TurnManager.NumActionsInTurn) {
@@ -196,10 +193,10 @@
             // print turn info
             int actionNum = TurnManager.NumActionsInTurn - turnInfo.NumActionsLeft + 1;
             Console.WriteLine($"Round: {RoundCount}, Current player: {currentPlayer.Name} ({currentPlayer.GetType().Name}), Action: {actionNum}");
-            Console.WriteLine($"TurnInfo: GamePhase={turnInfo.GamePhase}, LastRound={turnInfo.LastRound}, TookBlackPuzzle={turnInfo.TookBlackPuzzle}, UsedMaster={turnInfo.UsedMasterAction}");
+            Console.WriteLine(turnInfo.ToString());
         }
 
-        internal static void PrintFinishedPuzzleInfo(FinishedPuzzleInfo puzzleInfo, Player currentPlayer)
+        private static void PrintFinishedPuzzleInfo(FinishedPuzzleInfo puzzleInfo, Player currentPlayer)
         {
             Console.WriteLine($"{currentPlayer.Name} completed puzzle with ID={puzzleInfo.Puzzle.Id}");
             Console.WriteLine($"   Returned pieces: {GetUsedTetrominos()}");
@@ -238,7 +235,7 @@
             }
         }
 
-        internal static void PrintGameScreen(GameInfo gameInfo, PlayerInfo[] playerInfos, GameCore game)
+        private static void PrintGameScreen(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, GameCore game)
         {
             Console.WriteLine(SmallSeparator);
             Console.Write(gameInfo);
@@ -252,7 +249,7 @@
             Console.WriteLine();
         }
 
-        internal static void PrintPlayerProvidedNoAction(Player player, string message)
+        private static void PrintPlayerProvidedNoAction(Player player, string message)
         {
             Console.WriteLine($"{player.Name} failed to provide an action with error: {message}.\nSkipping action...");
             if (IsInteractive) {
@@ -264,7 +261,7 @@
             }
         }
 
-        internal static void PrintPlayerProvidedInvalidAction(GameAction action, VerificationFailure fail, Player player)
+        private static void PrintPlayerProvidedInvalidAction(GameAction action, VerificationFailure fail, Player player)
         {
             Console.WriteLine($"{player.Name} provided an invalid {action.GetType()}. Verification result:\n{fail.GetType()}: {fail.Message}\n");
             Console.WriteLine("Skipping action...");
@@ -277,7 +274,7 @@
             }
         }
 
-        internal static void PrintPlayerProvidedValidAction(GameAction action, Player player)
+        private static void PrintPlayerProvidedValidAction(GameAction action, Player player)
         {
             Console.WriteLine($"{player.Name} used a {action}\n");
             if (IsInteractive) {
@@ -289,14 +286,14 @@
             }
         }
 
-        internal static void PrintFinalResults(Dictionary<Player, int> results, GameCore game)
+        private static void PrintFinalResults(Dictionary<Player, int> results, GameCore game)
         {
             Console.WriteLine("Getting final results...\n");
             Console.WriteLine(SmallSeparator);
 
             foreach (var item in results) {
                 var info = game.PlayerStates[item.Key].GetPlayerInfo();
-                Console.WriteLine($" {item.Value}. | {item.Key.Name,-8} | Score: {info.Score,2}, Number of finished puzzles: {info.FinishedPuzzlesIds.Count,2}, Number of leftover tetrominos: {info.NumTetrominosOwned.Sum(),2}");
+                Console.WriteLine($" {item.Value}. | {item.Key.Name,-10} | Score: {info.Score,2}, Number of finished puzzles: {info.FinishedPuzzlesIds.Count,2}, Number of leftover tetrominos: {info.NumTetrominosOwned.Sum(),2}");
             }
             Console.WriteLine(SmallSeparator);
 

@@ -53,6 +53,28 @@
         /// </summary>
         public bool LastRound { get; set; }
 
+        /// <summary>
+        /// Converts to string.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            string str = $"TurnInfo: NumActionsLeft={NumActionsLeft}, GamePhase={GamePhase}";
+            // add flags
+            if (LastRound) {
+                str += ", IsLastRound";
+            }
+            if (UsedMasterAction) {
+                str += ", UsedMasterAction";
+            }
+            if (TookBlackPuzzle) {
+                str += ", TookBlackPuzzle";
+            }
+            return str;
+        }
+
         #endregion
     }
 }
