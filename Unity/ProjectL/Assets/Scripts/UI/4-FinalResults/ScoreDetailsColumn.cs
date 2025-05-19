@@ -2,11 +2,12 @@
 
 namespace ProjectL.UI.FinalResults
 {
+    using ProjectL.Data;
+    using ProjectL.UI.Animation;
     using System.Threading;
     using System.Threading.Tasks;
     using TMPro;
     using UnityEngine;
-    using ProjectL.Data;
 
     public class ScoreDetailsColumn : MonoBehaviour
     {
@@ -38,15 +39,13 @@ namespace ProjectL.UI.FinalResults
         /// </summary>
         public async Task AnimateAsync(CancellationToken cancellationToken)
         {
-            if (cancellationToken.IsCancellationRequested) {
-                return;
-            }
+            cancellationToken.ThrowIfCancellationRequested();
 
             ShowNumPuzzles();
-            await FinalAnimationManager.WaitForAnimationDelayAndPlaySound(cancellationToken);
+            await AnimationManager.PlayTapSoundAndWaitForScaledDelay(1f, cancellationToken);
 
             ShowNumTetrominos();
-            await FinalAnimationManager.WaitForAnimationDelayAndPlaySound(cancellationToken);
+            await AnimationManager.PlayTapSoundAndWaitForScaledDelay(1f, cancellationToken);
         }
 
         private void Awake()

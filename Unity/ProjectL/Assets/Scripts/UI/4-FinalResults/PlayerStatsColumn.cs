@@ -2,8 +2,9 @@
 
 namespace ProjectL.UI.FinalResults
 {
-    using ProjectLCore.GamePieces;
     using ProjectL.Data;
+    using ProjectL.UI.Animation;
+    using ProjectLCore.GamePieces;
     using System.Threading;
     using System.Threading.Tasks;
     using TMPro;
@@ -63,14 +64,12 @@ namespace ProjectL.UI.FinalResults
         /// </summary>
         public async Task AnimateStartAsync(CancellationToken cancellationToken)
         {
-            if (_gameEndInfo == null || cancellationToken.IsCancellationRequested) {
-                return;
-            }
+            cancellationToken.ThrowIfCancellationRequested();
 
             ShowColumn();
-            await FinalAnimationManager.WaitForAnimationDelayAndPlaySound(cancellationToken);
+            await AnimationManager.PlayTapSoundAndWaitForScaledDelay(1f, cancellationToken);
             ShowScoreLabel();
-            await FinalAnimationManager.WaitForAnimationDelayAndPlaySound(cancellationToken);
+            await AnimationManager.PlayTapSoundAndWaitForScaledDelay(1f, cancellationToken);
         }
 
         /// <summary>
@@ -78,15 +77,13 @@ namespace ProjectL.UI.FinalResults
         /// </summary>
         public async Task AnimateCompletedAsync(CancellationToken cancellationToken)
         {
-            if (_gameEndInfo == null || cancellationToken.IsCancellationRequested) {
-                return;
-            }
+            cancellationToken.ThrowIfCancellationRequested();
 
-            foreach (var puzzle in _gameEndInfo.FinishedPuzzles) {
+            foreach (var puzzle in _gameEndInfo!.FinishedPuzzles) {
                 ShowCompletedPuzzle();
                 SetCompletedPuzzleSprite(puzzle);
                 UpdateScore(puzzle.RewardScore);
-                await FinalAnimationManager.WaitForAnimationDelayAndPlaySound(cancellationToken);
+                await AnimationManager.PlayTapSoundAndWaitForScaledDelay(1f, cancellationToken);
 
             }
         }
@@ -96,15 +93,13 @@ namespace ProjectL.UI.FinalResults
         /// </summary>
         public async Task AnimateTetrominosAsync(CancellationToken cancellationToken)
         {
-            if (_gameEndInfo == null || cancellationToken.IsCancellationRequested) {
-                return;
-            }
+            cancellationToken.ThrowIfCancellationRequested();
 
-            foreach (var tetromino in _gameEndInfo.FinishingTouchesTetrominos) {
+            foreach (var tetromino in _gameEndInfo!.FinishingTouchesTetrominos) {
                 ShowFinishingTouches();
                 SetTetrominoSprite(tetromino);
                 UpdateScore(-1);
-                await FinalAnimationManager.WaitForAnimationDelayAndPlaySound(cancellationToken);
+                await AnimationManager.PlayTapSoundAndWaitForScaledDelay(1f, cancellationToken);
             }
         }
 
@@ -113,15 +108,13 @@ namespace ProjectL.UI.FinalResults
         /// </summary>
         public async Task AnimateIncompleteAsync(CancellationToken cancellationToken)
         {
-            if (_gameEndInfo == null || cancellationToken.IsCancellationRequested) {
-                return;
-            }
+            cancellationToken.ThrowIfCancellationRequested();
 
-            foreach (var puzzle in _gameEndInfo.UnfinishedPuzzles) {
+            foreach (var puzzle in _gameEndInfo!.UnfinishedPuzzles) {
                 ShowIncompletePuzzles();
                 SetIncompletePuzzleSprite(puzzle);
                 UpdateScore(-puzzle.RewardScore);
-                await FinalAnimationManager.WaitForAnimationDelayAndPlaySound(cancellationToken);
+                await AnimationManager.PlayTapSoundAndWaitForScaledDelay(1f, cancellationToken);
             }
         }
 

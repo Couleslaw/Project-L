@@ -19,5 +19,17 @@ namespace ProjectL.UI.FinalResults
             _playerNameText.text = playerName;
             _playerRankText.text = rank.ToString() + ".";
         }
+
+        public void Hide()
+        {
+            _playerNameText!.color = Color.clear;
+            _playerRankText!.color = Color.clear;
+        }
+
+        public void Show()
+        {
+            _playerNameText!.color = Color.white;
+            _playerRankText!.color = Color.white;
+        }
     }
 }

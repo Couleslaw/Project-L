@@ -2,7 +2,7 @@ namespace ProjectL.Data
 {
     using UnityEngine;
 
-    public class AnimationSpeed : MonoBehaviour
+    public static class AnimationSpeed
     {
         #region Constants
 
@@ -15,22 +15,23 @@ namespace ProjectL.Data
 
         #endregion
 
-        #region Properties
-        public static float Multiplier => PlayerPrefs.GetFloat(AnimationSpeedPlayerPrefKey);
+        #region Constructors
 
-        public static float DelayMultiplier => 1f / Multiplier;
-
-        #endregion
-
-        #region Methods
-
-        private void Awake()
+        static AnimationSpeed()
         {
             // check if player preference for animation speed exists
             if (!PlayerPrefs.HasKey(AnimationSpeedPlayerPrefKey)) {
                 PlayerPrefs.SetFloat(AnimationSpeedPlayerPrefKey, _animationSpeedDefault);
             }
         }
+
+        #endregion
+
+        #region Properties
+
+        public static float Multiplier => PlayerPrefs.GetFloat(AnimationSpeedPlayerPrefKey);
+
+        public static float DelayMultiplier => 1f / Multiplier;
 
         #endregion
     }

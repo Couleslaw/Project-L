@@ -5,6 +5,7 @@ namespace ProjectL.UI.FinalResults
     using ProjectL.Data;
     using ProjectL.Management;
     using ProjectL.UI.Sound;
+    using ProjectL.UI.Animation;
     using System;
     using System.Collections.Generic;
     using System.Threading;
@@ -15,17 +16,13 @@ namespace ProjectL.UI.FinalResults
 
     public class FinalAnimationManager : MonoBehaviour
     {
-        #region Constants
-
-        private const float _defaultAnimationDelay = 1.5f;
-
-        #endregion
-
         #region Fields
 
         private readonly List<PlayerStatsColumn> _playerStatsColumns = new();
 
         private readonly List<ScoreDetailsColumn> _scoreDetailsColumns = new();
+
+        private readonly List<FinalRankTableRow> _finalResultsRows = new();
 
         [Header("Final Results Panel")]
         [SerializeField] private CanvasGroup? finalResultsPanel;
@@ -46,31 +43,12 @@ namespace ProjectL.UI.FinalResults
 
         #endregion
 
-        #region Properties
-
-        public static float AnimationDelay => _defaultAnimationDelay * AnimationSpeed.DelayMultiplier;
-
-        #endregion
-
         #region Methods
-
-        public static async Task WaitForAnimationDelayAndPlaySound(CancellationToken cancellationToken = default)
-        {
-            if (cancellationToken.IsCancellationRequested) {
-                return;
-            }
-            try {
-                SoundManager.Instance?.PlayTapSoundEffect();
-                await Awaitable.WaitForSecondsAsync(AnimationDelay, cancellationToken);
-            }
-            catch (OperationCanceledException) {
-            }
-        }
 
         /// <summary>
         /// Handles the click event of the "Home" button. Loads the main menu scene.
         /// </summary>
-        public void OnHomeButtonClick()
+        private void OnHomeButtonClick()
         {
             SoundManager.Instance?.PlayButtonClickSound();
             SceneLoader.Instance?.LoadMainMenuAsync();
@@ -98,6 +76,8 @@ namespace ProjectL.UI.FinalResults
                 detailsColumn.Setup(item.Value);
                 _scoreDetailsColumns.Add(detailsColumn);
             }
+
+            homeButton.onClick.AddListener(OnHomeButtonClick);
         }
 
         private async void Start()
@@ -108,73 +88,100 @@ namespace ProjectL.UI.FinalResults
             HidePlayerStatsPanel();
             SetupFinalResultsPanel();
 
-            // show player stats labels
-            if (this != null) {
-                await Awaitable.WaitForSecondsAsync(AnimationDelay);
-                ShowPlayerStatsPanel();
-                await WaitForAnimationDelayAndPlaySound(destroyCancellationToken);
+            CancellationToken cancellationToken = destroyCancellationToken;
+            try {
+                await Animate(cancellationToken);
             }
+            catch (OperationCanceledException) {
+                return;
+            }
+        }
+
+        private async Task Animate(CancellationToken cancellationToken)
+        {
+            // show player stats labels
+            await AnimationManager.WaitForScaledDelay(1f, cancellationToken);
+            ShowPlayerStatsPanel();
+            await AnimationManager.PlayTapSoundAndWaitForScaledDelay(1f, cancellationToken);
 
             // animate player stats
             var tasks = new List<Task>();
-            if (this != null) {
-                foreach (var playerColumn in _playerStatsColumns) {
-                    tasks.Add(playerColumn.AnimateStartAsync(destroyCancellationToken));
-                }
-                await Task.WhenAll(tasks);
+            cancellationToken.ThrowIfCancellationRequested();
+            foreach (var playerColumn in _playerStatsColumns) {
+                tasks.Add(playerColumn.AnimateStartAsync(cancellationToken));
             }
+            await Task.WhenAll(tasks);
+
             // animate completed puzzles
-            if (this != null) {
-                tasks.Clear();
-                foreach (var playerColumn in _playerStatsColumns) {
-                    tasks.Add(playerColumn.AnimateCompletedAsync(destroyCancellationToken));
-                }
-                await Task.WhenAll(tasks);
+            tasks.Clear();
+            cancellationToken.ThrowIfCancellationRequested();
+            foreach (var playerColumn in _playerStatsColumns) {
+                tasks.Add(playerColumn.AnimateCompletedAsync(cancellationToken));
             }
+            await Task.WhenAll(tasks);
+
             // animate tetrominos
-            if (this != null) {
-                tasks.Clear();
-                foreach (var playerColumn in _playerStatsColumns) {
-                    tasks.Add(playerColumn.AnimateTetrominosAsync(destroyCancellationToken));
-                }
-                await Task.WhenAll(tasks);
+            tasks.Clear();
+            cancellationToken.ThrowIfCancellationRequested();
+            foreach (var playerColumn in _playerStatsColumns) {
+                tasks.Add(playerColumn.AnimateTetrominosAsync(cancellationToken));
             }
+            await Task.WhenAll(tasks);
+
             // animate incomplete puzzles
-            if (this != null) {
-                tasks.Clear();
-                foreach (var playerColumn in _playerStatsColumns) {
-                    tasks.Add(playerColumn.AnimateIncompleteAsync(destroyCancellationToken));
-                }
-                await Task.WhenAll(tasks);
+            tasks.Clear();
+            cancellationToken.ThrowIfCancellationRequested();
+            foreach (var playerColumn in _playerStatsColumns) {
+                tasks.Add(playerColumn.AnimateIncompleteAsync(cancellationToken));
             }
+            await Task.WhenAll(tasks);
 
             // show divider
-            if (this != null) {
-                ShowDividerLine();
-                await WaitForAnimationDelayAndPlaySound(destroyCancellationToken);
-            }
+            ShowDividerLine();
+            await AnimationManager.PlayTapSoundAndWaitForScaledDelay(1f, cancellationToken);
 
             // if two players have the same score, show the detail columns
             if (!AreAllScoresDifferent()) {
-                if (this != null) {
-                    ShowDetailsPanel();
-                    await WaitForAnimationDelayAndPlaySound(destroyCancellationToken);
-                }
+                ShowDetailsPanel();
+                await AnimationManager.PlayTapSoundAndWaitForScaledDelay(1f, cancellationToken);
 
                 // animate details panel
-                if (this != null) {
-                    tasks.Clear();
-                    foreach (var detailsColumn in _scoreDetailsColumns) {
-                        tasks.Add(detailsColumn.AnimateAsync(destroyCancellationToken));
-                    }
-                    await Task.WhenAll(tasks);
+                tasks.Clear();
+                cancellationToken.ThrowIfCancellationRequested();
+
+                foreach (var detailsColumn in _scoreDetailsColumns) {
+                    tasks.Add(detailsColumn.AnimateAsync(cancellationToken));
                 }
+                await Task.WhenAll(tasks);
             }
 
             // show final results panel
-            if (this != null) {
-                await AnimateFinalResultsPanelAsync(destroyCancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+            await AnimateFinalResultsPanelAsync(cancellationToken);
+        }
+
+        private async Task AnimateFinalResultsPanelAsync(CancellationToken cancellationToken)
+        {
+            if (finalResultsPanel == null || homeButton == null) {
+                return;
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // show final results panel
+            finalResultsPanel.alpha = 1;
+
+            // show final results table rows - starting with last player
+            float delay = 1f;
+            for (int i = _finalResultsRows.Count - 1; i >= 0; i--) {
+                await AnimationManager.WaitForScaledDelayAndPlayTapSound(delay, cancellationToken);
+                _finalResultsRows[i].Show();
+                delay += 0.3f;
+            }
+
+            // show home button
+            await AnimationManager.WaitForScaledDelayAndPlayTapSound(1f, cancellationToken);
+            homeButton.interactable = true;
         }
 
         private bool AreAllScoresDifferent()
@@ -216,29 +223,12 @@ namespace ProjectL.UI.FinalResults
                 var row = Instantiate(finalResultsRowPrefab, finalResultsTableContainer.transform);
                 row.gameObject.SetActive(true);
                 row.Init(item.Key.Name, item.Value);
+                row.Hide();
+                _finalResultsRows.Add(row);
             }
 
             // hide the final results panel
             finalResultsPanel.alpha = 0;
-        }
-
-        private async Task AnimateFinalResultsPanelAsync(CancellationToken cancellationToken)
-        {
-            if (finalResultsPanel == null || homeButton == null) {
-                return;
-            }
-
-            // show final results
-            if (!cancellationToken.IsCancellationRequested) {
-                finalResultsPanel.alpha = 1;
-                await WaitForAnimationDelayAndPlaySound(cancellationToken);
-            }
-
-            // show home button
-            if (!cancellationToken.IsCancellationRequested) {
-                homeButton.interactable = true;
-                SoundManager.Instance?.PlayTapSoundEffect();
-            }
         }
 
         private void HideDividerLine()
@@ -272,6 +262,8 @@ namespace ProjectL.UI.FinalResults
             }
             detailsPanel!.alpha = 1;
         }
+
+
 
         #endregion
     }

@@ -102,6 +102,7 @@
 - [x] increase confirm button hitbox
 - [x] place puzzle on selected slot
 - [ ] AI place - rotate / flip while moving
+- [ ] right click should not start dragging
 
 ### Finishing touches
 

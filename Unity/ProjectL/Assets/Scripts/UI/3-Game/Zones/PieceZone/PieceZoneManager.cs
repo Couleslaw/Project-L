@@ -5,6 +5,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     using ProjectL.UI.GameScene.Actions;
     using ProjectL.UI.GameScene.Actions.Constructing;
     using ProjectL.UI.GameScene.Zones.PlayerZone;
+    using ProjectL.UI.Animation;
     using ProjectL.UI.Sound;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
@@ -142,13 +143,13 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             // highlight reward options
             using (new TemporaryButtonHighlighter(action.RewardOptions!)) {
 
-                await GameAnimationManager.WaitForScaledDelayAsync(1f, cancellationToken);
+                await AnimationManager.WaitForScaledDelay(1f, cancellationToken);
 
                 // highlight and select the reward
                 var spawner = _tetrominoButtons[action.SelectedReward];
                 using (new TemporaryButtonHighlighter(action.SelectedReward, playSound: false)) {
                     using (spawner.CreateTemporaryButtonSelector(SelectionSideEffect.GiveToPlayer)) {
-                        await GameAnimationManager.WaitForScaledDelayAsync(1f, cancellationToken);
+                        await AnimationManager.WaitForScaledDelay(1f, cancellationToken);
                     }
                 }
             }

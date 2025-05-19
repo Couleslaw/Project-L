@@ -7,6 +7,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     using ProjectL.UI.GameScene.Actions;
     using ProjectL.UI.GameScene.Actions.Constructing;
     using ProjectL.UI.GameScene.Zones.PlayerZone;
+    using ProjectL.UI.Animation;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameManagers;
     using ProjectLCore.GamePieces;
@@ -509,7 +510,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             (puzzle as IAIPlayerActionAnimator<PlaceTetrominoAction>)?.Animate(action, cancellationToken);
             Destroy(gameObject);
 
-            await GameAnimationManager.WaitForScaledDelayAsync(0.5f, cancellationToken);
+            await AnimationManager.WaitForScaledDelay(0.5f, cancellationToken);
 
             // returns [shouldFlip], angle
             static (bool, float) GetTransformation(BinaryImage start, BinaryImage goal)
