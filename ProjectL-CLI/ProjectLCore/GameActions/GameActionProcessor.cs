@@ -149,16 +149,16 @@
                 _signaler.PlayerTookBlackPuzzle();
             }
 
-            // signal if the black deck is empty
-            if (_gameState.NumBlackPuzzlesLeft == 0) {
-                _signaler.BlackDeckIsEmpty();
-            }
-
             // add the puzzle to the player's state
             _playerState.PlaceNewPuzzle(puzzle!);
 
             // refill the missing puzzle
             _gameState.RefillPuzzles();
+
+            // signal if the black deck is empty
+            if (_gameState.NumBlackPuzzlesLeft == 0) {
+                _signaler.BlackDeckIsEmpty();
+            }
         }
 
         private async Task ProcessTakePuzzleActionAsync(TakePuzzleAction action, CancellationToken cancellationToken)
@@ -193,16 +193,16 @@
                 _signaler.PlayerTookBlackPuzzle();
             }
 
-            // signal if the black deck is empty
-            if (_gameState.NumBlackPuzzlesLeft == 0) {
-                _signaler.BlackDeckIsEmpty();
-            }
-
             // add the puzzle to the player's state
             _playerState.PlaceNewPuzzle(puzzle!);
 
             // refill the missing puzzle
             await _gameState.RefillPuzzlesAsync(cancellationToken);
+
+            // signal if the black deck is empty
+            if (_gameState.NumBlackPuzzlesLeft == 0) {
+                _signaler.BlackDeckIsEmpty();
+            }
         }
 
 

@@ -29,7 +29,7 @@
         /// <summary>
         /// Internal representation if the current turn.
         /// </summary>
-        /// <remarks>Initialized to <see cref="NumActionsInTurn"/> + 1. The first time <see cref="NextTurn"/> will be called, it will be decremented.</remarks>
+        /// <remarks>Initialized to <see cref="NumActionsInTurn"/> + 1. The first time <see cref="GetNextTurn"/> will be called, it will be decremented.</remarks>
         private TurnInfo _turnInfo = new(NumActionsInTurn + 1, GamePhase.Normal, usedMasterAction: false, tookBlackPuzzle: false, lastRound: false);
 
         #endregion
@@ -58,17 +58,17 @@
         /// <summary>
         /// <see langword="true"/> if this is the turn of the last player; else <see langword="false"/>.
         /// </summary>
-        private bool IsEndOfRound => _currentPlayersIndex == _numPlayers - 1;
+        private bool IsLastPlayer => _currentPlayersIndex == _numPlayers - 1;
 
         #endregion
 
         #region Methods
 
         /// <summary>
-        /// Adjusts the internal turn state to represent the next turn.
+        /// Adjusts the internal turn state to represent the next turn and returns it.
         /// </summary>
         /// <returns>Information about the next turn.</returns>
-        public TurnInfo NextTurn()
+        public TurnInfo GetNextTurn()
         {
             if (_turnInfo.GamePhase == GamePhase.FinishingTouches || _turnInfo.GamePhase == GamePhase.Finished) {
                 return _turnInfo;
@@ -82,7 +82,7 @@
             // turn of a new player
             // after EndOfTheGame is triggered, finish current round and then play 1 last round
 
-            if (IsEndOfRound) {
+            if (IsLastPlayer) {
                 ChangeGamePhaseIfNeeded();
             }
             SetNextPlayer();
@@ -168,6 +168,7 @@
             {
                 if (_turnManager._turnInfo.GamePhase == GamePhase.Normal) {
                     _turnManager._turnInfo.GamePhase = GamePhase.EndOfTheGame;
+                    _turnManager._turnInfo.LastRound = false;
                 }
             }
 
@@ -186,9 +187,11 @@
             /// </summary>
             public void PlayerEndedFinishingTouches()
             {
-                _turnManager.SetNextPlayer();
-                if (_turnManager._currentPlayersIndex == 0) {
+                if (_turnManager.IsLastPlayer) {
                     _turnManager._turnInfo.GamePhase = GamePhase.Finished;
+                }
+                else {
+                    _turnManager.SetNextPlayer();
                 }
             }
 
