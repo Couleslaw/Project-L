@@ -1,8 +1,0 @@
-prilozit-icon https://www.flaticon.com/free-icon/puzzle_7468192
-swap-icon https://iconduck.com/icons/145306/swap
-power-move-icon https://www.flaticon.com/free-icon/power_1477177
-upgrade-icon https://www.flaticon.com/free-icon/upgrade_8446061
-restart icon
-https://iconduck.com/icons/294726/restart
-checkbox
-https://iconduck.com/icons/8984/checkbox-checked
