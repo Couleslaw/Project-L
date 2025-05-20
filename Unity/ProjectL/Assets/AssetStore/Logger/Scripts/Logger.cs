@@ -44,8 +44,8 @@ namespace EasyUI
         };
 
         public void ClearLog() => uiLogText!.text = string.Empty;
-        public void Hide() => gameObject.SetActive(false);
-        public void Show() => gameObject.SetActive(true);
+        public void Hide() => uiScrollRect!.gameObject.SetActive(false);
+        public void Show() => uiScrollRect!.gameObject.SetActive(true);
 
         private void OnEnable()
         {

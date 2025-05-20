@@ -20,25 +20,22 @@ namespace ProjectL.Data
     /// </summary>
     public static class PlayerTypeLoader
     {
-        #region Constants
-
         /// <summary>
         /// The name of the INI file containing player type information.
         /// </summary>
         private const string _iniFileName = "aiplayers.ini";
-
-        #endregion
-
-        #region Fields
 
         /// <summary>
         /// A list of available player types loaded from the INI file.
         /// </summary>
         private static readonly List<PlayerTypeInfo> _availablePlayerTypes = new();
 
-        #endregion
+        /// <summary>
+        /// Gets a read-only list of available AI player information. This value is initialized only once when the class is loaded.
+        /// </summary>
+        public static IReadOnlyList<PlayerTypeInfo> AvailableAIPlayerInfos => _availablePlayerTypes;
 
-        #region Constructors
+#if !UNITY_WEBGL
 
         /// <summary>
         /// Class constructor to load player types from the INI file and prepare <see cref="AvailableAIPlayerInfos"/>.
@@ -53,28 +50,19 @@ namespace ProjectL.Data
                 return;
             }
             Debug.Log($"Loading player types from {iniFilePath}");
-            _availablePlayerTypes = GetAvailablePlayerTypes(iniFilePath);
+            _availablePlayerTypes = GetCustomAIPlayerTypes(iniFilePath);
         }
 
-        #endregion
 
-        #region Properties
 
-        /// <summary>
-        /// Gets a read-only list of available AI player information. This value is initialized only once when the class is loaded.
-        /// </summary>
-        public static IReadOnlyList<PlayerTypeInfo> AvailableAIPlayerInfos => _availablePlayerTypes;
-
-        #endregion
-
-        #region Methods
+        
 
         /// <summary>
         /// Checks if the given assembly targets .NET Standard 2.0 or 2.1.
         /// </summary>
         /// <param name="assembly">The assembly to check.</param>
         /// <returns><see langword="true"/> if the assembly targets .NET Standard 2.0 or 2.1; otherwise, <see langword="false"/>.</returns>
-        public static bool TargetsNetStandard2(Assembly assembly)
+        private static bool TargetsNetStandard2(Assembly assembly)
         {
             var targetFrameworkAttribute = assembly.GetCustomAttribute<TargetFrameworkAttribute>();
 
@@ -100,7 +88,7 @@ namespace ProjectL.Data
         /// </summary>
         /// <param name="filePath">The full path to the file.</param>
         /// <returns><see langword="true"/> if the file exists or was successfully created; otherwise, <see langword="false"/>.</returns>
-        public static bool EnsureFileExists(string filePath)
+        private static bool EnsureFileExists(string filePath)
         {
             if (string.IsNullOrEmpty(filePath)) {
                 Debug.LogWarning("File path cannot be null or empty.");
@@ -148,7 +136,7 @@ namespace ProjectL.Data
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>The absolute version of the given path.</returns>
-        public static string GetAbsolutePath(string path)
+        private static string GetAbsolutePath(string path)
         {
             // Path is already absolute
             if (Path.IsPathRooted(path)) {
@@ -174,7 +162,7 @@ namespace ProjectL.Data
         /// </summary>
         /// <param name="iniFilePath">Path to the INI file.</param>
         /// <returns>List of all available AI player types and their names.</returns>
-        private static List<PlayerTypeInfo> GetAvailablePlayerTypes(string iniFilePath)
+        private static List<PlayerTypeInfo> GetCustomAIPlayerTypes(string iniFilePath)
         {
             var parser = new FileIniDataParser();
             IniData data = parser.ReadFile(iniFilePath);
@@ -236,7 +224,6 @@ namespace ProjectL.Data
 
             return playerTypes;
         }
-
-        #endregion
+#endif
     }
 }

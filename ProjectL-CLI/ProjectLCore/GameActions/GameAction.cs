@@ -37,7 +37,7 @@
         /// <returns>A task that represents the asynchronous operation.</returns>
         public async Task AcceptAsync(IAsyncActionProcessor visitor, CancellationToken cancellationToken = default)
         {
-            await visitor.ProcessActionAsync(this, cancellationToken).ConfigureAwait(false);
+            await visitor.ProcessActionAsync(this, cancellationToken);
         }
 
         #endregion

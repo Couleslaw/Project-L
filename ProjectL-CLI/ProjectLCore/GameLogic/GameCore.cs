@@ -171,7 +171,7 @@ namespace ProjectLCore.GameLogic
         /// And fills the black and white puzzle rows with puzzles from the decks.
         /// Throws an exception if this method is called more than once.
         /// </summary>
-        /// <exception cref="InvalidOperationException">Game already finalized</exception>
+        /// <exception cref="InvalidOperationException">Game already initialized.</exception>
         public void InitializeGame()
         {
             if (_didInitialize) {
@@ -196,7 +196,9 @@ namespace ProjectLCore.GameLogic
         /// Then asynchronously fills the black and white puzzle rows with puzzles from the decks.
         /// Throws an exception if this method is called more than once.
         /// </summary>
-        /// <exception cref="InvalidOperationException">Game already finalized</exception>
+        /// <param name="cancellationToken">Cancellation token to observe while waiting for the task to complete.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        /// <exception cref="InvalidOperationException">Game already initialized.</exception>
         public async Task InitializeGameAsync(CancellationToken cancellationToken = default)
         {
             if (_didInitialize) {
@@ -223,7 +225,7 @@ namespace ProjectLCore.GameLogic
         /// Should be called after <see cref="CurrentGamePhase"/> changes to <see cref="GamePhase.Finished"/>.
         /// Throws an exception if this method is called more than once.
         /// </summary>
-        /// <exception cref="InvalidOperationException">Game already finalized</exception>
+        /// <exception cref="InvalidOperationException">Game already finalized.</exception>
         public void FinalizeGame()
         {
             if (_didFinalize) {

@@ -107,8 +107,6 @@ namespace ProjectL.UI.PlayerSelection
             // handle error message
             if (errorMessage != null) {
                 // play error sound
-                if (_didInitialize)
-                    SoundManager.Instance?.PlayErrorSound();
                 Debug.LogWarning(errorMessage);
                 ShowError(errorMessage); // Show the error message on screen
                 return;
@@ -154,6 +152,10 @@ namespace ProjectL.UI.PlayerSelection
             HideErrorMessageBox();
 
             _didInitialize = true;
+
+#if UNITY_WEBGL
+            Debug.LogWarning("AI players are not supported in the WebGL version of the game. To use the AI players feature, download the desktop release of the game.");
+#endif
         }
 
         private void SetUpSettingDefaults()
@@ -254,6 +256,7 @@ namespace ProjectL.UI.PlayerSelection
             }
 
             // Start the new fade coroutine
+            SoundManager.Instance?.PlayErrorSound();
             _activeErrorCoroutine = StartCoroutine(ShowAndFadeErrorCoroutine(message));
         }
 

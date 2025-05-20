@@ -197,16 +197,17 @@ namespace ProjectL.UI.GameScene.Management
                 return; // safety check
             }
 
-            Debug.Log("Initializing game.");
+            Debug.Log("Initializing game...");
             RuntimeGameInfo.RegisterGame(_game);
 
             // wait until the graphics system is ready
             while (!GameGraphicsSystem.Instance.IsReadyForInitialization) {
-                await Task.Delay(10, cancellationToken);
+                await Awaitable.WaitForSecondsAsync(0.01f, cancellationToken);
             }
 
             GameGraphicsSystem.Instance.Init(_game);
             await _game.InitializeGameAsync(cancellationToken);
+            Debug.Log("Game initialized successfully.");
         }
 
         /// <summary>
@@ -227,8 +228,8 @@ namespace ProjectL.UI.GameScene.Management
                 else if (player is AIPlayerBase aiPlayer) {
                     // initialize AI player
                     string? initPath = GameSettings.Players[player.Name].InitPath;
-                    string pathStr = string.IsNullOrEmpty(initPath) ? "None" : initPath;
-                    Debug.Log($"Initializing AI player {player.Name}. Init file: {pathStr}");
+                    string initFileStr = string.IsNullOrEmpty(initPath) ? string.Empty : $"Init file:{initPath}";
+                    Debug.Log($"Initializing AI player {player.Name}. {initFileStr}");
 
                     aiPlayer.InitAsync(_game.Players.Length, _game.GameState.GetAllPuzzlesInGame(), initPath, cancellationToken)
                         .ContinueWith(t => {
@@ -312,6 +313,7 @@ namespace ProjectL.UI.GameScene.Management
 
             while (!cancellationToken.IsCancellationRequested && !GameErrorHandler.ShouldEndGameWithError) {
                 TurnInfo turnInfo = _game.GetNextTurnInfo();
+                LogTurnInfo(turnInfo, _game.CurrentPlayer);
 
                 // check if game ended
                 if (_game.CurrentGamePhase == GamePhase.Finished) {
@@ -358,7 +360,9 @@ namespace ProjectL.UI.GameScene.Management
                 if (_game.CurrentPlayer is AIPlayerBase aiPlayer) {
                     await action.AcceptAsync(_aiPlayerAnimator, cancellationToken);
                 }
+                Debug.Log($"Processing action {action}.");
                 await _game.ProcessActionAsync(action);
+                Debug.Log($"Action {action} processed.");
 
                 // if not finishing touches --> log finished puzzles
                 if (_game.CurrentGamePhase != GamePhase.FinishingTouches) {
@@ -380,6 +384,11 @@ namespace ProjectL.UI.GameScene.Management
                             ? new EndFinishingTouchesAction()
                             : new DoNothingAction();
             }
+        }
+
+        private void LogTurnInfo(TurnInfo turnInfo, Player currentPlayer)
+        {
+            Debug.Log($"Current player: {currentPlayer.Name} ({currentPlayer.GetType().Name}), {turnInfo}");
         }
 
         private void LogPlayerGetActionThrownException(string message)

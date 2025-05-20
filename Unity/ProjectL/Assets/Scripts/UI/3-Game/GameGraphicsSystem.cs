@@ -66,7 +66,6 @@ namespace ProjectL.UI.GameScene
         public void Init(GameCore game)
         {
             if (_game != null) {
-                Debug.LogError("GameGraphicsSystem is already initialized.", this);
                 return;
             }
             _game = game;

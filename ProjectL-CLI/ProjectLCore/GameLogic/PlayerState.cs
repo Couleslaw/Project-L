@@ -275,7 +275,7 @@ namespace ProjectLCore.GameLogic
         /// </summary>
         /// <param name="info"></param>
         /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <returns>A task that represents the asynchronous operation.</returns>
         /// <exception cref="InvalidOperationException"></exception>
         public async Task FinishPuzzleAsync(FinishedPuzzleInfo info, CancellationToken cancellationToken = default)
         {

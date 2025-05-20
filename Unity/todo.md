@@ -115,7 +115,7 @@
 - [x] final results align names bellow each other properly
   - [x] 1. is a shorter tan 2,3,4 --> it is more to the left
 - [x] recycle - rows act as radio buttons
-- [ ] disable AI players feature on WebGL
+- [x] disable AI players feature on WebGL
 - [x] prefill game creation screen with last used settings
 - [x] make num actions left in pause menu colorful
 
@@ -126,3 +126,4 @@
   - [ ] main game scene
   - [ ] add option to skip animation
 - [ ] use singleton base class for all singletons
+- [ ] game session manager - remove update

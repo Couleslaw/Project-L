@@ -30,7 +30,7 @@
         /// <param name="allPuzzles">All the puzzles in the game.</param>
         /// <param name="filePath">The path to a file where the player might be storing some information.</param>
         /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
-        /// <returns>Task object. Can be used to handle exceptions which might have been thrown while executing this method.</returns>
+        /// <returns>A task that represents the asynchronous operation.</returns>
         public async Task InitAsync(int numPlayers, List<Puzzle> allPuzzles, string? filePath = null, CancellationToken cancellationToken = default)
         {
             await Task.Run(() => Init(numPlayers, allPuzzles, filePath), cancellationToken);
