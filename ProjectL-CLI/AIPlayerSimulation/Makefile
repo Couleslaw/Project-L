@@ -1,11 +1,11 @@
-all:  AIPlayerDLLs/AIPlayerExample.dll bin/Release/net8.0/AIPlayerSimulation.exe
+all:  AIPlayerDLLs/SimpleAIPlayer.dll bin/Release/net8.0/AIPlayerSimulation.exe
 
 clean:
-	rm -rf AIPlayerDLLs/AIPlayerExample.dll bin
+	rm -rf AIPlayerDLLs/SimpleAIPlayer.dll bin
 
-AIPlayerDLLs/AIPlayerExample.dll: ../AIPlayerExample/bin/Release/netstandard2.1/AIPlayerExample.dll
+AIPlayerDLLs/SimpleAIPlayer.dll: ../SimpleAIPlayer/bin/Release/netstandard2.1/SimpleAIPlayer.dll
 	mkdir -p AIPlayerDLLs
-	cp ../AIPlayerExample/bin/Release/netstandard2.1/AIPlayerExample.dll AIPlayerDLLs
+	cp ../SimpleAIPlayer/bin/Release/netstandard2.1/SimpleAIPlayer.dll AIPlayerDLLs
 
 bin/Release/net8.0/AIPlayerSimulation.exe: AIPlayerSimulation.csproj
 	dotnet build -c Release AIPlayerSimulation.csproj

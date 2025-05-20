@@ -1,17 +1,17 @@
-all: ProjectLCore/bin/Release/netstandard2.1/ProjectLCore.dll AIPlayerExample/bin/Release/netstandard2.1/AIPlayerExample.dll ProjectLCoreDocs/Help AIPlayerExampleDocs/Help
+all: ProjectLCore/bin/Release/netstandard2.1/ProjectLCore.dll SimpleAIPlayer/bin/Release/netstandard2.1/SimpleAIPlayer.dll ProjectLCoreDocs/Help SimpleAIPlayerDocs/Help
 
 clean:
-	rm -rf ProjectLCore/bin AIPlayerExample/bin ProjectLCoreDocs/Help AIPlayerExampleDocs/Help
+	rm -rf ProjectLCore/bin SimpleAIPlayer/bin ProjectLCoreDocs/Help SimpleAIPlayerDocs/Help
 
 ProjectLCore/bin/Release/netstandard2.1/ProjectLCore.dll: ProjectLCore/ProjectLCore.csproj
 	dotnet build -c Release ProjectLCore/ProjectLCore.csproj
 
-AIPlayerExample/bin/Release/netstandard2.1/AIPlayerExample.dll: AIPlayerExample/AIPlayerExample.csproj
-	dotnet build -c Release AIPlayerExample/AIPlayerExample.csproj
+SimpleAIPlayer/bin/Release/netstandard2.1/SimpleAIPlayer.dll: SimpleAIPlayer/SimpleAIPlayer.csproj
+	dotnet build -c Release SimpleAIPlayer/SimpleAIPlayer.csproj
 
 ProjectLCoreDocs/Help: ProjectLCoreDocs/ProjectLCoreDocs.shfbproj ProjectLCore/bin/Release/netstandard2.1/ProjectLCore.dll
 	msbuild.exe ProjectLCoreDocs/ProjectLCoreDocs.shfbproj
 
-AIPlayerExampleDocs/Help: AIPlayerExampleDocs/AIPlayerExampleDocs.shfbproj ProjectLCore/bin/Release/netstandard2.1/ProjectLCore.dll AIPlayerExample/bin/Release/netstandard2.1/AIPlayerExample.dll
-	msbuild.exe AIPlayerExampleDocs/AIPlayerExampleDocs.shfbproj
+SimpleAIPlayerDocs/Help: SimpleAIPlayerDocs/SimpleAIPlayerDocs.shfbproj ProjectLCore/bin/Release/netstandard2.1/ProjectLCore.dll SimpleAIPlayer/bin/Release/netstandard2.1/SimpleAIPlayer.dll
+	msbuild.exe SimpleAIPlayerDocs/SimpleAIPlayerDocs.shfbproj
 

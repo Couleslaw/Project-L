@@ -15,7 +15,7 @@
     <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual Studio adds them anyway -->
     <AssemblyName>AIPlayerExampleDocs</AssemblyName>
     <RootNamespace>AIPlayerExampleDocs</RootNamespace>
-    <Name>AIPlayerExampleDocs</Name>
+    <Name>SimpleAIPlayerDocs</Name>
     <!-- SHFB properties -->
     <FrameworkVersion>.NET Core/.NET Standard/.NET 5.0+</FrameworkVersion>
     <OutputPath>.\Help\</OutputPath>
@@ -51,8 +51,8 @@
     <VisibleItems>Internals, Protected, ProtectedInternalAsProtected, NonBrowsable</VisibleItems>
     <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, AutoDocumentDispose</MissingTags>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\AIPlayerExample\bin\Release\netstandard2.1\AIPlayerExample.dll" />
-      <DocumentationSource sourceFile="..\AIPlayerExample\bin\Release\netstandard2.1\AIPlayerExample.xml" />
+      <DocumentationSource sourceFile="..\SimpleAIPlayer\bin\Release\netstandard2.1\SimpleAIPlayer.dll" />
+      <DocumentationSource sourceFile="..\SimpleAIPlayer\bin\Release\netstandard2.1\SimpleAIPlayer.xml" />
     </DocumentationSources>
     <PlugInConfigurations>
       <PlugInConfig id="Additional Reference Links" enabled="True">
