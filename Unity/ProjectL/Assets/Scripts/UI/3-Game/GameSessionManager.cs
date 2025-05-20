@@ -64,13 +64,14 @@ namespace ProjectL.UI.GameScene.Management
             var cancellationToken = destroyCancellationToken;
 
             _aiPlayerAnimator.Init(_game);
-            InitializePlayersAsync(cancellationToken);
+            await InitializePlayersAsync(cancellationToken);
             await InitializeGameAsync(cancellationToken);
 
             // game loop
             GameSummary.Clear();
             await GameLoopAsync(cancellationToken);
 
+            // wait a bit before showing the game ended box
             await AnimationManager.WaitForScaledDelay(1f);
 
             // final results
@@ -178,14 +179,12 @@ namespace ProjectL.UI.GameScene.Management
             if (gameState == null) {
                 return null;
             }
-            Debug.Log($"Game state loaded successfully. Number of puzzles: {gameState.GetAllPuzzlesInGame().Count}");
 
             // try to create players
             List<Player>? players = LoadPlayers();
             if (players == null) {
                 return null;
             }
-            Debug.Log("Players created successfully.");
 
             return new GameCore(gameState, players, GameSettings.ShouldShufflePlayers);
         }
@@ -197,7 +196,6 @@ namespace ProjectL.UI.GameScene.Management
                 return; // safety check
             }
 
-            Debug.Log("Initializing game...");
             RuntimeGameInfo.RegisterGame(_game);
 
             // wait until the graphics system is ready
@@ -207,44 +205,45 @@ namespace ProjectL.UI.GameScene.Management
 
             GameGraphicsSystem.Instance.Init(_game);
             await _game.InitializeGameAsync(cancellationToken);
-            Debug.Log("Game initialized successfully.");
         }
 
         /// <summary>
         /// Asynchronously initializes all AI players by calling their <see cref="AIPlayerBase.InitAsync(int, List{Puzzle}, string?)"/> method.
         /// </summary>
-        /// <param name="players">List of players to initialize.</param>
-        /// <param name="gameState">The game state.</param>
-        private void InitializePlayersAsync(CancellationToken cancellationToken)
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        private async Task InitializePlayersAsync(CancellationToken cancellationToken)
         {
             if (GameErrorHandler.ShouldEndGameWithError) {
                 return;
             }
 
             foreach (Player player in _game!.Players) {
+                // initialize human player
                 if (player is HumanPlayer humanPlayer) {
                     HumanPlayerActionCreator.Instance.RegisterPlayer(humanPlayer, _game.PlayerStates[humanPlayer]);
                 }
+                // initialize AI player
                 else if (player is AIPlayerBase aiPlayer) {
-                    // initialize AI player
                     string? initPath = GameSettings.Players[player.Name].InitPath;
-                    string initFileStr = string.IsNullOrEmpty(initPath) ? string.Empty : $"Init file:{initPath}";
-                    Debug.Log($"Initializing AI player {player.Name}. {initFileStr}");
+                    string fileStr = initPath != null ? $", (ini file: {initPath})" : string.Empty;
 
-                    aiPlayer.InitAsync(_game.Players.Length, _game.GameState.GetAllPuzzlesInGame(), initPath, cancellationToken)
-                        .ContinueWith(t => {
-                            if (t.Exception != null) {
-                                GameErrorHandler.FatalErrorOccurred($"Initialization of player {player.Name} failed: {t.Exception.InnerException?.Message}");
-                            }
-                            else {
-                                Debug.Log($"AI player {player.Name} initialized successfully.");
-                            }
-                        },
-                        cancellationToken
-                    );
+                    Debug.Log($"Initializing {aiPlayer.GetType().Name} {aiPlayer.Name}{initPath}...");
+
+                    try {
+                        await aiPlayer.InitAsync(_game.Players.Length, _game.GameState.GetAllPuzzlesInGame(), initPath, cancellationToken);
+                        Debug.Log($"AI player {player.Name} initialized successfully.");
+                    }
+                    catch (AggregateException e) {
+                        GameErrorHandler.FatalErrorOccurred($"Initialization of player {player.Name} failed: {e.InnerException?.Message}");
+                    }
+                    catch (Exception e) {
+                        GameErrorHandler.FatalErrorOccurred($"Initialization of player {player.Name} failed: {e.Message}");
+                    }
                 }
+                // should never happen, but just in case
                 else {
-                    Debug.LogError($"Player {player.Name} is not a supported player type.");
+                    Debug.LogError($"Player {player.Name} has an unknown type {player.GetType().Name}.");
                 }
             }
         }
@@ -262,8 +261,6 @@ namespace ProjectL.UI.GameScene.Management
                 Debug.LogError("GameCore is null. Cannot prepare end game stats.");
                 return; // safety check
             }
-
-            Debug.Log("Calculating game results.");
 
             // add final results
             GameSummary.FinalResults = _game.GetPlayerRankings();
@@ -308,8 +305,6 @@ namespace ProjectL.UI.GameScene.Management
                 Debug.LogError("GameCore is null. Cannot start game loop.");
                 return; // safety check
             }
-
-            Debug.Log("Starting game loop.");
 
             while (!cancellationToken.IsCancellationRequested && !GameErrorHandler.ShouldEndGameWithError) {
                 TurnInfo turnInfo = _game.GetNextTurnInfo();
@@ -360,9 +355,7 @@ namespace ProjectL.UI.GameScene.Management
                 if (_game.CurrentPlayer is AIPlayerBase aiPlayer) {
                     await action.AcceptAsync(_aiPlayerAnimator, cancellationToken);
                 }
-                Debug.Log($"Processing action {action}.");
                 await _game.ProcessActionAsync(action);
-                Debug.Log($"Action {action} processed.");
 
                 // if not finishing touches --> log finished puzzles
                 if (_game.CurrentGamePhase != GamePhase.FinishingTouches) {

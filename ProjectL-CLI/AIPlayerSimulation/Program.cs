@@ -86,11 +86,11 @@
 
             // initialize players
             foreach (AIPlayerBase aiPlayer in players) {
-                string? iniPath = playersWithTypes[aiPlayer].InitPath;
-                string fileStr = iniPath != null ? $", (ini file: {iniPath})" : string.Empty;
+                string? initPath = playersWithTypes[aiPlayer].InitPath;
+                string fileStr = initPath != null ? $", (ini file: {initPath})" : string.Empty;
 
-                Console.WriteLine($"Initializing player {aiPlayer.Name}{iniPath}...");
-                Task initTask = aiPlayer.InitAsync(playersWithTypes.Count, gameState.GetAllPuzzlesInGame(), iniPath);
+                Console.WriteLine($"Initializing {aiPlayer.GetType().Name} {aiPlayer.Name}{initPath}...");
+                Task initTask = aiPlayer.InitAsync(playersWithTypes.Count, gameState.GetAllPuzzlesInGame(), initPath);
 
                 // wait for initialization to finish
                 try {
@@ -217,8 +217,7 @@
                 RoundCount++;
             }
             // print turn info
-            int actionNum = TurnManager.NumActionsInTurn - turnInfo.NumActionsLeft + 1;
-            Console.WriteLine($"Round: {RoundCount}, Current player: {currentPlayer.Name} ({currentPlayer.GetType().Name}), Action: {actionNum}");
+            Console.WriteLine($"Round: {RoundCount}, Current player: {currentPlayer.Name} ({currentPlayer.GetType().Name})");
             Console.WriteLine(turnInfo.ToString());
         }
 

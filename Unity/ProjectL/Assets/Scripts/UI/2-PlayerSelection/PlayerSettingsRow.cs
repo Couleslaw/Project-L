@@ -31,7 +31,7 @@ namespace ProjectL.UI.PlayerSelection
         /// <summary>
         /// List of all available player types in the game. It is initialized with the <see cref="HumanPlayer"/> and AI player types are added in <see cref="Start"/>.
         /// </summary>
-        private readonly List<PlayerTypeInfo> _availablePlayerInfos = new() { new PlayerTypeInfo(typeof(HumanPlayer), "Human", null) };
+        private readonly List<PlayerTypeInfo> _availablePlayerTypes = new() { new PlayerTypeInfo(typeof(HumanPlayer), "Human", null) };
 
         [Header("UI Elements")]
         [SerializeField] private TMP_Dropdown? playerTypeDropdown;
@@ -149,12 +149,12 @@ namespace ProjectL.UI.PlayerSelection
         /// <param name="index">The index of the selected dropdown option.</param>
         public void OnDropdownValueChanged(int index)
         {
-            if (index < 0 || index >= _availablePlayerInfos.Count) {
+            if (index < 0 || index >= _availablePlayerTypes.Count) {
                 Debug.LogWarning($"Invalid dropdown index mapping. Index: {index}.");
                 PlayerType = null;
             }
             else {
-                PlayerType = _availablePlayerInfos[index];
+                PlayerType = _availablePlayerTypes[index];
             }
 
             UpdateUI();
@@ -262,7 +262,7 @@ namespace ProjectL.UI.PlayerSelection
             playerNameInput!.text = playerName.Trim();
 
             // set player type in dropdown
-            int index = _availablePlayerInfos.FindIndex(info => info.PlayerType == playerType.Value.PlayerType);
+            int index = _availablePlayerTypes.FindIndex(info => info.PlayerType == playerType.Value.PlayerType);
             if (index >= 0) {
                 playerTypeDropdown!.SetValueWithoutNotify(index);
                 PlayerType = playerType;
@@ -349,8 +349,8 @@ namespace ProjectL.UI.PlayerSelection
             playerTypeDropdown!.ClearOptions();
 
             // add possible player options
-            _availablePlayerInfos.AddRange(PlayerTypeLoader.AvailableAIPlayerInfos);
-            playerTypeDropdown.AddOptions(_availablePlayerInfos.Select(info => info.DisplayName).ToList());
+            _availablePlayerTypes.AddRange(AIPlayerTypesLoader.AvailableAIPlayerTypes);
+            playerTypeDropdown.AddOptions(_availablePlayerTypes.Select(type => type.DisplayName).ToList());
         }
 
         /// <summary>

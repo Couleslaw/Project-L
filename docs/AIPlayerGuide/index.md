@@ -22,8 +22,8 @@ Then export your player as a Class Library (DLL) targeting **.NET Standard 2.1**
 ```ini
 [My_AIPlayer]
 dll_path = path/to/your/dll/AwesomeAI.dll
-name = Awesome
-init_path = path/to/your/init/file/or/folder ; optional
+name = Awesome Player
+init_path = (optional) path/to/your/init/file/or/folder
 ```
 
 The section name can be anything, its just for your reference. The properties are:

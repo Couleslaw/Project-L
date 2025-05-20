@@ -61,11 +61,11 @@
         /// </returns>
         public override string ToString()
         {
-            string str = $"TurnInfo: NumActionsLeft={NumActionsLeft}, GamePhase={GamePhase}";
-            // add flags
+            string str = $"TurnInfo: GamePhase={GamePhase}";
             if (LastRound) {
                 str += ", IsLastRound";
             }
+            str += $", NumActionsLeft={NumActionsLeft}";
             if (UsedMasterAction) {
                 str += ", UsedMasterAction";
             }

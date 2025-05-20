@@ -71,7 +71,6 @@ namespace ProjectL.Data
         /// <param name="puzzle">The puzzle that was not finished.</param>
         public static void AddUnfinishedPuzzle(Player player, Puzzle puzzle)
         {
-            Debug.Log($"Added unfinished puzzle for player {player.Name}, id={puzzle.Id}");
             if (!PlayerStats.ContainsKey(player)) {
                 PlayerStats.Add(player, new Stats());
             }
@@ -85,7 +84,6 @@ namespace ProjectL.Data
         /// <param name="tetromino">The tetromino shape.</param>
         public static void AddFinishingTouchesTetromino(Player player, TetrominoShape tetromino)
         {
-            Debug.Log($"Added finishing touches tetromino for player {player.Name}, shape={tetromino}");
             if (!PlayerStats.ContainsKey(player)) {
                 PlayerStats.Add(player, new Stats());
             }

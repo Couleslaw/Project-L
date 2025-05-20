@@ -18,7 +18,7 @@ namespace ProjectL.Data
     /// <summary>
     /// Provides functionality to load player types from an INI file.
     /// </summary>
-    public static class PlayerTypeLoader
+    public static class AIPlayerTypesLoader
     {
         /// <summary>
         /// The name of the INI file containing player type information.
@@ -33,14 +33,14 @@ namespace ProjectL.Data
         /// <summary>
         /// Gets a read-only list of available AI player information. This value is initialized only once when the class is loaded.
         /// </summary>
-        public static IReadOnlyList<PlayerTypeInfo> AvailableAIPlayerInfos => _availablePlayerTypes;
+        public static IReadOnlyList<PlayerTypeInfo> AvailableAIPlayerTypes => _availablePlayerTypes;
 
 #if !UNITY_WEBGL
 
         /// <summary>
-        /// Class constructor to load player types from the INI file and prepare <see cref="AvailableAIPlayerInfos"/>.
+        /// Class constructor to load player types from the INI file and prepare <see cref="AvailableAIPlayerTypes"/>.
         /// </summary>
-        static PlayerTypeLoader()
+        static AIPlayerTypesLoader()
         {
             // Load the available player types from the INI file
             string iniFilePath = GetAbsolutePath(_iniFileName);
@@ -52,10 +52,6 @@ namespace ProjectL.Data
             Debug.Log($"Loading player types from {iniFilePath}");
             _availablePlayerTypes = GetCustomAIPlayerTypes(iniFilePath);
         }
-
-
-
-        
 
         /// <summary>
         /// Checks if the given assembly targets .NET Standard 2.0 or 2.1.

@@ -144,7 +144,7 @@ namespace ProjectL.UI.GameScene.Actions
 
         public void RegisterPlayer(HumanPlayer player, PlayerState playerState)
         {
-            playerState.AddListener(this);
+            playerState.AddListener((IPlayerStatePuzzleFinishedAsyncListener)this);
             player.ActionRequested += Player_ActionRequested;
             player.RewardChoiceRequested += Player_RewardChoiceRequested;
         }
@@ -286,13 +286,11 @@ namespace ProjectL.UI.GameScene.Actions
 
         public void OnRewardSelected()
         {
-            Debug.Log("OnRewardSelected");
             SelectRewardAction? action = CurrentActionConstructor?.GetAction<SelectRewardAction>();
             if (action == null) {
                 Debug.LogError("Selected reward is null", this);
                 return;
             }
-            Debug.Log("Selected reward: " + action.SelectedReward, this);
 
             CurrentRewardEventArgs = null;
             var player = PrepareForSubmission();
