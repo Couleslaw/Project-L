@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2032672691222769762}
   - component: {fileID: 5315439279606913428}
   m_Layer: 5
-  m_Name: PuzzleCard(puzzle-zone)
+  m_Name: PuzzleCard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -7,7 +7,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
     using System.Collections.Generic;
     using UnityEngine;
 
-    public class PuzzleColumn : MonoBehaviour
+    public class PuzzlesColumn : MonoBehaviour
     {
 
         [SerializeField] private PuzzleCard? puzzleCardPrefab;
@@ -89,7 +89,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
         {
             List<PuzzleZoneManager.TemporarySpriteReplacer> _dimmers = new();
 
-            public TemporaryColumnDimmer(PuzzleColumn column, bool shouldDimCoverCard)
+            public TemporaryColumnDimmer(PuzzlesColumn column, bool shouldDimCoverCard)
             {
                 foreach (var puzzle in column._puzzleCards) {
                     _dimmers.Add(puzzle.CreateCardDimmer());
@@ -110,7 +110,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
         {
             List<PuzzleZoneManager.TemporarySpriteReplacer> _highlighters = new();
 
-            public TemporaryPuzzleHighlighter(PuzzleColumn column, List<uint> puzzleIds)
+            public TemporaryPuzzleHighlighter(PuzzlesColumn column, List<uint> puzzleIds)
             {
 
                 foreach (var puzzleId in puzzleIds) {

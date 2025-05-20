@@ -22,12 +22,12 @@ namespace ProjectL.UI.FinalResults
 
         private readonly List<ScoreDetailsColumn> _scoreDetailsColumns = new();
 
-        private readonly List<FinalRankTableRow> _finalResultsRows = new();
+        private readonly List<FinalResultsTableRow> _finalResultsRows = new();
 
         [Header("Final Results Panel")]
         [SerializeField] private CanvasGroup? finalResultsPanel;
         [SerializeField] private GameObject? finalResultsTableContainer;
-        [SerializeField] private FinalRankTableRow? finalResultsRowPrefab;
+        [SerializeField] private FinalResultsTableRow? finalResultsRowPrefab;
         [SerializeField] private Button? homeButton;
 
         [Header("Player Columns")]

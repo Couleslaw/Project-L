@@ -400,7 +400,7 @@ GameObject:
   - component: {fileID: 7992036286334671074}
   - component: {fileID: 5187558349787808853}
   m_Layer: 10
-  m_Name: PlayerZoneRow
+  m_Name: PlayerPuzzlesRow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3011,6 +3011,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfafcb23ded3944448b6145d1211dd8a, type: 3}
+  m_Script: {fileID: 11500000, guid: 5edef8ad39c39af479955f681f21a8e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

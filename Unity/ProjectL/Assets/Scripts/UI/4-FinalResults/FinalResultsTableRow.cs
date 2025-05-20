@@ -5,7 +5,7 @@ namespace ProjectL.UI.FinalResults
     using TMPro;
     using UnityEngine;
 
-    public class FinalRankTableRow : MonoBehaviour
+    public class FinalResultsTableRow : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI? _playerNameText;
         [SerializeField] private TextMeshProUGUI? _playerRankText;

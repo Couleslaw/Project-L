@@ -48,8 +48,8 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
     {
 
         [Header("Puzzle columns")]
-        [SerializeField] private PuzzleColumn? _whiteColumn;
-        [SerializeField] private PuzzleColumn? _blackColumn;
+        [SerializeField] private PuzzlesColumn? _whiteColumn;
+        [SerializeField] private PuzzlesColumn? _blackColumn;
 
         [SerializeField] private Button? _requestTakePuzzleButton;
 
@@ -245,7 +245,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
                     // wait a bit
                     await AnimationManager.WaitForScaledDelay(1f, cancellationToken);
 
-                    PuzzleColumn column = action.Option == RecycleAction.Options.White ? _whiteColumn : _blackColumn;
+                    PuzzlesColumn column = action.Option == RecycleAction.Options.White ? _whiteColumn : _blackColumn;
 
                     List<uint> puzzleIds = new();
                     foreach (uint puzzleId in action.Order) {

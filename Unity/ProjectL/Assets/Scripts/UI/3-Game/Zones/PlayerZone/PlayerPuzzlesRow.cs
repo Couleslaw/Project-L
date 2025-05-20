@@ -15,7 +15,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
     [RequireComponent(typeof(Image))]
     [RequireComponent(typeof(BoxCollider2D))]
-    public class PlayerZoneRow : MonoBehaviour, IPlayerStatePuzzleListener,
+    public class PlayerPuzzlesRow : MonoBehaviour, IPlayerStatePuzzleListener,
         IHumanPlayerActionCreator<TakePuzzleAction>
     {
         #region Fields

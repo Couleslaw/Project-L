@@ -15,7 +15,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
         [SerializeField] private GameObject? _playerZoneRowPrefab;
 
-        private Dictionary<Player, PlayerZoneRow> _playerZoneRows = new();
+        private Dictionary<Player, PlayerPuzzlesRow> _playerZoneRows = new();
 
         private Player? _currentPlayer;
 
@@ -51,7 +51,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
                 GameObject rowParent = Instantiate(_playerZoneRowPrefab, transform);
                 rowParent.SetActive(true);
 
-                var row = rowParent.GetComponentInChildren<PlayerZoneRow>();
+                var row = rowParent.GetComponentInChildren<PlayerPuzzlesRow>();
                 row.Init(player.Name, game.PlayerStates[player]);
                 _playerZoneRows.Add(player, row);
             }
@@ -60,7 +60,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
         public PuzzleSlot? GetPuzzleWithId(uint puzzleId)
         {
             PuzzleSlot? puzzle = null;
-            foreach (PlayerZoneRow row in _playerZoneRows.Values) {
+            foreach (PlayerPuzzlesRow row in _playerZoneRows.Values) {
                 if (row.TryGetPuzzleWithId(puzzleId, out puzzle)) {
                     return puzzle;
                 }
