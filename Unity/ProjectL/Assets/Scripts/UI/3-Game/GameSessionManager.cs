@@ -2,7 +2,12 @@
 
 namespace ProjectL.UI.GameScene.Management
 {
-
+    using ProjectL;
+    using ProjectL.Data;
+    using ProjectL.Management;
+    using ProjectL.UI.Animation;
+    using ProjectL.UI.GameScene;
+    using ProjectL.UI.GameScene.Actions;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameActions.Verification;
     using ProjectLCore.GameLogic;
@@ -14,85 +19,85 @@ namespace ProjectL.UI.GameScene.Management
     using System.IO;
     using System.Linq;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using UnityEngine;
-    using ProjectL.UI.GameScene;
-    using ProjectL.Data;
-    using ProjectL.Management;
-    using ProjectL;
-    using Unity.VisualScripting;
-    using System.Threading;
-    using ProjectL.UI.GameScene.Actions;
-    using ProjectL.UI.Animation;
 
     public class GameSessionManager : StaticInstance<GameSessionManager>
     {
         #region Fields
 
         [Header("Game End Boxes")]
-        [SerializeField] private GameObject? errorMessageBoxPrefab;
-        [SerializeField] private GameObject? gameEndedBoxPrefab;
+        [SerializeField] private ErrorAlertBox? _errorAlertBoxPrefab;
+        [SerializeField] private GameEndedBox? _gameEndedBoxPrefab;
 
-        [Header("Text game")]
-        [SerializeField] private TextBasedGame? textGame;
-
-        private GameCore? _game;
         private AIPlayerActionAnimator _aiPlayerAnimator = new();
+
+        #endregion
+
+        #region Methods
 
         protected override void Awake()
         {
             base.Awake();
             // check that all components are assigned
-            if (errorMessageBoxPrefab == null || gameEndedBoxPrefab == null) {
+            if (_errorAlertBoxPrefab == null || _gameEndedBoxPrefab == null) {
                 Debug.LogError("GameManager: One or more required UI elements are not assigned.");
                 return;
             }
 
-            GameErrorHandler.Setup(errorMessageBoxPrefab);
+            GameErrorHandler.Setup(_errorAlertBoxPrefab);
         }
 
         private async void Start()
         {
             // create game core
-            _game = CreateGameCore();
+            GameCore? game = CreateGameCore();
 
             // if error occurred --> end
-            if (_game == null) {
+            if (game == null) {
                 return;
             }
 
-            var cancellationToken = destroyCancellationToken;
+            RuntimeGameInfo.RegisterGame(game);
 
-            _aiPlayerAnimator.Init(_game);
-            await InitializePlayersAsync(cancellationToken);
-            await InitializeGameAsync(cancellationToken);
-
-            // game loop
-            GameSummary.Clear();
-            await GameLoopAsync(cancellationToken);
-
-            // wait a bit before showing the game ended box
-            await AnimationManager.WaitForScaledDelay(1f);
-
-            // final results
-            if (!cancellationToken.IsCancellationRequested) {
-                _game.FinalizeGame();
-                PrepareGameEndStats();
-                GoToFinalResultsScreen();
+            // start the game
+            try {
+                await SimulateGameAsync(game, destroyCancellationToken);
             }
-        }
-
-
-        private void Update()
-        {
-            if (GameErrorHandler.ShouldEndGameWithError && !GameErrorHandler.EndedGameWithError) {
-                GameErrorHandler.EndGameWithError();
+            catch (OperationCanceledException) {
+                Debug.Log("Game session cancelled.");
+            }
+            catch (Exception e) {
+                GameErrorHandler.FatalErrorOccurred($"An error occurred during the game: {e.Message}");
             }
         }
 
         protected override void OnDestroy()
         {
+            base.OnDestroy();
             RuntimeGameInfo.UnregisterGame();
+        }
+  
+        /// <summary>
+        /// Tries to load the puzzles and create players.
+        /// </summary>
+        /// <returns>A <see cref="GameCore"/> instance if successful; otherwise <see langword="null"/>.</returns>
+        private GameCore? CreateGameCore()
+        {
+            // try to load puzzles
+            GameState? gameState = LoadGameState();
+            if (gameState == null) {
+                return null;
+            }
+
+            // try to create players
+            List<Player>? players = LoadPlayers();
+            if (players == null) {
+                return null;
+            }
+
+            return new GameCore(gameState, players, GameSettings.ShouldShufflePlayers);
         }
 
         /// <summary>
@@ -101,7 +106,8 @@ namespace ProjectL.UI.GameScene.Management
         /// <returns>A <see cref="GameState"/> instance if successful; otherwise <see langword="null"/>.</returns>
         private GameState? LoadGameState()
         {
-            if (GameErrorHandler.ShouldEndGameWithError) {
+            // check if the game didn't end already
+            if (GameErrorHandler.GameEndedWithError) {
                 return null;
             }
 
@@ -141,7 +147,8 @@ namespace ProjectL.UI.GameScene.Management
         /// <returns>A list of instantiated players if successful; otherwise <see langword="null"/>.</returns>
         private List<Player>? LoadPlayers()
         {
-            if (GameErrorHandler.ShouldEndGameWithError) {
+            // check if the game didn't end already
+            if (GameErrorHandler.GameEndedWithError) {
                 return null;
             }
 
@@ -168,61 +175,53 @@ namespace ProjectL.UI.GameScene.Management
             }
         }
 
-        /// <summary>
-        /// Tries to load the puzzles and create players.
-        /// </summary>
-        /// <returns>A <see cref="GameCore"/> instance if successful; otherwise <see langword="null"/>.</returns>
-        private GameCore? CreateGameCore()
+        private async Task SimulateGameAsync(GameCore game, CancellationToken cancellationToken = default)
         {
-            // try to load puzzles
-            GameState? gameState = LoadGameState();
-            if (gameState == null) {
-                return null;
-            }
+            cancellationToken.ThrowIfCancellationRequested();
 
-            // try to create players
-            List<Player>? players = LoadPlayers();
-            if (players == null) {
-                return null;
-            }
+            // initialize game components
+            _aiPlayerAnimator.Init(game);
+            await InitializePlayersAsync(game, cancellationToken);
+            await InitializeGameAsync(game, cancellationToken);
 
-            return new GameCore(gameState, players, GameSettings.ShouldShufflePlayers);
+            // start game loop
+            GameSummary.Clear();
+            await GameLoopAsync(game, cancellationToken);
+
+            // wait a bit before showing the game ended box
+            await AnimationManager.WaitForScaledDelay(1f);
+
+            // finalize game
+            cancellationToken.ThrowIfCancellationRequested();
+            game.FinalizeGame();
+            PrepareGameEndStats(game);
+
+            // go to final results screen
+            cancellationToken.ThrowIfCancellationRequested();
+            GoToFinalResultsScreen();
         }
 
-        private async Task InitializeGameAsync(CancellationToken cancellationToken)
-        {
-            if (_game == null) {
-                Debug.LogError("GameCore is null. Cannot prepare end game stats.");
-                return; // safety check
-            }
-
-            RuntimeGameInfo.RegisterGame(_game);
-
-            // wait until the graphics system is ready
-            while (!GameGraphicsSystem.Instance.IsReadyForInitialization) {
-                await Awaitable.WaitForSecondsAsync(0.01f, cancellationToken);
-            }
-
-            GameGraphicsSystem.Instance.Init(_game);
-            await _game.InitializeGameAsync(cancellationToken);
-        }
 
         /// <summary>
         /// Asynchronously initializes all AI players by calling their <see cref="AIPlayerBase.InitAsync(int, List{Puzzle}, string?)"/> method.
         /// </summary>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        private async Task InitializePlayersAsync(CancellationToken cancellationToken)
+        private async Task InitializePlayersAsync(GameCore game, CancellationToken cancellationToken)
         {
-            if (GameErrorHandler.ShouldEndGameWithError) {
-                return;
-            }
+            foreach (Player player in game!.Players) {
 
-            foreach (Player player in _game!.Players) {
+                // check if the game didn't end already
+                cancellationToken.ThrowIfCancellationRequested();
+                if (GameErrorHandler.GameEndedWithError) {
+                    return;
+                }
+
                 // initialize human player
                 if (player is HumanPlayer humanPlayer) {
-                    HumanPlayerActionCreator.Instance.RegisterPlayer(humanPlayer, _game.PlayerStates[humanPlayer]);
+                    HumanPlayerActionCreator.Instance.RegisterPlayer(humanPlayer, game.PlayerStates[humanPlayer]);
                 }
+
                 // initialize AI player
                 else if (player is AIPlayerBase aiPlayer) {
                     string? initPath = GameSettings.Players[player.Name].InitPath;
@@ -231,16 +230,23 @@ namespace ProjectL.UI.GameScene.Management
                     Debug.Log($"Initializing {aiPlayer.GetType().Name} {aiPlayer.Name}{initPath}...");
 
                     try {
-                        await aiPlayer.InitAsync(_game.Players.Length, _game.GameState.GetAllPuzzlesInGame(), initPath, cancellationToken);
+                        await aiPlayer.InitAsync(game.Players.Length, game.GameState.GetAllPuzzlesInGame(), initPath, cancellationToken);
                         Debug.Log($"AI player {player.Name} initialized successfully.");
+                    }
+                    catch (OperationCanceledException) {
+                        // explicitly rethrow the exception to cancel the game
+                        throw;
                     }
                     catch (AggregateException e) {
                         GameErrorHandler.FatalErrorOccurred($"Initialization of player {player.Name} failed: {e.InnerException?.Message}");
+                        break;
                     }
                     catch (Exception e) {
                         GameErrorHandler.FatalErrorOccurred($"Initialization of player {player.Name} failed: {e.Message}");
+                        break;
                     }
                 }
+
                 // should never happen, but just in case
                 else {
                     Debug.LogError($"Player {player.Name} has an unknown type {player.GetType().Name}.");
@@ -248,32 +254,135 @@ namespace ProjectL.UI.GameScene.Management
             }
         }
 
-        /// <summary>
-        /// Prepares the <see cref="GameSummary"/> by adding final results and unfinished puzzles.
-        /// </summary>
-        private void PrepareGameEndStats()
+        private async Task InitializeGameAsync(GameCore game, CancellationToken cancellationToken)
         {
-            if (GameErrorHandler.ShouldEndGameWithError) {
+            // check if the game didn't end already
+            cancellationToken.ThrowIfCancellationRequested();
+            if (GameErrorHandler.GameEndedWithError) {
                 return;
             }
 
-            if (_game == null) {
-                Debug.LogError("GameCore is null. Cannot prepare end game stats.");
-                return; // safety check
+            // wait until the graphics system is ready
+            while (!GameGraphicsSystem.Instance.IsReadyForInitialization) {
+                await Awaitable.WaitForSecondsAsync(0.01f, cancellationToken);
+            }
+
+            GameGraphicsSystem.Instance.Init(game);
+            await game.InitializeGameAsync(cancellationToken);
+        }
+
+        private async Task GameLoopAsync(GameCore game, CancellationToken cancellationToken)
+        {
+            while (!GameErrorHandler.GameEndedWithError) {
+                // check if the game didn't end already
+                cancellationToken.ThrowIfCancellationRequested();
+
+                // get next turn
+                TurnInfo turnInfo = game.GetNextTurnInfo();
+                LogTurnInfo(turnInfo, game.CurrentPlayer);
+
+                // check if game ended
+                if (game.CurrentGamePhase == GamePhase.Finished) {
+                    Debug.Log("Game ended.");
+                    break;
+                }
+
+                // create verifier for the current player
+                var gameInfo = game.GameState.GetGameInfo();
+                var playerInfos = game.GetPlayerInfos();
+                var currentPlayerInfo = game.PlayerStates[game.CurrentPlayer].GetPlayerInfo();
+                var verifier = new ActionVerifier(gameInfo, currentPlayerInfo, turnInfo);
+
+                // try to get action from player
+                GameAction? action;
+                try {
+                    action = await game.CurrentPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier, cancellationToken);
+                    if (action == null) {
+                        LogPlayerGetActionReturnedNull(game.CurrentPlayer.Name);
+                    }
+                }
+                catch (OperationCanceledException) {
+                    // explicitly rethrow the exception to cancel the game
+                    throw;
+                }
+                catch (AggregateException e) {
+                    LogPlayerGetActionThrownException(game.CurrentPlayer.Name, e.InnerException.Message);
+                    action = null;
+                }
+                catch (Exception e) {
+                    LogPlayerGetActionThrownException(game.CurrentPlayer.Name, e.Message);
+                    action = null;
+                }
+
+                // if action is not null --> verify it
+                if (action != null) {
+                    var result = verifier.Verify(action);
+
+                    // if fail --> set action to null
+                    if (result is VerificationFailure fail) {
+                        LogPlayerProvidedInvalidAction(game.CurrentPlayer.Name, action, fail);
+                        action = null;
+                    }
+                }
+
+                // if action is null --> assign default action
+                if (action == null) {
+                    action = GetDefaultAction(game.CurrentGamePhase);
+                    LogDefaultFunctionAssignment(game.CurrentPlayer.Name, action);
+                }
+
+                // action is now valid --> process it
+                LogPlayerProvidedValidAction(game.CurrentPlayer.Name, action);
+                if (game.CurrentPlayer is AIPlayerBase aiPlayer) {
+                    await action.AcceptAsync(_aiPlayerAnimator, cancellationToken);
+                }
+                await game.ProcessActionAsync(action, cancellationToken);
+
+                // if not finishing touches --> add finished puzzles to summary for the final screen
+                if (game.CurrentGamePhase != GamePhase.FinishingTouches) {
+                    while (game.TryGetNextPuzzleFinishedBy(game.CurrentPlayer, out var finishedPuzzleInfo)) {
+                        LogPlayerFinishedPuzzle(game.CurrentPlayer.Name, finishedPuzzleInfo);
+                        GameSummary.AddFinishedPuzzle(game.CurrentPlayer, finishedPuzzleInfo.Puzzle);
+                    }
+                }
+
+                // if finishing touches --> add tetromino to summary for the final screen
+                if (game.CurrentGamePhase == GamePhase.FinishingTouches && action is PlaceTetrominoAction a) {
+                    GameSummary.AddFinishingTouchesTetromino(game.CurrentPlayer, a.Shape);
+                }
+            }
+
+            GameAction GetDefaultAction(GamePhase currentGamePhase)
+            {
+                return (currentGamePhase == GamePhase.FinishingTouches)
+                            ? new EndFinishingTouchesAction()
+                            : new DoNothingAction();
+            }
+        }
+
+
+        /// <summary>
+        /// Prepares the <see cref="GameSummary"/> by adding final results and unfinished puzzles.
+        /// </summary>
+        private void PrepareGameEndStats(GameCore game)
+        {
+            // check if the game didn't end already
+            if (GameErrorHandler.GameEndedWithError) {
+                return;
             }
 
             // add final results
-            GameSummary.FinalResults = _game.GetPlayerRankings();
+            GameSummary.FinalResults = game.GetPlayerRankings();
 
             // add info about leftover tetrominos
-            foreach (Player player in _game.Players) {
-                var info = _game.PlayerStates[player].GetPlayerInfo();
+            foreach (Player player in game.Players) {
+                var info = game.PlayerStates[player].GetPlayerInfo();
                 GameSummary.SetNumLeftoverTetrominos(player, info.NumTetrominosOwned.Sum());
             }
 
             // add info about unfinished puzzles
-            foreach (Player player in _game.Players) {
-                var state = _game.PlayerStates[player];
+            foreach (Player player in game.Players) {
+                var state = game.PlayerStates[player];
                 foreach (Puzzle puzzle in state.GetUnfinishedPuzzles()) {
                     GameSummary.AddUnfinishedPuzzle(player, puzzle);
                 }
@@ -286,97 +395,17 @@ namespace ProjectL.UI.GameScene.Management
         /// </summary>
         private void GoToFinalResultsScreen()
         {
-            if (gameEndedBoxPrefab == null) {
+            if (_gameEndedBoxPrefab == null) {
                 return;  // safety check
             }
 
             // if game ended with error, we aren't going to final results
-            if (GameErrorHandler.ShouldEndGameWithError) {
+            if (GameErrorHandler.GameEndedWithError) {
                 return;
             }
 
-            Instantiate(gameEndedBoxPrefab);
+            Instantiate(_gameEndedBoxPrefab);
             GameManager.CanGameBePaused = false;
-        }
-
-        private async Task GameLoopAsync(CancellationToken cancellationToken)
-        {
-            if (_game == null) {
-                Debug.LogError("GameCore is null. Cannot start game loop.");
-                return; // safety check
-            }
-
-            while (!cancellationToken.IsCancellationRequested && !GameErrorHandler.ShouldEndGameWithError) {
-                TurnInfo turnInfo = _game.GetNextTurnInfo();
-                LogTurnInfo(turnInfo, _game.CurrentPlayer);
-
-                // check if game ended
-                if (_game.CurrentGamePhase == GamePhase.Finished) {
-                    Debug.Log("Game ended.");
-                    break;
-                }
-
-                // create verifier for the current player
-                var gameInfo = _game.GameState.GetGameInfo();
-                var playerInfos = _game.GetPlayerInfos();
-                var currentPlayerInfo = _game.PlayerStates[_game.CurrentPlayer].GetPlayerInfo();
-                var verifier = new ActionVerifier(gameInfo, currentPlayerInfo, turnInfo);
-
-                // get action from player
-                GameAction? action;
-                try {
-                    action = await _game.CurrentPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier, destroyCancellationToken);
-                    if (action == null) {
-                        LogPlayerGetActionReturnedNull();
-                    }
-                }
-                catch (Exception e) {
-                    LogPlayerGetActionThrownException(e.Message);
-                    action = null;
-                }
-
-                // verify if got some action
-                if (action != null) {
-                    var result = verifier.Verify(action);
-                    if (result is VerificationFailure fail) {
-                        LogPlayerProvidedInvalidAction(action, fail);
-                        action = null;
-                    }
-                }
-
-                // assign default action if null
-                if (action == null) {
-                    action = GetDefaultAction();
-                    LogDefaultFunctionAssignment(action);
-                }
-
-                // process valid action
-                LogPlayerProvidedValidAction(action);
-                if (_game.CurrentPlayer is AIPlayerBase aiPlayer) {
-                    await action.AcceptAsync(_aiPlayerAnimator, cancellationToken);
-                }
-                await _game.ProcessActionAsync(action);
-
-                // if not finishing touches --> log finished puzzles
-                if (_game.CurrentGamePhase != GamePhase.FinishingTouches) {
-                    while (_game.TryGetNextPuzzleFinishedBy(_game.CurrentPlayer, out var finishedPuzzleInfo)) {
-                        LogPlayerFinishedPuzzle(finishedPuzzleInfo);
-                        GameSummary.AddFinishedPuzzle(_game.CurrentPlayer, finishedPuzzleInfo.Puzzle);
-                    }
-                }
-
-                // if finishing touches --> log used tetrominos
-                if (_game.CurrentGamePhase == GamePhase.FinishingTouches && action is PlaceTetrominoAction a) {
-                    GameSummary.AddFinishingTouchesTetromino(_game.CurrentPlayer, a.Shape);
-                }
-            }
-
-            GameAction GetDefaultAction()
-            {
-                return (_game?.CurrentGamePhase == GamePhase.FinishingTouches)
-                            ? new EndFinishingTouchesAction()
-                            : new DoNothingAction();
-            }
         }
 
         private void LogTurnInfo(TurnInfo turnInfo, Player currentPlayer)
@@ -384,35 +413,35 @@ namespace ProjectL.UI.GameScene.Management
             Debug.Log($"Current player: {currentPlayer.Name} ({currentPlayer.GetType().Name}), {turnInfo}");
         }
 
-        private void LogPlayerGetActionThrownException(string message)
+        private void LogPlayerGetActionThrownException(string playerName, string message)
         {
-            Debug.LogWarning($"{_game?.CurrentPlayer.Name} failed to provide an action with error: {message}.");
+            Debug.LogWarning($"{playerName} failed to provide an action with error: {message}.");
         }
 
-        private void LogPlayerGetActionReturnedNull()
+        private void LogPlayerGetActionReturnedNull(string playerName)
         {
-            Debug.LogWarning($"{_game?.CurrentPlayer.Name} provided no action.");
+            Debug.LogWarning($"{playerName} provided no action.");
         }
 
-        private void LogPlayerProvidedInvalidAction(GameAction action, VerificationFailure fail)
+        private void LogPlayerProvidedInvalidAction(string playerName, GameAction action, VerificationFailure fail)
         {
-            Debug.LogWarning($"{_game?.CurrentPlayer.Name} provided an invalid {action}\nVerification result:\n{fail.GetType()}: {fail.Message}\n");
+            Debug.LogWarning($"{playerName} provided an invalid {action}\nVerification result:\n{fail.GetType()}: {fail.Message}\n");
         }
 
-        private void LogDefaultFunctionAssignment(GameAction action)
+        private void LogDefaultFunctionAssignment(string playerName, GameAction action)
         {
-            Debug.LogWarning($"{_game?.CurrentPlayer.Name} provided no action. Defaulting to {action}");
+            Debug.LogWarning($"{playerName} provided no action. Defaulting to {action}");
         }
 
-        private void LogPlayerProvidedValidAction(GameAction action)
+        private void LogPlayerProvidedValidAction(string playerName, GameAction action)
         {
-            Debug.Log($"{_game?.CurrentPlayer.Name} provided a valid {action}");
+            Debug.Log($"{playerName} provided a valid {action}");
         }
 
-        private void LogPlayerFinishedPuzzle(FinishedPuzzleInfo puzzleInfo)
+        private void LogPlayerFinishedPuzzle(string playerName, FinishedPuzzleInfo puzzleInfo)
         {
             var logText = new StringBuilder();
-            logText.AppendLine($"{_game?.CurrentPlayer.Name} completed puzzle with ID={puzzleInfo.Puzzle.Id}");
+            logText.AppendLine($"{playerName} completed puzzle with ID={puzzleInfo.Puzzle.Id}");
             logText.AppendLine($"   Returned pieces: {GetUsedTetrominos()}");
             logText.AppendLine($"   Reward: {puzzleInfo.SelectedReward}");
             logText.AppendLine($"   Points: {puzzleInfo.Puzzle.RewardScore}");
@@ -447,48 +476,42 @@ namespace ProjectL.UI.GameScene.Management
 
         private static class GameErrorHandler
         {
-            public static bool ShouldEndGameWithError { get; private set; } = false;
-            public static bool EndedGameWithError { get; private set; } = false;
-            private static string _message { get; set; } = "Game ended with error.";
+            #region Fields
 
-            private static GameObject? _errorMessageBoxPrefab;
+            private static ErrorAlertBox? _errorAlertBoxPrefab;
 
-            public static void Setup(GameObject errorMessageBoxPrefab)
+            #endregion
+
+            #region Properties
+
+            public static bool GameEndedWithError { get; private set; } = false;
+
+            #endregion
+
+            #region Methods
+
+            public static void Setup(ErrorAlertBox errorAlertBoxPrefab)
             {
-                _message = "Game ended with error.";
-                ShouldEndGameWithError = false;
-                EndedGameWithError = false;
-                _errorMessageBoxPrefab = errorMessageBoxPrefab;
+                GameEndedWithError = false;
+                _errorAlertBoxPrefab = errorAlertBoxPrefab;
             }
 
             public static void FatalErrorOccurred(string message)
             {
-                if (ShouldEndGameWithError) {
+                if (GameEndedWithError) {
                     return;
                 }
-                ShouldEndGameWithError = true;
-                _message = message;
+                GameEndedWithError = true;
+
+                Debug.LogError(message);
+
+                if (_errorAlertBoxPrefab != null) {
+                    GameManager.CanGameBePaused = false;
+                    Instantiate(_errorAlertBoxPrefab);
+                }
             }
 
-            /// <summary>
-            /// Instantiates the error message box prefab. This method needs to be called from the main thread.
-            /// </summary>
-            public static void EndGameWithError()
-            {
-                if (_errorMessageBoxPrefab == null) {
-                    return; // safety check
-                }
-
-                // check if we already created the error message box
-                if (EndedGameWithError) {
-                    return;
-                }
-
-                EndedGameWithError = true;
-                Debug.LogError(_message);
-                GameManager.CanGameBePaused = false;
-                Instantiate(_errorMessageBoxPrefab);
-            }
+            #endregion
         }
     }
 }

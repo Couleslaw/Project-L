@@ -88,9 +88,8 @@ namespace ProjectL.UI.FinalResults
             HidePlayerStatsPanel();
             SetupFinalResultsPanel();
 
-            CancellationToken cancellationToken = destroyCancellationToken;
             try {
-                await Animate(cancellationToken);
+                await Animate(destroyCancellationToken);
             }
             catch (OperationCanceledException) {
                 return;

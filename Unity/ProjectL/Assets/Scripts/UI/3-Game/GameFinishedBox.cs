@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace UI.GameScene
+namespace ProjectL.UI.GameScene
 {
     using UnityEngine;
     using ProjectL.Management;

@@ -9,7 +9,7 @@ namespace ProjectL.UI.GameScene
     /// <summary>
     /// Manages the ErrorMessageBox prefab.
     /// </summary>
-    public class ErrorMessageBox : MonoBehaviour
+    public class ErrorAlertBox : MonoBehaviour
     {
         #region Methods
 
