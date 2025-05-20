@@ -111,7 +111,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
             // notify the HumanPlayerActionCreator to handle the action
             if (_mode != PieceZoneMode.Disabled) {
-                HumanPlayerActionCreator.Instance.OnPlacePieceActionRequested();
+                HumanPlayerActionCreationManager.Instance.OnPlacePieceActionRequested();
             }
 
             return tetromino;

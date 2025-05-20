@@ -16,7 +16,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
     [RequireComponent(typeof(Image))]
     [RequireComponent(typeof(BoxCollider2D))]
     public class PlayerZoneRow : MonoBehaviour, IPlayerStatePuzzleListener,
-        IHumanPlayerActionListener<TakePuzzleAction>
+        IHumanPlayerActionCreator<TakePuzzleAction>
     {
         #region Fields
 
@@ -44,7 +44,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
         public bool IsMouseOverRow => IsMouseOver();
 
-        event Action<IActionModification<TakePuzzleAction>>? IHumanPlayerActionListener<TakePuzzleAction>.ActionModifiedEventHandler {
+        event Action<IActionModification<TakePuzzleAction>>? IHumanPlayerActionCreator<TakePuzzleAction>.ActionModifiedEventHandler {
             add { }
             remove { }
         }
@@ -91,10 +91,10 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
             // listen to take puzzle action
             if (current) {
-                HumanPlayerActionCreator.Instance.AddListener(this);
+                HumanPlayerActionCreationManager.Instance.AddListener(this);
             }
             else {
-                HumanPlayerActionCreator.Instance.RemoveListener(this);
+                HumanPlayerActionCreationManager.Instance.RemoveListener(this);
             }
         }
 
@@ -129,7 +129,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
                 puzzle.OnEmptySlotClickEventHandler += () => {
                     _takePuzzleActionPlacePosition = puzzle;
-                    HumanPlayerActionCreator.Instance.OnActionConfirmed();
+                    HumanPlayerActionCreationManager.Instance.OnActionConfirmed();
                 };
                 _puzzles[i] = puzzle;
             }
@@ -171,15 +171,15 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             }
         }
 
-        void IHumanPlayerActionListener<TakePuzzleAction>.OnActionRequested()
+        void IHumanPlayerActionCreator<TakePuzzleAction>.OnActionRequested()
         {
             // don't block raycasting for empty slot buttons in the row
             _collider!.enabled = false;
         }
 
-        void IHumanPlayerActionListener<TakePuzzleAction>.OnActionCanceled() => _collider!.enabled = true;
+        void IHumanPlayerActionCreator<TakePuzzleAction>.OnActionCanceled() => _collider!.enabled = true;
 
-        void IHumanPlayerActionListener<TakePuzzleAction>.OnActionConfirmed() => _collider!.enabled = true;
+        void IHumanPlayerActionCreator<TakePuzzleAction>.OnActionConfirmed() => _collider!.enabled = true;
 
         #endregion
     }

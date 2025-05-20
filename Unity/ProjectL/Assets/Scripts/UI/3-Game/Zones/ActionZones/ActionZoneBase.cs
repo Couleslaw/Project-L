@@ -14,7 +14,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
     using UnityEngine.InputSystem;
     using UnityEngine.UI;
 
-    public abstract class ActionZoneBase : MonoBehaviour, IGameActionController
+    public abstract class ActionZoneBase : MonoBehaviour, IGameActionCreationController
     {
         #region Fields
 
@@ -122,21 +122,21 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
         public abstract void EnabledButtonsBasedOnGameState(GameState.GameInfo gameInfo, PlayerState.PlayerInfo playerInfo, TurnInfo turnInfo);
 
-        public virtual void AddListener(HumanPlayerActionCreator acm)
+        public virtual void AddListener(HumanPlayerActionCreationManager acm)
         {
             _confirmButton!.onClick.AddListener(acm.OnActionConfirmed);
         }
-        public virtual void RemoveListener(HumanPlayerActionCreator acm)
+        public virtual void RemoveListener(HumanPlayerActionCreationManager acm)
         {
             _confirmButton!.onClick.RemoveListener(acm.OnActionConfirmed);
         }
 
-        public void AddSelectRewardListener(HumanPlayerActionCreator acm)
+        public void AddSelectRewardListener(HumanPlayerActionCreationManager acm)
         {
             _selectRewardButton!.onClick.AddListener(acm.OnRewardSelected);
         }
 
-        public void RemoveSelectRewardListener(HumanPlayerActionCreator acm)
+        public void RemoveSelectRewardListener(HumanPlayerActionCreationManager acm)
         {
             _selectRewardButton!.onClick.RemoveListener(acm.OnRewardSelected);
         }
@@ -152,7 +152,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _selectRewardButton.onClick.AddListener(SoundManager.Instance!.PlayButtonClickSound);
             _finishingTouchesButton.onClick.AddListener(SoundManager.Instance!.PlayButtonClickSound);
 
-            HumanPlayerActionCreator.RegisterController(this);
+            HumanPlayerActionCreationManager.RegisterController(this);
         }
 
         public void SimulateConfirmActionClick()

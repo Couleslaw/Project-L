@@ -10,9 +10,9 @@ namespace ProjectL.UI.GameScene.Actions.Constructing
     {
         #region Methods
 
-        void Subscribe<T>(IHumanPlayerActionListener<T> listener) where T : GameAction;
+        void Subscribe<T>(IHumanPlayerActionCreator<T> listener) where T : GameAction;
 
-        void Unsubscribe<T>(IHumanPlayerActionListener<T> listener) where T : GameAction;
+        void Unsubscribe<T>(IHumanPlayerActionCreator<T> listener) where T : GameAction;
 
         void RaiseRequested();
 
@@ -37,14 +37,14 @@ namespace ProjectL.UI.GameScene.Actions.Constructing
 
         #region Methods
 
-        public void Subscribe(IHumanPlayerActionListener<T> listener)
+        public void Subscribe(IHumanPlayerActionCreator<T> listener)
         {
             OnActionRequested += listener.OnActionRequested;
             OnActionCanceled += listener.OnActionCanceled;
             OnActionConfirmed += listener.OnActionConfirmed;
         }
 
-        public void Unsubscribe(IHumanPlayerActionListener<T> listener)
+        public void Unsubscribe(IHumanPlayerActionCreator<T> listener)
         {
             OnActionRequested -= listener.OnActionRequested;
             OnActionCanceled -= listener.OnActionCanceled;
@@ -57,16 +57,16 @@ namespace ProjectL.UI.GameScene.Actions.Constructing
 
         public void RaiseConfirmed() => OnActionConfirmed?.Invoke();
 
-        public void Subscribe<T1>(IHumanPlayerActionListener<T1> listener) where T1 : GameAction
+        public void Subscribe<T1>(IHumanPlayerActionCreator<T1> listener) where T1 : GameAction
         {
-            Subscribe(listener as IHumanPlayerActionListener<T> ??
+            Subscribe(listener as IHumanPlayerActionCreator<T> ??
                 throw new InvalidCastException($"Cannot cast {typeof(T1)} to {typeof(T)}")
                 );
         }
 
-        public void Unsubscribe<T1>(IHumanPlayerActionListener<T1> listener) where T1 : GameAction
+        public void Unsubscribe<T1>(IHumanPlayerActionCreator<T1> listener) where T1 : GameAction
         {
-            Unsubscribe(listener as IHumanPlayerActionListener<T> ??
+            Unsubscribe(listener as IHumanPlayerActionCreator<T> ??
                 throw new InvalidCastException($"Cannot cast {typeof(T1)} to {typeof(T)}")
                 );
         }

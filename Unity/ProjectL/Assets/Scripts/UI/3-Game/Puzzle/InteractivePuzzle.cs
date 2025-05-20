@@ -20,7 +20,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
     [RequireComponent(typeof(Image))]
     [RequireComponent(typeof(GridLayoutGroup))]
     public class InteractivePuzzle : MonoBehaviour, IPuzzleListener,
-        IHumanPlayerActionListener<PlaceTetrominoAction>,
+        IHumanPlayerActionCreator<PlaceTetrominoAction>,
         IAIPlayerActionAnimator<PlaceTetrominoAction>
     {
         #region Fields
@@ -111,7 +111,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             logicalPuzzle.AddListener(this);
 
             // listen to action requests
-            HumanPlayerActionCreator.Instance.AddListener(this);
+            HumanPlayerActionCreationManager.Instance.AddListener(this);
         }
 
         public void FinishPuzzle()
@@ -122,7 +122,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             MakeInteractive(false);
 
             // stop listening to action requests
-            HumanPlayerActionCreator.Instance.RemoveListener(this);
+            HumanPlayerActionCreationManager.Instance.RemoveListener(this);
         }
 
         public Vector2 GetPlacementCenter(BinaryImage placement)
@@ -281,13 +281,13 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             }
         }
 
-        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionRequested()
+        void IHumanPlayerActionCreator<PlaceTetrominoAction>.OnActionRequested()
         {
             _temporaryPuzzleCopy = (PuzzleWithColor)_logicalPuzzle!.Clone();
             _temporaryPuzzleCopy.AddListener(this);
         }
 
-        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionCanceled()
+        void IHumanPlayerActionCreator<PlaceTetrominoAction>.OnActionCanceled()
         {
             var tetrominosToRemove = _temporaryPlacements.Keys.ToList();
             foreach (var tetromino in tetrominosToRemove) {
@@ -297,7 +297,7 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
             _temporaryPuzzleCopy = null;
         }
 
-        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionConfirmed()
+        void IHumanPlayerActionCreator<PlaceTetrominoAction>.OnActionConfirmed()
         {
             _temporaryPlacements.Clear();
             _temporaryPuzzleCopy?.RemoveListener(this);

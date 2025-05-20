@@ -46,7 +46,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             }
         }
 
-        public void ConnectToActionButtons(HumanPlayerActionCreator acm)
+        public void ConnectToActionButtons(HumanPlayerActionCreationManager acm)
         {
             if (GameManager.Controls == null) {
                 return;
@@ -58,7 +58,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _puzzleActionZone?.AddListener(acm);
         }
 
-        public void DisconnectFromActionButtons(HumanPlayerActionCreator acm)
+        public void DisconnectFromActionButtons(HumanPlayerActionCreationManager acm)
         {
             if (GameManager.Controls == null) {
                 return;
@@ -70,7 +70,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _puzzleActionZone?.RemoveListener(acm);
         }
 
-        public void ConnectToSelectRewardButtons(HumanPlayerActionCreator acm)
+        public void ConnectToSelectRewardButtons(HumanPlayerActionCreationManager acm)
         {
             if (_puzzleActionZone == null || _pieceActionZone == null) {
                 return;
@@ -79,7 +79,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _puzzleActionZone.AddSelectRewardListener(acm);
         }
 
-        public void DisconnectFromSelectRewardButton(HumanPlayerActionCreator acm)
+        public void DisconnectFromSelectRewardButton(HumanPlayerActionCreationManager acm)
         {
             if (_puzzleActionZone == null || _pieceActionZone == null) {
                 return;
@@ -92,8 +92,8 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
 
         private void OnCancelActionRequested(InputAction.CallbackContext ctx)
         {
-            if (HumanPlayerActionCreator.Instance != null) {
-                HumanPlayerActionCreator.Instance.OnActionCanceled();
+            if (HumanPlayerActionCreationManager.Instance != null) {
+                HumanPlayerActionCreationManager.Instance.OnActionCanceled();
                 ActionButton.DeselectCurrentButton();
             }
         }

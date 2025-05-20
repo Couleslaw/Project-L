@@ -23,7 +23,7 @@ namespace ProjectL.UI.GameScene.Management
     using System.Threading.Tasks;
     using UnityEngine;
 
-    public class GameSessionManager : StaticInstance<GameSessionManager>
+    public class GameSessionManager : MonoBehaviour
     {
         #region Fields
 
@@ -31,15 +31,12 @@ namespace ProjectL.UI.GameScene.Management
         [SerializeField] private ErrorAlertBox? _errorAlertBoxPrefab;
         [SerializeField] private GameEndedBox? _gameEndedBoxPrefab;
 
-        private AIPlayerActionAnimator _aiPlayerAnimator = new();
-
         #endregion
 
         #region Methods
 
-        protected override void Awake()
+        private void Awake()
         {
-            base.Awake();
             // check that all components are assigned
             if (_errorAlertBoxPrefab == null || _gameEndedBoxPrefab == null) {
                 Debug.LogError("GameManager: One or more required UI elements are not assigned.");
@@ -73,9 +70,8 @@ namespace ProjectL.UI.GameScene.Management
             }
         }
 
-        protected override void OnDestroy()
+        private void OnDestroy()
         {
-            base.OnDestroy();
             RuntimeGameInfo.UnregisterGame();
         }
   
@@ -180,7 +176,6 @@ namespace ProjectL.UI.GameScene.Management
             cancellationToken.ThrowIfCancellationRequested();
 
             // initialize game components
-            _aiPlayerAnimator.Init(game);
             await InitializePlayersAsync(game, cancellationToken);
             await InitializeGameAsync(game, cancellationToken);
 
@@ -219,7 +214,7 @@ namespace ProjectL.UI.GameScene.Management
 
                 // initialize human player
                 if (player is HumanPlayer humanPlayer) {
-                    HumanPlayerActionCreator.Instance.RegisterPlayer(humanPlayer, game.PlayerStates[humanPlayer]);
+                    HumanPlayerActionCreationManager.Instance.RegisterPlayer(humanPlayer, game.PlayerStates[humanPlayer]);
                 }
 
                 // initialize AI player
@@ -334,7 +329,7 @@ namespace ProjectL.UI.GameScene.Management
                 // action is now valid --> process it
                 LogPlayerProvidedValidAction(game.CurrentPlayer.Name, action);
                 if (game.CurrentPlayer is AIPlayerBase aiPlayer) {
-                    await action.AcceptAsync(_aiPlayerAnimator, cancellationToken);
+                    await action.AcceptAsync(AIPlayerActionAnimationManager.Instance, cancellationToken);
                 }
                 await game.ProcessActionAsync(action, cancellationToken);
 
@@ -415,33 +410,33 @@ namespace ProjectL.UI.GameScene.Management
 
         private void LogPlayerGetActionThrownException(string playerName, string message)
         {
-            Debug.LogWarning($"{playerName} failed to provide an action with error: {message}.");
+            Debug.LogWarning($"Player '{playerName}' failed to provide an action with error: {message}.");
         }
 
         private void LogPlayerGetActionReturnedNull(string playerName)
         {
-            Debug.LogWarning($"{playerName} provided no action.");
+            Debug.LogWarning($"Player '{playerName}' provided no action.");
         }
 
         private void LogPlayerProvidedInvalidAction(string playerName, GameAction action, VerificationFailure fail)
         {
-            Debug.LogWarning($"{playerName} provided an invalid {action}\nVerification result:\n{fail.GetType()}: {fail.Message}\n");
+            Debug.LogWarning($"Player '{playerName}' provided an invalid {action}\nVerification result:\n{fail.GetType()}: {fail.Message}\n");
         }
 
         private void LogDefaultFunctionAssignment(string playerName, GameAction action)
         {
-            Debug.LogWarning($"{playerName} provided no action. Defaulting to {action}");
+            Debug.LogWarning($"Player '{playerName}' provided no action. Defaulting to {action}");
         }
 
         private void LogPlayerProvidedValidAction(string playerName, GameAction action)
         {
-            Debug.Log($"{playerName} provided a valid {action}");
+            Debug.Log($"Player '{playerName}' provided a valid {action}");
         }
 
         private void LogPlayerFinishedPuzzle(string playerName, FinishedPuzzleInfo puzzleInfo)
         {
             var logText = new StringBuilder();
-            logText.AppendLine($"{playerName} completed puzzle with ID={puzzleInfo.Puzzle.Id}");
+            logText.AppendLine($"Player '{playerName}' completed puzzle with ID={puzzleInfo.Puzzle.Id}");
             logText.AppendLine($"   Returned pieces: {GetUsedTetrominos()}");
             logText.AppendLine($"   Reward: {puzzleInfo.SelectedReward}");
             logText.AppendLine($"   Points: {puzzleInfo.Puzzle.RewardScore}");

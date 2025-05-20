@@ -10,6 +10,7 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
     using System;
+    using Unity.VisualScripting;
     using UnityEngine;
     using UnityEngine.EventSystems;
     using UnityEngine.UI;
@@ -131,6 +132,13 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
             _button.onClick.AddListener(OnRecycleButtonClick);
             UpdateUI();
+        }
+
+        private void OnDestroy()
+        {
+            if (_button != null) {
+                PuzzleZoneManager.RemoveFromRadioButtonGroup(_button);
+            }
         }
 
         private void OnRecycleButtonClick()

@@ -4,10 +4,6 @@ namespace ProjectL.UI.GameScene
 {
     using UnityEngine;
     using ProjectLCore.GameLogic;
-    using ProjectL.UI.GameScene.Zones.PlayerZone;
-    using ProjectL.UI.GameScene.Zones.PuzzleZone;
-    using ProjectL.UI.GameScene.Zones.ActionZones;
-    using ProjectL.UI.GameScene.Zones.PieceZone;
     using System.Collections.Generic;
 
     public abstract class GraphicsManager<TSelf> : StaticInstance<TSelf>, GameGraphicsSystem.IGraphicsManager

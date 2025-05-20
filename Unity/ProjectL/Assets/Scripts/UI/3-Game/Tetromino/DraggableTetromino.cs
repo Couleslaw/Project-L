@@ -24,7 +24,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
     [RequireComponent(typeof(SpriteRenderer))]
     [RequireComponent(typeof(Collider2D))]
     public class DraggableTetromino : MonoBehaviour,
-        IHumanPlayerActionListener<PlaceTetrominoAction>,
+        IHumanPlayerActionCreator<PlaceTetrominoAction>,
         IAIPlayerActionAnimator<PlaceTetrominoAction>,
         IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
     {
@@ -70,7 +70,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         public event Action<DraggableTetromino>? OnStartDraggingEventHandler;
 
-        event Action<IActionModification<PlaceTetrominoAction>>? IHumanPlayerActionListener<PlaceTetrominoAction>.ActionModifiedEventHandler {
+        event Action<IActionModification<PlaceTetrominoAction>>? IHumanPlayerActionCreator<PlaceTetrominoAction>.ActionModifiedEventHandler {
             add { }
             remove { }
         }
@@ -117,7 +117,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
 
             // listen to place action events
-            HumanPlayerActionCreator.Instance?.AddListener<PlaceTetrominoAction>(this);
+            HumanPlayerActionCreationManager.Instance?.AddListener<PlaceTetrominoAction>(this);
 
             // select the puzzle and start dragging
             SetMode(Mode.Selected);
@@ -480,7 +480,7 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             if (this == null || gameObject == null)
                 return;
 
-            HumanPlayerActionCreator.Instance?.RemoveListener(this);
+            HumanPlayerActionCreationManager.Instance?.RemoveListener(this);
 
             // unselect tetromino
             if (SelectedTetromino == this) {
@@ -506,11 +506,11 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         }
 
 
-        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionRequested() { }
+        void IHumanPlayerActionCreator<PlaceTetrominoAction>.OnActionRequested() { }
 
-        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionCanceled() => RemoveFromScene();
+        void IHumanPlayerActionCreator<PlaceTetrominoAction>.OnActionCanceled() => RemoveFromScene();
 
-        void IHumanPlayerActionListener<PlaceTetrominoAction>.OnActionConfirmed() => RemoveFromScene();
+        void IHumanPlayerActionCreator<PlaceTetrominoAction>.OnActionConfirmed() => RemoveFromScene();
 
         async Task IAIPlayerActionAnimator<PlaceTetrominoAction>.Animate(PlaceTetrominoAction action, CancellationToken cancellationToken)
         {

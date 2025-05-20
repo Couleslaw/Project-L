@@ -42,8 +42,8 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
     public class PuzzleZoneManager : GraphicsManager<PuzzleZoneManager>,
         ICurrentTurnListener, IGameStatePuzzleListener,
-        IGameActionController,
-        IHumanPlayerActionListener<TakePuzzleAction>, IHumanPlayerActionListener<RecycleAction>,
+        IGameActionCreationController,
+        IHumanPlayerActionCreator<TakePuzzleAction>, IHumanPlayerActionCreator<RecycleAction>,
         IAIPlayerActionAnimator<TakePuzzleAction>, IAIPlayerActionAnimator<RecycleAction>
     {
 
@@ -56,13 +56,13 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
         private TurnInfo _currentTurnInfo;
 
         private event Action<IActionModification<TakePuzzleAction>>? TakePuzzleModifiedEventHandler;
-        event Action<IActionModification<TakePuzzleAction>>? IHumanPlayerActionListener<TakePuzzleAction>.ActionModifiedEventHandler {
+        event Action<IActionModification<TakePuzzleAction>>? IHumanPlayerActionCreator<TakePuzzleAction>.ActionModifiedEventHandler {
             add => TakePuzzleModifiedEventHandler += value;
             remove => TakePuzzleModifiedEventHandler -= value;
         }
 
         private event Action<IActionModification<RecycleAction>>? RecycleModifiedEventHandler;
-        event Action<IActionModification<RecycleAction>>? IHumanPlayerActionListener<RecycleAction>.ActionModifiedEventHandler {
+        event Action<IActionModification<RecycleAction>>? IHumanPlayerActionCreator<RecycleAction>.ActionModifiedEventHandler {
             add => RecycleModifiedEventHandler += value;
             remove => RecycleModifiedEventHandler -= value;
         }
@@ -101,26 +101,26 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             game.GameState.AddListener((IGameStatePuzzleListener)this);
             game.AddListener((ICurrentTurnListener)this);
 
-            HumanPlayerActionCreator.Instance.AddListener<TakePuzzleAction>(this);
-            HumanPlayerActionCreator.Instance.AddListener<RecycleAction>(this);
+            HumanPlayerActionCreationManager.Instance.AddListener<TakePuzzleAction>(this);
+            HumanPlayerActionCreationManager.Instance.AddListener<RecycleAction>(this);
 
             _whiteColumn.Init(isBlack: false);
             _blackColumn.Init(isBlack: true);
 
-            HumanPlayerActionCreator.RegisterController(this);
+            HumanPlayerActionCreationManager.RegisterController(this);
 
             _requestTakePuzzleButton.onClick.AddListener(ActionZonesManager.Instance.ManuallyClickTakePuzzleButton);
             EnableRequestTakePuzzleButton(false);
         }
 
-        void IGameActionController.SetPlayerMode(PlayerMode mode)
+        void IGameActionCreationController.SetPlayerMode(PlayerMode mode)
         {
             if (mode == PlayerMode.NonInteractive) {
                 SetMode(PuzzleZoneMode.Disabled);
             }
         }
 
-        void IGameActionController.SetActionMode(ActionMode mode)
+        void IGameActionCreationController.SetActionMode(ActionMode mode)
         {
             if (mode == ActionMode.ActionCreation) {
                 SetMode(PuzzleZoneMode.ReadyToTakePuzzle);
@@ -175,17 +175,17 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             _currentTurnInfo = currentTurnInfo;
         }
 
-        void IHumanPlayerActionListener<TakePuzzleAction>.OnActionRequested() => SetMode(PuzzleZoneMode.TakePuzzle);
+        void IHumanPlayerActionCreator<TakePuzzleAction>.OnActionRequested() => SetMode(PuzzleZoneMode.TakePuzzle);
 
-        void IHumanPlayerActionListener<TakePuzzleAction>.OnActionCanceled() => SetMode(PuzzleZoneMode.ReadyToTakePuzzle);
+        void IHumanPlayerActionCreator<TakePuzzleAction>.OnActionCanceled() => SetMode(PuzzleZoneMode.ReadyToTakePuzzle);
 
-        void IHumanPlayerActionListener<TakePuzzleAction>.OnActionConfirmed() => SetMode(PuzzleZoneMode.Disabled);
+        void IHumanPlayerActionCreator<TakePuzzleAction>.OnActionConfirmed() => SetMode(PuzzleZoneMode.Disabled);
 
-        void IHumanPlayerActionListener<RecycleAction>.OnActionRequested() => SetMode(PuzzleZoneMode.Recycle);
+        void IHumanPlayerActionCreator<RecycleAction>.OnActionRequested() => SetMode(PuzzleZoneMode.Recycle);
 
-        void IHumanPlayerActionListener<RecycleAction>.OnActionCanceled() => SetMode(PuzzleZoneMode.ReadyToTakePuzzle);
+        void IHumanPlayerActionCreator<RecycleAction>.OnActionCanceled() => SetMode(PuzzleZoneMode.ReadyToTakePuzzle);
 
-        void IHumanPlayerActionListener<RecycleAction>.OnActionConfirmed() => SetMode(PuzzleZoneMode.Disabled);
+        void IHumanPlayerActionCreator<RecycleAction>.OnActionConfirmed() => SetMode(PuzzleZoneMode.Disabled);
 
         async Task IAIPlayerActionAnimator<TakePuzzleAction>.Animate(TakePuzzleAction action, CancellationToken cancellationToken)
         {

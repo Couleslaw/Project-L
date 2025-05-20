@@ -41,7 +41,7 @@ namespace ProjectL.UI.GameScene.Actions
         SelectReward,
     }
 
-    public interface IGameActionController
+    public interface IGameActionCreationController
     {
         #region Methods
 
@@ -52,7 +52,7 @@ namespace ProjectL.UI.GameScene.Actions
         #endregion
     }
 
-    public interface IHumanPlayerActionListener<out T> where T : GameAction
+    public interface IHumanPlayerActionCreator<out T> where T : GameAction
     {
         #region Events
 
@@ -92,7 +92,7 @@ namespace ProjectL.UI.GameScene.Actions
         #endregion
     }
 
-    public class HumanPlayerActionCreator : GraphicsManager<HumanPlayerActionCreator>, 
+    public class HumanPlayerActionCreationManager : GraphicsManager<HumanPlayerActionCreationManager>, 
         ICurrentTurnListener, IPlayerStatePuzzleFinishedAsyncListener
     {
         #region Fields
@@ -107,7 +107,7 @@ namespace ProjectL.UI.GameScene.Actions
             { typeof(SelectRewardAction), ActionType.SelectReward }
         };
 
-        private static readonly List<IGameActionController> _actionControllers = new();
+        private static readonly List<IGameActionCreationController> _actionControllers = new();
 
         private readonly Dictionary<ActionType, IActionEventSet> _actionEventSets = new();
 
@@ -150,7 +150,7 @@ namespace ProjectL.UI.GameScene.Actions
             player.RewardChoiceRequested += Player_RewardChoiceRequested;
         }
 
-        public static void RegisterController(IGameActionController controller)
+        public static void RegisterController(IGameActionCreationController controller)
         {
             _actionControllers.Add(controller);
             if (Instance != null) {
@@ -159,14 +159,14 @@ namespace ProjectL.UI.GameScene.Actions
             }
         }
 
-        public void AddListener<T>(IHumanPlayerActionListener<T> listener) where T : GameAction
+        public void AddListener<T>(IHumanPlayerActionCreator<T> listener) where T : GameAction
         {
             ActionType actionType = _typeToEnumActionType[typeof(T)];
             _actionEventSets[actionType].Subscribe(listener);
             listener.ActionModifiedEventHandler += OnActionModified;
         }
 
-        public void RemoveListener<T>(IHumanPlayerActionListener<T> listener) where T : GameAction
+        public void RemoveListener<T>(IHumanPlayerActionCreator<T> listener) where T : GameAction
         {
             ActionType actionType = _typeToEnumActionType[typeof(T)];
             _actionEventSets[actionType].Unsubscribe(listener);
@@ -337,6 +337,8 @@ namespace ProjectL.UI.GameScene.Actions
         {
             base.OnDestroy();
             _actionControllers.Clear();
+            _actionConstructors.Clear();
+            _actionEventSets.Clear();
             ActionZonesManager.Instance.DisconnectFromActionButtons(this);
             ActionZonesManager.Instance.DisconnectFromSelectRewardButton(this);
         }

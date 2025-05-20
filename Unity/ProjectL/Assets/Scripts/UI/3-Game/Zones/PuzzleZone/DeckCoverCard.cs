@@ -120,6 +120,13 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
             _dimmedSprite = _button.image.sprite;
         }
 
+        private void OnDestroy()
+        {
+            if (_button != null) {
+                PuzzleZoneManager.RemoveFromRadioButtonGroup(_button);
+            }
+        }
+
         #endregion
     }
 }

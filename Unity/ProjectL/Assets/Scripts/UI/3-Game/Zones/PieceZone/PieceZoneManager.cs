@@ -27,13 +27,13 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
     public class PieceZoneManager : StaticInstance<PieceZoneManager>,
         ITetrominoCollectionListener,
-        IGameActionController,
+        IGameActionCreationController,
         IAIPlayerActionAnimator<TakeBasicTetrominoAction>,
         IAIPlayerActionAnimator<ChangeTetrominoAction>,
         IAIPlayerActionAnimator<SelectRewardAction>,
-        IHumanPlayerActionListener<TakeBasicTetrominoAction>,
-        IHumanPlayerActionListener<ChangeTetrominoAction>,
-        IHumanPlayerActionListener<SelectRewardAction>
+        IHumanPlayerActionCreator<TakeBasicTetrominoAction>,
+        IHumanPlayerActionCreator<ChangeTetrominoAction>,
+        IHumanPlayerActionCreator<SelectRewardAction>
     {
 
         private IDisposable? _finishedPuzzleHighlighter = null;
@@ -50,19 +50,19 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
         private ActionMode _actionMode;
 
         private event Action<IActionModification<TakeBasicTetrominoAction>>? TakeBasicModifiedEventHandler;
-        event Action<IActionModification<TakeBasicTetrominoAction>>? IHumanPlayerActionListener<TakeBasicTetrominoAction>.ActionModifiedEventHandler {
+        event Action<IActionModification<TakeBasicTetrominoAction>>? IHumanPlayerActionCreator<TakeBasicTetrominoAction>.ActionModifiedEventHandler {
             add => TakeBasicModifiedEventHandler += value;
             remove => TakeBasicModifiedEventHandler -= value;
         }
 
         private event Action<IActionModification<ChangeTetrominoAction>>? ChangeTetrominoModifiedEventHandler;
-        event Action<IActionModification<ChangeTetrominoAction>>? IHumanPlayerActionListener<ChangeTetrominoAction>.ActionModifiedEventHandler {
+        event Action<IActionModification<ChangeTetrominoAction>>? IHumanPlayerActionCreator<ChangeTetrominoAction>.ActionModifiedEventHandler {
             add => ChangeTetrominoModifiedEventHandler += value;
             remove => ChangeTetrominoModifiedEventHandler -= value;
         }
 
         private event Action<IActionModification<SelectRewardAction>>? SelectRewardModifiedEventHandler;
-        event Action<IActionModification<SelectRewardAction>>? IHumanPlayerActionListener<SelectRewardAction>.ActionModifiedEventHandler {
+        event Action<IActionModification<SelectRewardAction>>? IHumanPlayerActionCreator<SelectRewardAction>.ActionModifiedEventHandler {
             add => SelectRewardModifiedEventHandler += value;
             remove => SelectRewardModifiedEventHandler -= value;
         }
@@ -107,10 +107,10 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         private void Start()
         {
-            HumanPlayerActionCreator.RegisterController(this);
-            HumanPlayerActionCreator.Instance.AddListener(this as IHumanPlayerActionListener<TakeBasicTetrominoAction>);
-            HumanPlayerActionCreator.Instance.AddListener(this as IHumanPlayerActionListener<ChangeTetrominoAction>);
-            HumanPlayerActionCreator.Instance.AddListener(this as IHumanPlayerActionListener<SelectRewardAction>);
+            HumanPlayerActionCreationManager.RegisterController(this);
+            HumanPlayerActionCreationManager.Instance.AddListener(this as IHumanPlayerActionCreator<TakeBasicTetrominoAction>);
+            HumanPlayerActionCreationManager.Instance.AddListener(this as IHumanPlayerActionCreator<ChangeTetrominoAction>);
+            HumanPlayerActionCreationManager.Instance.AddListener(this as IHumanPlayerActionCreator<SelectRewardAction>);
         }
 
         private Dictionary<TetrominoShape, TetrominoButton> FindSpawners()
@@ -191,13 +191,13 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
         }
 
-        void IGameActionController.SetPlayerMode(PlayerMode mode)
+        void IGameActionCreationController.SetPlayerMode(PlayerMode mode)
         {
             _playerMode = mode;
             SetMode(GetDefaultMode());
         }
 
-        void IGameActionController.SetActionMode(ActionMode mode)
+        void IGameActionCreationController.SetActionMode(ActionMode mode)
         {
             _actionMode = mode;
             SetMode(GetDefaultMode());
@@ -224,22 +224,22 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             }
         }
 
-        void IHumanPlayerActionListener<SelectRewardAction>.OnActionRequested()
+        void IHumanPlayerActionCreator<SelectRewardAction>.OnActionRequested()
         {
             SetMode(PieceZoneMode.SelectReward);
 
             _currentPieceColumn!.SetColor(GameGraphicsSystem.ActiveColor);
 
-            var eventArgs = HumanPlayerActionCreator.Instance.CurrentRewardEventArgs!;
+            var eventArgs = HumanPlayerActionCreationManager.Instance.CurrentRewardEventArgs!;
             var puzzleSlot = PlayerZoneManager.Instance.GetPuzzleWithId(eventArgs.Puzzle.Id)!;
             _finishedPuzzleHighlighter = puzzleSlot.CreateTemporaryPuzzleHighlighter();
 
             EnableRewardSelection(eventArgs.RewardOptions);
         }
-        void IHumanPlayerActionListener<SelectRewardAction>.OnActionCanceled() => DisposeAndSetDisabled();
-        void IHumanPlayerActionListener<SelectRewardAction>.OnActionConfirmed() => DisposeAndSetDisabled();
+        void IHumanPlayerActionCreator<SelectRewardAction>.OnActionCanceled() => DisposeAndSetDisabled();
+        void IHumanPlayerActionCreator<SelectRewardAction>.OnActionConfirmed() => DisposeAndSetDisabled();
 
-        void IHumanPlayerActionListener<TakeBasicTetrominoAction>.OnActionRequested()
+        void IHumanPlayerActionCreator<TakeBasicTetrominoAction>.OnActionRequested()
         {
             SetMode(PieceZoneMode.Disabled);
             _takeBasicActionCreator = new TakeBasicActionCreator();
@@ -248,16 +248,16 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
             TakeBasicTetrominoActionModification mod = new(isSelected: true);
             TakeBasicModifiedEventHandler?.Invoke(mod);
         }
-        void IHumanPlayerActionListener<TakeBasicTetrominoAction>.OnActionCanceled() => DisposeAndSetSpawning();
-        void IHumanPlayerActionListener<TakeBasicTetrominoAction>.OnActionConfirmed() => DisposeAndSetDisabled();
+        void IHumanPlayerActionCreator<TakeBasicTetrominoAction>.OnActionCanceled() => DisposeAndSetSpawning();
+        void IHumanPlayerActionCreator<TakeBasicTetrominoAction>.OnActionConfirmed() => DisposeAndSetDisabled();
 
-        void IHumanPlayerActionListener<ChangeTetrominoAction>.OnActionRequested()
+        void IHumanPlayerActionCreator<ChangeTetrominoAction>.OnActionRequested()
         {
             SetMode(PieceZoneMode.ChangeTetromino);
             _changeTetrominoActionCreator = new(SharedReserveManager.Instance.GetNumTetrominosLeft());
         }
-        void IHumanPlayerActionListener<ChangeTetrominoAction>.OnActionCanceled() => DisposeAndSetSpawning();
-        void IHumanPlayerActionListener<ChangeTetrominoAction>.OnActionConfirmed() => DisposeAndSetDisabled();
+        void IHumanPlayerActionCreator<ChangeTetrominoAction>.OnActionCanceled() => DisposeAndSetSpawning();
+        void IHumanPlayerActionCreator<ChangeTetrominoAction>.OnActionConfirmed() => DisposeAndSetDisabled();
 
         private void DisposeAndSetSpawning()
         {

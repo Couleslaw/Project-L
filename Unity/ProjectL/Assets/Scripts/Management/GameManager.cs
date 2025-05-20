@@ -7,13 +7,12 @@ namespace ProjectL.Management
     using UnityEngine;
     using UnityEngine.SceneManagement;
 
-    public class GameManager : MonoBehaviour
+    public class GameManager : Singleton<GameManager>
     {
         #region Fields
 
         [SerializeField] private PauseMenu? _pauseMenu;
         [SerializeField] private EasyUI.Logger? _logger = null;
-
 
         private GameControls? _gameControls;
 
@@ -22,8 +21,6 @@ namespace ProjectL.Management
         #region Properties
 
         public static GameControls? Controls => (Instance != null) ? Instance._gameControls : null;
-
-        public static GameManager? Instance { get; private set; } = null;
 
         public static bool IsGamePaused { get; private set; } = false;
 
@@ -68,11 +65,11 @@ namespace ProjectL.Management
             }
         }
 
-        private void Awake()
+        protected override void Awake()
         {
             // singleton pattern
-            if (Instance != null && Instance != this) {
-                Destroy(gameObject);
+            base.Awake();
+            if (Instance != this) {
                 return;
             }
 
@@ -84,9 +81,6 @@ namespace ProjectL.Management
                 Debug.LogError("Logger prefab is not assigned in the inspector.");
                 return;
             }
-
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
 
             // pause logic
             _pauseMenu = Instantiate(_pauseMenu, gameObject.transform);
@@ -122,7 +116,6 @@ namespace ProjectL.Management
             else {
                 _logger!.Show();
             }
-
         }
 
         #endregion

@@ -60,7 +60,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _masterActionButton!.Mode = mode;
         }
 
-        public override void AddListener(HumanPlayerActionCreator acm)
+        public override void AddListener(HumanPlayerActionCreationManager acm)
         {
             base.AddListener(acm);
             _finishingTouchesButton!.onClick.AddListener(acm.OnEndFinishingTouchesActionRequested);
@@ -69,7 +69,7 @@ namespace ProjectL.UI.GameScene.Zones.ActionZones
             _masterActionButton!.SelectActionEventHandler += acm.OnMasterActionRequested;
         }
 
-        public override void RemoveListener(HumanPlayerActionCreator acm)
+        public override void RemoveListener(HumanPlayerActionCreationManager acm)
         {
             base.RemoveListener(acm);
             _finishingTouchesButton!.onClick.RemoveListener(acm.OnEndFinishingTouchesActionRequested);

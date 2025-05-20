@@ -8,7 +8,7 @@ namespace ProjectL.UI.Animation
     using System.Threading.Tasks;
     using UnityEngine;
 
-    public class AnimationManager
+    public static class AnimationManager
     {
         #region Constants
 

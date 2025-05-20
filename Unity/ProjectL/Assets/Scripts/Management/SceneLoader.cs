@@ -9,7 +9,7 @@ namespace ProjectL.Management
     /// <summary>
     /// Manages transitioning between different scenes.
     /// </summary>
-    public class SceneLoader : MonoBehaviour
+    public class SceneLoader : Singleton<SceneLoader>
     {
         #region Constants
 
@@ -28,15 +28,6 @@ namespace ProjectL.Management
         [SerializeField] private Animator? fadeAnimator;
 
         private string _currentScene = string.Empty;
-
-        #endregion
-
-        #region Properties
-
-        /// <summary>
-        /// Singleton instance of the <see cref="SceneLoader"/> class.
-        /// </summary>
-        public static SceneLoader? Instance { get; private set; } = null;
 
         #endregion
 
@@ -90,14 +81,13 @@ namespace ProjectL.Management
             await FadeOutAndLoadSceneAsync(FinalResultsScene);
         }
 
-        private void Awake()
+        protected override void Awake()
         {
             // Singleton pattern
-            if (Instance != null && Instance != this) {
-                Destroy(gameObject);
+            base.Awake();
+            if (Instance != this) {
                 return;
             }
-            Instance = this;
 
             // safety check
             if (fadeAnimator == null) {
