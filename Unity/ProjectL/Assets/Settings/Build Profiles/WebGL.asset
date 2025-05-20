@@ -576,7 +576,7 @@ MonoBehaviour:
     - line: '|   spritePackerPolicy: '
     - line: '|   webGLMemorySize: 32'
     - line: '|   webGLExceptionSupport: 1'
-    - line: '|   webGLNameFilesAsHashes: 0'
+    - line: '|   webGLNameFilesAsHashes: 1'
     - line: '|   webGLShowDiagnostics: 0'
     - line: '|   webGLDataCaching: 1'
     - line: '|   webGLDebugSymbols: 0'

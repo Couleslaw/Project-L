@@ -101,12 +101,12 @@ namespace ProjectL.UI.FinalResults
                 ShowFinishingTouches();
                 SetTetrominoSprite(tetromino);
                 UpdateScore(-1);
-                await AnimationManager.PlayTapSoundAndWaitForScaledDelay(0.8f, cancellationToken);
+                await AnimationManager.PlayTapSoundAndWaitForScaledDelay(0.95f, cancellationToken);
                 
                 if (++count != numTetrominos) {
                     HideFinishingTouches();
                 }
-                await AnimationManager.WaitForScaledDelay(0.2f, cancellationToken);
+                await AnimationManager.WaitForScaledDelay(0.05f, cancellationToken);
             }
         }
 
