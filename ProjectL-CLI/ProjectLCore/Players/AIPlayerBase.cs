@@ -10,7 +10,7 @@
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Represents an AI player in the game. AI players pick their action using an algorithm by implementing the <see cref="GetAction"/> and <see cref="GetReward"/> methods.
+    /// Represents an AI player in the game. AI players pick their action using an algorithm by implementing the <see cref="GetAction(GameState.GameInfo, PlayerState.PlayerInfo, List{PlayerState.PlayerInfo}, TurnInfo, ActionVerifier)"/> and <see cref="GetReward"/> methods.
     /// </summary>
     /// <seealso cref="Player" />
     public abstract class AIPlayerBase : Player
@@ -38,10 +38,10 @@
         }
 
         /// <summary>
-        /// Asynchronously passes the parameters to <see cref="GetAction"/> and returns a <see cref="Task"/> containing the result.
+        /// Asynchronously passes the parameters to <see cref="GetAction(GameState.GameInfo, PlayerState.PlayerInfo, List{PlayerState.PlayerInfo}, TurnInfo, ActionVerifier)"/> and returns a <see cref="Task"/> containing the result.
         /// </summary>
         /// <remarks>
-        /// This methods waits for initialization of the AI player. It will not return until <see cref="InitAsync"/> is called and finished running.
+        /// This methods asynchronously waits for initialization of the AI player. It will not return until <see cref="InitAsync"/> is called and finished running.
         /// </remarks>
         /// <param name="gameInfo">Information about the shared resources.</param>
         /// <param name="playerInfos">Information about the resources of the players.</param>
@@ -49,7 +49,7 @@
         /// <param name="verifier">Verifier for verifying the validity of actions in the current game context.</param>
         /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
         /// <returns>
-        /// The action the player wants to take.
+        /// A task representing the action the player wants to take.
         /// </returns>
         /// <exception cref="System.ArgumentException"><see cref="PlayerState"/> matching this player's <see cref="Player.Id"/> not found in <paramref name="playerInfos"/>.</exception>
         public override sealed async Task<GameAction> GetActionAsync(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, TurnInfo turnInfo, ActionVerifier verifier, CancellationToken cancellationToken = default)
@@ -57,6 +57,32 @@
             // check if the player has been initialized
             if (!_isInitialized) {
                 await WaitUntil(() => _isInitialized, cancellationToken: cancellationToken);
+            }
+
+            return await Task.Run(() => GetAction(gameInfo, playerInfos, turnInfo, verifier), cancellationToken);
+        }
+
+        /// <summary>
+        /// Passes the parameters to <see cref="GetAction(GameState.GameInfo, PlayerState.PlayerInfo, List{PlayerState.PlayerInfo}, TurnInfo, ActionVerifier)"/> and returns the result.
+        /// This method should be called only after <see cref="InitAsync"/> has been called and finished running.
+        /// </summary>
+        /// <remarks>
+        /// This method should be used for training AI players as it doesn't come with the async performance overhead of <see cref="GetActionAsync(GameState.GameInfo, PlayerState.PlayerInfo[], TurnInfo, ActionVerifier, CancellationToken)"/>.
+        /// It also shouldn't be used outside of CLI applications as it will block the main thread until <see cref="GetAction(GameState.GameInfo, PlayerState.PlayerInfo, List{PlayerState.PlayerInfo}, TurnInfo, ActionVerifier)"/> returns.
+        /// </remarks>
+        /// <param name="gameInfo">Information about the shared resources.</param>
+        /// <param name="playerInfos">Information about the resources of the players.</param>
+        /// <param name="turnInfo">Information about the current turn.</param>
+        /// <param name="verifier">Verifier for verifying the validity of actions in the current game context.</param>
+        /// <returns>
+        /// The action the player wants to take.
+        /// </returns>
+        /// <exception cref="System.ArgumentException"><see cref="PlayerState"/> matching this player's <see cref="Player.Id"/> not found in <paramref name="playerInfos"/>.</exception>
+        /// <exception cref="PlayerNotInitializedException">The player has not been initialized yet.</exception>"
+        public GameAction GetAction(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, TurnInfo turnInfo, ActionVerifier verifier)
+        {
+            if (!_isInitialized) {
+                throw new PlayerNotInitializedException();
             }
 
             // extract the state of THIS player and the OTHER players from playerInfos
@@ -75,7 +101,7 @@
             }
 
             // call the method that implements the AI algorithm
-            return await Task.Run(() => GetAction(gameInfo, myState, enemyStates, turnInfo, verifier), cancellationToken);
+            return GetAction(gameInfo, myState, enemyStates, turnInfo, verifier);
         }
 
         /// <summary>
@@ -83,12 +109,11 @@
         /// Note that the player doesn't get the current game context here.
         /// This is because this function will be called right after he completes a puzzle and therefore he knows the current game state from the last <see cref="GetActionAsync" /> call.
         /// </summary>
-        /// <param name="rewardOptions">The reward options.</param>
+        /// <param name="rewardOptions">A nonempty list containing rewards to choose from.</param>
         /// <param name="puzzle">The puzzle that was completed.</param>
         /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
-        /// <returns>
-        /// The tetromino the player wants to take.
-        /// </returns>
+        /// <remarks>If there is only one reward option, it will be chosen automatically and <see cref="GetReward"/> will not be called.</remarks>
+        /// <returns> A task representing the tetromino the player wants to take. </returns>
         public override sealed async Task<TetrominoShape> GetRewardAsync(List<TetrominoShape> rewardOptions, Puzzle puzzle, CancellationToken cancellationToken = default)
         {
             // if there is only 1 reward option, return it immediately
@@ -121,10 +146,9 @@
         /// <summary>
         /// Implementation of an algorithm that decides the shape the player wants as a reward for completing a puzzle.
         /// </summary>
-        /// <param name="rewardOptions">A list containing at least two possible reward options.</param>
+        /// <param name="rewardOptions">A nonempty list containing rewards to choose from.</param>
         /// <param name="puzzle">The puzzle that was completed.</param>
         /// <returns>The tetromino the player wants to take.</returns>
-        /// <remarks>If there is only one reward option, it will be chosen automatically and this method will not be called.</remarks>
         protected abstract TetrominoShape GetReward(List<TetrominoShape> rewardOptions, Puzzle puzzle);
 
         /// <summary>
@@ -148,5 +172,17 @@
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// Represents an exception that is thrown when the player is not initialized but he is expected to be.
+    /// </summary>
+    /// <seealso cref="System.Exception" />
+    public class PlayerNotInitializedException : Exception
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerNotInitializedException"/> class.
+        /// </summary>
+        public PlayerNotInitializedException() : base("Player not initialized!") { }
     }
 }
