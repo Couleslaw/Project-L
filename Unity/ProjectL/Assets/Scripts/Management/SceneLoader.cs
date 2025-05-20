@@ -7,7 +7,7 @@ namespace ProjectL.Management
     using UnityEngine.SceneManagement;
 
     /// <summary>
-    /// Manages transitioning between different scenes.
+    /// Manages the <c>SceneLoader</c> prefab. Provides functionality for transitioning between different scenes.
     /// </summary>
     public class SceneLoader : Singleton<SceneLoader>
     {
