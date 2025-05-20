@@ -7,6 +7,7 @@
     using ProjectLCore.GamePieces;
     using ProjectLCore.Players;
     using System;
+    using System.Diagnostics;
     using System.Text;
 
     internal class Program
@@ -46,7 +47,6 @@
 
             // initialize a new game
             Console.Clear();
-            Console.WriteLine("Loading game state from file...\n");
 
             GameState? gameState = LoadGameStateFromFile(PuzzleFilePath, simParams);
             if (gameState == null) {
@@ -54,31 +54,61 @@
             }
 
             // create players
-            List<(Player, PlayerTypeInfo)>? playersAndTypes = LoadPlayers(simParams);
-            if (playersAndTypes == null) {
+            var playersWithTypes = LoadPlayers(simParams);
+            if (playersWithTypes == null) {
                 return;
             }
 
             // initialize players
-            Console.WriteLine("Initializing players...\n");
-            foreach (var info in playersAndTypes) {
-                if (info.Item1 is AIPlayerBase aiPlayer) {
-                    Task initTask = aiPlayer.InitAsync(playersAndTypes.Count, gameState.GetAllPuzzlesInGame(), info.Item2.InitPath);
-                    // handle possible exception
-                    initTask.ContinueWith(t => {
-                        if (t.Exception != null) {
-                            ExitGame($"Initialization of player {aiPlayer.Name} failed: {t.Exception.InnerException?.Message}");
-                        }
-                    });
-                }
-            }
+            Console.WriteLine();
+            InitializePlayers(playersWithTypes, gameState);
 
             // create game core
             Console.WriteLine("\nInitializing game...");
-            List<Player> playerList = playersAndTypes.Select(x => x.Item1).ToList();
-            var game = new GameCore(gameState, playerList, shufflePlayers: false);
+            List<Player> players = playersWithTypes.Keys.Cast<Player>().ToList();
+            var game = new GameCore(gameState, players, shufflePlayers: false);
             game.InitializeGame();
+
+            // start game loop
             Console.WriteLine("Done! Starting game...\n");
+            GameLoop(game);
+
+            // print final results
+            game.FinalizeGame();
+            var results = game.GetPlayerRankings();
+            PrintGameScreenSeparator();
+            PrintFinalResults(results, game);
+        }
+
+        private static void InitializePlayers(Dictionary<AIPlayerBase, PlayerTypeInfo> playersWithTypes, GameState gameState)
+        {
+            List<AIPlayerBase> players = playersWithTypes.Keys.ToList();
+
+            // initialize players
+            foreach (AIPlayerBase aiPlayer in players) {
+                string? iniPath = playersWithTypes[aiPlayer].InitPath;
+                string fileStr = iniPath != null ? $", (ini file: {iniPath})" : string.Empty;
+
+                Console.WriteLine($"Initializing player {aiPlayer.Name}{iniPath}...");
+                Task initTask = aiPlayer.InitAsync(playersWithTypes.Count, gameState.GetAllPuzzlesInGame(), iniPath);
+
+                // wait for initialization to finish
+                try {
+                    initTask.GetAwaiter().GetResult();
+                    Console.WriteLine($"Player {aiPlayer.Name} initialized successfully.");
+                }
+                catch (AggregateException e) {
+                    ExitGame($"Initialization of player {aiPlayer.Name} failed: {e.InnerException?.Message}");
+                }
+                catch (Exception e) {
+                    ExitGame($"Initialization of player {aiPlayer.Name} failed: {e.Message}");
+                }
+            }
+        }
+
+        private static void GameLoop(GameCore game)
+        {
+            GameState gameState = game.GameState;
 
             // game loop
             while (true) {
@@ -107,7 +137,7 @@
                 // get action from player
                 GameAction? action;
                 try {
-                    action = game.CurrentPlayer.GetActionAsync(gameInfo, playerInfos, turnInfo, verifier).GetAwaiter().GetResult();
+                    action = ((AIPlayerBase)game.CurrentPlayer).GetAction(gameInfo, playerInfos, turnInfo, verifier);
                 }
                 catch (Exception e) {
                     PrintPlayerProvidedNoAction(game.CurrentPlayer, e.Message);
@@ -132,15 +162,9 @@
                     }
                 }
             }
-
-            // print final results
-            game.FinalizeGame();
-            var results = game.GetPlayerRankings();
-            PrintGameScreenSeparator();
-            PrintFinalResults(results, game);
         }
 
-        private static void ExitGame(string message="")
+        private static void ExitGame(string message = "")
         {
             if (ExitingGame == true)
                 return;
@@ -154,6 +178,7 @@
 
         private static GameState? LoadGameStateFromFile(string filePath, SimulationParams simParams)
         {
+            Console.WriteLine("Loading game state...");
             try {
                 return GameState.CreateFromFile<Puzzle>("puzzles.txt", simParams.NumInitialTetrominos, simParams.NumWhitePuzzles, simParams.NumBlackPuzzles);
             }
@@ -163,8 +188,9 @@
             }
         }
 
-        private static List<(Player, PlayerTypeInfo)>? LoadPlayers(SimulationParams simParams)
+        private static Dictionary<AIPlayerBase, PlayerTypeInfo>? LoadPlayers(SimulationParams simParams)
         {
+            Console.WriteLine("Loading AI player types...\n");
             try {
                 return ParamParser.GetPlayersFromStdIn(simParams.NumPlayers);
             }

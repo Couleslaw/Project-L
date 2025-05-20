@@ -51,7 +51,7 @@
         /// </summary>
         /// <param name="numPlayers">The number of players to create.</param>
         /// <returns>List of uninitialized AI players.</returns>
-        public static List<(Player, PlayerTypeInfo)> GetPlayersFromStdIn(int numPlayers)
+        public static Dictionary<AIPlayerBase, PlayerTypeInfo> GetPlayersFromStdIn(int numPlayers)
         {
             List<PlayerTypeInfo> playerTypes = PlayerTypeLoader.AvailableAIPlayerInfos.ToList();
 
@@ -67,7 +67,7 @@
             Console.WriteLine();
 
             // prompt user to pick players
-            List<(Player, PlayerTypeInfo)> players = new();
+            Dictionary<AIPlayerBase, PlayerTypeInfo> players = new();
 
             for (int i = 0; i < numPlayers; i++) {
                 string name = GetStringFromStdIn(_defaultPlayerNames[i % _defaultPlayerNames.Length], $"Name of player {i + 1}");
@@ -75,9 +75,9 @@
                 PlayerTypeInfo playerTypeInfo = playerTypes[playerTypeIndex - 1];
 
                 // cerate player
-                Player player = (Activator.CreateInstance(playerTypeInfo.PlayerType) as Player)!;
+                AIPlayerBase player = (Activator.CreateInstance(playerTypeInfo.PlayerType) as AIPlayerBase)!;
                 player.Name = name;
-                players.Add((player, playerTypeInfo));
+                players.Add(player, playerTypeInfo);
             }
             return players;
         }

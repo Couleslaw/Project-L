@@ -49,7 +49,7 @@ namespace AIPlayerSimulation
                 Console.WriteLine($"Failed to ensure the INI file exists at {iniFilePath}");
                 return;
             }
-            Console.WriteLine($"Loading player types from {iniFilePath}");
+            Console.WriteLine();
             _availablePlayerTypes = GetCustomAIPlayerTypes(iniFilePath);
         }
 
