@@ -423,12 +423,15 @@ namespace ProjectLCore.GameLogic
         /// </summary>
         public void RefillPuzzles()
         {
+            // refill white puzzle row
             for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
                 if (_whitePuzzlesRow[i] is null && _whitePuzzlesDeck.Count > 0) {
                     _whitePuzzlesRow[i] = TakeTopWhitePuzzle();
                     WhitePuzzleRowChangedEventHandler?.Invoke(i, _whitePuzzlesRow[i]);
                 }
             }
+
+            // refill black puzzle row
             for (int i = 0; i < _blackPuzzlesRow.Length; i++) {
                 if (_blackPuzzlesRow[i] is null && _blackPuzzlesDeck.Count > 0) {
                     _blackPuzzlesRow[i] = TakeTopBlackPuzzle();
@@ -444,32 +447,39 @@ namespace ProjectLCore.GameLogic
         /// </summary>
         /// <param name="cancellationToken"> A cancellation token to observe while waiting for the task to complete.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
+        /// <exception cref="OperationCanceledException">The task was canceled.</exception>
         public async Task RefillPuzzlesAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             var asyncHandler = PuzzleRefilledEventHandler;
-            if (asyncHandler is null) {
-                return;
-            }
 
+            // refill white puzzle row
             for (int i = 0; i < _whitePuzzlesRow.Length; i++) {
                 if (_whitePuzzlesRow[i] is null && _whitePuzzlesDeck.Count > 0) {
                     cancellationToken.ThrowIfCancellationRequested();
-                    
-                    foreach (PuzzleRefilledDelegate handler in asyncHandler.GetInvocationList()) {
-                        await handler(i, cancellationToken);
+
+                    // notify listeners about the refill
+                    if (asyncHandler is not null) {
+                        foreach (PuzzleRefilledDelegate handler in asyncHandler.GetInvocationList()) {
+                            await handler(i, cancellationToken);
+                        }
                     }
                     _whitePuzzlesRow[i] = TakeTopWhitePuzzle()!;
                     WhitePuzzleRowChangedEventHandler?.Invoke(i, _whitePuzzlesRow[i]);
                 }
             }
+
+            // refill black puzzle row
             for (int i = 0; i < _blackPuzzlesRow.Length; i++) {
                 if (_blackPuzzlesRow[i] is null && _blackPuzzlesDeck.Count > 0) {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    foreach (PuzzleRefilledDelegate handler in asyncHandler.GetInvocationList()) {
-                        await handler(i, cancellationToken);
+                    // notify listeners about the refill
+                    if (asyncHandler is not null) {
+                        foreach (PuzzleRefilledDelegate handler in asyncHandler.GetInvocationList()) {
+                            await handler(i, cancellationToken);
+                        }
                     }
                     _blackPuzzlesRow[i] = TakeTopBlackPuzzle()!;
                     BlackPuzzleRowChangedEventHandler?.Invoke(i, _blackPuzzlesRow[i]);

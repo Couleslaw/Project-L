@@ -3,6 +3,7 @@
     using ProjectLCore.GameActions.Verification;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
@@ -35,8 +36,10 @@
         /// <param name="visitor">The visitor to accept.</param>
         /// <param name="cancellationToken">Cancellation token to observe while waiting for the task to complete.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
+        /// <exception cref="OperationCanceledException">The task was canceled.</exception>
         public async Task AcceptAsync(IAsyncActionProcessor visitor, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             await visitor.ProcessActionAsync(this, cancellationToken);
         }
 

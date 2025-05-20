@@ -72,8 +72,11 @@
         /// <param name="action">The game action to process.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
+        /// <exception cref="OperationCanceledException">The task was canceled.</exception>
         public async Task ProcessActionAsync(GameAction action, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             switch (action) {
                 case PlaceTetrominoAction a:
                     await ProcessPlaceActionAsync(a, cancellationToken);
@@ -163,6 +166,8 @@
 
         private async Task ProcessTakePuzzleActionAsync(TakePuzzleAction action, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             Puzzle? puzzle = null;
             switch (action.Option) {
                 case TakePuzzleAction.Options.TopWhite: {
@@ -227,6 +232,8 @@
 
         private async Task ProcessRecycleActionAsync(RecycleAction action, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             foreach (var id in action.Order) {
                 Puzzle? puzzle = _gameState.GetPuzzleWithId(id);
                 if (puzzle is null) {
@@ -325,6 +332,8 @@
 
         private async Task ProcessPlaceActionAsync(PlaceTetrominoAction action, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             // add the tetromino to the puzzle
             Puzzle? puzzle = _playerState.GetPuzzleWithId(action.PuzzleId);
             if (puzzle is null) {
@@ -347,6 +356,8 @@
                 info = new FinishedPuzzleInfo(_player.Id, puzzle, null, null);
             else
                 info = await GetPuzzleRewardFromPlayerAsync(puzzle, cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             // call finishPuzzle before modifying the game state
             FinishedPuzzlesQueue.Enqueue(info);
@@ -389,6 +400,8 @@
 
         private async Task ProcessMasterActionAsync(MasterAction action, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             _signaler.PlayerUsedMasterAction();
             foreach (var placement in action.TetrominoPlacements) {
                 await ProcessPlaceActionAsync(placement, cancellationToken);
@@ -429,6 +442,8 @@
 
         private async Task<FinishedPuzzleInfo> GetPuzzleRewardFromPlayerAsync(Puzzle puzzle, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             List<TetrominoShape> rewardOptions = RewardManager.GetRewardOptions(_gameState.GetNumTetrominosLeft(), puzzle.RewardTetromino);
 
             // if there are no reward options, the player doesn't get anything
@@ -446,6 +461,7 @@
             catch (Exception) {
                 reward = null;
             }
+
 
             // if the chosen reward isn't valid, pick the first one
             if (reward is null || !rewardOptions.Contains(reward.Value)) {

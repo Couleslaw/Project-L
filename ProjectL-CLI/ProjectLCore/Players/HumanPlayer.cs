@@ -81,19 +81,24 @@
         /// <returns>
         /// The action the player wants to take.
         /// </returns>
+        /// <exception cref="OperationCanceledException">The task was canceled.</exception>
         public override async Task<GameAction> GetActionAsync(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, TurnInfo turnInfo, ActionVerifier verifier, CancellationToken cancellationToken = default)
         {
-            _getActionCompletionSource = new(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+
             if (!TryFindMyInfo(playerInfos, out var playerInfo)) {
                 throw new ArgumentException($"PlayerState matching this player's {nameof(Player.Id)} not found in {nameof(playerInfos)}.");
             }
 
             // request the action
             var args = new GetActionEventArgs(gameInfo, playerInfo!, turnInfo, verifier, cancellationToken);
+            _getActionCompletionSource = new(cancellationToken);
             ActionRequested?.Invoke(this, args);
 
-            // wait until the action has been set from the outside
-            return await _getActionCompletionSource.Task;
+            // wait until the action has been set from the outside or cancellation is requested
+            using (cancellationToken.Register(() => _getActionCompletionSource.TrySetCanceled(cancellationToken))) {
+                return await _getActionCompletionSource.Task;
+            }
         }
 
         /// <summary>
@@ -107,16 +112,20 @@
         /// <returns>
         /// The shape the player wants to take.
         /// </returns>
+        /// <exception cref="OperationCanceledException">The task was canceled.</exception>
         public override async Task<TetrominoShape> GetRewardAsync(List<TetrominoShape> rewardOptions, Puzzle puzzle, CancellationToken cancellationToken = default)
         {
-            _getRewardCompletionSource = new(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
 
             // request the reward
             var args = new GetRewardEventArgs(rewardOptions, puzzle, cancellationToken);
+            _getRewardCompletionSource = new(cancellationToken);
             RewardChoiceRequested?.Invoke(this, args);
 
-            // wait until the reward has been set from the outside
-            return await _getRewardCompletionSource.Task;
+            // wait until the reward has been set from the outside or cancellation is requested
+            using (cancellationToken.Register(() => _getRewardCompletionSource.TrySetCanceled(cancellationToken))) {
+                return await _getRewardCompletionSource.Task;
+            }
         }
 
         private bool TryFindMyInfo(PlayerState.PlayerInfo[] playerInfos, out PlayerState.PlayerInfo? result)

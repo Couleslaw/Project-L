@@ -31,8 +31,11 @@
         /// <param name="filePath">The path to a file where the player might be storing some information.</param>
         /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
+        /// <exception cref="OperationCanceledException">The task was canceled.</exception>
         public async Task InitAsync(int numPlayers, List<Puzzle> allPuzzles, string? filePath = null, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             await Task.Run(() => Init(numPlayers, allPuzzles, filePath), cancellationToken);
             _isInitialized = true;
         }
@@ -52,8 +55,11 @@
         /// A task representing the action the player wants to take.
         /// </returns>
         /// <exception cref="System.ArgumentException"><see cref="PlayerState"/> matching this player's <see cref="Player.Id"/> not found in <paramref name="playerInfos"/>.</exception>
+        /// <exception cref="OperationCanceledException">The task was canceled.</exception>
         public override sealed async Task<GameAction> GetActionAsync(GameState.GameInfo gameInfo, PlayerState.PlayerInfo[] playerInfos, TurnInfo turnInfo, ActionVerifier verifier, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             // check if the player has been initialized
             if (!_isInitialized) {
                 await WaitUntil(() => _isInitialized, cancellationToken: cancellationToken);
@@ -114,8 +120,11 @@
         /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
         /// <remarks>If there is only one reward option, it will be chosen automatically and <see cref="GetReward"/> will not be called.</remarks>
         /// <returns> A task representing the tetromino the player wants to take. </returns>
+        /// <exception cref="OperationCanceledException">The task was canceled.</exception>
         public override sealed async Task<TetrominoShape> GetRewardAsync(List<TetrominoShape> rewardOptions, Puzzle puzzle, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             // if there is only 1 reward option, return it immediately
             if (rewardOptions.Count == 1) {
                 return rewardOptions[0];
@@ -160,6 +169,8 @@
         /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
         private static async Task WaitUntil(Func<bool> condition, int frequency = 25, int timeout = -1, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var waitTask = Task.Run(async () => {
                 while (!condition()) {
                     await Task.Delay(frequency, cancellationToken);

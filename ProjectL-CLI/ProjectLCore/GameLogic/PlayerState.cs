@@ -277,6 +277,7 @@ namespace ProjectLCore.GameLogic
         /// <param name="cancellationToken"></param>
         /// <returns>A task that represents the asynchronous operation.</returns>
         /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="OperationCanceledException">The task was canceled.</exception>
         public async Task FinishPuzzleAsync(FinishedPuzzleInfo info, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();

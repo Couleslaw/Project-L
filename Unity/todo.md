@@ -124,6 +124,5 @@
 - [ ] cancellation token workflow
   - [x] final scene
   - [ ] main game scene
-  - [ ] add option to skip animation
 - [ ] use singleton base class for all singletons
 - [ ] game session manager - remove update

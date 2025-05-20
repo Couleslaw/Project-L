@@ -199,14 +199,15 @@ namespace ProjectLCore.GameLogic
         /// <param name="cancellationToken">Cancellation token to observe while waiting for the task to complete.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
         /// <exception cref="InvalidOperationException">Game already initialized.</exception>
+        /// <exception cref="OperationCanceledException">The task was canceled.</exception>
         public async Task InitializeGameAsync(CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             if (_didInitialize) {
                 throw new InvalidOperationException("Game already initialized");
             }
             _didInitialize = true;
-
-            cancellationToken.ThrowIfCancellationRequested();
 
             // give all players their initial tetrominos
             foreach (var playerState in PlayerStates.Values) {
@@ -352,8 +353,10 @@ namespace ProjectLCore.GameLogic
         /// <param name="action">The action.</param>
         /// <param name="cancellationToken">Cancellation token to observe while waiting for the task to complete.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
+        /// <exception cref="OperationCanceledException">The task was canceled.</exception>
         public async Task ProcessActionAsync(GameAction action, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             await action.AcceptAsync(_actionProcessors[CurrentPlayer], cancellationToken);
         }
 

@@ -35,8 +35,11 @@
         /// <param name="action">The action to process.</param>
         /// <param name="cancellationToken">Cancellation token to observe while waiting for the task to complete.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
+        /// <exception cref="OperationCanceledException">The task was canceled.</exception>
         public async Task ProcessActionAsync(GameAction action, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             switch (action) {
                 case EndFinishingTouchesAction a:
                     await ProcessActionAsync(a, cancellationToken);
