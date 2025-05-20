@@ -306,6 +306,8 @@ namespace ProjectL.UI.GameScene.Zones.PlayerZone
 
         Task IAIPlayerActionAnimator<PlaceTetrominoAction>.Animate(PlaceTetrominoAction action, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             (this as IPuzzleListener).OnTetrominoPlaced(action.Shape, action.Position);
             return Task.CompletedTask;
         }

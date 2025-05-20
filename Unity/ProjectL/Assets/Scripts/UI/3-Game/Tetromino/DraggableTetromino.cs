@@ -514,10 +514,14 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         async Task IAIPlayerActionAnimator<PlaceTetrominoAction>.Animate(PlaceTetrominoAction action, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // try get puzzle to place the tetromino to
             if (!InteractivePuzzle.TryGetPuzzleWithId(action.PuzzleId, out InteractivePuzzle? puzzle)) {
                 return;
             }
 
+            // where on the screen should the tetromino be placed
             Vector2 goalPosition = puzzle!.GetPlacementCenter(action.Position);
 
             // rotate and flip the tetromino to match the placement
@@ -572,6 +576,8 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
                 }
                 await Awaitable.FixedUpdateAsync();
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             // set the tetromino to placed mode - prevent collisions
             // switch back to animation mode - prevent user modifications

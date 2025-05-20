@@ -24,23 +24,23 @@ namespace ProjectL.UI.Animation
 
         #region Methods
 
-        public static async Task WaitForScaledDelay(float animationDelayFraction, CancellationToken cancellationToken = default)
+        public static async Task WaitForScaledDelay(float animationDelayFraction, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             await Awaitable.WaitForSecondsAsync(AnimationDelay * animationDelayFraction, cancellationToken);
         }
 
-        public static async Task PlayTapSoundAndWaitForScaledDelay(float animationDelayFraction, CancellationToken cancellationToken = default)
+        public static async Task PlayTapSoundAndWaitForScaledDelay(float animationDelayFraction, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             SoundManager.Instance?.PlayTapSoundEffect();
             await Awaitable.WaitForSecondsAsync(AnimationDelay * animationDelayFraction, cancellationToken);
         }
 
-        public static async Task WaitForScaledDelayAndPlayTapSound(float animationDelayFraction, CancellationToken cancellationToken = default)
+        public static async Task WaitForScaledDelayAndPlayTapSound(float animationDelayFraction, CancellationToken cancellationToken)
         {
-            await Awaitable.WaitForSecondsAsync(AnimationDelay * animationDelayFraction, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
+            await Awaitable.WaitForSecondsAsync(AnimationDelay * animationDelayFraction, cancellationToken);
             SoundManager.Instance?.PlayTapSoundEffect();
         }
 

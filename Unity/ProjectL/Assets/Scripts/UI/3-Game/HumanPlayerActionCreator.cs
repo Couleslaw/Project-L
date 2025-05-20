@@ -126,6 +126,7 @@ namespace ProjectL.UI.GameScene.Actions
         private ActionMode _currentActionMode = ActionMode.ActionCreation;
 
         private PlayerMode _currentPlayerMode = PlayerMode.NonInteractive;
+
         private TurnInfo _currentTurnInfo;
 
         #endregion
@@ -476,6 +477,7 @@ namespace ProjectL.UI.GameScene.Actions
 
         private void SetPlayerMode(PlayerMode mode)
         {
+            _currentPlayerMode = mode;
             foreach (var controller in _actionControllers) {
                 controller.SetPlayerMode(mode);
             }
@@ -530,6 +532,8 @@ namespace ProjectL.UI.GameScene.Actions
 
         async Task IPlayerStatePuzzleFinishedAsyncListener.OnPuzzleFinishedAsync(FinishedPuzzleInfo info, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             if (info.SelectedReward != null) {
                 return;
             }

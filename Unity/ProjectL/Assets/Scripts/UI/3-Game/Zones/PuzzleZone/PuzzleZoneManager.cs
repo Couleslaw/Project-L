@@ -189,6 +189,8 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
         async Task IAIPlayerActionAnimator<TakePuzzleAction>.Animate(TakePuzzleAction action, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             if (_whiteColumn == null || _blackColumn == null) {
                 return;
             }
@@ -201,7 +203,6 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
                     // wait a bit
                     await AnimationManager.WaitForScaledDelay(delay, cancellationToken);
-                    cancellationToken.ThrowIfCancellationRequested();
 
                     // select the taken puzzle card
                     switch (action.Option) {
@@ -231,6 +232,8 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
         async Task IAIPlayerActionAnimator<RecycleAction>.Animate(RecycleAction action, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             if (_whiteColumn == null || _blackColumn == null) {
                 return;
             }
@@ -241,14 +244,11 @@ namespace ProjectL.UI.GameScene.Zones.PuzzleZone
 
                     // wait a bit
                     await AnimationManager.WaitForScaledDelay(1f, cancellationToken);
-                    cancellationToken.ThrowIfCancellationRequested();
 
                     PuzzleColumn column = action.Option == RecycleAction.Options.White ? _whiteColumn : _blackColumn;
 
                     List<uint> puzzleIds = new();
                     foreach (uint puzzleId in action.Order) {
-                        cancellationToken.ThrowIfCancellationRequested();
-
                         puzzleIds.Add(puzzleId);
                         using (column.CreatePuzzleHighlighter(puzzleIds)) {
                             await AnimationManager.WaitForScaledDelay(1f, cancellationToken);

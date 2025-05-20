@@ -189,7 +189,7 @@ namespace ProjectL.UI.GameScene.Management
             await GameLoopAsync(game, cancellationToken);
 
             // wait a bit before showing the game ended box
-            await AnimationManager.WaitForScaledDelay(1f);
+            await AnimationManager.WaitForScaledDelay(1f, cancellationToken);
 
             // finalize game
             cancellationToken.ThrowIfCancellationRequested();

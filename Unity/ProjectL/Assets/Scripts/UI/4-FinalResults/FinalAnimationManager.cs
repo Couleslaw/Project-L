@@ -92,6 +92,7 @@ namespace ProjectL.UI.FinalResults
                 await Animate(destroyCancellationToken);
             }
             catch (OperationCanceledException) {
+                Debug.Log("Final animation cancelled.");
                 return;
             }
         }

@@ -142,6 +142,8 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         async Task IAIPlayerActionAnimator<SelectRewardAction>.Animate(SelectRewardAction action, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+            
             // highlight reward options
             using (new TemporaryButtonHighlighter(action.RewardOptions!)) {
 
@@ -159,6 +161,8 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         async Task IAIPlayerActionAnimator<TakeBasicTetrominoAction>.Animate(TakeBasicTetrominoAction action, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             // select the O1 piece
             List<TetrominoShape> options = new() { TetrominoShape.O1 };
             SelectRewardAction selectAction = new(options, TetrominoShape.O1);
@@ -167,6 +171,8 @@ namespace ProjectL.UI.GameScene.Zones.PieceZone
 
         async Task IAIPlayerActionAnimator<ChangeTetrominoAction>.Animate(ChangeTetrominoAction action, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var oldSpawner = _tetrominoButtons[action.OldTetromino];
 
             // select the old piece

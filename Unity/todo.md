@@ -121,8 +121,8 @@
 
 ### Code Cleanup
 
-- [ ] cancellation token workflow
+- [x] cancellation token workflow
   - [x] final scene
-  - [ ] main game scene
+  - [x] main game scene
 - [ ] use singleton base class for all singletons
-- [ ] game session manager - remove update
+- [x] game session manager - remove update
