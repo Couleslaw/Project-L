@@ -5,6 +5,10 @@
 
 This guide explains how to implement your own AI player for the game.
 
+{% include warning.html content="
+AI players are not supported in the WebGL build of the game.
+"%}
+
 {% include important.html content="
 Before reading further, please make sure that you know the rules of the game, which can be found in the [user guide](../UserDocs/index). I also highly recommend reading the [documentation](../TechnicalDocs/core/index) for the *Project-L Core* library.
 "%}
@@ -34,7 +38,9 @@ The section name can be anything, its just for your reference. The properties ar
 
 Your AI player should now appear in the list of available player types.
 
-TODO: specify where exactly the `aiplayers.ini` file is located.
+{% include note.html content="
+The find the `aiplayers.ini` file, go to the folder containing the game executable and from there go to `ProjectL_Data/StreamingAssets`. The file should be in there. If it is not, you can create it yourself. The path to your DLL and your init file should be relative to this folder (recommended), or absolute.
+"%}
 
 ## Technical Requirements
 
@@ -109,7 +115,7 @@ As mentioned in the [overview](#overview), your AI player needs to inherit from 
 Remember the C# 8.0 language feature limitations mentioned in the [Technical Requirements](#technical-requirements). Avoid newer syntax. If you haven't read the [documentation](../TechnicalDocs/core/index) for the _Project-L Core_ library, now is the time to do it.
 "%}
 
-The [AI Player Example](https://github.com/Couleslaw/Project-L/tree/master/ProjectL-CLI/AIPlayerExample) project showcases the implementation of a simple AI player. You can find the documentation for it [here](../AIPlayerExampleDocs/index.html).
+The [AI Player Example](https://github.com/Couleslaw/Project-L/tree/master/ProjectL-CLI/SimpleAIPlayer) project showcases the implementation of a simple AI player. You can find the documentation for it [here](../SimpleAIPlayerDocs/index.html).
 
 ### Test Your AI Player
 

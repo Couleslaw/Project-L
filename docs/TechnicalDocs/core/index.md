@@ -149,10 +149,6 @@ Note that there is quite a large number of puzzles in the board game (32 white a
 - How do we remember which pieces have been placed into a puzzle?
 - In what format do we store the puzzles?
 
-#### Related objects
-
-- [Puzzle](../../ProjectLCoreDocs/html/T_ProjectLCore_GamePieces_Puzzle.htm), [BinaryImage](../../ProjectLCoreDocs/html/T_ProjectLCore_GamePieces_BinaryImage.htm), [PuzzleParser](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_PuzzleParser.htm)
-
 ## Showcase of the Game Engine
 
 With all these considerations in mind, we can take a look at the game engine. Every game loop will contain the following steps:
@@ -238,14 +234,14 @@ The puzzles are represented by the [Puzzle](../../ProjectLCoreDocs/html/T_Projec
 The `Puzzle` class has two other noteworthy methods. The [GetUsedTetrominos](../../ProjectLCoreDocs/html/M_ProjectLCore_GamePieces_Puzzle_GetUsedTetrominos.htm) method is called when the puzzle is finished and the pieces are returned to the player. The [Clone](../../ProjectLCoreDocs/html/M_ProjectLCore_GamePieces_Puzzle_Clone.htm) method returns a deep copy of the puzzle. This is used when creating a representation the game, which can safely be passed to an AI player, without the risk of it modifying the actual game state.
 "%}
 
-The puzzles are loaded from a file using the [PuzzleParser](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_PuzzleParser.htm) class. The puzzles are stored in a simple text format which is easy to read and write. For more details on the format, please refer to the [documentations](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_PuzzleParser.htm).
+The puzzles are loaded from a file using the [PuzzleParser](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_PuzzleParser_1.htm) class. The puzzles are stored in a simple text format which is easy to read and write. For more details on the format, please refer to the [documentations](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_PuzzleParser_1.htm).
 
 ## Shared Resources (solution)
 
 The game state is represented by the [GameState](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GameState.htm) class. It remembers the puzzle rows, puzzle decks and the shared tetromino reserve. It has a simple API for viewing and modifying these resources, which is used when validating and processing actions.
 
 {% include tip.html content="
-The `GameState` can be easily initialized from a puzzle file with the [CreateFromFile](../../ProjectLCoreDocs/html/M_ProjectLCore_GameLogic_GameState_CreateFromFile.htm) method, which uses a [PuzzleParser](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_PuzzleParser.htm) and a [GameStateBuilder](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GameStateBuilder.htm).
+The `GameState` can be easily initialized from a puzzle file with the [CreateFromFile](../../ProjectLCoreDocs/html/M_ProjectLCore_GameLogic_GameState_CreateFromFile__1.htm) method, which uses a [PuzzleParser](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_PuzzleParser_1.htm) and a [GameStateBuilder](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GameStateBuilder.htm).
 " %}
 
 As we have mentioned previously, we need a means to represent the game state in a way that the AI players can interact with it, without a risk of modifying the underlying data. We can get such a representation using the [GetGameInfo](../../ProjectLCoreDocs/html/M_ProjectLCore_GameLogic_GameState_GetGameInfo.htm) method, which returns a [GameInfo](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GameState_GameInfo.htm) object. It provides all necessary information an AI player might need and nothing more, while preventing any modifications.
@@ -264,7 +260,7 @@ The `PlayerState` class also implements the `IComparable` interface to allow sor
 
 ## Game Phases (solution)
 
-The game phase is represented by a simple [GamePhase](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GamePhase.htm) enum. Managing the current game phase and transitioning between phases is the job of the [TurnManager](../../ProjectLCoreDocs/html/T_ProjectLCore_GameManagers_TurnManager.htm) class. The other job it has is keeping track of who the current player is. It contains the [NextTurn](../../ProjectLCoreDocs/html/M_ProjectLCore_GameManagers_TurnManager_NextTurn.htm) method which adjusts the internal turn state and return a [TurnInfo](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_TurnInfo.htm) object, which contains information about the current turn, such as the number of actions the current player has left in their turn or the current game phase.
+The game phase is represented by a simple [GamePhase](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GamePhase.htm) enum. Managing the current game phase and transitioning between phases is the job of the [TurnManager](../../ProjectLCoreDocs/html/T_ProjectLCore_GameManagers_TurnManager.htm) class. The other job it has is keeping track of who the current player is. It contains the [GetNextTurn](../../ProjectLCoreDocs/html/M_ProjectLCore_GameManagers_TurnManager_GetNextTurn.htm) method which adjusts the internal turn state and return a [TurnInfo](../../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_TurnInfo.htm) object, which contains information about the current turn, such as the number of actions the current player has left in their turn or the current game phase.
 
 {% include note.html content="
 The `TurnInfo` object also contains some additional information needed to determine the validity of actions in some cases. For example, it remembers if the current player has already used the Master action in this turn. Recall that the Master action can be used only once per turn.
@@ -280,7 +276,7 @@ The second one is [GetUpgradeOptions](../../ProjectLCoreDocs/html/M_ProjectLCore
 
 ## Actions (solution)
 
-The actions are represented by the [IAction](../../ProjectLCoreDocs/html/T_ProjectLCore_GameActions_IAction.htm) interface. Together with the [IActionProcessor](../../ProjectLCoreDocs/html/T_ProjectLCore_GameActions_IActionProcessor.htm) interface, it implements the visitor pattern for processing actions. The idea is that in this way it is easy to add new action processors, e.g. for modifying the graphics in the Unity game.
+The actions are represented by the [GameAction](../../ProjectLCoreDocs/html/T_ProjectLCore_GameActions_GameAction.htm) abstract class. Together with the [IActionProcessor](../../ProjectLCoreDocs/html/T_ProjectLCore_GameActions_IActionProcessor.htm) interface, it implements the visitor pattern for processing actions. The idea is that in this way it is easy to add new action processors, e.g. for modifying the graphics in the Unity game.
 
 {% include tip.html content="
 For details about the individual actions, see the game action
