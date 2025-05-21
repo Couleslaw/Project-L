@@ -684,6 +684,7 @@
             int actualTotalLevel = CalculateTotalTetrominoLevel(myInfo.NumTetrominosOwned);
 
             bool anyBlackPuzzlesLeft = gameInfo.NumBlackPuzzlesLeft > 0;
+            bool anyWhitePuzzlesLeft = gameInfo.AvailableWhitePuzzles.Length > 0;
 
             bool recalculateAfter = false;
             bool onlyTakeShortSolution = false;
@@ -730,9 +731,13 @@
             // if there are no puzzles to choose from --> return null
             if (possiblePuzzles.Count == 0 && !anyBlackPuzzlesLeft) {
                 possiblePuzzles.AddRange(gameInfo.AvailableWhitePuzzles);
-                if (possiblePuzzles.Count == 0) {
-                    return false;
-                }
+
+            }
+            if (possiblePuzzles.Count == 0 && numPuzzles == 0 && !anyWhitePuzzlesLeft) {
+                possiblePuzzles.AddRange(gameInfo.AvailableBlackPuzzles);
+            }
+            if (possiblePuzzles.Count == 0) {
+                return false;
             }
 
             if (recalculateAfter) {

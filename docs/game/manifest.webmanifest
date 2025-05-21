@@ -1,0 +1,15 @@
+{
+    "name": "Project L",
+    "short_name": "Project L",
+    "start_url": "index.html",
+    "display": "fullscreen",
+    "background_color": "#000000",
+    "theme_color": "#000",
+    "description": "A straregic, visually pleasing board game for up to 4 players.",
+    "icons": [{
+      "src": "TemplateData/icons/unity-logo-dark.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }]
+  }

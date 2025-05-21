@@ -8,11 +8,11 @@ This project is a digital version of the game that can be played by both human a
 
 ## [Play Project L Online](https://couleslaw.github.io/Project-L/game/)
 
-The game can be [played online](https://couleslaw.github.io/Project-L/game/) in your browser, however this version of the game does not support AI players.
+Experience the game in your browser. Please note: AI players are not available in this version.
 
 ## [Download Project L](https://github.com/Couleslaw/Project-L/releases/latest)
 
-If you want to try playing against some AI players you can [download the game](https://github.com/Couleslaw/Project-L/releases/latest) and play it offline. It is available for Windows, MacOS and Linux.
+If you want to try playing against some AI players you can download the game and play it offline. It is available for Windows, MacOS and Linux.
 
 There is one built-in AI player, but you can also implement your own AI players.
 
