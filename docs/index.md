@@ -10,11 +10,11 @@ This project implements only the **Base game**. It doesn't implement the solo va
 
 ## User Guide
 
-The [user guide](./UserDocs/index) explains the rules and how to play the game.
+The [User Guide](./UserDocs/index) explains the rules and how to play the game.
 
 ## Functional Specification
 
-The [functional specification](./FunctionDocs/index) details all features and behavior of the game from a user's perspective.
+The [Functional Specification](./FunctionDocs/index) details all features and behavior of the game from a user's perspective.
 
 ## Technical Documentation
 

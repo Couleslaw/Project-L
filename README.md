@@ -16,6 +16,10 @@ If you want to try playing against some AI players you can [download the game](h
 
 There is one built-in AI player, but you can also implement your own AI players.
 
+## User Guide
+
+The [User Guide](./UserDocs/index) explains the rules and how to play the game.
+
 ## Crate Your Own AI Player
 
 You can create your own AI player by simply implementing the methods of the [AIPlayerBase](https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/T_ProjectLCore_Players_AIPlayerBase.htm) abstract class. Specifically:
@@ -25,10 +29,6 @@ You can create your own AI player by simply implementing the methods of the [AIP
 - [GetReward](https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/M_ProjectLCore_Players_AIPlayerBase_GetReward.htm) – selects a reward for completing a puzzle
 
 More detailed information on creating AI players is available in the [AI Player Guide](https://couleslaw.github.io/Project-L/AIPlayerGuide/index).
-
-## User Guide
-
-The [user guide](./UserDocs/index) explains the rules and how to play the game.
 
 ## How Does It Work?
 

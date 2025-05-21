@@ -87,7 +87,7 @@ Now, add the _Project-L Core_ library reference using one of the following metho
 
 ##### Downloading the DLL (recommended)
 
-1.  Download `ProjectLCore.zip` and from the [releases](https://github.com/Couleslaw/Project-L/releases/latest) page and extract the `ProjectLCore.dll` and `ProjectLCore.xml` files.
+1.  Download `ProjectLCore.zip` and from the [releases page](https://github.com/Couleslaw/Project-L/releases/latest) and extract the `ProjectLCore.dll` and `ProjectLCore.xml` files.
 2.  Create a folder in your project (e.g., named `lib`) and copy the extracted files there.
 3.  Right-click on the project in the Solution Explorer and select **Add** > **Project Reference** > **Browse** and find `ProjectLCore.dll`.
 
@@ -133,7 +133,11 @@ Select the **Release** configuration and build your project. You will find the D
 The game will look through the DLL for a (public) non-abstract class that inherits from the `AIPlayerBase` class. If no such class is found, or if the DLL cannot be loaded due to incorrect targeting (not .NET Standard 2.1) or other errors, the player will not appear in the list of available players. If for some weird reason there are multiple valid AI player classes, the first one found will be used.
 "%}
 
-Before adding your player to the game, it is a good idea to test it in the `AIPlayerSimulation` project. If your player works there, it should work in the game as well. It it doesn't, it will tell you what went wrong.
+Before adding your player to the game, it's a good idea to test it using the `AIPlayerSimulation` project. You can easily get started by downloading a pre-compiled version as a .zip file from the [releases page](https://github.com/Couleslaw/Project-L/releases/latest).
+
+### Debugging
+
+The Unity game has a built-in logging system that can be used to debug your AI player. You can open the log window by clicking the little icon in the top right corner of the screen.
 
 ### What Could Go Wrong?
 
@@ -155,7 +159,3 @@ When your player fails to provide a valid action, or the `GetAction` method thro
 #### Invalid Rewards
 
 When your player fails to choose a valid reward, or the `GetReward` method throws an exception, the game picks the first available reward for it.
-
-### Debugging
-
-The Unity game has a built-in logging system that can be used to debug your AI player. You can open the log window by clicking the little icon in the top right corner of the screen.
