@@ -4,7 +4,7 @@
             The player tried to take a basic tetromino but there are none left in the shared reserve.
             This failure can be produced by the <a href="T_ProjectLCore_GameActions_TakeBasicTetrominoAction.htm">TakeBasicTetrominoAction</a>.
             /// </td></tr><tr><td><a href="T_ProjectLCore_GameActions_Verification_CannotPlaceTetrominoFail.htm">CannotPlaceTetrominoFail</a></td><td>
-            The player tried to place a tetromino with the given <span class="parameter">configuration</span> into the puzzle with ID <span class="parameter">puzzleId</span>, but the tetromino cannot be placed there.
+            The player tried to place a tetromino into a puzzle, but the tetromino cannot be placed there.
             This failure can be produced by the <a href="T_ProjectLCore_GameActions_PlaceTetrominoAction.htm">PlaceTetrominoAction</a> or <a href="T_ProjectLCore_GameActions_MasterAction.htm">MasterAction</a>.
             </td></tr><tr><td><a href="T_ProjectLCore_GameActions_Verification_EmptyRowRecycleFail.htm">EmptyRowRecycleFail</a></td><td>
             The player tried to recycle an empty row.
@@ -15,10 +15,10 @@
             </td></tr><tr><td><a href="T_ProjectLCore_GameActions_Verification_InvalidEndFinishingTouchesActionUseFail.htm">InvalidEndFinishingTouchesActionUseFail</a></td><td>
             The player used the <a href="T_ProjectLCore_GameActions_EndFinishingTouchesAction.htm">EndFinishingTouchesAction</a> during a different phase than <a href="T_ProjectLCore_GameLogic_GamePhase.htm">FinishingTouches</a>.
             </td></tr><tr><td><a href="T_ProjectLCore_GameActions_Verification_InvalidTetrominoConfigurationFail.htm">InvalidTetrominoConfigurationFail</a></td><td>
-            The player tried to place a tetromino of type <span class="parameter">shape</span>, but the given <span class="parameter">configuration</span> doesn't match the shape.
+            The player tried to place a tetromino, but the given configuration doesn't match its shape.
             This failure can be produced by the <a href="T_ProjectLCore_GameActions_PlaceTetrominoAction.htm">PlaceTetrominoAction</a> or <a href="T_ProjectLCore_GameActions_MasterAction.htm">MasterAction</a>.
             </td></tr><tr><td><a href="T_ProjectLCore_GameActions_Verification_InvalidTetrominoChangeFail.htm">InvalidTetrominoChangeFail</a></td><td>
-            The player tried to change the <span class="parameter">oldShape</span> tetromino for the <span class="parameter">newShape</span> tetromino, but this trade is not possible.
+            The player tried to change an old tetromino for a new one, but this trade is not possible.
             This includes the scenario when the new tetromino is the same as the old one.
             This failure can be produced by the <a href="T_ProjectLCore_GameActions_ChangeTetrominoAction.htm">ChangeTetrominoAction</a>.
             </td></tr><tr><td><a href="T_ProjectLCore_GameActions_Verification_MasterActionAlreadyUsedFail.htm">MasterActionAlreadyUsedFail</a></td><td>
@@ -28,13 +28,15 @@
             </td></tr><tr><td><a href="T_ProjectLCore_GameActions_Verification_MasterActionUniquePlacementFail.htm">MasterActionUniquePlacementFail</a></td><td>
             The player tried to place two tetrominos into the same puzzle using the <a href="T_ProjectLCore_GameActions_MasterAction.htm">MasterAction</a>.
             </td></tr><tr><td><a href="T_ProjectLCore_GameActions_Verification_NumberOfRecycledPuzzlesMismatchFail.htm">NumberOfRecycledPuzzlesMismatchFail</a></td><td>
-            The player tried to recycle the puzzle row with color <span class="parameter">color</span>, but the number of puzzles to recycle doesn't match the number of puzzles in the row.
+            The player tried to recycle a puzzle row, but the number of puzzles to recycle doesn't match the number of puzzles in the row.
             This failure can be produced by the <a href="T_ProjectLCore_GameActions_RecycleAction.htm">RecycleAction</a>.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameActions_Verification_PlayerAlreadyHasMaxPuzzlesFail.htm">PlayerAlreadyHasMaxPuzzlesFail</a></td><td>
+            Initializes a new instance of the <a href="T_ProjectLCore_GameActions_Verification_PlayerAlreadyHasMaxPuzzlesFail.htm">PlayerAlreadyHasMaxPuzzlesFail</a> class.
             </td></tr><tr><td><a href="T_ProjectLCore_GameActions_Verification_PlayerAlreadyTookBlackPuzzleInEndOfTheGameFail.htm">PlayerAlreadyTookBlackPuzzleInEndOfTheGameFail</a></td><td>
             The player tried to take a second black puzzle in the same turn during <a href="T_ProjectLCore_GameLogic_GamePhase.htm">EndOfTheGame</a>.
             This failure can be produced by the <a href="T_ProjectLCore_GameActions_TakePuzzleAction.htm">TakePuzzleAction</a>.
             </td></tr><tr><td><a href="T_ProjectLCore_GameActions_Verification_PlayerDoesntHavePuzzleFail.htm">PlayerDoesntHavePuzzleFail</a></td><td>
-            The player tried to place a tetromino into the puzzle with ID <span class="parameter">id</span>, but the player doesn't have this puzzle.
+            The player tried to place a tetromino into the puzzle with ID <a href="P_ProjectLCore_GameActions_Verification_PlayerDoesntHavePuzzleFail_Id.htm">Id</a>, but the player doesn't have a puzzle with this ID.
             This failure can be produced by the <a href="T_ProjectLCore_GameActions_PlaceTetrominoAction.htm">PlaceTetrominoAction</a> or <a href="T_ProjectLCore_GameActions_MasterAction.htm">MasterAction</a>.
             </td></tr><tr><td><a href="T_ProjectLCore_GameActions_Verification_PuzzleDeckIsEmptyFail.htm">PuzzleDeckIsEmptyFail</a></td><td>
             The player specified <a href="T_ProjectLCore_GameActions_TakePuzzleAction_Options.htm">TopBlack</a> or <a href="T_ProjectLCore_GameActions_TakePuzzleAction_Options.htm">TopWhite</a> but the corresponding deck is empty.
@@ -43,21 +45,21 @@
             The player specified <a href="T_ProjectLCore_GameActions_TakePuzzleAction_Options.htm">Normal</a> but <a href="P_ProjectLCore_GameActions_TakePuzzleAction_PuzzleId.htm">PuzzleId</a> was <span class="keyword"><span id="LST15C2C992_0" data-languageSpecificText="cpp=nullptr|vb=Nothing|nu=null"></span></span>.
             This failure can be produced by the <a href="T_ProjectLCore_GameActions_TakePuzzleAction.htm">TakePuzzleAction</a>.
             </td></tr><tr><td><a href="T_ProjectLCore_GameActions_Verification_PuzzleNotAvailableFail.htm">PuzzleNotAvailableFail</a></td><td>
-            The player tried to take the puzzle with ID <span class="parameter">id</span> from one of the rows, but no such puzzle is available.
+            The player tried to take the puzzle with ID <a href="P_ProjectLCore_GameActions_Verification_PuzzleNotAvailableFail_Id.htm">Id</a>, but no available puzzle has this ID.
             This failure can be produced by the <a href="T_ProjectLCore_GameActions_TakePuzzleAction.htm">TakePuzzleAction</a>.
             </td></tr><tr><td><a href="T_ProjectLCore_GameActions_Verification_PuzzleNotInRowFail.htm">PuzzleNotInRowFail</a></td><td>
-            The player tried to recycle the row with color <span class="parameter">color</span>, but the puzzle with ID <span class="parameter">id</span> found in the <a href="P_ProjectLCore_GameActions_RecycleAction_Order.htm">Order</a> is not in the row.
+            The player tried to recycle a puzzle row, but no puzzle in the row has the <a href="P_ProjectLCore_GameActions_Verification_PuzzleNotInRowFail_Id.htm">Id</a> specified in the <a href="P_ProjectLCore_GameActions_RecycleAction_Order.htm">Order</a>.
             This failure can be produced by the <a href="T_ProjectLCore_GameActions_RecycleAction.htm">RecycleAction</a>.
             </td></tr><tr><td><a href="T_ProjectLCore_GameActions_Verification_TetrominoNotInPersonalSupplyFail.htm">TetrominoNotInPersonalSupplyFail</a></td><td>
-            The player tried to use a tetromino of type <span class="parameter">shape</span>, but doesn't have any in their personal supply.
+            The player tried to use a tetromino but doesn't have any of this shape in their personal supply.
             This failure can be produced by the <a href="T_ProjectLCore_GameActions_ChangeTetrominoAction.htm">ChangeTetrominoAction</a>, <a href="T_ProjectLCore_GameActions_PlaceTetrominoAction.htm">PlaceTetrominoAction</a> or <a href="T_ProjectLCore_GameActions_MasterAction.htm">MasterAction</a>.
             </td></tr><tr><td><a href="T_ProjectLCore_GameActions_Verification_VerificationFailure.htm">VerificationFailure</a></td><td>
-            Represents a failed verification of a <a href="T_ProjectLCore_GameActions_IAction.htm">IAction</a> by a <a href="T_ProjectLCore_GameActions_Verification_ActionVerifier.htm">ActionVerifier</a>.
+            Represents a failed verification of a <a href="T_ProjectLCore_GameActions_GameAction.htm">GameAction</a> by a <a href="T_ProjectLCore_GameActions_Verification_ActionVerifier.htm">ActionVerifier</a>.
             Derived classes should provide a description of the failure in the <a href="P_ProjectLCore_GameActions_Verification_VerificationFailure_Message.htm">Message</a> property.
             </td></tr><tr><td><a href="T_ProjectLCore_GameActions_Verification_VerificationResult.htm">VerificationResult</a></td><td>
-            Represents the result of a verification of a <a href="T_ProjectLCore_GameActions_IAction.htm">IAction</a> by a <a href="T_ProjectLCore_GameActions_Verification_ActionVerifier.htm">ActionVerifier</a>.
+            Represents the result of a verification of a <a href="T_ProjectLCore_GameActions_GameAction.htm">GameAction</a> by a <a href="T_ProjectLCore_GameActions_Verification_ActionVerifier.htm">ActionVerifier</a>.
             </td></tr><tr><td><a href="T_ProjectLCore_GameActions_Verification_VerificationSuccess.htm">VerificationSuccess</a></td><td>
-            Represents a successful verification of a <a href="T_ProjectLCore_GameActions_IAction.htm">IAction</a> by a <a href="T_ProjectLCore_GameActions_Verification_ActionVerifier.htm">ActionVerifier</a>.
+            Represents a successful verification of a <a href="T_ProjectLCore_GameActions_GameAction.htm">GameAction</a> by a <a href="T_ProjectLCore_GameActions_Verification_ActionVerifier.htm">ActionVerifier</a>.
             </td></tr></table></div></div><div id="InThisArticleColumn" class="column is-hidden-mobile"><nav class="menu sticky is-hidden"><p class="menu-label"><strong>In This Article</strong></p><ul id="InThisArticleMenu" class="menu-list"><li><a class="quickLink">Classes</a></li></ul></nav></div></div></div></div><script>$(function(){
 SetDefaultLanguage("cs");
 LoadTocFile(null, null);

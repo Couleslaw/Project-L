@@ -10,7 +10,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net.Http.Headers;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -18,12 +17,11 @@
     /// </summary>
     public class SimpleAIPlayer : AIPlayerBase
     {
+        #region Constants
 
-        private enum Stage
-        {
-            Ealy, Mid, Late
-        }
+        private const int MinTotalTetrominoLevelForBlackPuzzle = 16;
 
+        #endregion
 
         #region Fields
 
@@ -35,24 +33,20 @@
 
         private int[] _numTetrominosOwned = new int[TetrominoManager.NumShapes];
 
-        private const int MinTotalTetrominoLevelForBlackPuzzle = 16;
+        private Stage _currentStage = Stage.Ealy;
 
         #endregion
 
+        private enum Stage
+        {
+            Ealy, Mid, Late
+        }
+
+        #region Properties
 
         private bool IsSolvingBlackPuzzle => _puzzleStrategies.Any(p => p.Puzzle.IsBlack);
 
-        private Stage _currentStage = Stage.Ealy;
-
-        private int CalculateTotalTetrominoLevel(int[] numTetrominosOwned)
-        {
-            int level = 0;
-            for (int i = 0; i < TetrominoManager.NumShapes; i++) {
-                level += numTetrominosOwned[i] * TetrominoManager.GetLevelOf((TetrominoShape)i);
-            }
-            return level;
-        }
-
+        #endregion
 
         #region Methods
 
@@ -80,7 +74,68 @@
         }
 
         /// <summary>
-        /// Uses the IDA* algorithm to solve one puzzle at a time.
+        /// Uses the IDA* algorithm to find the best solution for the given puzzle. The strategy goes as follows:
+        /// <para>
+        /// During the <see cref="GamePhase.Normal"/> phase:
+        /// <list type="bullet">
+        ///   <item>
+        ///     <description>If the player has no puzzles, take a new puzzle.</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>If the player has more than one puzzle and more than one puzzle has a Place action at the end of its queue, use the Master action.</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>If the player already has a puzzle, he will take a new one if after solving the puzzles he already has, he will still have at least one tetromino left.
+        ///     If he will take a puzzle and which one it will be is determined by the following criteria:
+        ///     <list type="bullet">
+        /// <item><description>how many pieces of which level he has in total</description></item>    
+        /// <item><description>how many pieces of which level he has in his collection right now</description></item>    
+        /// <item><description>if he is solving a black puzzle right now</description></item>    
+        /// <item><description>how many puzzles are left in the black deck</description></item>    
+        /// </list>
+        ///     </description>
+        ///   </item>
+        ///   <item>
+        ///     <description>There is a 3% random chance to use a recycle action.</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>Otherwise, pick the puzzle with the shortest solution and use its next action.</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>Near the end of the game, limit the number of puzzles based on the number of puzzles left in the black deck. Always try to have: number of unfinished puzzles &lt;= number of puzzles left in the black deck.</description>
+        ///   </item>
+        /// </list>
+        /// </para>
+        /// 
+        /// <para>
+        /// During the <see cref="GamePhase.EndOfTheGame"/> phase:
+        ///   <list type="bullet">
+        ///   <item>
+        ///     <description>If the player has no puzzles, attempt to use tetromino actions to gain more tetrominos, as leftover tetrominos may be used for tiebreakers.</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>If the player has unfinished puzzles, attempt to solve them, prioritizing the closest one to being solved first.</description>
+        ///   </item>
+        /// </list>
+        /// </para>
+        /// 
+        /// <para>
+        /// During the <see cref="GamePhase.FinishingTouches"/> phase:
+        ///  <list type="bullet">
+        ///   <item>
+        ///     <description>If there are no unfinished puzzles, simply returns <see cref="EndFinishingTouchesAction"/>.</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>For each unfinished puzzle, the method attempts to solve it using only the tetrominos the player currently owns.</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>that provide a net positive score are included in the strategy.</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>The resulting list of actions is ordered to maximize the player's final score, ending with an <see cref="EndFinishingTouchesAction"/>.</description>
+        ///   </item>
+        /// </list>
+        /// </para>
         /// </summary>
         /// <param name="gameInfo">Information about the shared resources.</param>
         /// <param name="myInfo">Information about the resources of THIS player</param>
@@ -123,37 +178,6 @@
             }
         }
 
-        private void UpdateStage(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, TurnInfo turnInfo)
-        {
-            if (turnInfo.GamePhase == GamePhase.EndOfTheGame || gameInfo.NumBlackPuzzlesLeft <= 3) {
-                _currentStage = Stage.Late;
-                return;
-            }
-
-            int num = GetTotalNumberOfTetrominosOwned();
-
-            if (num < MinTotalTetrominoLevelForBlackPuzzle) {
-                _currentStage = Stage.Ealy;
-            }
-            else if (num < 2 * MinTotalTetrominoLevelForBlackPuzzle) {
-                _currentStage = Stage.Mid;
-            }
-            else {
-                _currentStage = Stage.Late;
-            }
-
-            int GetTotalNumberOfTetrominosOwned()
-            {
-                int n = CalculateTotalTetrominoLevel(myInfo.NumTetrominosOwned);
-                foreach (Puzzle puzzle in myInfo.UnfinishedPuzzles) {
-                    foreach (TetrominoShape tetromino in puzzle.GetUsedTetrominos()) {
-                        n += TetrominoManager.GetLevelOf(tetromino);
-                    }
-                }
-                return n;
-            }
-        }
-
         /// <summary>
         /// Solves the given puzzle using IDA*. It minimizes the number of actions needed to solve the puzzle.
         /// </summary>
@@ -187,6 +211,45 @@
             return new PuzzleSolutionInfo(puzzle, path, numTetrominosLeftAfter, numTetrominosOwnedAfter);
         }
 
+        private int CalculateTotalTetrominoLevel(int[] numTetrominosOwned)
+        {
+            int level = 0;
+            for (int i = 0; i < TetrominoManager.NumShapes; i++) {
+                level += numTetrominosOwned[i] * TetrominoManager.GetLevelOf((TetrominoShape)i);
+            }
+            return level;
+        }
+
+        private void UpdateStage(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, TurnInfo turnInfo)
+        {
+            if (turnInfo.GamePhase == GamePhase.EndOfTheGame || gameInfo.NumBlackPuzzlesLeft <= 3) {
+                _currentStage = Stage.Late;
+                return;
+            }
+
+            int num = GetTotalNumberOfTetrominosOwned();
+
+            if (num < MinTotalTetrominoLevelForBlackPuzzle) {
+                _currentStage = Stage.Ealy;
+            }
+            else if (num < 2 * MinTotalTetrominoLevelForBlackPuzzle) {
+                _currentStage = Stage.Mid;
+            }
+            else {
+                _currentStage = Stage.Late;
+            }
+
+            int GetTotalNumberOfTetrominosOwned()
+            {
+                int n = CalculateTotalTetrominoLevel(myInfo.NumTetrominosOwned);
+                foreach (Puzzle puzzle in myInfo.UnfinishedPuzzles) {
+                    foreach (TetrominoShape tetromino in puzzle.GetUsedTetrominos()) {
+                        n += TetrominoManager.GetLevelOf(tetromino);
+                    }
+                }
+                return n;
+            }
+        }
 
         /// <summary>
         /// Determines the action to take during the <see cref="GamePhase.Normal"/> phase of the game.
@@ -201,6 +264,13 @@
         ///   </item>
         ///   <item>
         ///     <description>If the player already has a puzzle, he will take a new one if after solving the puzzles he already has, he will still have at least one tetromino left.
+        ///     If he will take a puzzle and which one it will be is determined by the following criteria:
+        ///     <list type="bullet">
+        /// <item><description>how many pieces of which level he has in total</description></item>    
+        /// <item><description>how many pieces of which level he has in his collection right now</description></item>    
+        /// <item><description>if he is solving a black puzzle right now</description></item>    
+        /// <item><description>how many puzzles are left in the black deck</description></item>    
+        /// </list>
         ///     </description>
         ///   </item>
         ///   <item>
@@ -320,7 +390,7 @@
         }
 
         /// <summary>
-        /// Creates a strategy for the FinishingTouches phase, where the player can use their remaining tetrominos to complete unfinished puzzles for additional points.
+        /// Creates a strategy for the FinishingTouches phase, where the player can use their remaining tetrominos to complete unfinished puzzles to prevent negative points.
         /// </summary>
         /// <param name="gameInfo">The current game information, including available puzzles and shared resources.</param>
         /// <param name="myInfo">Information about the player's current state, such as owned tetrominos and unfinished puzzles.</param>
@@ -669,7 +739,6 @@
                 UpdateTetrominosOwned(myInfo);
             }
 
-
             // choose the best puzzle
             List<PuzzleSolutionInfo> solutionInfos = new();
             object lockObject = new();
@@ -683,7 +752,6 @@
                     }
                 }
             });
-
 
             if (onlyTakeShortSolution) {
                 solutionInfos = solutionInfos.Where(p => p.NumSteps <= shortSolutionMaxLength || p.Solution.Peek() is PlaceTetrominoAction).ToList();
@@ -781,13 +849,22 @@
         /// <seealso cref="PuzzleSolutionInfo"/>
         private class PuzzleComparer : IComparer<PuzzleSolutionInfo>
         {
+            #region Fields
+
             private Stage _stage;
-            #region Methods
+
+            #endregion
+
+            #region Constructors
 
             public PuzzleComparer(Stage gameStage)
             {
                 _stage = gameStage;
             }
+
+            #endregion
+
+            #region Methods
 
             public int Compare(PuzzleSolutionInfo x, PuzzleSolutionInfo y)
             {

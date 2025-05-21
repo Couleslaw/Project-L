@@ -1,10 +1,10 @@
-all: ProjectLCoreDocs AIPlayerExampleDocs
+all: ProjectLCoreDocs SimpleAIPlayerDocs
 
 clean:
-	rm -rf ProjectLCoreDocs AIPlayerExampleDocs
+	rm -rf ProjectLCoreDocs SimpleAIPlayerDocs
 
 ProjectLCoreDocs: ../ProjectL-CLI/ProjectLCoreDocs/Help
 	cp -r ../ProjectL-CLI/ProjectLCoreDocs/Help ProjectLCoreDocs
 
-AIPlayerExampleDocs: ../ProjectL-CLI/AIPlayerExampleDocs/Help
-	cp -r ../ProjectL-CLI/AIPlayerExampleDocs/Help AIPlayerExampleDocs
+SimpleAIPlayerDocs: ../ProjectL-CLI/SimpleAIPlayerDocs/Help
+	cp -r ../ProjectL-CLI/SimpleAIPlayerDocs/Help SimpleAIPlayerDocs

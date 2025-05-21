@@ -12,16 +12,33 @@
             Represents the resources and progress of a single <a href="T_ProjectLCore_Players_Player.htm">Player</a>.
               <ul><li>His current score.</li><li>Tetrominos he has.</li><li>Puzzles he is working on.</li><li>Puzzles he has completed.</li></ul></td></tr><tr><td><a href="T_ProjectLCore_GameLogic_PlayerState_PlayerInfo.htm">PlayerState<span id="LST7540F490_1" data-languageSpecificText="cs=.|vb=.|cpp=::|nu=.|fs=."></span>PlayerInfo</a></td><td>
             Provides information about about a <a href="T_ProjectLCore_GameLogic_PlayerState.htm">PlayerState</a> while preventing modification of the original data.
-            </td></tr><tr><td><a href="T_ProjectLCore_GameLogic_PuzzleParser.htm">PuzzleParser</a></td><td>
+            </td></tr><tr><td><a href="T_ProjectLCore_GameLogic_PuzzleParser_1.htm">PuzzleParser<span id="LST7540F490_2" data-languageSpecificText="cs=&lt;|vb=(Of |cpp=&lt;|nu=(|fs=&lt;'"></span>T<span id="LST7540F490_3" data-languageSpecificText="cs=&gt;|vb=)|cpp=&gt;|nu=)|fs=&gt;"></span></a></td><td>
             Reads puzzles from a file.
             Each puzzle is encoded in the following way:
             <ul><li><span class="code">I</span> (identifier) <span class="code">B</span>/<span class="code">W</span> (black/white) <span class="code">puzzleNumber</span></li><li><span class="code">R</span> (reward) <span class="code">score</span><span class="code">tetromino</span> (<span class="code">O1</span>/<span class="code">O2</span>/<span class="code">I2</span>/<span class="code">I3</span>/<span class="code">I4</span>/<span class="code">L2</span>/<span class="code">L3</span>/<span class="code">Z</span>/<span class="code">T</span>)</li><li>five rows starting with <span class="code">P</span> encoding the puzzle; <span class="code">#</span> = filled cell, <span class="code">.</span> = empty cell</li></ul>
             The puzzle color and puzzle number together uniquely identify the file in which the puzzle image is stored.
-            </td></tr></table></div><h2 class="quickLinkHeader"><span class="icon toggleSection" tabindex="0"><i class="fa fa-angle-down"></i></span>Structures</h2><div id="IDJCASection"><table id="structureList" class="table is-hoverable"><tr><td><a href="T_ProjectLCore_GameLogic_TurnInfo.htm">TurnInfo</a></td><td>
+            </td></tr></table></div><h2 class="quickLinkHeader"><span class="icon toggleSection" tabindex="0"><i class="fa fa-angle-down"></i></span>Structures</h2><div id="IDRCASection"><table id="structureList" class="table is-hoverable"><tr><td><a href="T_ProjectLCore_GameLogic_TurnInfo.htm">TurnInfo</a></td><td>
             Represents the information about the current turn.
-            </td></tr></table></div><h2 class="quickLinkHeader"><span class="icon toggleSection" tabindex="0"><i class="fa fa-angle-down"></i></span>Enumerations</h2><div id="IDBCASection"><table id="enumerationList" class="table is-hoverable"><tr><td><a href="T_ProjectLCore_GameLogic_GamePhase.htm">GamePhase</a></td><td>
+            </td></tr></table></div><h2 class="quickLinkHeader"><span class="icon toggleSection" tabindex="0"><i class="fa fa-angle-down"></i></span>Interfaces</h2><div id="IDBCASection"><table id="interfaceList" class="table is-hoverable"><tr><td><a href="T_ProjectLCore_GameLogic_ICurrentPlayerListener.htm">ICurrentPlayerListener</a></td><td>
+            Interface for classes that want to be notified when the current player changes.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameLogic_ICurrentTurnListener.htm">ICurrentTurnListener</a></td><td>
+            Interface for classes that want to be notified when the next turn starts.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameLogic_IGameStatePuzzleAsyncListener.htm">IGameStatePuzzleAsyncListener</a></td><td>
+            Interface for classes that want to be notified asynchronously when a puzzle is refilled in the game state.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameLogic_IGameStatePuzzleListener.htm">IGameStatePuzzleListener</a></td><td>
+            Interface for classes that want to be notified about puzzle changes in a <a href="T_ProjectLCore_GameLogic_GameState.htm">GameState</a>.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameLogic_IPlayerStatePuzzleFinishedAsyncListener.htm">IPlayerStatePuzzleFinishedAsyncListener</a></td><td>
+            Interface for classes that want to be notified when a puzzle is finished by a player.
+            Upon finishing a puzzle, the <a href="M_ProjectLCore_GameLogic_IPlayerStatePuzzleFinishedAsyncListener_OnPuzzleFinishedAsync.htm">OnPuzzleFinishedAsync(FinishedPuzzleInfo, CancellationToken)</a> method is <span class="keyword"><span id="LST7540F490_4" data-languageSpecificText="vb=Await|fs=let!|nu=await"></span></span>ed.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameLogic_IPlayerStatePuzzleListener.htm">IPlayerStatePuzzleListener</a></td><td>
+            Interface for classes that want to be notified about changes in a <a href="T_ProjectLCore_GameLogic_PlayerState.htm">PlayerState</a>.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameLogic_ITetrominoCollectionListener.htm">ITetrominoCollectionListener</a></td><td>
+            Interface for classes that want to be notified about tetromino changes in a <a href="T_ProjectLCore_GameLogic_GameState.htm">GameState</a>.
+            </td></tr><tr><td><a href="T_ProjectLCore_GameLogic_ITetrominoCollectionNotifier.htm">ITetrominoCollectionNotifier</a></td><td>
+            Interface for notifying listeners about changes in the tetromino collection.
+            </td></tr></table></div><h2 class="quickLinkHeader"><span class="icon toggleSection" tabindex="0"><i class="fa fa-angle-down"></i></span>Enumerations</h2><div id="IDJCASection"><table id="enumerationList" class="table is-hoverable"><tr><td><a href="T_ProjectLCore_GameLogic_GamePhase.htm">GamePhase</a></td><td>
             Represents the current phase of the game
-            </td></tr></table></div></div><div id="InThisArticleColumn" class="column is-hidden-mobile"><nav class="menu sticky is-hidden"><p class="menu-label"><strong>In This Article</strong></p><ul id="InThisArticleMenu" class="menu-list"><li><a class="quickLink">Classes</a></li><li><a class="quickLink">Structures</a></li><li><a class="quickLink">Enumerations</a></li></ul></nav></div></div></div></div><script>$(function(){
+            </td></tr></table></div></div><div id="InThisArticleColumn" class="column is-hidden-mobile"><nav class="menu sticky is-hidden"><p class="menu-label"><strong>In This Article</strong></p><ul id="InThisArticleMenu" class="menu-list"><li><a class="quickLink">Classes</a></li><li><a class="quickLink">Structures</a></li><li><a class="quickLink">Interfaces</a></li><li><a class="quickLink">Enumerations</a></li></ul></nav></div></div></div></div><script>$(function(){
 SetDefaultLanguage("cs");
 LoadTocFile(null, null);
 InitializeQuickLinks();
