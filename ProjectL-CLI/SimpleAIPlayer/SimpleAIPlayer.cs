@@ -231,7 +231,7 @@
             }
 
             // 0 or 1 puzzles --> take a new one before using master
-            if (numPuzzles <= Math.Min(1, gameInfo.NumBlackPuzzlesLeft) && !turnInfo.LastRound) {
+            if (numPuzzles <= Math.Min(1, gameInfo.NumBlackPuzzlesLeft)) {
                 if (TryTakingNewPuzzle(gameInfo, myInfo, out var newPuzzleAction)) {
                     return newPuzzleAction!;
                 }
@@ -245,7 +245,7 @@
             }
 
             // try to take a new puzzle if the player has more than one puzzle and can still take one
-            if (numPuzzles > 1 && numPuzzles <= Math.Min(3, gameInfo.NumBlackPuzzlesLeft) && !turnInfo.LastRound) {
+            if (numPuzzles > 1 && numPuzzles <= Math.Min(3, gameInfo.NumBlackPuzzlesLeft)) {
                 if (TryTakingNewPuzzle(gameInfo, myInfo, out var newPuzzleAction)) {
                     return newPuzzleAction!;
                 }
@@ -433,10 +433,15 @@
         /// <param name="myInfo">Information about THIS player.</param>
         private void RecalculateSolutionsForPuzzles(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo)
         {
-            List<Puzzle> puzzlesToSolve = myInfo.UnfinishedPuzzles.ToList();
+            List<Puzzle> whitePuzzlesToSolve = myInfo.UnfinishedPuzzles.Where(p => !p.IsBlack).ToList();
+            List<Puzzle> blackPuzzlesToSolve = myInfo.UnfinishedPuzzles.Where(p => p.IsBlack).ToList();
 
             // sort puzzles by the number of empty cells in the puzzle
-            puzzlesToSolve.Sort((p1, p2) => p1.Image.CountEmptyCells().CompareTo(p2.Image.CountEmptyCells()));
+            whitePuzzlesToSolve.Sort((p1, p2) => p1.Image.CountEmptyCells().CompareTo(p2.Image.CountEmptyCells()));
+            blackPuzzlesToSolve.Sort((p1, p2) => p1.Image.CountEmptyCells().CompareTo(p2.Image.CountEmptyCells()));
+
+            // put black puzzles in front of white ones
+            var puzzlesToSolve = blackPuzzlesToSolve.Concat(whitePuzzlesToSolve).ToList();
 
             // solve each puzzle and add it to the list
             _puzzleStrategies.Clear();
@@ -528,10 +533,19 @@
                 return false;
             }
 
-            PuzzleSolutionInfo best = _puzzleStrategies.Where(p => p.NumSteps > 0).OrderBy(p => p.NumSteps).FirstOrDefault();
+            List<PuzzleSolutionInfo> sortedStrategies = _puzzleStrategies.Where(p => p.NumSteps > 0).OrderBy(p => p.NumSteps).ToList();
+
+            if (IsSolvingBlackPuzzle) {
+                // find first black puzzle with a solution
+                sortedStrategies = sortedStrategies.Where(p => p.Puzzle.IsBlack).ToList();
+            }
+
+            var best = sortedStrategies.FirstOrDefault();
+
             if (best is null) {
                 return false;
             }
+
             action = best.Solution.Dequeue();
             return true;
         }
@@ -595,24 +609,32 @@
             List<Puzzle> possiblePuzzles = new();
 
             int numPuzzles = _puzzleStrategies.Count;
+            int currentNumPieces = _numTetrominosOwned.Sum();
             int currentTotalLevel = CalculateTotalTetrominoLevel(_numTetrominosOwned);
             int actualTotalLevel = CalculateTotalTetrominoLevel(myInfo.NumTetrominosOwned);
 
-            bool recalculateAfter = false;
             bool anyBlackPuzzlesLeft = gameInfo.NumBlackPuzzlesLeft > 0;
+
+            bool recalculateAfter = false;
+            bool onlyTakeShortSolution = false;
+            int shortSolutionMaxLength = 3;
 
             switch (_currentStage) {
                 case Stage.Ealy:
                     // solve only white
                     if (_numTetrominosOwned.Sum() > 0) {
                         possiblePuzzles.AddRange(gameInfo.AvailableWhitePuzzles);
+                        onlyTakeShortSolution = numPuzzles >= 1 && currentNumPieces <= 2;
                     }
                     break;
 
                 case Stage.Mid:
                     // solve 1 black and rest white
-                    if (IsSolvingBlackPuzzle && numPuzzles <= 2) {
-                        possiblePuzzles.AddRange(gameInfo.AvailableWhitePuzzles);
+                    if (IsSolvingBlackPuzzle) {
+                        if (numPuzzles <= 2) {
+                            possiblePuzzles.AddRange(gameInfo.AvailableWhitePuzzles);
+                            onlyTakeShortSolution = numPuzzles > 1 && currentNumPieces <= 2;
+                        }
                     }
                     else if (currentTotalLevel >= MinTotalTetrominoLevelForBlackPuzzle) {
                         possiblePuzzles.AddRange(gameInfo.AvailableBlackPuzzles);
@@ -628,7 +650,7 @@
                     if (currentTotalLevel >= MinTotalTetrominoLevelForBlackPuzzle) {
                         possiblePuzzles.AddRange(gameInfo.AvailableBlackPuzzles);
                     }
-                    else if (actualTotalLevel >= MinTotalTetrominoLevelForBlackPuzzle) {
+                    else if (!IsSolvingBlackPuzzle && actualTotalLevel >= MinTotalTetrominoLevelForBlackPuzzle) {
                         possiblePuzzles.AddRange(gameInfo.AvailableBlackPuzzles);
                         recalculateAfter = true;
                     }
@@ -662,13 +684,17 @@
                 }
             });
 
+
+            if (onlyTakeShortSolution) {
+                solutionInfos = solutionInfos.Where(p => p.NumSteps <= shortSolutionMaxLength || p.Solution.Peek() is PlaceTetrominoAction).ToList();
+            }
+
             // if there are no puzzles with a solution --> return null
             if (solutionInfos.Count == 0) {
                 return false;
             }
-
             // sort the solution infos using the PuzzleComparer and chose best
-            var best = solutionInfos.OrderByDescending(p => p, new PuzzleComparer()).FirstOrDefault();
+            var best = solutionInfos.OrderByDescending(p => p, new PuzzleComparer(_currentStage)).FirstOrDefault();
 
             // add it to the list of my puzzles
             if (recalculateAfter) {
@@ -755,14 +781,31 @@
         /// <seealso cref="PuzzleSolutionInfo"/>
         private class PuzzleComparer : IComparer<PuzzleSolutionInfo>
         {
+            private Stage _stage;
             #region Methods
+
+            public PuzzleComparer(Stage gameStage)
+            {
+                _stage = gameStage;
+            }
 
             public int Compare(PuzzleSolutionInfo x, PuzzleSolutionInfo y)
             {
                 int xLevel = TetrominoManager.GetLevelOf(x.Puzzle.RewardTetromino);
                 int yLevel = TetrominoManager.GetLevelOf(y.Puzzle.RewardTetromino);
-                int xScore = (x.Puzzle.RewardScore + xLevel) / x.NumSteps;
-                int yScore = (y.Puzzle.RewardScore + yLevel) / y.NumSteps;
+
+                int xScore = 0;
+                int yScore = 0;
+
+                if (_stage == Stage.Ealy) {
+                    xScore = (x.Puzzle.RewardScore + xLevel) / x.NumSteps;
+                    yScore = (y.Puzzle.RewardScore + yLevel) / y.NumSteps;
+                }
+
+                else {
+                    xScore = (2 * x.Puzzle.RewardScore + xLevel) / x.NumSteps;
+                    yScore = (2 * y.Puzzle.RewardScore + yLevel) / y.NumSteps;
+                }
 
                 return xScore.CompareTo(yScore);
             }

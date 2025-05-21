@@ -133,7 +133,5 @@
 ### Testing
 
 - [x] 4 players game screen size resposiveness
-- [ ] fail init AI player
-- [ ] player with init file
-- [ ] player with recycle and master actions
-- [ ] play the game multiple times in 1 session
+- [x] player with init file
+- [x] player with recycle and master actions

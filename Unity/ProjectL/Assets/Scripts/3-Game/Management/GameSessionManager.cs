@@ -72,6 +72,7 @@ namespace ProjectL.GameScene.Management
         private void OnDestroy()
         {
             RuntimeGameInfo.UnregisterGame();
+            GameErrorHandler.DestroyErrorBox();
         }
   
         /// <summary>
@@ -513,7 +514,15 @@ namespace ProjectL.GameScene.Management
 
                 if (_errorAlertBoxPrefab != null) {
                     GameManager.CanGameBePaused = false;
-                    Instantiate(_errorAlertBoxPrefab);
+                    _errorAlertBoxPrefab = Instantiate(_errorAlertBoxPrefab);
+                }
+            }
+
+            public static void DestroyErrorBox()
+            {
+                if (_errorAlertBoxPrefab != null) {
+                    Destroy(_errorAlertBoxPrefab.gameObject);
+                    _errorAlertBoxPrefab = null;
                 }
             }
 

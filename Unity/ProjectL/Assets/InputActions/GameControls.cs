@@ -312,6 +312,17 @@ namespace ProjectL.InputActions
                 },
                 {
                     ""name"": """",
+                    ""id"": ""77b99b54-d57d-48c3-9960-8b71e67c55eb"",
+                    ""path"": ""<Keyboard>/p"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PauseGame"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""44ea8668-3399-4831-ae44-568e367f2efb"",
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
@@ -342,6 +353,17 @@ namespace ProjectL.InputActions
                     ""name"": """",
                     ""id"": ""dc59ca69-e0bd-4da2-84d5-940979d06d75"",
                     ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ResumeGame"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""649ce11e-0839-49ef-9de5-3d7c149e236b"",
+                    ""path"": ""<Keyboard>/p"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
