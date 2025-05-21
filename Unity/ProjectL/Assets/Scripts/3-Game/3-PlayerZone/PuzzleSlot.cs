@@ -67,7 +67,7 @@ namespace ProjectL.GameScene.PlayerZone
             _puzzleCard.MakeInteractive(current);
         }
 
-        public TemporaryPuzzleHighlighter CreateTemporaryPuzzleHighlighter() => new(this);
+        public DisposablePuzzleHighlighter GetDisposablePuzzleHighlighter() => new(this);
 
         public void EnableEmptySlotButton(bool value) => _emptySlot!.interactable = value;
 
@@ -92,7 +92,7 @@ namespace ProjectL.GameScene.PlayerZone
 
         #endregion
 
-        public class TemporaryPuzzleHighlighter : IDisposable
+        public class DisposablePuzzleHighlighter : IDisposable
         {
             #region Fields
 
@@ -102,7 +102,7 @@ namespace ProjectL.GameScene.PlayerZone
 
             #region Constructors
 
-            public TemporaryPuzzleHighlighter(PuzzleSlot slot)
+            public DisposablePuzzleHighlighter(PuzzleSlot slot)
             {
                 SoundManager.Instance?.PlaySoftTapSoundEffect();
                 _slot = slot;

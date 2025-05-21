@@ -87,6 +87,22 @@
         <article data-uid="">
 <h1 id="animating-ai-player-actions">Animating AI Player Actions</h1>
 
+<p>Animating AI player actions is handled by the <a class="xref" href="../api/ProjectL.GameScene.Management.AIPlayerActionAnimationManager.html">AIPlayerActionAnimationManager</a>, referred to as <code>AIPAAM</code>. This manager implements the <a href="https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/T_ProjectLCore_GameActions_IAsyncActionProcessor.htm">IAsyncActionProcessor</a> interface.</p>
+<p>When the <code>GameCore</code> processes an action, it checks if the current player is an AI player. If so, it passes the action to <code>AIPAAM</code>, which animates the action and waits until the animation is complete.</p>
+<p>To animate actions, various classes implement the <a class="xref" href="../api/ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator-1.html">IAIPlayerActionAnimator</a> generic interface, which defines the <code>AnimateAsync</code> method. The <code>AIPAAM</code> uses these animators to perform the animations. Additionally, several <code>IDisposable</code> helper classes are used to keep the code organized and safe.</p>
+<h3 id="example-animating-a-changetetrominoaction">Example: Animating a <code>ChangeTetrominoAction</code></h3>
+<p>First, the player needs to click on the <strong>Change Tetromino</strong> button in the action zone.
+The <code>AIPAAM</code> uses a <a class="xref" href="../api/ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.html">ActionZonesManager.DisposableButtonSelector</a> to do so.</p>
+<p>Then it redirects the job to the <a class="xref" href="../api/ProjectL.GameScene.PieceZone.PieceZoneManager.html">PieceZoneManager</a>, which implements the <code>IAIPlayerActionAnimator&lt;ChangeTetrominoAction&gt;</code> interface. It uses two disposables to animate the action.</p>
+<ul>
+<li>The <a class="xref" href="../api/ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.html">TetrominoButton.DisposableButtonSelector</a> to visually select the piece to give away and the piece to take.</li>
+<li>The (private) <code>PieceZoneManager.DisposableButtonHighlighter</code> to highlight the possible trade options.</li>
+</ul>
+<h3 id="animating-reward-selection">Animating Reward Selection</h3>
+<p>Reward selection is a bit different. With regular actions, the <code>GameSessionManager</code> calls <code>GameAction.AcceptAsync(AIPAAM)</code> before <code>GameCore.ProcessActionAsync(GameAction)</code>, so the <code>AIPAAM</code> can animate the action before it is processed and the game graphics respond to it.</p>
+<p>However, reward selection takes place inside the <code>GameCore.ProcessActionAsync</code> method. When a player completes a puzzle, the <a href="https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/T_ProjectLCore_GameActions_GameActionProcessor.htm">GameActionProcessor</a> processing the action calls the player's <code>GetRewardAsync</code> method. This method returns the piece the player wants to take as a reward. We need to animate this selection before the <code>GameCore.ProcessActionAsync</code> method returns — otherwise, the graphics would already reflect the updated game state after the reward is chosen, making the animation ineffective.</p>
+<p>Thankfully, the <strong>Project L Core</strong> library provides a bunch of game listener interfaces, one of which is the <a href="https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_IPlayerStatePuzzleFinishedAsyncListener.htm">IPlayerStatePuzzleFinishedAsyncListener</a>. When a puzzle is finished by a player, the <code>OnPuzzleFinishedAsync(FinishedPuzzleInfo)</code> method of all listeners subscribed to his <code>PlayerState</code> is called and awaited. This happens before any changes are made to his <a href="https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_PlayerState.htm">PlayerState</a> and the <a href="https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GameState.htm">GameState</a>.</p>
+<p>The <code>AIPAAM</code> implements this interface to animate the reward selection using the <code>PieceZoneManager</code> in a very similar way as with the <code>ChangeTetrominoAction</code>.</p>
 
 </article>
 

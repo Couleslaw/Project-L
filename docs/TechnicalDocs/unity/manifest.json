@@ -348,6 +348,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/ProjectL.GameScene.ActionHandling.ChangeTetrominoActionModification.yml",
       "output": {
         ".html": {
@@ -460,6 +474,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/ProjectL.GameScene.ActionHandling.PlaceTetrominoActionModification.Options.yml",
       "output": {
         ".html": {
@@ -516,6 +544,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.RecycleActionConstructor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.RecycleActionConstructor.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.RecycleActionConstructor",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/ProjectL.GameScene.ActionHandling.RecycleActionModification.yml",
       "output": {
         ".html": {
@@ -558,6 +600,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/ProjectL.GameScene.ActionHandling.SelectRewardActionModification.yml",
       "output": {
         ".html": {
@@ -586,6 +642,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/ProjectL.GameScene.ActionHandling.TakeBasicConstructor.yml",
       "output": {
         ".html": {
@@ -610,6 +680,20 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "ProjectL.GameScene.ActionHandling.TakeBasicTetrominoActionModification",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor",
       "Summary": null
     },
     {
@@ -694,6 +778,20 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "ProjectL.GameScene.ActionZones.ActionZonesManager.Button",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector",
       "Summary": null
     },
     {
@@ -1048,6 +1146,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/ProjectL.GameScene.PieceZone.TetrominoButton.TemporaryButtonSelector.yml",
       "output": {
         ".html": {
@@ -1072,6 +1184,20 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "ProjectL.GameScene.PieceZone.TetrominoButton",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger",
       "Summary": null
     },
     {
@@ -1216,6 +1342,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/ProjectL.GameScene.PlayerZone.PuzzleSlot.TemporaryPuzzleHighlighter.yml",
       "output": {
         ".html": {
@@ -1300,6 +1440,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.TemporarySpriteReplacer.yml",
       "output": {
         ".html": {
@@ -1338,6 +1492,34 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "ProjectL.GameScene.PuzzleZone.PuzzleZoneMode",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter",
       "Summary": null
     },
     {
@@ -1911,20 +2093,20 @@
     },
     {
       "type": "Conceptual",
-      "source_relative_path": "docs/human-players.md",
+      "source_relative_path": "docs/game-flow.md",
       "output": {
         ".html": {
-          "relative_path": "docs/human-players.html"
+          "relative_path": "docs/game-flow.html"
         }
       },
       "version": ""
     },
     {
       "type": "Conceptual",
-      "source_relative_path": "docs/responding-to-actions.md",
+      "source_relative_path": "docs/human-players.md",
       "output": {
         ".html": {
-          "relative_path": "docs/responding-to-actions.html"
+          "relative_path": "docs/human-players.html"
         }
       },
       "version": ""

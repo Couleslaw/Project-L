@@ -172,7 +172,7 @@ namespace ProjectL.GameScene.PuzzleZone
 
         void IHumanPlayerActionCreator<RecycleAction>.OnActionConfirmed() => SetMode(PuzzleZoneMode.Disabled);
 
-        async Task IAIPlayerActionAnimator<TakePuzzleAction>.Animate(TakePuzzleAction action, CancellationToken cancellationToken)
+        async Task IAIPlayerActionAnimator<TakePuzzleAction>.AnimateAsync(TakePuzzleAction action, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -183,8 +183,8 @@ namespace ProjectL.GameScene.PuzzleZone
             float delay = 0.7f;
 
             // dim all cards
-            using (_whiteColumn.CreateColumnDimmer()) {
-                using (_blackColumn.CreateColumnDimmer()) {
+            using (_whiteColumn.GetDisposableColumnDimmer()) {
+                using (_blackColumn.GetDisposableColumnDimmer()) {
 
                     // wait a bit
                     await AnimationManager.WaitForScaledDelay(delay, cancellationToken);
@@ -192,18 +192,18 @@ namespace ProjectL.GameScene.PuzzleZone
                     // select the taken puzzle card
                     switch (action.Option) {
                         case TakePuzzleAction.Options.TopWhite:
-                            using (_whiteColumn.DeckCard.CreateCardHighlighter()) {
+                            using (_whiteColumn.DeckCard.GetDisposableCardHighlighter()) {
                                 await AnimationManager.WaitForScaledDelay(delay, cancellationToken);
                             }
                             break;
                         case TakePuzzleAction.Options.TopBlack:
-                            using (_blackColumn.DeckCard.CreateCardHighlighter()) {
+                            using (_blackColumn.DeckCard.GetDisposableCardHighlighter()) {
                                 await AnimationManager.WaitForScaledDelay(delay, cancellationToken);
                             }
                             break;
                         case TakePuzzleAction.Options.Normal:
                             if (TryGetPuzzleCardWithId(action.PuzzleId!.Value, out var puzzleCard)) {
-                                using (puzzleCard!.CreateCardHighlighter()) {
+                                using (puzzleCard!.GetDisposableCardHighlighter()) {
                                     await AnimationManager.WaitForScaledDelay(delay, cancellationToken);
                                 }
                             }
@@ -215,7 +215,7 @@ namespace ProjectL.GameScene.PuzzleZone
             }
         }
 
-        async Task IAIPlayerActionAnimator<RecycleAction>.Animate(RecycleAction action, CancellationToken cancellationToken)
+        async Task IAIPlayerActionAnimator<RecycleAction>.AnimateAsync(RecycleAction action, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -224,8 +224,8 @@ namespace ProjectL.GameScene.PuzzleZone
             }
 
             // dim all cards - except the deck cards
-            using (_whiteColumn.CreateColumnDimmer(shouldDimCoverCard: false)) {
-                using (_blackColumn.CreateColumnDimmer(shouldDimCoverCard: false)) {
+            using (_whiteColumn.GetDisposableColumnDimmer(shouldDimCoverCard: false)) {
+                using (_blackColumn.GetDisposableColumnDimmer(shouldDimCoverCard: false)) {
 
                     // wait a bit
                     await AnimationManager.WaitForScaledDelay(1f, cancellationToken);
@@ -235,7 +235,7 @@ namespace ProjectL.GameScene.PuzzleZone
                     List<uint> puzzleIds = new();
                     foreach (uint puzzleId in action.Order) {
                         puzzleIds.Add(puzzleId);
-                        using (column.CreatePuzzleHighlighter(puzzleIds)) {
+                        using (column.GetDisposablePuzzleHighlighter(puzzleIds)) {
                             await AnimationManager.WaitForScaledDelay(1f, cancellationToken);
                         }
                     }
@@ -255,12 +255,12 @@ namespace ProjectL.GameScene.PuzzleZone
             return false;
         }
 
-        public class TemporarySpriteReplacer : IDisposable
+        public class DisposableSpriteReplacer : IDisposable
         {
             private Button? _button;
             private SpriteState _originalSpriteState;
 
-            public TemporarySpriteReplacer(Button button, Sprite? tempSprite)
+            public DisposableSpriteReplacer(Button button, Sprite? tempSprite)
             {
                 if (button.transition != Selectable.Transition.SpriteSwap || tempSprite == null) {
                     return;

@@ -302,7 +302,7 @@ namespace ProjectL.GameScene.PlayerZone
             _temporaryPuzzleCopy = null;
         }
 
-        Task IAIPlayerActionAnimator<PlaceTetrominoAction>.Animate(PlaceTetrominoAction action, CancellationToken cancellationToken)
+        Task IAIPlayerActionAnimator<PlaceTetrominoAction>.AnimateAsync(PlaceTetrominoAction action, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 

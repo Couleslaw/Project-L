@@ -2,9 +2,9 @@
 <html>
   <head>
     <meta charset="utf-8">
-      <title>Class ActionConstructor&lt;T&gt; | Project L Unity </title>
+      <title>Class PlaceTetrominoActionConstructor | Project L Unity </title>
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="title" content="Class ActionConstructor&lt;T&gt; | Project L Unity ">
+      <meta name="title" content="Class PlaceTetrominoActionConstructor | Project L Unity ">
       
       
       <link rel="icon" href="../favicon.ico">
@@ -84,12 +84,12 @@
           <nav id="breadcrumb"></nav>
         </div>
 
-        <article data-uid="ProjectL.GameScene.ActionHandling.ActionConstructor`1">
+        <article data-uid="ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor">
 
 
 
-  <h1 id="ProjectL_GameScene_ActionHandling_ActionConstructor_1" data-uid="ProjectL.GameScene.ActionHandling.ActionConstructor`1" class="text-break">
-Class ActionConstructor&lt;T&gt;  
+  <h1 id="ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor" data-uid="ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor" class="text-break">
+Class PlaceTetrominoActionConstructor  
   </h1>
 
   <div class="facts text-secondary">
@@ -101,22 +101,18 @@ Class ActionConstructor&lt;T&gt;
   <div class="markdown conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class ActionConstructor&lt;T&gt; : IActionConstructor where T : GameAction</code></pre>
+    <pre><code class="lang-csharp hljs">public class PlaceTetrominoActionConstructor : ActionConstructor&lt;PlaceTetrominoAction&gt;, IActionConstructor</code></pre>
   </div>
 
 
 
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>T</code></dt>
-    <dd></dd>
-  </dl>
 
   <dl class="typelist inheritance">
     <dt>Inheritance</dt>
     <dd>
       <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-      <div><span class="xref">ActionConstructor&lt;T&gt;</span></div>
+      <div><a class="xref" href="ProjectL.GameScene.ActionHandling.ActionConstructor-1.html">ActionConstructor</a>&lt;<span class="xref">PlaceTetrominoAction</span>&gt;</div>
+      <div><span class="xref">PlaceTetrominoActionConstructor</span></div>
     </dd>
   </dl>
 
@@ -127,21 +123,16 @@ Class ActionConstructor&lt;T&gt;
     </dd>
   </dl>
 
-  <dl class="typelist derived">
-    <dt>Derived</dt>
-    <dd>
-      <div><a class="xref" href="ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.html">ChangeTetrominoActionConstructor</a></div>
-      <div><a class="xref" href="ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.html">PlaceTetrominoActionConstructor</a></div>
-      <div><a class="xref" href="ProjectL.GameScene.ActionHandling.RecycleActionConstructor.html">RecycleActionConstructor</a></div>
-      <div><a class="xref" href="ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.html">SelectRewardActionConstructor</a></div>
-      <div><a class="xref" href="ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.html">TakeBasicActionConstructor</a></div>
-      <div><a class="xref" href="ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.html">TakePuzzleActionConstructor</a></div>
-    </dd>
-  </dl>
 
   <dl class="typelist inheritedMembers">
     <dt>Inherited Members</dt>
     <dd>
+    <div>
+      <a class="xref" href="ProjectL.GameScene.ActionHandling.ActionConstructor-1.html#ProjectL_GameScene_ActionHandling_ActionConstructor_1_GetAction__1">ActionConstructor&lt;PlaceTetrominoAction&gt;.GetAction&lt;T1&gt;()</a>
+    </div>
+    <div>
+      <a class="xref" href="ProjectL.GameScene.ActionHandling.ActionConstructor-1.html#ProjectL_GameScene_ActionHandling_ActionConstructor_1_ApplyActionModification__1_ProjectL_GameScene_ActionHandling_IActionModification___0__">ActionConstructor&lt;PlaceTetrominoAction&gt;.ApplyActionModification&lt;T1&gt;(IActionModification&lt;T1&gt;)</a>
+    </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
     </div>
@@ -174,10 +165,10 @@ Class ActionConstructor&lt;T&gt;
 </h2>
 
 
-  <a id="ProjectL_GameScene_ActionHandling_ActionConstructor_1_ApplyActionModification_" data-uid="ProjectL.GameScene.ActionHandling.ActionConstructor`1.ApplyActionModification*"></a>
+  <a id="ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor_ApplyActionModification_" data-uid="ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.ApplyActionModification*"></a>
 
-  <h3 id="ProjectL_GameScene_ActionHandling_ActionConstructor_1_ApplyActionModification_ProjectL_GameScene_ActionHandling_IActionModification__0__" data-uid="ProjectL.GameScene.ActionHandling.ActionConstructor`1.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification{`0})">
-  ApplyActionModification(IActionModification&lt;T&gt;)
+  <h3 id="ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor_ApplyActionModification_ProjectL_GameScene_ActionHandling_IActionModification_ProjectLCore_GameActions_PlaceTetrominoAction__" data-uid="ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification{ProjectLCore.GameActions.PlaceTetrominoAction})">
+  ApplyActionModification(IActionModification&lt;PlaceTetrominoAction&gt;)
   
   </h3>
 
@@ -185,12 +176,12 @@ Class ActionConstructor&lt;T&gt;
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected abstract void ApplyActionModification(IActionModification&lt;T&gt; change)</code></pre>
+    <pre><code class="lang-csharp hljs">protected override void ApplyActionModification(IActionModification&lt;PlaceTetrominoAction&gt; change)</code></pre>
   </div>
 
   <h4 class="section">Parameters</h4>
   <dl class="parameters">
-    <dt><code>change</code> <a class="xref" href="ProjectL.GameScene.ActionHandling.IActionModification-1.html">IActionModification</a>&lt;T&gt;</dt>
+    <dt><code>change</code> <a class="xref" href="ProjectL.GameScene.ActionHandling.IActionModification-1.html">IActionModification</a>&lt;<span class="xref">PlaceTetrominoAction</span>&gt;</dt>
     <dd></dd>
   </dl>
 
@@ -205,45 +196,9 @@ Class ActionConstructor&lt;T&gt;
 
 
 
-  <a id="ProjectL_GameScene_ActionHandling_ActionConstructor_1_ApplyActionModification_" data-uid="ProjectL.GameScene.ActionHandling.ActionConstructor`1.ApplyActionModification*"></a>
+  <a id="ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor_GetAction_" data-uid="ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetAction*"></a>
 
-  <h3 id="ProjectL_GameScene_ActionHandling_ActionConstructor_1_ApplyActionModification__1_ProjectL_GameScene_ActionHandling_IActionModification___0__" data-uid="ProjectL.GameScene.ActionHandling.ActionConstructor`1.ApplyActionModification``1(ProjectL.GameScene.ActionHandling.IActionModification{``0})">
-  ApplyActionModification&lt;T1&gt;(IActionModification&lt;T1&gt;)
-  
-  </h3>
-
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void ApplyActionModification&lt;T1&gt;(IActionModification&lt;T1&gt; change) where T1 : GameAction</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>change</code> <a class="xref" href="ProjectL.GameScene.ActionHandling.IActionModification-1.html">IActionModification</a>&lt;T1&gt;</dt>
-    <dd></dd>
-  </dl>
-
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>T1</code></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-  <a id="ProjectL_GameScene_ActionHandling_ActionConstructor_1_GetAction_" data-uid="ProjectL.GameScene.ActionHandling.ActionConstructor`1.GetAction*"></a>
-
-  <h3 id="ProjectL_GameScene_ActionHandling_ActionConstructor_1_GetAction" data-uid="ProjectL.GameScene.ActionHandling.ActionConstructor`1.GetAction">
+  <h3 id="ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor_GetAction" data-uid="ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetAction">
   GetAction()
   
   </h3>
@@ -252,13 +207,13 @@ Class ActionConstructor&lt;T&gt;
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected abstract T? GetAction()</code></pre>
+    <pre><code class="lang-csharp hljs">protected override PlaceTetrominoAction? GetAction()</code></pre>
   </div>
 
 
   <h4 class="section">Returns</h4>
   <dl class="parameters">
-    <dt><span class="xref">T</span></dt>
+    <dt><span class="xref">PlaceTetrominoAction</span></dt>
     <dd></dd>
   </dl>
 
@@ -272,10 +227,10 @@ Class ActionConstructor&lt;T&gt;
 
 
 
-  <a id="ProjectL_GameScene_ActionHandling_ActionConstructor_1_GetAction_" data-uid="ProjectL.GameScene.ActionHandling.ActionConstructor`1.GetAction*"></a>
+  <a id="ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor_GetMasterAction_" data-uid="ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetMasterAction*"></a>
 
-  <h3 id="ProjectL_GameScene_ActionHandling_ActionConstructor_1_GetAction__1" data-uid="ProjectL.GameScene.ActionHandling.ActionConstructor`1.GetAction``1">
-  GetAction&lt;T1&gt;()
+  <h3 id="ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor_GetMasterAction" data-uid="ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetMasterAction">
+  GetMasterAction()
   
   </h3>
 
@@ -283,19 +238,44 @@ Class ActionConstructor&lt;T&gt;
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public T1? GetAction&lt;T1&gt;() where T1 : GameAction</code></pre>
+    <pre><code class="lang-csharp hljs">public MasterAction? GetMasterAction()</code></pre>
   </div>
 
 
   <h4 class="section">Returns</h4>
   <dl class="parameters">
-    <dt><span class="xref">T1</span></dt>
+    <dt><span class="xref">MasterAction</span></dt>
     <dd></dd>
   </dl>
 
-  <h4 class="section">Type Parameters</h4>
+
+
+
+
+
+
+
+
+
+
+  <a id="ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor_GetPlacementsQueue_" data-uid="ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetPlacementsQueue*"></a>
+
+  <h3 id="ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor_GetPlacementsQueue" data-uid="ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetPlacementsQueue">
+  GetPlacementsQueue()
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Queue&lt;PlaceTetrominoAction&gt; GetPlacementsQueue()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
   <dl class="parameters">
-    <dt><code>T1</code></dt>
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.queue-1">Queue</a>&lt;<span class="xref">PlaceTetrominoAction</span>&gt;</dt>
     <dd></dd>
   </dl>
 
@@ -308,9 +288,10 @@ Class ActionConstructor&lt;T&gt;
 
 
 
-  <a id="ProjectL_GameScene_ActionHandling_ActionConstructor_1_Reset_" data-uid="ProjectL.GameScene.ActionHandling.ActionConstructor`1.Reset*"></a>
 
-  <h3 id="ProjectL_GameScene_ActionHandling_ActionConstructor_1_Reset" data-uid="ProjectL.GameScene.ActionHandling.ActionConstructor`1.Reset">
+  <a id="ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor_Reset_" data-uid="ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.Reset*"></a>
+
+  <h3 id="ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor_Reset" data-uid="ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.Reset">
   Reset()
   
   </h3>
@@ -319,7 +300,7 @@ Class ActionConstructor&lt;T&gt;
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract void Reset()</code></pre>
+    <pre><code class="lang-csharp hljs">public override void Reset()</code></pre>
   </div>
 
 

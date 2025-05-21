@@ -151,7 +151,7 @@ namespace ProjectL.GameScene.ActionZones
 
         #endregion
 
-        public class SimulateButtonClickDisposable : IDisposable
+        public class DisposableButtonSelector : IDisposable
         {
             #region Fields
 
@@ -161,7 +161,7 @@ namespace ProjectL.GameScene.ActionZones
 
             #region Constructors
 
-            public SimulateButtonClickDisposable(Button button)
+            public DisposableButtonSelector(Button button)
             {
                 _button = button;
                 switch (button) {

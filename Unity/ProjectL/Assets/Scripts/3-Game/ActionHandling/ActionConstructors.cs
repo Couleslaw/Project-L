@@ -48,7 +48,7 @@ namespace ProjectL.GameScene.ActionHandling
         #endregion
     }
 
-    public class TakePuzzleConstructor : ActionConstructor<TakePuzzleAction>
+    public class TakePuzzleActionConstructor : ActionConstructor<TakePuzzleAction>
     {
         #region Fields
 
@@ -75,7 +75,7 @@ namespace ProjectL.GameScene.ActionHandling
         #endregion
     }
 
-    public class RecycleConstructor : ActionConstructor<RecycleAction>
+    public class RecycleActionConstructor : ActionConstructor<RecycleAction>
     {
         #region Fields
 
@@ -115,7 +115,7 @@ namespace ProjectL.GameScene.ActionHandling
         #endregion
     }
 
-    public class TakeBasicConstructor : ActionConstructor<TakeBasicTetrominoAction>
+    public class TakeBasicActionConstructor : ActionConstructor<TakeBasicTetrominoAction>
     {
         #region Fields
 
@@ -142,7 +142,7 @@ namespace ProjectL.GameScene.ActionHandling
         #endregion
     }
 
-    public class ChangeTetrominoConstructor : ActionConstructor<ChangeTetrominoAction>
+    public class ChangeTetrominoActionConstructor : ActionConstructor<ChangeTetrominoAction>
     {
         #region Fields
 
@@ -182,7 +182,7 @@ namespace ProjectL.GameScene.ActionHandling
         #endregion
     }
 
-    public class PlaceTetrominoConstructor : ActionConstructor<PlaceTetrominoAction>
+    public class PlaceTetrominoActionConstructor : ActionConstructor<PlaceTetrominoAction>
     {
         #region Fields
 
@@ -227,7 +227,7 @@ namespace ProjectL.GameScene.ActionHandling
         #endregion
     }
 
-    public class SelectRewardConstructor : ActionConstructor<SelectRewardAction>
+    public class SelectRewardActionConstructor : ActionConstructor<SelectRewardAction>
     {
         #region Fields
 

@@ -91,10 +91,10 @@ namespace ProjectL.GameScene.PieceZone
             DisplayCollectionChangedEventHandler -= listener.OnTetrominoCollectionChanged;
         }
 
-        public TemporaryPieceCountChanger CreateTemporaryCountIncreaser(TetrominoShape shape)
+        public DisposablePieceCountChanger CreateTemporaryCountIncreaser(TetrominoShape shape)
             => new(this, shape, GetDisplayCount(shape) + 1);
 
-        public TemporaryPieceCountChanger CreateTemporaryCountDecreaser(TetrominoShape shape)
+        public DisposablePieceCountChanger CreateTemporaryCountDecreaser(TetrominoShape shape)
             => new(this, shape, GetDisplayCount(shape) - 1);
 
         private void Awake()
@@ -153,7 +153,7 @@ namespace ProjectL.GameScene.PieceZone
 
         #endregion
 
-        public class TemporaryPieceCountChanger : IDisposable
+        public class DisposablePieceCountChanger : IDisposable
         {
             #region Fields
 
@@ -167,7 +167,7 @@ namespace ProjectL.GameScene.PieceZone
 
             #region Constructors
 
-            public TemporaryPieceCountChanger(TetrominoCountsColumn pieceCountColumn, TetrominoShape shape, int newCount)
+            public DisposablePieceCountChanger(TetrominoCountsColumn pieceCountColumn, TetrominoShape shape, int newCount)
             {
                 _pieceCountColumn = pieceCountColumn;
                 _shape = shape;

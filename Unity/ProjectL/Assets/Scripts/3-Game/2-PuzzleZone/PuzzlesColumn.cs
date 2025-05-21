@@ -72,9 +72,9 @@ namespace ProjectL.GameScene.PuzzleZone
             }
         }
 
-        public TemporaryColumnDimmer CreateColumnDimmer(bool shouldDimCoverCard = true) => new(this, shouldDimCoverCard);
+        public DisposableColumnDimmer GetDisposableColumnDimmer(bool shouldDimCoverCard = true) => new(this, shouldDimCoverCard);
 
-        public TemporaryPuzzleHighlighter CreatePuzzleHighlighter(List<uint> puzzleIds) => new(this, puzzleIds);
+        public DisposablePuzzleHighlighter GetDisposablePuzzleHighlighter(List<uint> puzzleIds) => new(this, puzzleIds);
 
         private void Awake()
         {
@@ -97,23 +97,23 @@ namespace ProjectL.GameScene.PuzzleZone
 
         #endregion
 
-        public class TemporaryColumnDimmer : IDisposable
+        public class DisposableColumnDimmer : IDisposable
         {
             #region Fields
 
-            private List<PuzzleZoneManager.TemporarySpriteReplacer> _dimmers = new();
+            private List<PuzzleZoneManager.DisposableSpriteReplacer> _dimmers = new();
 
             #endregion
 
             #region Constructors
 
-            public TemporaryColumnDimmer(PuzzlesColumn column, bool shouldDimCoverCard)
+            public DisposableColumnDimmer(PuzzlesColumn column, bool shouldDimCoverCard)
             {
                 foreach (var puzzle in column._puzzleCards) {
-                    _dimmers.Add(puzzle.CreateCardDimmer());
+                    _dimmers.Add(puzzle.GetDisposableCardDimmer());
                 }
                 if (shouldDimCoverCard) {
-                    _dimmers.Add(column.DeckCard.CreateCardDimmer());
+                    _dimmers.Add(column.DeckCard.GetDisposableCardDimmer());
                 }
             }
 
@@ -131,22 +131,22 @@ namespace ProjectL.GameScene.PuzzleZone
             #endregion
         }
 
-        public class TemporaryPuzzleHighlighter : IDisposable
+        public class DisposablePuzzleHighlighter : IDisposable
         {
             #region Fields
 
-            private List<PuzzleZoneManager.TemporarySpriteReplacer> _highlighters = new();
+            private List<PuzzleZoneManager.DisposableSpriteReplacer> _highlighters = new();
 
             #endregion
 
             #region Constructors
 
-            public TemporaryPuzzleHighlighter(PuzzlesColumn column, List<uint> puzzleIds)
+            public DisposablePuzzleHighlighter(PuzzlesColumn column, List<uint> puzzleIds)
             {
 
                 foreach (var puzzleId in puzzleIds) {
                     if (column.TryGetPuzzleCardWithId(puzzleId, out var puzzleCard)) {
-                        _highlighters.Add(puzzleCard!.CreateCardHighlighter());
+                        _highlighters.Add(puzzleCard!.GetDisposableCardHighlighter());
                     }
                 }
             }

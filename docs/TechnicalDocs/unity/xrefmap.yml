@@ -991,6 +991,54 @@ references:
   commentId: F:ProjectL.GameScene.ActionHandling.ActionMode.RewardSelection
   fullName: ProjectL.GameScene.ActionHandling.ActionMode.RewardSelection
   nameWithType: ActionMode.RewardSelection
+- uid: ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor
+  name: ChangeTetrominoActionConstructor
+  href: api/ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.html
+  commentId: T:ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor
+  fullName: ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor
+  nameWithType: ChangeTetrominoActionConstructor
+- uid: ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification{ProjectLCore.GameActions.ChangeTetrominoAction})
+  name: ApplyActionModification(IActionModification<ChangeTetrominoAction>)
+  href: api/ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.html#ProjectL_GameScene_ActionHandling_ChangeTetrominoActionConstructor_ApplyActionModification_ProjectL_GameScene_ActionHandling_IActionModification_ProjectLCore_GameActions_ChangeTetrominoAction__
+  commentId: M:ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification{ProjectLCore.GameActions.ChangeTetrominoAction})
+  name.vb: ApplyActionModification(IActionModification(Of ChangeTetrominoAction))
+  fullName: ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification<ProjectLCore.GameActions.ChangeTetrominoAction>)
+  fullName.vb: ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification(Of ProjectLCore.GameActions.ChangeTetrominoAction))
+  nameWithType: ChangeTetrominoActionConstructor.ApplyActionModification(IActionModification<ChangeTetrominoAction>)
+  nameWithType.vb: ChangeTetrominoActionConstructor.ApplyActionModification(IActionModification(Of ChangeTetrominoAction))
+- uid: ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.ApplyActionModification*
+  name: ApplyActionModification
+  href: api/ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.html#ProjectL_GameScene_ActionHandling_ChangeTetrominoActionConstructor_ApplyActionModification_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.ApplyActionModification
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.ApplyActionModification
+  nameWithType: ChangeTetrominoActionConstructor.ApplyActionModification
+- uid: ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.GetAction
+  name: GetAction()
+  href: api/ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.html#ProjectL_GameScene_ActionHandling_ChangeTetrominoActionConstructor_GetAction
+  commentId: M:ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.GetAction
+  fullName: ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.GetAction()
+  nameWithType: ChangeTetrominoActionConstructor.GetAction()
+- uid: ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.GetAction*
+  name: GetAction
+  href: api/ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.html#ProjectL_GameScene_ActionHandling_ChangeTetrominoActionConstructor_GetAction_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.GetAction
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.GetAction
+  nameWithType: ChangeTetrominoActionConstructor.GetAction
+- uid: ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.Reset
+  name: Reset()
+  href: api/ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.html#ProjectL_GameScene_ActionHandling_ChangeTetrominoActionConstructor_Reset
+  commentId: M:ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.Reset
+  fullName: ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.Reset()
+  nameWithType: ChangeTetrominoActionConstructor.Reset()
+- uid: ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.Reset*
+  name: Reset
+  href: api/ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.html#ProjectL_GameScene_ActionHandling_ChangeTetrominoActionConstructor_Reset_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.Reset
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionHandling.ChangeTetrominoActionConstructor.Reset
+  nameWithType: ChangeTetrominoActionConstructor.Reset
 - uid: ProjectL.GameScene.ActionHandling.ChangeTetrominoActionModification
   name: ChangeTetrominoActionModification
   href: api/ProjectL.GameScene.ActionHandling.ChangeTetrominoActionModification.html
@@ -1358,23 +1406,23 @@ references:
   fullName.vb: ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator(Of T)
   nameWithType: IAIPlayerActionAnimator<T>
   nameWithType.vb: IAIPlayerActionAnimator(Of T)
-- uid: ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator`1.Animate(`0,System.Threading.CancellationToken)
-  name: Animate(T, CancellationToken)
-  href: api/ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator-1.html#ProjectL_GameScene_ActionHandling_IAIPlayerActionAnimator_1_Animate__0_System_Threading_CancellationToken_
-  commentId: M:ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator`1.Animate(`0,System.Threading.CancellationToken)
-  fullName: ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator<T>.Animate(T, System.Threading.CancellationToken)
-  fullName.vb: ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator(Of T).Animate(T, System.Threading.CancellationToken)
-  nameWithType: IAIPlayerActionAnimator<T>.Animate(T, CancellationToken)
-  nameWithType.vb: IAIPlayerActionAnimator(Of T).Animate(T, CancellationToken)
-- uid: ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator`1.Animate*
-  name: Animate
-  href: api/ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator-1.html#ProjectL_GameScene_ActionHandling_IAIPlayerActionAnimator_1_Animate_
-  commentId: Overload:ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator`1.Animate
+- uid: ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator`1.AnimateAsync(`0,System.Threading.CancellationToken)
+  name: AnimateAsync(T, CancellationToken)
+  href: api/ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator-1.html#ProjectL_GameScene_ActionHandling_IAIPlayerActionAnimator_1_AnimateAsync__0_System_Threading_CancellationToken_
+  commentId: M:ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator`1.AnimateAsync(`0,System.Threading.CancellationToken)
+  fullName: ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator<T>.AnimateAsync(T, System.Threading.CancellationToken)
+  fullName.vb: ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator(Of T).AnimateAsync(T, System.Threading.CancellationToken)
+  nameWithType: IAIPlayerActionAnimator<T>.AnimateAsync(T, CancellationToken)
+  nameWithType.vb: IAIPlayerActionAnimator(Of T).AnimateAsync(T, CancellationToken)
+- uid: ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator`1.AnimateAsync*
+  name: AnimateAsync
+  href: api/ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator-1.html#ProjectL_GameScene_ActionHandling_IAIPlayerActionAnimator_1_AnimateAsync_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator`1.AnimateAsync
   isSpec: "True"
-  fullName: ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator<T>.Animate
-  fullName.vb: ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator(Of T).Animate
-  nameWithType: IAIPlayerActionAnimator<T>.Animate
-  nameWithType.vb: IAIPlayerActionAnimator(Of T).Animate
+  fullName: ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator<T>.AnimateAsync
+  fullName.vb: ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator(Of T).AnimateAsync
+  nameWithType: IAIPlayerActionAnimator<T>.AnimateAsync
+  nameWithType.vb: IAIPlayerActionAnimator(Of T).AnimateAsync
 - uid: ProjectL.GameScene.ActionHandling.IActionConstructor
   name: IActionConstructor
   href: api/ProjectL.GameScene.ActionHandling.IActionConstructor.html
@@ -1535,6 +1583,80 @@ references:
   fullName.vb: ProjectL.GameScene.ActionHandling.IHumanPlayerActionCreator(Of T).OnActionRequested
   nameWithType: IHumanPlayerActionCreator<T>.OnActionRequested
   nameWithType.vb: IHumanPlayerActionCreator(Of T).OnActionRequested
+- uid: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor
+  name: PlaceTetrominoActionConstructor
+  href: api/ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.html
+  commentId: T:ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor
+  fullName: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor
+  nameWithType: PlaceTetrominoActionConstructor
+- uid: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification{ProjectLCore.GameActions.PlaceTetrominoAction})
+  name: ApplyActionModification(IActionModification<PlaceTetrominoAction>)
+  href: api/ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.html#ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor_ApplyActionModification_ProjectL_GameScene_ActionHandling_IActionModification_ProjectLCore_GameActions_PlaceTetrominoAction__
+  commentId: M:ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification{ProjectLCore.GameActions.PlaceTetrominoAction})
+  name.vb: ApplyActionModification(IActionModification(Of PlaceTetrominoAction))
+  fullName: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification<ProjectLCore.GameActions.PlaceTetrominoAction>)
+  fullName.vb: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification(Of ProjectLCore.GameActions.PlaceTetrominoAction))
+  nameWithType: PlaceTetrominoActionConstructor.ApplyActionModification(IActionModification<PlaceTetrominoAction>)
+  nameWithType.vb: PlaceTetrominoActionConstructor.ApplyActionModification(IActionModification(Of PlaceTetrominoAction))
+- uid: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.ApplyActionModification*
+  name: ApplyActionModification
+  href: api/ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.html#ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor_ApplyActionModification_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.ApplyActionModification
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.ApplyActionModification
+  nameWithType: PlaceTetrominoActionConstructor.ApplyActionModification
+- uid: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetAction
+  name: GetAction()
+  href: api/ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.html#ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor_GetAction
+  commentId: M:ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetAction
+  fullName: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetAction()
+  nameWithType: PlaceTetrominoActionConstructor.GetAction()
+- uid: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetAction*
+  name: GetAction
+  href: api/ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.html#ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor_GetAction_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetAction
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetAction
+  nameWithType: PlaceTetrominoActionConstructor.GetAction
+- uid: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetMasterAction
+  name: GetMasterAction()
+  href: api/ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.html#ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor_GetMasterAction
+  commentId: M:ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetMasterAction
+  fullName: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetMasterAction()
+  nameWithType: PlaceTetrominoActionConstructor.GetMasterAction()
+- uid: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetMasterAction*
+  name: GetMasterAction
+  href: api/ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.html#ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor_GetMasterAction_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetMasterAction
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetMasterAction
+  nameWithType: PlaceTetrominoActionConstructor.GetMasterAction
+- uid: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetPlacementsQueue
+  name: GetPlacementsQueue()
+  href: api/ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.html#ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor_GetPlacementsQueue
+  commentId: M:ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetPlacementsQueue
+  fullName: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetPlacementsQueue()
+  nameWithType: PlaceTetrominoActionConstructor.GetPlacementsQueue()
+- uid: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetPlacementsQueue*
+  name: GetPlacementsQueue
+  href: api/ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.html#ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor_GetPlacementsQueue_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetPlacementsQueue
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.GetPlacementsQueue
+  nameWithType: PlaceTetrominoActionConstructor.GetPlacementsQueue
+- uid: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.Reset
+  name: Reset()
+  href: api/ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.html#ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor_Reset
+  commentId: M:ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.Reset
+  fullName: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.Reset()
+  nameWithType: PlaceTetrominoActionConstructor.Reset()
+- uid: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.Reset*
+  name: Reset
+  href: api/ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.html#ProjectL_GameScene_ActionHandling_PlaceTetrominoActionConstructor_Reset_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.Reset
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionConstructor.Reset
+  nameWithType: PlaceTetrominoActionConstructor.Reset
 - uid: ProjectL.GameScene.ActionHandling.PlaceTetrominoActionModification
   name: PlaceTetrominoActionModification
   href: api/ProjectL.GameScene.ActionHandling.PlaceTetrominoActionModification.html
@@ -1696,6 +1818,54 @@ references:
   commentId: F:ProjectL.GameScene.ActionHandling.PlayerMode.NonInteractive
   fullName: ProjectL.GameScene.ActionHandling.PlayerMode.NonInteractive
   nameWithType: PlayerMode.NonInteractive
+- uid: ProjectL.GameScene.ActionHandling.RecycleActionConstructor
+  name: RecycleActionConstructor
+  href: api/ProjectL.GameScene.ActionHandling.RecycleActionConstructor.html
+  commentId: T:ProjectL.GameScene.ActionHandling.RecycleActionConstructor
+  fullName: ProjectL.GameScene.ActionHandling.RecycleActionConstructor
+  nameWithType: RecycleActionConstructor
+- uid: ProjectL.GameScene.ActionHandling.RecycleActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification{ProjectLCore.GameActions.RecycleAction})
+  name: ApplyActionModification(IActionModification<RecycleAction>)
+  href: api/ProjectL.GameScene.ActionHandling.RecycleActionConstructor.html#ProjectL_GameScene_ActionHandling_RecycleActionConstructor_ApplyActionModification_ProjectL_GameScene_ActionHandling_IActionModification_ProjectLCore_GameActions_RecycleAction__
+  commentId: M:ProjectL.GameScene.ActionHandling.RecycleActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification{ProjectLCore.GameActions.RecycleAction})
+  name.vb: ApplyActionModification(IActionModification(Of RecycleAction))
+  fullName: ProjectL.GameScene.ActionHandling.RecycleActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification<ProjectLCore.GameActions.RecycleAction>)
+  fullName.vb: ProjectL.GameScene.ActionHandling.RecycleActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification(Of ProjectLCore.GameActions.RecycleAction))
+  nameWithType: RecycleActionConstructor.ApplyActionModification(IActionModification<RecycleAction>)
+  nameWithType.vb: RecycleActionConstructor.ApplyActionModification(IActionModification(Of RecycleAction))
+- uid: ProjectL.GameScene.ActionHandling.RecycleActionConstructor.ApplyActionModification*
+  name: ApplyActionModification
+  href: api/ProjectL.GameScene.ActionHandling.RecycleActionConstructor.html#ProjectL_GameScene_ActionHandling_RecycleActionConstructor_ApplyActionModification_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.RecycleActionConstructor.ApplyActionModification
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionHandling.RecycleActionConstructor.ApplyActionModification
+  nameWithType: RecycleActionConstructor.ApplyActionModification
+- uid: ProjectL.GameScene.ActionHandling.RecycleActionConstructor.GetAction
+  name: GetAction()
+  href: api/ProjectL.GameScene.ActionHandling.RecycleActionConstructor.html#ProjectL_GameScene_ActionHandling_RecycleActionConstructor_GetAction
+  commentId: M:ProjectL.GameScene.ActionHandling.RecycleActionConstructor.GetAction
+  fullName: ProjectL.GameScene.ActionHandling.RecycleActionConstructor.GetAction()
+  nameWithType: RecycleActionConstructor.GetAction()
+- uid: ProjectL.GameScene.ActionHandling.RecycleActionConstructor.GetAction*
+  name: GetAction
+  href: api/ProjectL.GameScene.ActionHandling.RecycleActionConstructor.html#ProjectL_GameScene_ActionHandling_RecycleActionConstructor_GetAction_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.RecycleActionConstructor.GetAction
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionHandling.RecycleActionConstructor.GetAction
+  nameWithType: RecycleActionConstructor.GetAction
+- uid: ProjectL.GameScene.ActionHandling.RecycleActionConstructor.Reset
+  name: Reset()
+  href: api/ProjectL.GameScene.ActionHandling.RecycleActionConstructor.html#ProjectL_GameScene_ActionHandling_RecycleActionConstructor_Reset
+  commentId: M:ProjectL.GameScene.ActionHandling.RecycleActionConstructor.Reset
+  fullName: ProjectL.GameScene.ActionHandling.RecycleActionConstructor.Reset()
+  nameWithType: RecycleActionConstructor.Reset()
+- uid: ProjectL.GameScene.ActionHandling.RecycleActionConstructor.Reset*
+  name: Reset
+  href: api/ProjectL.GameScene.ActionHandling.RecycleActionConstructor.html#ProjectL_GameScene_ActionHandling_RecycleActionConstructor_Reset_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.RecycleActionConstructor.Reset
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionHandling.RecycleActionConstructor.Reset
+  nameWithType: RecycleActionConstructor.Reset
 - uid: ProjectL.GameScene.ActionHandling.RecycleActionModification
   name: RecycleActionModification
   href: api/ProjectL.GameScene.ActionHandling.RecycleActionModification.html
@@ -1859,6 +2029,54 @@ references:
   isSpec: "True"
   fullName: ProjectL.GameScene.ActionHandling.SelectRewardAction.SelectedReward
   nameWithType: SelectRewardAction.SelectedReward
+- uid: ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor
+  name: SelectRewardActionConstructor
+  href: api/ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.html
+  commentId: T:ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor
+  fullName: ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor
+  nameWithType: SelectRewardActionConstructor
+- uid: ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification{ProjectL.GameScene.ActionHandling.SelectRewardAction})
+  name: ApplyActionModification(IActionModification<SelectRewardAction>)
+  href: api/ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.html#ProjectL_GameScene_ActionHandling_SelectRewardActionConstructor_ApplyActionModification_ProjectL_GameScene_ActionHandling_IActionModification_ProjectL_GameScene_ActionHandling_SelectRewardAction__
+  commentId: M:ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification{ProjectL.GameScene.ActionHandling.SelectRewardAction})
+  name.vb: ApplyActionModification(IActionModification(Of SelectRewardAction))
+  fullName: ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification<ProjectL.GameScene.ActionHandling.SelectRewardAction>)
+  fullName.vb: ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification(Of ProjectL.GameScene.ActionHandling.SelectRewardAction))
+  nameWithType: SelectRewardActionConstructor.ApplyActionModification(IActionModification<SelectRewardAction>)
+  nameWithType.vb: SelectRewardActionConstructor.ApplyActionModification(IActionModification(Of SelectRewardAction))
+- uid: ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.ApplyActionModification*
+  name: ApplyActionModification
+  href: api/ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.html#ProjectL_GameScene_ActionHandling_SelectRewardActionConstructor_ApplyActionModification_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.ApplyActionModification
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.ApplyActionModification
+  nameWithType: SelectRewardActionConstructor.ApplyActionModification
+- uid: ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.GetAction
+  name: GetAction()
+  href: api/ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.html#ProjectL_GameScene_ActionHandling_SelectRewardActionConstructor_GetAction
+  commentId: M:ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.GetAction
+  fullName: ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.GetAction()
+  nameWithType: SelectRewardActionConstructor.GetAction()
+- uid: ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.GetAction*
+  name: GetAction
+  href: api/ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.html#ProjectL_GameScene_ActionHandling_SelectRewardActionConstructor_GetAction_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.GetAction
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.GetAction
+  nameWithType: SelectRewardActionConstructor.GetAction
+- uid: ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.Reset
+  name: Reset()
+  href: api/ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.html#ProjectL_GameScene_ActionHandling_SelectRewardActionConstructor_Reset
+  commentId: M:ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.Reset
+  fullName: ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.Reset()
+  nameWithType: SelectRewardActionConstructor.Reset()
+- uid: ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.Reset*
+  name: Reset
+  href: api/ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.html#ProjectL_GameScene_ActionHandling_SelectRewardActionConstructor_Reset_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.Reset
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionHandling.SelectRewardActionConstructor.Reset
+  nameWithType: SelectRewardActionConstructor.Reset
 - uid: ProjectL.GameScene.ActionHandling.SelectRewardActionModification
   name: SelectRewardActionModification
   href: api/ProjectL.GameScene.ActionHandling.SelectRewardActionModification.html
@@ -1945,6 +2163,54 @@ references:
   isSpec: "True"
   fullName: ProjectL.GameScene.ActionHandling.SelectRewardConstructor.Reset
   nameWithType: SelectRewardConstructor.Reset
+- uid: ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor
+  name: TakeBasicActionConstructor
+  href: api/ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.html
+  commentId: T:ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor
+  fullName: ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor
+  nameWithType: TakeBasicActionConstructor
+- uid: ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification{ProjectLCore.GameActions.TakeBasicTetrominoAction})
+  name: ApplyActionModification(IActionModification<TakeBasicTetrominoAction>)
+  href: api/ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.html#ProjectL_GameScene_ActionHandling_TakeBasicActionConstructor_ApplyActionModification_ProjectL_GameScene_ActionHandling_IActionModification_ProjectLCore_GameActions_TakeBasicTetrominoAction__
+  commentId: M:ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification{ProjectLCore.GameActions.TakeBasicTetrominoAction})
+  name.vb: ApplyActionModification(IActionModification(Of TakeBasicTetrominoAction))
+  fullName: ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification<ProjectLCore.GameActions.TakeBasicTetrominoAction>)
+  fullName.vb: ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification(Of ProjectLCore.GameActions.TakeBasicTetrominoAction))
+  nameWithType: TakeBasicActionConstructor.ApplyActionModification(IActionModification<TakeBasicTetrominoAction>)
+  nameWithType.vb: TakeBasicActionConstructor.ApplyActionModification(IActionModification(Of TakeBasicTetrominoAction))
+- uid: ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.ApplyActionModification*
+  name: ApplyActionModification
+  href: api/ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.html#ProjectL_GameScene_ActionHandling_TakeBasicActionConstructor_ApplyActionModification_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.ApplyActionModification
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.ApplyActionModification
+  nameWithType: TakeBasicActionConstructor.ApplyActionModification
+- uid: ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.GetAction
+  name: GetAction()
+  href: api/ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.html#ProjectL_GameScene_ActionHandling_TakeBasicActionConstructor_GetAction
+  commentId: M:ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.GetAction
+  fullName: ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.GetAction()
+  nameWithType: TakeBasicActionConstructor.GetAction()
+- uid: ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.GetAction*
+  name: GetAction
+  href: api/ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.html#ProjectL_GameScene_ActionHandling_TakeBasicActionConstructor_GetAction_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.GetAction
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.GetAction
+  nameWithType: TakeBasicActionConstructor.GetAction
+- uid: ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.Reset
+  name: Reset()
+  href: api/ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.html#ProjectL_GameScene_ActionHandling_TakeBasicActionConstructor_Reset
+  commentId: M:ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.Reset
+  fullName: ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.Reset()
+  nameWithType: TakeBasicActionConstructor.Reset()
+- uid: ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.Reset*
+  name: Reset
+  href: api/ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.html#ProjectL_GameScene_ActionHandling_TakeBasicActionConstructor_Reset_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.Reset
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionHandling.TakeBasicActionConstructor.Reset
+  nameWithType: TakeBasicActionConstructor.Reset
 - uid: ProjectL.GameScene.ActionHandling.TakeBasicConstructor
   name: TakeBasicConstructor
   href: api/ProjectL.GameScene.ActionHandling.TakeBasicConstructor.html
@@ -2031,6 +2297,54 @@ references:
   isSpec: "True"
   fullName: ProjectL.GameScene.ActionHandling.TakeBasicTetrominoActionModification.IsSelected
   nameWithType: TakeBasicTetrominoActionModification.IsSelected
+- uid: ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor
+  name: TakePuzzleActionConstructor
+  href: api/ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.html
+  commentId: T:ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor
+  fullName: ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor
+  nameWithType: TakePuzzleActionConstructor
+- uid: ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification{ProjectLCore.GameActions.TakePuzzleAction})
+  name: ApplyActionModification(IActionModification<TakePuzzleAction>)
+  href: api/ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.html#ProjectL_GameScene_ActionHandling_TakePuzzleActionConstructor_ApplyActionModification_ProjectL_GameScene_ActionHandling_IActionModification_ProjectLCore_GameActions_TakePuzzleAction__
+  commentId: M:ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification{ProjectLCore.GameActions.TakePuzzleAction})
+  name.vb: ApplyActionModification(IActionModification(Of TakePuzzleAction))
+  fullName: ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification<ProjectLCore.GameActions.TakePuzzleAction>)
+  fullName.vb: ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.ApplyActionModification(ProjectL.GameScene.ActionHandling.IActionModification(Of ProjectLCore.GameActions.TakePuzzleAction))
+  nameWithType: TakePuzzleActionConstructor.ApplyActionModification(IActionModification<TakePuzzleAction>)
+  nameWithType.vb: TakePuzzleActionConstructor.ApplyActionModification(IActionModification(Of TakePuzzleAction))
+- uid: ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.ApplyActionModification*
+  name: ApplyActionModification
+  href: api/ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.html#ProjectL_GameScene_ActionHandling_TakePuzzleActionConstructor_ApplyActionModification_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.ApplyActionModification
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.ApplyActionModification
+  nameWithType: TakePuzzleActionConstructor.ApplyActionModification
+- uid: ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.GetAction
+  name: GetAction()
+  href: api/ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.html#ProjectL_GameScene_ActionHandling_TakePuzzleActionConstructor_GetAction
+  commentId: M:ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.GetAction
+  fullName: ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.GetAction()
+  nameWithType: TakePuzzleActionConstructor.GetAction()
+- uid: ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.GetAction*
+  name: GetAction
+  href: api/ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.html#ProjectL_GameScene_ActionHandling_TakePuzzleActionConstructor_GetAction_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.GetAction
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.GetAction
+  nameWithType: TakePuzzleActionConstructor.GetAction
+- uid: ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.Reset
+  name: Reset()
+  href: api/ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.html#ProjectL_GameScene_ActionHandling_TakePuzzleActionConstructor_Reset
+  commentId: M:ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.Reset
+  fullName: ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.Reset()
+  nameWithType: TakePuzzleActionConstructor.Reset()
+- uid: ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.Reset*
+  name: Reset
+  href: api/ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.html#ProjectL_GameScene_ActionHandling_TakePuzzleActionConstructor_Reset_
+  commentId: Overload:ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.Reset
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.Reset
+  nameWithType: TakePuzzleActionConstructor.Reset
 - uid: ProjectL.GameScene.ActionHandling.TakePuzzleActionModification
   name: TakePuzzleActionModification
   href: api/ProjectL.GameScene.ActionHandling.TakePuzzleActionModification.html
@@ -2537,6 +2851,44 @@ references:
   isSpec: "True"
   fullName: ProjectL.GameScene.ActionZones.ActionZonesManager.DisconnectFromSelectRewardButton
   nameWithType: ActionZonesManager.DisconnectFromSelectRewardButton
+- uid: ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector
+  name: ActionZonesManager.DisposableButtonSelector
+  href: api/ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.html
+  commentId: T:ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector
+  fullName: ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector
+  nameWithType: ActionZonesManager.DisposableButtonSelector
+- uid: ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.#ctor(ProjectL.GameScene.ActionZones.ActionZonesManager.Button)
+  name: DisposableButtonSelector(Button)
+  href: api/ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.html#ProjectL_GameScene_ActionZones_ActionZonesManager_DisposableButtonSelector__ctor_ProjectL_GameScene_ActionZones_ActionZonesManager_Button_
+  commentId: M:ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.#ctor(ProjectL.GameScene.ActionZones.ActionZonesManager.Button)
+  name.vb: New(Button)
+  fullName: ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.DisposableButtonSelector(ProjectL.GameScene.ActionZones.ActionZonesManager.Button)
+  fullName.vb: ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.New(ProjectL.GameScene.ActionZones.ActionZonesManager.Button)
+  nameWithType: ActionZonesManager.DisposableButtonSelector.DisposableButtonSelector(ActionZonesManager.Button)
+  nameWithType.vb: ActionZonesManager.DisposableButtonSelector.New(ActionZonesManager.Button)
+- uid: ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.#ctor*
+  name: DisposableButtonSelector
+  href: api/ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.html#ProjectL_GameScene_ActionZones_ActionZonesManager_DisposableButtonSelector__ctor_
+  commentId: Overload:ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.DisposableButtonSelector
+  fullName.vb: ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.New
+  nameWithType: ActionZonesManager.DisposableButtonSelector.DisposableButtonSelector
+  nameWithType.vb: ActionZonesManager.DisposableButtonSelector.New
+- uid: ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.Dispose
+  name: Dispose()
+  href: api/ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.html#ProjectL_GameScene_ActionZones_ActionZonesManager_DisposableButtonSelector_Dispose
+  commentId: M:ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.Dispose
+  fullName: ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.Dispose()
+  nameWithType: ActionZonesManager.DisposableButtonSelector.Dispose()
+- uid: ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.Dispose*
+  name: Dispose
+  href: api/ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.html#ProjectL_GameScene_ActionZones_ActionZonesManager_DisposableButtonSelector_Dispose_
+  commentId: Overload:ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.Dispose
+  isSpec: "True"
+  fullName: ProjectL.GameScene.ActionZones.ActionZonesManager.DisposableButtonSelector.Dispose
+  nameWithType: ActionZonesManager.DisposableButtonSelector.Dispose
 - uid: ProjectL.GameScene.ActionZones.ActionZonesManager.Init(ProjectLCore.GameLogic.GameCore)
   name: Init(GameCore)
   href: api/ProjectL.GameScene.ActionZones.ActionZonesManager.html#ProjectL_GameScene_ActionZones_ActionZonesManager_Init_ProjectLCore_GameLogic_GameCore_
@@ -3653,19 +4005,57 @@ references:
   isSpec: "True"
   fullName: ProjectL.GameScene.PieceZone.TetrominoButton.AddListener
   nameWithType: TetrominoButton.AddListener
-- uid: ProjectL.GameScene.PieceZone.TetrominoButton.CreateTemporaryButtonSelector(ProjectL.GameScene.PieceZone.SelectionSideEffect,ProjectL.GameScene.PieceZone.SelectionButtonEffect)
-  name: CreateTemporaryButtonSelector(SelectionSideEffect, SelectionButtonEffect)
-  href: api/ProjectL.GameScene.PieceZone.TetrominoButton.html#ProjectL_GameScene_PieceZone_TetrominoButton_CreateTemporaryButtonSelector_ProjectL_GameScene_PieceZone_SelectionSideEffect_ProjectL_GameScene_PieceZone_SelectionButtonEffect_
-  commentId: M:ProjectL.GameScene.PieceZone.TetrominoButton.CreateTemporaryButtonSelector(ProjectL.GameScene.PieceZone.SelectionSideEffect,ProjectL.GameScene.PieceZone.SelectionButtonEffect)
-  fullName: ProjectL.GameScene.PieceZone.TetrominoButton.CreateTemporaryButtonSelector(ProjectL.GameScene.PieceZone.SelectionSideEffect, ProjectL.GameScene.PieceZone.SelectionButtonEffect)
-  nameWithType: TetrominoButton.CreateTemporaryButtonSelector(SelectionSideEffect, SelectionButtonEffect)
-- uid: ProjectL.GameScene.PieceZone.TetrominoButton.CreateTemporaryButtonSelector*
-  name: CreateTemporaryButtonSelector
-  href: api/ProjectL.GameScene.PieceZone.TetrominoButton.html#ProjectL_GameScene_PieceZone_TetrominoButton_CreateTemporaryButtonSelector_
-  commentId: Overload:ProjectL.GameScene.PieceZone.TetrominoButton.CreateTemporaryButtonSelector
+- uid: ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector
+  name: TetrominoButton.DisposableButtonSelector
+  href: api/ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.html
+  commentId: T:ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector
+  fullName: ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector
+  nameWithType: TetrominoButton.DisposableButtonSelector
+- uid: ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.#ctor(ProjectL.GameScene.PieceZone.TetrominoButton,ProjectL.GameScene.PieceZone.SelectionSideEffect,ProjectL.GameScene.PieceZone.SelectionButtonEffect)
+  name: DisposableButtonSelector(TetrominoButton, SelectionSideEffect, SelectionButtonEffect)
+  href: api/ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.html#ProjectL_GameScene_PieceZone_TetrominoButton_DisposableButtonSelector__ctor_ProjectL_GameScene_PieceZone_TetrominoButton_ProjectL_GameScene_PieceZone_SelectionSideEffect_ProjectL_GameScene_PieceZone_SelectionButtonEffect_
+  commentId: M:ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.#ctor(ProjectL.GameScene.PieceZone.TetrominoButton,ProjectL.GameScene.PieceZone.SelectionSideEffect,ProjectL.GameScene.PieceZone.SelectionButtonEffect)
+  name.vb: New(TetrominoButton, SelectionSideEffect, SelectionButtonEffect)
+  fullName: ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.DisposableButtonSelector(ProjectL.GameScene.PieceZone.TetrominoButton, ProjectL.GameScene.PieceZone.SelectionSideEffect, ProjectL.GameScene.PieceZone.SelectionButtonEffect)
+  fullName.vb: ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.New(ProjectL.GameScene.PieceZone.TetrominoButton, ProjectL.GameScene.PieceZone.SelectionSideEffect, ProjectL.GameScene.PieceZone.SelectionButtonEffect)
+  nameWithType: TetrominoButton.DisposableButtonSelector.DisposableButtonSelector(TetrominoButton, SelectionSideEffect, SelectionButtonEffect)
+  nameWithType.vb: TetrominoButton.DisposableButtonSelector.New(TetrominoButton, SelectionSideEffect, SelectionButtonEffect)
+- uid: ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.#ctor*
+  name: DisposableButtonSelector
+  href: api/ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.html#ProjectL_GameScene_PieceZone_TetrominoButton_DisposableButtonSelector__ctor_
+  commentId: Overload:ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.#ctor
   isSpec: "True"
-  fullName: ProjectL.GameScene.PieceZone.TetrominoButton.CreateTemporaryButtonSelector
-  nameWithType: TetrominoButton.CreateTemporaryButtonSelector
+  name.vb: New
+  fullName: ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.DisposableButtonSelector
+  fullName.vb: ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.New
+  nameWithType: TetrominoButton.DisposableButtonSelector.DisposableButtonSelector
+  nameWithType.vb: TetrominoButton.DisposableButtonSelector.New
+- uid: ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.Dispose
+  name: Dispose()
+  href: api/ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.html#ProjectL_GameScene_PieceZone_TetrominoButton_DisposableButtonSelector_Dispose
+  commentId: M:ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.Dispose
+  fullName: ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.Dispose()
+  nameWithType: TetrominoButton.DisposableButtonSelector.Dispose()
+- uid: ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.Dispose*
+  name: Dispose
+  href: api/ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.html#ProjectL_GameScene_PieceZone_TetrominoButton_DisposableButtonSelector_Dispose_
+  commentId: Overload:ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.Dispose
+  isSpec: "True"
+  fullName: ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.Dispose
+  nameWithType: TetrominoButton.DisposableButtonSelector.Dispose
+- uid: ProjectL.GameScene.PieceZone.TetrominoButton.GetDisposableButtonSelector(ProjectL.GameScene.PieceZone.SelectionSideEffect,ProjectL.GameScene.PieceZone.SelectionButtonEffect)
+  name: GetDisposableButtonSelector(SelectionSideEffect, SelectionButtonEffect)
+  href: api/ProjectL.GameScene.PieceZone.TetrominoButton.html#ProjectL_GameScene_PieceZone_TetrominoButton_GetDisposableButtonSelector_ProjectL_GameScene_PieceZone_SelectionSideEffect_ProjectL_GameScene_PieceZone_SelectionButtonEffect_
+  commentId: M:ProjectL.GameScene.PieceZone.TetrominoButton.GetDisposableButtonSelector(ProjectL.GameScene.PieceZone.SelectionSideEffect,ProjectL.GameScene.PieceZone.SelectionButtonEffect)
+  fullName: ProjectL.GameScene.PieceZone.TetrominoButton.GetDisposableButtonSelector(ProjectL.GameScene.PieceZone.SelectionSideEffect, ProjectL.GameScene.PieceZone.SelectionButtonEffect)
+  nameWithType: TetrominoButton.GetDisposableButtonSelector(SelectionSideEffect, SelectionButtonEffect)
+- uid: ProjectL.GameScene.PieceZone.TetrominoButton.GetDisposableButtonSelector*
+  name: GetDisposableButtonSelector
+  href: api/ProjectL.GameScene.PieceZone.TetrominoButton.html#ProjectL_GameScene_PieceZone_TetrominoButton_GetDisposableButtonSelector_
+  commentId: Overload:ProjectL.GameScene.PieceZone.TetrominoButton.GetDisposableButtonSelector
+  isSpec: "True"
+  fullName: ProjectL.GameScene.PieceZone.TetrominoButton.GetDisposableButtonSelector
+  nameWithType: TetrominoButton.GetDisposableButtonSelector
 - uid: ProjectL.GameScene.PieceZone.TetrominoButton.IsGrayedOut
   name: IsGrayedOut
   href: api/ProjectL.GameScene.PieceZone.TetrominoButton.html#ProjectL_GameScene_PieceZone_TetrominoButton_IsGrayedOut
@@ -3830,6 +4220,44 @@ references:
   isSpec: "True"
   fullName: ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DecrementDisplayCount
   nameWithType: TetrominoCountsColumn.DecrementDisplayCount
+- uid: ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger
+  name: TetrominoCountsColumn.DisposablePieceCountChanger
+  href: api/ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.html
+  commentId: T:ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger
+  fullName: ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger
+  nameWithType: TetrominoCountsColumn.DisposablePieceCountChanger
+- uid: ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.#ctor(ProjectL.GameScene.PieceZone.TetrominoCountsColumn,ProjectLCore.GamePieces.TetrominoShape,System.Int32)
+  name: DisposablePieceCountChanger(TetrominoCountsColumn, TetrominoShape, int)
+  href: api/ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.html#ProjectL_GameScene_PieceZone_TetrominoCountsColumn_DisposablePieceCountChanger__ctor_ProjectL_GameScene_PieceZone_TetrominoCountsColumn_ProjectLCore_GamePieces_TetrominoShape_System_Int32_
+  commentId: M:ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.#ctor(ProjectL.GameScene.PieceZone.TetrominoCountsColumn,ProjectLCore.GamePieces.TetrominoShape,System.Int32)
+  name.vb: New(TetrominoCountsColumn, TetrominoShape, Integer)
+  fullName: ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.DisposablePieceCountChanger(ProjectL.GameScene.PieceZone.TetrominoCountsColumn, ProjectLCore.GamePieces.TetrominoShape, int)
+  fullName.vb: ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.New(ProjectL.GameScene.PieceZone.TetrominoCountsColumn, ProjectLCore.GamePieces.TetrominoShape, Integer)
+  nameWithType: TetrominoCountsColumn.DisposablePieceCountChanger.DisposablePieceCountChanger(TetrominoCountsColumn, TetrominoShape, int)
+  nameWithType.vb: TetrominoCountsColumn.DisposablePieceCountChanger.New(TetrominoCountsColumn, TetrominoShape, Integer)
+- uid: ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.#ctor*
+  name: DisposablePieceCountChanger
+  href: api/ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.html#ProjectL_GameScene_PieceZone_TetrominoCountsColumn_DisposablePieceCountChanger__ctor_
+  commentId: Overload:ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.DisposablePieceCountChanger
+  fullName.vb: ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.New
+  nameWithType: TetrominoCountsColumn.DisposablePieceCountChanger.DisposablePieceCountChanger
+  nameWithType.vb: TetrominoCountsColumn.DisposablePieceCountChanger.New
+- uid: ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.Dispose
+  name: Dispose()
+  href: api/ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.html#ProjectL_GameScene_PieceZone_TetrominoCountsColumn_DisposablePieceCountChanger_Dispose
+  commentId: M:ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.Dispose
+  fullName: ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.Dispose()
+  nameWithType: TetrominoCountsColumn.DisposablePieceCountChanger.Dispose()
+- uid: ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.Dispose*
+  name: Dispose
+  href: api/ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.html#ProjectL_GameScene_PieceZone_TetrominoCountsColumn_DisposablePieceCountChanger_Dispose_
+  commentId: Overload:ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.Dispose
+  isSpec: "True"
+  fullName: ProjectL.GameScene.PieceZone.TetrominoCountsColumn.DisposablePieceCountChanger.Dispose
+  nameWithType: TetrominoCountsColumn.DisposablePieceCountChanger.Dispose
 - uid: ProjectL.GameScene.PieceZone.TetrominoCountsColumn.GetDisplayCount(ProjectLCore.GamePieces.TetrominoShape)
   name: GetDisplayCount(TetrominoShape)
   href: api/ProjectL.GameScene.PieceZone.TetrominoCountsColumn.html#ProjectL_GameScene_PieceZone_TetrominoCountsColumn_GetDisplayCount_ProjectLCore_GamePieces_TetrominoShape_
@@ -4382,19 +4810,44 @@ references:
   commentId: T:ProjectL.GameScene.PlayerZone.PuzzleSlot
   fullName: ProjectL.GameScene.PlayerZone.PuzzleSlot
   nameWithType: PuzzleSlot
-- uid: ProjectL.GameScene.PlayerZone.PuzzleSlot.CreateTemporaryPuzzleHighlighter
-  name: CreateTemporaryPuzzleHighlighter()
-  href: api/ProjectL.GameScene.PlayerZone.PuzzleSlot.html#ProjectL_GameScene_PlayerZone_PuzzleSlot_CreateTemporaryPuzzleHighlighter
-  commentId: M:ProjectL.GameScene.PlayerZone.PuzzleSlot.CreateTemporaryPuzzleHighlighter
-  fullName: ProjectL.GameScene.PlayerZone.PuzzleSlot.CreateTemporaryPuzzleHighlighter()
-  nameWithType: PuzzleSlot.CreateTemporaryPuzzleHighlighter()
-- uid: ProjectL.GameScene.PlayerZone.PuzzleSlot.CreateTemporaryPuzzleHighlighter*
-  name: CreateTemporaryPuzzleHighlighter
-  href: api/ProjectL.GameScene.PlayerZone.PuzzleSlot.html#ProjectL_GameScene_PlayerZone_PuzzleSlot_CreateTemporaryPuzzleHighlighter_
-  commentId: Overload:ProjectL.GameScene.PlayerZone.PuzzleSlot.CreateTemporaryPuzzleHighlighter
+- uid: ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter
+  name: PuzzleSlot.DisposablePuzzleHighlighter
+  href: api/ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.html
+  commentId: T:ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter
+  fullName: ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter
+  nameWithType: PuzzleSlot.DisposablePuzzleHighlighter
+- uid: ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.#ctor(ProjectL.GameScene.PlayerZone.PuzzleSlot)
+  name: DisposablePuzzleHighlighter(PuzzleSlot)
+  href: api/ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.html#ProjectL_GameScene_PlayerZone_PuzzleSlot_DisposablePuzzleHighlighter__ctor_ProjectL_GameScene_PlayerZone_PuzzleSlot_
+  commentId: M:ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.#ctor(ProjectL.GameScene.PlayerZone.PuzzleSlot)
+  name.vb: New(PuzzleSlot)
+  fullName: ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.DisposablePuzzleHighlighter(ProjectL.GameScene.PlayerZone.PuzzleSlot)
+  fullName.vb: ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.New(ProjectL.GameScene.PlayerZone.PuzzleSlot)
+  nameWithType: PuzzleSlot.DisposablePuzzleHighlighter.DisposablePuzzleHighlighter(PuzzleSlot)
+  nameWithType.vb: PuzzleSlot.DisposablePuzzleHighlighter.New(PuzzleSlot)
+- uid: ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.#ctor*
+  name: DisposablePuzzleHighlighter
+  href: api/ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.html#ProjectL_GameScene_PlayerZone_PuzzleSlot_DisposablePuzzleHighlighter__ctor_
+  commentId: Overload:ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.#ctor
   isSpec: "True"
-  fullName: ProjectL.GameScene.PlayerZone.PuzzleSlot.CreateTemporaryPuzzleHighlighter
-  nameWithType: PuzzleSlot.CreateTemporaryPuzzleHighlighter
+  name.vb: New
+  fullName: ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.DisposablePuzzleHighlighter
+  fullName.vb: ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.New
+  nameWithType: PuzzleSlot.DisposablePuzzleHighlighter.DisposablePuzzleHighlighter
+  nameWithType.vb: PuzzleSlot.DisposablePuzzleHighlighter.New
+- uid: ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.Dispose
+  name: Dispose()
+  href: api/ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.html#ProjectL_GameScene_PlayerZone_PuzzleSlot_DisposablePuzzleHighlighter_Dispose
+  commentId: M:ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.Dispose
+  fullName: ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.Dispose()
+  nameWithType: PuzzleSlot.DisposablePuzzleHighlighter.Dispose()
+- uid: ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.Dispose*
+  name: Dispose
+  href: api/ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.html#ProjectL_GameScene_PlayerZone_PuzzleSlot_DisposablePuzzleHighlighter_Dispose_
+  commentId: Overload:ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.Dispose
+  isSpec: "True"
+  fullName: ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.Dispose
+  nameWithType: PuzzleSlot.DisposablePuzzleHighlighter.Dispose
 - uid: ProjectL.GameScene.PlayerZone.PuzzleSlot.EnableEmptySlotButton(System.Boolean)
   name: EnableEmptySlotButton(bool)
   href: api/ProjectL.GameScene.PlayerZone.PuzzleSlot.html#ProjectL_GameScene_PlayerZone_PuzzleSlot_EnableEmptySlotButton_System_Boolean_
@@ -4424,6 +4877,19 @@ references:
   isSpec: "True"
   fullName: ProjectL.GameScene.PlayerZone.PuzzleSlot.FinishPuzzle
   nameWithType: PuzzleSlot.FinishPuzzle
+- uid: ProjectL.GameScene.PlayerZone.PuzzleSlot.GetDisposablePuzzleHighlighter
+  name: GetDisposablePuzzleHighlighter()
+  href: api/ProjectL.GameScene.PlayerZone.PuzzleSlot.html#ProjectL_GameScene_PlayerZone_PuzzleSlot_GetDisposablePuzzleHighlighter
+  commentId: M:ProjectL.GameScene.PlayerZone.PuzzleSlot.GetDisposablePuzzleHighlighter
+  fullName: ProjectL.GameScene.PlayerZone.PuzzleSlot.GetDisposablePuzzleHighlighter()
+  nameWithType: PuzzleSlot.GetDisposablePuzzleHighlighter()
+- uid: ProjectL.GameScene.PlayerZone.PuzzleSlot.GetDisposablePuzzleHighlighter*
+  name: GetDisposablePuzzleHighlighter
+  href: api/ProjectL.GameScene.PlayerZone.PuzzleSlot.html#ProjectL_GameScene_PlayerZone_PuzzleSlot_GetDisposablePuzzleHighlighter_
+  commentId: Overload:ProjectL.GameScene.PlayerZone.PuzzleSlot.GetDisposablePuzzleHighlighter
+  isSpec: "True"
+  fullName: ProjectL.GameScene.PlayerZone.PuzzleSlot.GetDisposablePuzzleHighlighter
+  nameWithType: PuzzleSlot.GetDisposablePuzzleHighlighter
 - uid: ProjectL.GameScene.PlayerZone.PuzzleSlot.MakePuzzleInteractive(System.Boolean)
   name: MakePuzzleInteractive(bool)
   href: api/ProjectL.GameScene.PlayerZone.PuzzleSlot.html#ProjectL_GameScene_PlayerZone_PuzzleSlot_MakePuzzleInteractive_System_Boolean_
@@ -4522,32 +4988,32 @@ references:
   commentId: T:ProjectL.GameScene.PuzzleZone.DeckCoverCard
   fullName: ProjectL.GameScene.PuzzleZone.DeckCoverCard
   nameWithType: DeckCoverCard
-- uid: ProjectL.GameScene.PuzzleZone.DeckCoverCard.CreateCardDimmer
-  name: CreateCardDimmer()
-  href: api/ProjectL.GameScene.PuzzleZone.DeckCoverCard.html#ProjectL_GameScene_PuzzleZone_DeckCoverCard_CreateCardDimmer
-  commentId: M:ProjectL.GameScene.PuzzleZone.DeckCoverCard.CreateCardDimmer
-  fullName: ProjectL.GameScene.PuzzleZone.DeckCoverCard.CreateCardDimmer()
-  nameWithType: DeckCoverCard.CreateCardDimmer()
-- uid: ProjectL.GameScene.PuzzleZone.DeckCoverCard.CreateCardDimmer*
-  name: CreateCardDimmer
-  href: api/ProjectL.GameScene.PuzzleZone.DeckCoverCard.html#ProjectL_GameScene_PuzzleZone_DeckCoverCard_CreateCardDimmer_
-  commentId: Overload:ProjectL.GameScene.PuzzleZone.DeckCoverCard.CreateCardDimmer
+- uid: ProjectL.GameScene.PuzzleZone.DeckCoverCard.GetDisposableCardDimmer
+  name: GetDisposableCardDimmer()
+  href: api/ProjectL.GameScene.PuzzleZone.DeckCoverCard.html#ProjectL_GameScene_PuzzleZone_DeckCoverCard_GetDisposableCardDimmer
+  commentId: M:ProjectL.GameScene.PuzzleZone.DeckCoverCard.GetDisposableCardDimmer
+  fullName: ProjectL.GameScene.PuzzleZone.DeckCoverCard.GetDisposableCardDimmer()
+  nameWithType: DeckCoverCard.GetDisposableCardDimmer()
+- uid: ProjectL.GameScene.PuzzleZone.DeckCoverCard.GetDisposableCardDimmer*
+  name: GetDisposableCardDimmer
+  href: api/ProjectL.GameScene.PuzzleZone.DeckCoverCard.html#ProjectL_GameScene_PuzzleZone_DeckCoverCard_GetDisposableCardDimmer_
+  commentId: Overload:ProjectL.GameScene.PuzzleZone.DeckCoverCard.GetDisposableCardDimmer
   isSpec: "True"
-  fullName: ProjectL.GameScene.PuzzleZone.DeckCoverCard.CreateCardDimmer
-  nameWithType: DeckCoverCard.CreateCardDimmer
-- uid: ProjectL.GameScene.PuzzleZone.DeckCoverCard.CreateCardHighlighter
-  name: CreateCardHighlighter()
-  href: api/ProjectL.GameScene.PuzzleZone.DeckCoverCard.html#ProjectL_GameScene_PuzzleZone_DeckCoverCard_CreateCardHighlighter
-  commentId: M:ProjectL.GameScene.PuzzleZone.DeckCoverCard.CreateCardHighlighter
-  fullName: ProjectL.GameScene.PuzzleZone.DeckCoverCard.CreateCardHighlighter()
-  nameWithType: DeckCoverCard.CreateCardHighlighter()
-- uid: ProjectL.GameScene.PuzzleZone.DeckCoverCard.CreateCardHighlighter*
-  name: CreateCardHighlighter
-  href: api/ProjectL.GameScene.PuzzleZone.DeckCoverCard.html#ProjectL_GameScene_PuzzleZone_DeckCoverCard_CreateCardHighlighter_
-  commentId: Overload:ProjectL.GameScene.PuzzleZone.DeckCoverCard.CreateCardHighlighter
+  fullName: ProjectL.GameScene.PuzzleZone.DeckCoverCard.GetDisposableCardDimmer
+  nameWithType: DeckCoverCard.GetDisposableCardDimmer
+- uid: ProjectL.GameScene.PuzzleZone.DeckCoverCard.GetDisposableCardHighlighter
+  name: GetDisposableCardHighlighter()
+  href: api/ProjectL.GameScene.PuzzleZone.DeckCoverCard.html#ProjectL_GameScene_PuzzleZone_DeckCoverCard_GetDisposableCardHighlighter
+  commentId: M:ProjectL.GameScene.PuzzleZone.DeckCoverCard.GetDisposableCardHighlighter
+  fullName: ProjectL.GameScene.PuzzleZone.DeckCoverCard.GetDisposableCardHighlighter()
+  nameWithType: DeckCoverCard.GetDisposableCardHighlighter()
+- uid: ProjectL.GameScene.PuzzleZone.DeckCoverCard.GetDisposableCardHighlighter*
+  name: GetDisposableCardHighlighter
+  href: api/ProjectL.GameScene.PuzzleZone.DeckCoverCard.html#ProjectL_GameScene_PuzzleZone_DeckCoverCard_GetDisposableCardHighlighter_
+  commentId: Overload:ProjectL.GameScene.PuzzleZone.DeckCoverCard.GetDisposableCardHighlighter
   isSpec: "True"
-  fullName: ProjectL.GameScene.PuzzleZone.DeckCoverCard.CreateCardHighlighter
-  nameWithType: DeckCoverCard.CreateCardHighlighter
+  fullName: ProjectL.GameScene.PuzzleZone.DeckCoverCard.GetDisposableCardHighlighter
+  nameWithType: DeckCoverCard.GetDisposableCardHighlighter
 - uid: ProjectL.GameScene.PuzzleZone.DeckCoverCard.Init(System.Boolean)
   name: Init(bool)
   href: api/ProjectL.GameScene.PuzzleZone.DeckCoverCard.html#ProjectL_GameScene_PuzzleZone_DeckCoverCard_Init_System_Boolean_
@@ -4599,32 +5065,32 @@ references:
   commentId: T:ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard
   fullName: ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard
   nameWithType: IPuzzleZoneCard
-- uid: ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.CreateCardDimmer
-  name: CreateCardDimmer()
-  href: api/ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.html#ProjectL_GameScene_PuzzleZone_IPuzzleZoneCard_CreateCardDimmer
-  commentId: M:ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.CreateCardDimmer
-  fullName: ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.CreateCardDimmer()
-  nameWithType: IPuzzleZoneCard.CreateCardDimmer()
-- uid: ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.CreateCardDimmer*
-  name: CreateCardDimmer
-  href: api/ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.html#ProjectL_GameScene_PuzzleZone_IPuzzleZoneCard_CreateCardDimmer_
-  commentId: Overload:ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.CreateCardDimmer
+- uid: ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.GetDisposableCardDimmer
+  name: GetDisposableCardDimmer()
+  href: api/ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.html#ProjectL_GameScene_PuzzleZone_IPuzzleZoneCard_GetDisposableCardDimmer
+  commentId: M:ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.GetDisposableCardDimmer
+  fullName: ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.GetDisposableCardDimmer()
+  nameWithType: IPuzzleZoneCard.GetDisposableCardDimmer()
+- uid: ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.GetDisposableCardDimmer*
+  name: GetDisposableCardDimmer
+  href: api/ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.html#ProjectL_GameScene_PuzzleZone_IPuzzleZoneCard_GetDisposableCardDimmer_
+  commentId: Overload:ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.GetDisposableCardDimmer
   isSpec: "True"
-  fullName: ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.CreateCardDimmer
-  nameWithType: IPuzzleZoneCard.CreateCardDimmer
-- uid: ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.CreateCardHighlighter
-  name: CreateCardHighlighter()
-  href: api/ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.html#ProjectL_GameScene_PuzzleZone_IPuzzleZoneCard_CreateCardHighlighter
-  commentId: M:ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.CreateCardHighlighter
-  fullName: ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.CreateCardHighlighter()
-  nameWithType: IPuzzleZoneCard.CreateCardHighlighter()
-- uid: ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.CreateCardHighlighter*
-  name: CreateCardHighlighter
-  href: api/ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.html#ProjectL_GameScene_PuzzleZone_IPuzzleZoneCard_CreateCardHighlighter_
-  commentId: Overload:ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.CreateCardHighlighter
+  fullName: ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.GetDisposableCardDimmer
+  nameWithType: IPuzzleZoneCard.GetDisposableCardDimmer
+- uid: ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.GetDisposableCardHighlighter
+  name: GetDisposableCardHighlighter()
+  href: api/ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.html#ProjectL_GameScene_PuzzleZone_IPuzzleZoneCard_GetDisposableCardHighlighter
+  commentId: M:ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.GetDisposableCardHighlighter
+  fullName: ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.GetDisposableCardHighlighter()
+  nameWithType: IPuzzleZoneCard.GetDisposableCardHighlighter()
+- uid: ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.GetDisposableCardHighlighter*
+  name: GetDisposableCardHighlighter
+  href: api/ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.html#ProjectL_GameScene_PuzzleZone_IPuzzleZoneCard_GetDisposableCardHighlighter_
+  commentId: Overload:ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.GetDisposableCardHighlighter
   isSpec: "True"
-  fullName: ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.CreateCardHighlighter
-  nameWithType: IPuzzleZoneCard.CreateCardHighlighter
+  fullName: ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.GetDisposableCardHighlighter
+  nameWithType: IPuzzleZoneCard.GetDisposableCardHighlighter
 - uid: ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.Init(System.Boolean)
   name: Init(bool)
   href: api/ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.html#ProjectL_GameScene_PuzzleZone_IPuzzleZoneCard_Init_System_Boolean_
@@ -4660,32 +5126,32 @@ references:
   commentId: T:ProjectL.GameScene.PuzzleZone.PuzzleCard
   fullName: ProjectL.GameScene.PuzzleZone.PuzzleCard
   nameWithType: PuzzleCard
-- uid: ProjectL.GameScene.PuzzleZone.PuzzleCard.CreateCardDimmer
-  name: CreateCardDimmer()
-  href: api/ProjectL.GameScene.PuzzleZone.PuzzleCard.html#ProjectL_GameScene_PuzzleZone_PuzzleCard_CreateCardDimmer
-  commentId: M:ProjectL.GameScene.PuzzleZone.PuzzleCard.CreateCardDimmer
-  fullName: ProjectL.GameScene.PuzzleZone.PuzzleCard.CreateCardDimmer()
-  nameWithType: PuzzleCard.CreateCardDimmer()
-- uid: ProjectL.GameScene.PuzzleZone.PuzzleCard.CreateCardDimmer*
-  name: CreateCardDimmer
-  href: api/ProjectL.GameScene.PuzzleZone.PuzzleCard.html#ProjectL_GameScene_PuzzleZone_PuzzleCard_CreateCardDimmer_
-  commentId: Overload:ProjectL.GameScene.PuzzleZone.PuzzleCard.CreateCardDimmer
+- uid: ProjectL.GameScene.PuzzleZone.PuzzleCard.GetDisposableCardDimmer
+  name: GetDisposableCardDimmer()
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzleCard.html#ProjectL_GameScene_PuzzleZone_PuzzleCard_GetDisposableCardDimmer
+  commentId: M:ProjectL.GameScene.PuzzleZone.PuzzleCard.GetDisposableCardDimmer
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzleCard.GetDisposableCardDimmer()
+  nameWithType: PuzzleCard.GetDisposableCardDimmer()
+- uid: ProjectL.GameScene.PuzzleZone.PuzzleCard.GetDisposableCardDimmer*
+  name: GetDisposableCardDimmer
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzleCard.html#ProjectL_GameScene_PuzzleZone_PuzzleCard_GetDisposableCardDimmer_
+  commentId: Overload:ProjectL.GameScene.PuzzleZone.PuzzleCard.GetDisposableCardDimmer
   isSpec: "True"
-  fullName: ProjectL.GameScene.PuzzleZone.PuzzleCard.CreateCardDimmer
-  nameWithType: PuzzleCard.CreateCardDimmer
-- uid: ProjectL.GameScene.PuzzleZone.PuzzleCard.CreateCardHighlighter
-  name: CreateCardHighlighter()
-  href: api/ProjectL.GameScene.PuzzleZone.PuzzleCard.html#ProjectL_GameScene_PuzzleZone_PuzzleCard_CreateCardHighlighter
-  commentId: M:ProjectL.GameScene.PuzzleZone.PuzzleCard.CreateCardHighlighter
-  fullName: ProjectL.GameScene.PuzzleZone.PuzzleCard.CreateCardHighlighter()
-  nameWithType: PuzzleCard.CreateCardHighlighter()
-- uid: ProjectL.GameScene.PuzzleZone.PuzzleCard.CreateCardHighlighter*
-  name: CreateCardHighlighter
-  href: api/ProjectL.GameScene.PuzzleZone.PuzzleCard.html#ProjectL_GameScene_PuzzleZone_PuzzleCard_CreateCardHighlighter_
-  commentId: Overload:ProjectL.GameScene.PuzzleZone.PuzzleCard.CreateCardHighlighter
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzleCard.GetDisposableCardDimmer
+  nameWithType: PuzzleCard.GetDisposableCardDimmer
+- uid: ProjectL.GameScene.PuzzleZone.PuzzleCard.GetDisposableCardHighlighter
+  name: GetDisposableCardHighlighter()
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzleCard.html#ProjectL_GameScene_PuzzleZone_PuzzleCard_GetDisposableCardHighlighter
+  commentId: M:ProjectL.GameScene.PuzzleZone.PuzzleCard.GetDisposableCardHighlighter
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzleCard.GetDisposableCardHighlighter()
+  nameWithType: PuzzleCard.GetDisposableCardHighlighter()
+- uid: ProjectL.GameScene.PuzzleZone.PuzzleCard.GetDisposableCardHighlighter*
+  name: GetDisposableCardHighlighter
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzleCard.html#ProjectL_GameScene_PuzzleZone_PuzzleCard_GetDisposableCardHighlighter_
+  commentId: Overload:ProjectL.GameScene.PuzzleZone.PuzzleCard.GetDisposableCardHighlighter
   isSpec: "True"
-  fullName: ProjectL.GameScene.PuzzleZone.PuzzleCard.CreateCardHighlighter
-  nameWithType: PuzzleCard.CreateCardHighlighter
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzleCard.GetDisposableCardHighlighter
+  nameWithType: PuzzleCard.GetDisposableCardHighlighter
 - uid: ProjectL.GameScene.PuzzleZone.PuzzleCard.Init(System.Boolean)
   name: Init(bool)
   href: api/ProjectL.GameScene.PuzzleZone.PuzzleCard.html#ProjectL_GameScene_PuzzleZone_PuzzleCard_Init_System_Boolean_
@@ -4779,6 +5245,44 @@ references:
   isSpec: "True"
   fullName: ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.AddToRadioButtonGroup
   nameWithType: PuzzleZoneManager.AddToRadioButtonGroup
+- uid: ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer
+  name: PuzzleZoneManager.DisposableSpriteReplacer
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.html
+  commentId: T:ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer
+  nameWithType: PuzzleZoneManager.DisposableSpriteReplacer
+- uid: ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.#ctor(UnityEngine.UI.Button,UnityEngine.Sprite)
+  name: DisposableSpriteReplacer(Button, Sprite?)
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.html#ProjectL_GameScene_PuzzleZone_PuzzleZoneManager_DisposableSpriteReplacer__ctor_UnityEngine_UI_Button_UnityEngine_Sprite_
+  commentId: M:ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.#ctor(UnityEngine.UI.Button,UnityEngine.Sprite)
+  name.vb: New(Button, Sprite)
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.DisposableSpriteReplacer(UnityEngine.UI.Button, UnityEngine.Sprite?)
+  fullName.vb: ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.New(UnityEngine.UI.Button, UnityEngine.Sprite)
+  nameWithType: PuzzleZoneManager.DisposableSpriteReplacer.DisposableSpriteReplacer(Button, Sprite?)
+  nameWithType.vb: PuzzleZoneManager.DisposableSpriteReplacer.New(Button, Sprite)
+- uid: ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.#ctor*
+  name: DisposableSpriteReplacer
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.html#ProjectL_GameScene_PuzzleZone_PuzzleZoneManager_DisposableSpriteReplacer__ctor_
+  commentId: Overload:ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.DisposableSpriteReplacer
+  fullName.vb: ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.New
+  nameWithType: PuzzleZoneManager.DisposableSpriteReplacer.DisposableSpriteReplacer
+  nameWithType.vb: PuzzleZoneManager.DisposableSpriteReplacer.New
+- uid: ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.Dispose
+  name: Dispose()
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.html#ProjectL_GameScene_PuzzleZone_PuzzleZoneManager_DisposableSpriteReplacer_Dispose
+  commentId: M:ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.Dispose
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.Dispose()
+  nameWithType: PuzzleZoneManager.DisposableSpriteReplacer.Dispose()
+- uid: ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.Dispose*
+  name: Dispose
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.html#ProjectL_GameScene_PuzzleZone_PuzzleZoneManager_DisposableSpriteReplacer_Dispose_
+  commentId: Overload:ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.Dispose
+  isSpec: "True"
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.Dispose
+  nameWithType: PuzzleZoneManager.DisposableSpriteReplacer.Dispose
 - uid: ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.Init(ProjectLCore.GameLogic.GameCore)
   name: Init(GameCore)
   href: api/ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.html#ProjectL_GameScene_PuzzleZone_PuzzleZoneManager_Init_ProjectLCore_GameLogic_GameCore_
@@ -4905,38 +5409,6 @@ references:
   commentId: T:ProjectL.GameScene.PuzzleZone.PuzzlesColumn
   fullName: ProjectL.GameScene.PuzzleZone.PuzzlesColumn
   nameWithType: PuzzlesColumn
-- uid: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.CreateColumnDimmer(System.Boolean)
-  name: CreateColumnDimmer(bool)
-  href: api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.html#ProjectL_GameScene_PuzzleZone_PuzzlesColumn_CreateColumnDimmer_System_Boolean_
-  commentId: M:ProjectL.GameScene.PuzzleZone.PuzzlesColumn.CreateColumnDimmer(System.Boolean)
-  name.vb: CreateColumnDimmer(Boolean)
-  fullName: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.CreateColumnDimmer(bool)
-  fullName.vb: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.CreateColumnDimmer(Boolean)
-  nameWithType: PuzzlesColumn.CreateColumnDimmer(bool)
-  nameWithType.vb: PuzzlesColumn.CreateColumnDimmer(Boolean)
-- uid: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.CreateColumnDimmer*
-  name: CreateColumnDimmer
-  href: api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.html#ProjectL_GameScene_PuzzleZone_PuzzlesColumn_CreateColumnDimmer_
-  commentId: Overload:ProjectL.GameScene.PuzzleZone.PuzzlesColumn.CreateColumnDimmer
-  isSpec: "True"
-  fullName: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.CreateColumnDimmer
-  nameWithType: PuzzlesColumn.CreateColumnDimmer
-- uid: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.CreatePuzzleHighlighter(System.Collections.Generic.List{System.UInt32})
-  name: CreatePuzzleHighlighter(List<uint>)
-  href: api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.html#ProjectL_GameScene_PuzzleZone_PuzzlesColumn_CreatePuzzleHighlighter_System_Collections_Generic_List_System_UInt32__
-  commentId: M:ProjectL.GameScene.PuzzleZone.PuzzlesColumn.CreatePuzzleHighlighter(System.Collections.Generic.List{System.UInt32})
-  name.vb: CreatePuzzleHighlighter(List(Of UInteger))
-  fullName: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.CreatePuzzleHighlighter(System.Collections.Generic.List<uint>)
-  fullName.vb: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.CreatePuzzleHighlighter(System.Collections.Generic.List(Of UInteger))
-  nameWithType: PuzzlesColumn.CreatePuzzleHighlighter(List<uint>)
-  nameWithType.vb: PuzzlesColumn.CreatePuzzleHighlighter(List(Of UInteger))
-- uid: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.CreatePuzzleHighlighter*
-  name: CreatePuzzleHighlighter
-  href: api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.html#ProjectL_GameScene_PuzzleZone_PuzzlesColumn_CreatePuzzleHighlighter_
-  commentId: Overload:ProjectL.GameScene.PuzzleZone.PuzzlesColumn.CreatePuzzleHighlighter
-  isSpec: "True"
-  fullName: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.CreatePuzzleHighlighter
-  nameWithType: PuzzlesColumn.CreatePuzzleHighlighter
 - uid: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DeckCard
   name: DeckCard
   href: api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.html#ProjectL_GameScene_PuzzleZone_PuzzlesColumn_DeckCard
@@ -4950,6 +5422,114 @@ references:
   isSpec: "True"
   fullName: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DeckCard
   nameWithType: PuzzlesColumn.DeckCard
+- uid: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer
+  name: PuzzlesColumn.DisposableColumnDimmer
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.html
+  commentId: T:ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer
+  nameWithType: PuzzlesColumn.DisposableColumnDimmer
+- uid: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.#ctor(ProjectL.GameScene.PuzzleZone.PuzzlesColumn,System.Boolean)
+  name: DisposableColumnDimmer(PuzzlesColumn, bool)
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.html#ProjectL_GameScene_PuzzleZone_PuzzlesColumn_DisposableColumnDimmer__ctor_ProjectL_GameScene_PuzzleZone_PuzzlesColumn_System_Boolean_
+  commentId: M:ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.#ctor(ProjectL.GameScene.PuzzleZone.PuzzlesColumn,System.Boolean)
+  name.vb: New(PuzzlesColumn, Boolean)
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.DisposableColumnDimmer(ProjectL.GameScene.PuzzleZone.PuzzlesColumn, bool)
+  fullName.vb: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.New(ProjectL.GameScene.PuzzleZone.PuzzlesColumn, Boolean)
+  nameWithType: PuzzlesColumn.DisposableColumnDimmer.DisposableColumnDimmer(PuzzlesColumn, bool)
+  nameWithType.vb: PuzzlesColumn.DisposableColumnDimmer.New(PuzzlesColumn, Boolean)
+- uid: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.#ctor*
+  name: DisposableColumnDimmer
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.html#ProjectL_GameScene_PuzzleZone_PuzzlesColumn_DisposableColumnDimmer__ctor_
+  commentId: Overload:ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.DisposableColumnDimmer
+  fullName.vb: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.New
+  nameWithType: PuzzlesColumn.DisposableColumnDimmer.DisposableColumnDimmer
+  nameWithType.vb: PuzzlesColumn.DisposableColumnDimmer.New
+- uid: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.Dispose
+  name: Dispose()
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.html#ProjectL_GameScene_PuzzleZone_PuzzlesColumn_DisposableColumnDimmer_Dispose
+  commentId: M:ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.Dispose
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.Dispose()
+  nameWithType: PuzzlesColumn.DisposableColumnDimmer.Dispose()
+- uid: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.Dispose*
+  name: Dispose
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.html#ProjectL_GameScene_PuzzleZone_PuzzlesColumn_DisposableColumnDimmer_Dispose_
+  commentId: Overload:ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.Dispose
+  isSpec: "True"
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposableColumnDimmer.Dispose
+  nameWithType: PuzzlesColumn.DisposableColumnDimmer.Dispose
+- uid: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter
+  name: PuzzlesColumn.DisposablePuzzleHighlighter
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.html
+  commentId: T:ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter
+  nameWithType: PuzzlesColumn.DisposablePuzzleHighlighter
+- uid: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.#ctor(ProjectL.GameScene.PuzzleZone.PuzzlesColumn,System.Collections.Generic.List{System.UInt32})
+  name: DisposablePuzzleHighlighter(PuzzlesColumn, List<uint>)
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.html#ProjectL_GameScene_PuzzleZone_PuzzlesColumn_DisposablePuzzleHighlighter__ctor_ProjectL_GameScene_PuzzleZone_PuzzlesColumn_System_Collections_Generic_List_System_UInt32__
+  commentId: M:ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.#ctor(ProjectL.GameScene.PuzzleZone.PuzzlesColumn,System.Collections.Generic.List{System.UInt32})
+  name.vb: New(PuzzlesColumn, List(Of UInteger))
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.DisposablePuzzleHighlighter(ProjectL.GameScene.PuzzleZone.PuzzlesColumn, System.Collections.Generic.List<uint>)
+  fullName.vb: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.New(ProjectL.GameScene.PuzzleZone.PuzzlesColumn, System.Collections.Generic.List(Of UInteger))
+  nameWithType: PuzzlesColumn.DisposablePuzzleHighlighter.DisposablePuzzleHighlighter(PuzzlesColumn, List<uint>)
+  nameWithType.vb: PuzzlesColumn.DisposablePuzzleHighlighter.New(PuzzlesColumn, List(Of UInteger))
+- uid: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.#ctor*
+  name: DisposablePuzzleHighlighter
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.html#ProjectL_GameScene_PuzzleZone_PuzzlesColumn_DisposablePuzzleHighlighter__ctor_
+  commentId: Overload:ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.DisposablePuzzleHighlighter
+  fullName.vb: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.New
+  nameWithType: PuzzlesColumn.DisposablePuzzleHighlighter.DisposablePuzzleHighlighter
+  nameWithType.vb: PuzzlesColumn.DisposablePuzzleHighlighter.New
+- uid: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.Dispose
+  name: Dispose()
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.html#ProjectL_GameScene_PuzzleZone_PuzzlesColumn_DisposablePuzzleHighlighter_Dispose
+  commentId: M:ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.Dispose
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.Dispose()
+  nameWithType: PuzzlesColumn.DisposablePuzzleHighlighter.Dispose()
+- uid: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.Dispose*
+  name: Dispose
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.html#ProjectL_GameScene_PuzzleZone_PuzzlesColumn_DisposablePuzzleHighlighter_Dispose_
+  commentId: Overload:ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.Dispose
+  isSpec: "True"
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.DisposablePuzzleHighlighter.Dispose
+  nameWithType: PuzzlesColumn.DisposablePuzzleHighlighter.Dispose
+- uid: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.GetDisposableColumnDimmer(System.Boolean)
+  name: GetDisposableColumnDimmer(bool)
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.html#ProjectL_GameScene_PuzzleZone_PuzzlesColumn_GetDisposableColumnDimmer_System_Boolean_
+  commentId: M:ProjectL.GameScene.PuzzleZone.PuzzlesColumn.GetDisposableColumnDimmer(System.Boolean)
+  name.vb: GetDisposableColumnDimmer(Boolean)
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.GetDisposableColumnDimmer(bool)
+  fullName.vb: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.GetDisposableColumnDimmer(Boolean)
+  nameWithType: PuzzlesColumn.GetDisposableColumnDimmer(bool)
+  nameWithType.vb: PuzzlesColumn.GetDisposableColumnDimmer(Boolean)
+- uid: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.GetDisposableColumnDimmer*
+  name: GetDisposableColumnDimmer
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.html#ProjectL_GameScene_PuzzleZone_PuzzlesColumn_GetDisposableColumnDimmer_
+  commentId: Overload:ProjectL.GameScene.PuzzleZone.PuzzlesColumn.GetDisposableColumnDimmer
+  isSpec: "True"
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.GetDisposableColumnDimmer
+  nameWithType: PuzzlesColumn.GetDisposableColumnDimmer
+- uid: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.GetDisposablePuzzleHighlighter(System.Collections.Generic.List{System.UInt32})
+  name: GetDisposablePuzzleHighlighter(List<uint>)
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.html#ProjectL_GameScene_PuzzleZone_PuzzlesColumn_GetDisposablePuzzleHighlighter_System_Collections_Generic_List_System_UInt32__
+  commentId: M:ProjectL.GameScene.PuzzleZone.PuzzlesColumn.GetDisposablePuzzleHighlighter(System.Collections.Generic.List{System.UInt32})
+  name.vb: GetDisposablePuzzleHighlighter(List(Of UInteger))
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.GetDisposablePuzzleHighlighter(System.Collections.Generic.List<uint>)
+  fullName.vb: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.GetDisposablePuzzleHighlighter(System.Collections.Generic.List(Of UInteger))
+  nameWithType: PuzzlesColumn.GetDisposablePuzzleHighlighter(List<uint>)
+  nameWithType.vb: PuzzlesColumn.GetDisposablePuzzleHighlighter(List(Of UInteger))
+- uid: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.GetDisposablePuzzleHighlighter*
+  name: GetDisposablePuzzleHighlighter
+  href: api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.html#ProjectL_GameScene_PuzzleZone_PuzzlesColumn_GetDisposablePuzzleHighlighter_
+  commentId: Overload:ProjectL.GameScene.PuzzleZone.PuzzlesColumn.GetDisposablePuzzleHighlighter
+  isSpec: "True"
+  fullName: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.GetDisposablePuzzleHighlighter
+  nameWithType: PuzzlesColumn.GetDisposablePuzzleHighlighter
 - uid: ProjectL.GameScene.PuzzleZone.PuzzlesColumn.Init(System.Boolean)
   name: Init(bool)
   href: api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.html#ProjectL_GameScene_PuzzleZone_PuzzlesColumn_Init_System_Boolean_

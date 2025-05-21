@@ -155,7 +155,7 @@ namespace ProjectL.GameScene.ActionHandling
 
         public void OnEndFinishingTouchesActionRequested()
         {
-            if (CurrentActionConstructor is not PlaceTetrominoConstructor placeTetrominoConstructor) {
+            if (CurrentActionConstructor is not PlaceTetrominoActionConstructor placeTetrominoConstructor) {
                 Debug.LogError($"Current action constructor is not PlaceTetrominoConstructor but {CurrentActionConstructor?.GetType().Name}", this);
                 return;
             }
@@ -210,7 +210,7 @@ namespace ProjectL.GameScene.ActionHandling
 
             GameAction? action;
             if (_currentActionType == ActionType.PlacePiece) {
-                if (CurrentActionConstructor is not PlaceTetrominoConstructor placeConstructor) {
+                if (CurrentActionConstructor is not PlaceTetrominoActionConstructor placeConstructor) {
                     Debug.LogError("Current action constructor is not PlaceTetrominoConstructor", this);
                     return;
                 }
@@ -218,7 +218,7 @@ namespace ProjectL.GameScene.ActionHandling
                 action = _placeActionsQueue.Dequeue();
             }
             else if (_currentActionType == ActionType.MasterAction) {
-                if (CurrentActionConstructor is not PlaceTetrominoConstructor placeConstructor) {
+                if (CurrentActionConstructor is not PlaceTetrominoActionConstructor placeConstructor) {
                     Debug.LogError("Current action constructor is not PlaceTetrominoConstructor", this);
                     return;
                 }
@@ -273,13 +273,13 @@ namespace ProjectL.GameScene.ActionHandling
             _actionEventSets[ActionType.MasterAction] = placeEventSet;
             _actionEventSets[ActionType.FinishingTouches] = placeEventSet;
 
-            _actionConstructors[ActionType.TakePuzzle] = new TakePuzzleConstructor();
-            _actionConstructors[ActionType.Recycle] = new RecycleConstructor();
-            _actionConstructors[ActionType.TakeBasicTetromino] = new TakeBasicConstructor();
-            _actionConstructors[ActionType.ChangeTetromino] = new ChangeTetrominoConstructor();
-            _actionConstructors[ActionType.SelectReward] = new SelectRewardConstructor();
+            _actionConstructors[ActionType.TakePuzzle] = new TakePuzzleActionConstructor();
+            _actionConstructors[ActionType.Recycle] = new RecycleActionConstructor();
+            _actionConstructors[ActionType.TakeBasicTetromino] = new TakeBasicActionConstructor();
+            _actionConstructors[ActionType.ChangeTetromino] = new ChangeTetrominoActionConstructor();
+            _actionConstructors[ActionType.SelectReward] = new SelectRewardActionConstructor();
 
-            var placeConstructor = new PlaceTetrominoConstructor();
+            var placeConstructor = new PlaceTetrominoActionConstructor();
             _actionConstructors[ActionType.PlacePiece] = placeConstructor;
             _actionConstructors[ActionType.MasterAction] = placeConstructor;
             _actionConstructors[ActionType.FinishingTouches] = placeConstructor;
@@ -374,7 +374,7 @@ namespace ProjectL.GameScene.ActionHandling
             }
 
             if (_currentActionType == ActionType.PlacePiece) {
-                if (CurrentActionConstructor is not PlaceTetrominoConstructor placeConstructor) {
+                if (CurrentActionConstructor is not PlaceTetrominoActionConstructor placeConstructor) {
                     Debug.LogError("Current action constructor is not PlaceTetrominoConstructor", this);
                     return;
                 }
@@ -392,7 +392,7 @@ namespace ProjectL.GameScene.ActionHandling
 
             GameAction? action;
             if (_currentActionType == ActionType.MasterAction) {
-                if (CurrentActionConstructor is not PlaceTetrominoConstructor placeConstructor) {
+                if (CurrentActionConstructor is not PlaceTetrominoActionConstructor placeConstructor) {
                     Debug.LogError("Current action constructor is not PlaceTetrominoConstructor", this);
                     return;
                 }
@@ -494,7 +494,7 @@ namespace ProjectL.GameScene.ActionHandling
             // highlight completed puzzle
             await AnimationManager.WaitForScaledDelay(0.7f, cancellationToken);
             var puzzleSlot = PlayerZoneManager.Instance.GetPuzzleWithId(info.Puzzle.Id)!;
-            using (puzzleSlot.CreateTemporaryPuzzleHighlighter()) {
+            using (puzzleSlot.GetDisposablePuzzleHighlighter()) {
                 await AnimationManager.WaitForScaledDelay(1f, cancellationToken);
             }
         }

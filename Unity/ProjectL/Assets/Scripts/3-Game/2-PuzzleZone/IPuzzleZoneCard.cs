@@ -12,9 +12,9 @@ namespace ProjectL.GameScene.PuzzleZone
 
         public void SetMode(PuzzleZoneMode mode, TurnInfo turnInfo);
 
-        public PuzzleZoneManager.TemporarySpriteReplacer CreateCardHighlighter();
+        public PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardHighlighter();
 
-        public PuzzleZoneManager.TemporarySpriteReplacer CreateCardDimmer();
+        public PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardDimmer();
 
         #endregion
     }

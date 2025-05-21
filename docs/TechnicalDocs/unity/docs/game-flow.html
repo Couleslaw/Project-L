@@ -2,18 +2,18 @@
 <html>
   <head>
     <meta charset="utf-8">
-      <title>Project L Unity | Project L Unity </title>
+      <title>Graphics Reacting to Player Actions | Project L Unity </title>
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="title" content="Project L Unity | Project L Unity ">
+      <meta name="title" content="Graphics Reacting to Player Actions | Project L Unity ">
       
       
-      <link rel="icon" href="favicon.ico">
-      <link rel="stylesheet" href="public/docfx.min.css">
-      <link rel="stylesheet" href="public/main.css">
-      <meta name="docfx:navrel" content="toc.html">
-      <meta name="docfx:tocrel" content="docs/toc.html">
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
       
-      <meta name="docfx:rel" content="">
+      <meta name="docfx:rel" content="../">
       
       
       
@@ -30,7 +30,7 @@
       <meta name="loc:copy" content="Copy">
       <meta name="loc:downloadPdf" content="Download PDF">
 
-      <script type="module" src="./public/docfx.min.js"></script>
+      <script type="module" src="./../public/docfx.min.js"></script>
 
       <script>
         const theme = localStorage.getItem('theme') || 'auto'
@@ -43,8 +43,8 @@
     <header class="bg-body border-bottom">
       <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
         <div class="container-xxl flex-nowrap">
-          <a class="navbar-brand" href="index.html">
-            <img id="logo" class="svg" src="logo.svg" alt="Project L Unity">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="Project L Unity">
             Project L Unity
           </a>
           <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,32 +85,11 @@
         </div>
 
         <article data-uid="">
-<h1 id="project-l-unity">Project L Unity</h1>
+<h1 id="graphics-reacting-to-player-actions">Graphics Reacting to Player Actions</h1>
 
-<div class="WARNING">
-<h5>Warning</h5>
-<p>Make sure to have read the Project L Core library <a href="https://couleslaw.github.io/Project-L/TechnicalDocs/core/index">documentation</a> first. This documentation is only for the Unity project.</p>
-</div>
-<h3 id="player-selection">Player Selection</h3>
-<p>When the player enters the player selection screen fot the first time, the game will try to load available AI player types specified in the <code>StreamingAssets/aiplayers.ini</code> file. This is the job of the <a class="xref" href="api/ProjectL.Data.AIPlayerTypesLoader.html">AIPlayerTypesLoader</a>. After the user has creating the game session, data about the selected players is stored in the <a class="xref" href="api/ProjectL.Data.GameSettings.html">GameSettings</a> static class.</p>
-<h3 id="playing-the-game">Playing the Game</h3>
-<p>The most high-level class is the <code>GameSessionManager</code>. It is responsible for</p>
-<ul>
-<li>loading the puzzles from the Resources folder</li>
-<li>instantiating players based on how they were selected by the user</li>
-<li>initializing the the AI players</li>
-<li>initializing the <a href="https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GameCore.htm">GameCore</a> instance which manages the internal game logic</li>
-<li>simulating the game loop</li>
-<li>storing information about how the players played in the <a class="xref" href="api/ProjectL.Data.GameSummary.html">GameSummary</a> static class.</li>
-</ul>
-<h3 id="challenges">Challenges</h3>
-<p>There are three interesting problems which need to be solved:</p>
-<ul>
-<li><a href="docs/game-flow.html">Making the graphics respond to actions taken by players</a></li>
-<li><a href="docs/ai-players.html">Animating actions provided by an AI player</a></li>
-<li><a href="docs/human-players.html">Getting actions from a human player</a></li>
-</ul>
-<p>The solution heavily relies on the listener pattern, where different components listen to events about changes in the game and update their state accordingly.</p>
+<p>When an action is processed by the <code>GameCore</code>, for example when a player takes a new puzzle, the game graphics need to respond to it.</p>
+<p>The <a class="xref" href="../api/ProjectL.GameScene.GraphicsManager-1.html">GraphicsManager</a> abstract class provides a way for different types to access the <code>GameCore</code>. The <a class="xref" href="../api/ProjectL.GameScene.Management.GameGraphicsSystem.html">GameGraphicsSystem</a> calls the <code>Init(GameCore)</code> method of all registered <code>GraphicsManagers</code> at the start of the game. They can use it to connect to the game listener interfaces provided by the <strong>Project L Core</strong> library, which are documented <a href="https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/N_ProjectLCore_GameLogic.htm">here</a>.</p>
+<p>For example, the <a class="xref" href="../api/ProjectL.GameScene.PieceZone.TetrominoCountsColumn.html">TetrominoCountsColumn</a>, which represents one column in the piece zone, is a <code>ITetrominoCollectionListener</code> because it listens to the changes in the tetromino collection of a player. It is however also a <code>ITetrominoCollectionNotifier</code> because the <a class="xref" href="../api/ProjectL.GameScene.PieceZone.PieceZoneManager.html">PieceZoneManager</a> (who is also a <code>ITetrominoCollectionListener</code>) needs to be notified when a tetromino count reaches zero, so that it can gray out the corresponding <a class="xref" href="../api/ProjectL.GameScene.PieceZone.TetrominoButton.html">TetrominoButton</a>.</p>
 
 </article>
 

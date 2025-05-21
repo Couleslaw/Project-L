@@ -1,8 +1,8 @@
 - name: Introduction
   href: ../index.md
+- name: Graphics Reacting to Player Actions
+  href: game-flow.md
 - name: Animating AI Player Actions
   href: ai-players.md
-- name: Getting Human Player Actions
+- name: Creating Human Player Actions
   href: human-players.md
-- name: Responding to Actions
-  href: responding-to-actions.md

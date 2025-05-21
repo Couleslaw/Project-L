@@ -2,9 +2,9 @@
 <html>
   <head>
     <meta charset="utf-8">
-      <title>Interface IPuzzleZoneCard | Project L Unity </title>
+      <title>Class TetrominoButton.DisposableButtonSelector | Project L Unity </title>
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="title" content="Interface IPuzzleZoneCard | Project L Unity ">
+      <meta name="title" content="Class TetrominoButton.DisposableButtonSelector | Project L Unity ">
       
       
       <link rel="icon" href="../favicon.ico">
@@ -84,16 +84,16 @@
           <nav id="breadcrumb"></nav>
         </div>
 
-        <article data-uid="ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard">
+        <article data-uid="ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector">
 
 
 
-  <h1 id="ProjectL_GameScene_PuzzleZone_IPuzzleZoneCard" data-uid="ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard" class="text-break">
-Interface IPuzzleZoneCard  
+  <h1 id="ProjectL_GameScene_PieceZone_TetrominoButton_DisposableButtonSelector" data-uid="ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector" class="text-break">
+Class TetrominoButton.DisposableButtonSelector  
   </h1>
 
   <div class="facts text-secondary">
-    <dl><dt>Namespace</dt><dd><a class="xref" href="ProjectL.html">ProjectL</a>.<a class="xref" href="ProjectL.GameScene.html">GameScene</a>.<a class="xref" href="ProjectL.GameScene.PuzzleZone.html">PuzzleZone</a></dd></dl>
+    <dl><dt>Namespace</dt><dd><a class="xref" href="ProjectL.html">ProjectL</a>.<a class="xref" href="ProjectL.GameScene.html">GameScene</a>.<a class="xref" href="ProjectL.GameScene.PieceZone.html">PieceZone</a></dd></dl>
   <dl><dt>Assembly</dt><dd>Assembly-CSharp.dll</dd></dl>
   </div>
 
@@ -101,9 +101,86 @@ Interface IPuzzleZoneCard
   <div class="markdown conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IPuzzleZoneCard</code></pre>
+    <pre><code class="lang-csharp hljs">public class TetrominoButton.DisposableButtonSelector : IDisposable</code></pre>
   </div>
 
+
+
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><span class="xref">TetrominoButton.DisposableButtonSelector</span></div>
+    </dd>
+  </dl>
+
+  <dl class="typelist implements">
+    <dt>Implements</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+    </dd>
+  </dl>
+
+
+  <dl class="typelist inheritedMembers">
+    <dt>Inherited Members</dt>
+    <dd>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+  </dd></dl>
+
+
+
+
+
+
+  <h2 class="section" id="constructors">Constructors
+</h2>
+
+
+  <a id="ProjectL_GameScene_PieceZone_TetrominoButton_DisposableButtonSelector__ctor_" data-uid="ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.#ctor*"></a>
+
+  <h3 id="ProjectL_GameScene_PieceZone_TetrominoButton_DisposableButtonSelector__ctor_ProjectL_GameScene_PieceZone_TetrominoButton_ProjectL_GameScene_PieceZone_SelectionSideEffect_ProjectL_GameScene_PieceZone_SelectionButtonEffect_" data-uid="ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.#ctor(ProjectL.GameScene.PieceZone.TetrominoButton,ProjectL.GameScene.PieceZone.SelectionSideEffect,ProjectL.GameScene.PieceZone.SelectionButtonEffect)">
+  DisposableButtonSelector(TetrominoButton, SelectionSideEffect, SelectionButtonEffect)
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public DisposableButtonSelector(TetrominoButton spawner, SelectionSideEffect sideEffect, SelectionButtonEffect buttonEffect)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>spawner</code> <a class="xref" href="ProjectL.GameScene.PieceZone.TetrominoButton.html">TetrominoButton</a></dt>
+    <dd></dd>
+    <dt><code>sideEffect</code> <a class="xref" href="ProjectL.GameScene.PieceZone.SelectionSideEffect.html">SelectionSideEffect</a></dt>
+    <dd></dd>
+    <dt><code>buttonEffect</code> <a class="xref" href="ProjectL.GameScene.PieceZone.SelectionButtonEffect.html">SelectionButtonEffect</a></dt>
+    <dd></dd>
+  </dl>
 
 
 
@@ -120,10 +197,10 @@ Interface IPuzzleZoneCard
 </h2>
 
 
-  <a id="ProjectL_GameScene_PuzzleZone_IPuzzleZoneCard_GetDisposableCardDimmer_" data-uid="ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.GetDisposableCardDimmer*"></a>
+  <a id="ProjectL_GameScene_PieceZone_TetrominoButton_DisposableButtonSelector_Dispose_" data-uid="ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.Dispose*"></a>
 
-  <h3 id="ProjectL_GameScene_PuzzleZone_IPuzzleZoneCard_GetDisposableCardDimmer" data-uid="ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.GetDisposableCardDimmer">
-  GetDisposableCardDimmer()
+  <h3 id="ProjectL_GameScene_PieceZone_TetrominoButton_DisposableButtonSelector_Dispose" data-uid="ProjectL.GameScene.PieceZone.TetrominoButton.DisposableButtonSelector.Dispose">
+  Dispose()
   
   </h3>
 
@@ -131,109 +208,9 @@ Interface IPuzzleZoneCard
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardDimmer()</code></pre>
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
   </div>
 
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.html">PuzzleZoneManager</a>.<a class="xref" href="ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.html">DisposableSpriteReplacer</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="ProjectL_GameScene_PuzzleZone_IPuzzleZoneCard_GetDisposableCardHighlighter_" data-uid="ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.GetDisposableCardHighlighter*"></a>
-
-  <h3 id="ProjectL_GameScene_PuzzleZone_IPuzzleZoneCard_GetDisposableCardHighlighter" data-uid="ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.GetDisposableCardHighlighter">
-  GetDisposableCardHighlighter()
-  
-  </h3>
-
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardHighlighter()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.html">PuzzleZoneManager</a>.<a class="xref" href="ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.DisposableSpriteReplacer.html">DisposableSpriteReplacer</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="ProjectL_GameScene_PuzzleZone_IPuzzleZoneCard_Init_" data-uid="ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.Init*"></a>
-
-  <h3 id="ProjectL_GameScene_PuzzleZone_IPuzzleZoneCard_Init_System_Boolean_" data-uid="ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.Init(System.Boolean)">
-  Init(bool)
-  
-  </h3>
-
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">void Init(bool isBlack)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>isBlack</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-
-  <a id="ProjectL_GameScene_PuzzleZone_IPuzzleZoneCard_SetMode_" data-uid="ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.SetMode*"></a>
-
-  <h3 id="ProjectL_GameScene_PuzzleZone_IPuzzleZoneCard_SetMode_ProjectL_GameScene_PuzzleZone_PuzzleZoneMode_ProjectLCore_GameLogic_TurnInfo_" data-uid="ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.SetMode(ProjectL.GameScene.PuzzleZone.PuzzleZoneMode,ProjectLCore.GameLogic.TurnInfo)">
-  SetMode(PuzzleZoneMode, TurnInfo)
-  
-  </h3>
-
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">void SetMode(PuzzleZoneMode mode, TurnInfo turnInfo)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>mode</code> <a class="xref" href="ProjectL.GameScene.PuzzleZone.PuzzleZoneMode.html">PuzzleZoneMode</a></dt>
-    <dd></dd>
-    <dt><code>turnInfo</code> <span class="xref">TurnInfo</span></dt>
-    <dd></dd>
-  </dl>
 
 
 

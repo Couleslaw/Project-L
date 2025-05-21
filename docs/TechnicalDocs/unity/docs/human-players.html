@@ -2,9 +2,9 @@
 <html>
   <head>
     <meta charset="utf-8">
-      <title>Getting Human Player Actions | Project L Unity </title>
+      <title>Creating Human Player Actions | Project L Unity </title>
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="title" content="Getting Human Player Actions | Project L Unity ">
+      <meta name="title" content="Creating Human Player Actions | Project L Unity ">
       
       
       <link rel="icon" href="../favicon.ico">
@@ -85,8 +85,72 @@
         </div>
 
         <article data-uid="">
-<h1 id="getting-human-player-actions">Getting Human Player Actions</h1>
+<h1 id="creating-human-player-actions">Creating Human Player Actions</h1>
 
+<p>Creating human player actions is the responsibility of the <a class="xref" href="../api/ProjectL.GameScene.ActionHandling.HumanPlayerActionCreationManager.html">HumanPlayerActionCreationManager</a>, which we will shorten to <code>HPACM</code>. The <code>GameSessionManager</code> registers <a href="https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/T_ProjectLCore_Players_HumanPlayer.htm">HumanPlayers</a> to it at the start of the game through the <code>RegisterPlayer(HumanPlayer)</code> method. The <code>HPACM</code> then listens to the <a href="https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/E_ProjectLCore_Players_HumanPlayer_ActionRequested.htm">ActionRequested</a> and <a href="https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/E_ProjectLCore_Players_HumanPlayer_RewardChoiceRequested.htm">RewardChoiceRequested</a> events of the player.</p>
+<p>Two enums, <a class="xref" href="../api/ProjectL.GameScene.ActionHandling.PlayerMode.html">PlayerMode</a> and <a class="xref" href="../api/ProjectL.GameScene.ActionHandling.ActionMode.html">ActionMode</a>, control the action creation logic. Any type that implements the <a class="xref" href="../api/ProjectL.GameScene.ActionHandling.IActionCreationController.html">IActionCreationController</a> interface and registers with the <code>HPACM</code> will be notified whenever either mode changes, allowing it to respond appropriately.</p>
+<h3 id="action-requested-by-the-gamesessionmanager">Action Requested by the <code>GameSessionManager</code></h3>
+<p>During the game loop, the <code>GameSessionManager</code> calls the <code>Player.GetActionAsync</code> method of a <code>HumanPlayer</code>. This triggers the <code>HumanPlayer.ActionRequested</code> event. As a result, the <code>HPACM</code> is notified and receives an <a href="https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/T_ProjectLCore_GameActions_Verification_ActionVerifier.htm">ActionVerifier</a> object. In response, it</p>
+<ul>
+<li>changes the modes to <code>PlayerMode.Interactive</code> and <code>ActionMode.ActionCreation</code></li>
+<li>and connects to the UI buttons using the <code>ActionZonesManager.ConnectToActionButtons(HPACM)</code> method</li>
+</ul>
+<p>When the user clicks on a button in the action zone, the <code>HPACM</code> will now be notified.</p>
+<h3 id="user-wants-to-take-a-certain-action">User Wants to Take a Certain Action</h3>
+<p>When a user wants to perform an action, certain types need to be notified about the action's creation, cancellation, or confirmation. To receive these notifications, these types implement the generic <a class="xref" href="../api/ProjectL.GameScene.ActionHandling.IHumanPlayerActionCreator-1.html">IHumanPlayerActionCreator</a> interface and register themselves with the <code>HPACM</code>. The <code>HPACM</code> then listens for their <code>ActionModifiedEventHandler</code> events, ensuring it is informed whenever an action changes.</p>
+<p>Let's say that the user clicked on the <strong>Take Puzzle</strong> button. The <code>HPACM</code> then calls the <code>OnActionRequested</code> method of all subscribed <code>IHumanPlayerActionCreator&lt;TakePuzzleAction&gt;</code> instances (for example the <a class="xref" href="../api/ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.html">PuzzleZoneManager</a>) and they can react to it.</p>
+<h3 id="modifying-the-action">Modifying the Action</h3>
+<p>When the user somehow changes the action, in our case by clicking on a puzzle button to select it, the <code>PuzzleZoneManager</code> fires the <code>ActionModifiedEventHandler</code> event and the <code>HPACM</code> is notified and receives a <a class="xref" href="../api/ProjectL.GameScene.ActionHandling.TakePuzzleActionModification.html">TakePuzzleActionModification</a> object.</p>
+<p>The <code>HPACM</code> internally uses a <a class="xref" href="../api/ProjectL.GameScene.ActionHandling.TakePuzzleActionConstructor.html">TakePuzzleActionConstructor</a> to keep track of the current action. After it applies the modification, it</p>
+<ul>
+<li>calls the constructors <code>TakePuzzleActionConstructor.GetAction</code> method</li>
+<li>checks if the action is valid using its <code>ActionVerifier</code></li>
+<li>tells the <code>ActionZonesManager</code> to enable or disable the <strong>Confirm</strong> buttons depending on the action validity</li>
+</ul>
+<h3 id="confirming-the-action">Confirming the Action</h3>
+<p>If the action was valid, then the <strong>Confirm</strong> buttons are enabled and if the player clicks on them, the <code>OnActionConfirmed</code> method of the <code>HPACM</code> is called. It in turn</p>
+<ul>
+<li>calls the <code>OnActionConfirmed</code> method of all subscribed <code>IHumanPlayerActionCreator&lt;TakePuzzleAction&gt;</code> instances</li>
+<li>sets the player mode back to <code>PlayerMode.NonInteractive</code></li>
+<li>disconnects from the action buttons</li>
+<li>calls the <code>HumanPlayer.SetReward</code> method of the player who requested the action</li>
+</ul>
+<h3 id="summary">Summary</h3>
+<ul>
+<li>The <code>HPACM</code> acts as a bridge between the game core, UI, and action creation logic.</li>
+<li>It uses the listener pattern to notify various classes about game state changes.</li>
+<li>The <code>IActionCreationController</code> interface:
+<ul>
+<li>Allows classes to control action creation logic.</li>
+<li>Notifies them when player or action modes change.</li>
+</ul>
+</li>
+<li>The <code>IHumanPlayerActionCreator&lt;T&gt;</code> interface:
+<ul>
+<li>Notifies classes when an action is requested, modified, or confirmed.</li>
+</ul>
+</li>
+<li>The <code>HPACM</code> maintains the current action using an <code>ActionConstructor&lt;T&gt;</code>.</li>
+<li>When an action is modified:
+<ul>
+<li><code>IHumanPlayerActionCreator&lt;T&gt;</code> sends an <code>IActionModification&lt;T&gt;</code> to the <code>HPACM</code>.</li>
+<li>The <code>HPACM</code> checks action validity and enables/disables <strong>Confirm</strong> buttons.</li>
+</ul>
+</li>
+<li>When an action is confirmed:
+<ul>
+<li>The <code>HPACM</code> calls <code>OnActionConfirmed</code> on all subscribed <code>IHumanPlayerActionCreator&lt;T&gt;</code> instances.</li>
+<li>Sets player mode back to <code>PlayerMode.NonInteractive</code>.</li>
+</ul>
+</li>
+<li>When an action is canceled:
+<ul>
+<li>The <code>HPACM</code> calls <code>OnActionCanceled</code> on all subscribed <code>IHumanPlayerActionCreator&lt;T&gt;</code> instances.</li>
+</ul>
+</li>
+</ul>
+<h2 id="requesting-a-reward">Requesting a Reward</h2>
+<p>When a player completes a puzzle, the <a href="https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/T_ProjectLCore_GameActions_GameActionProcessor.htm">GameActionProcessor</a> processing the action calls the player's <code>GetRewardAsync</code> method. This will trigger the <code>HumanPlayer.RewardChoiceRequested</code> event, the <code>HPACM</code> will be notified and the whole process starts again in a very similar fashion.</p>
 
 </article>
 

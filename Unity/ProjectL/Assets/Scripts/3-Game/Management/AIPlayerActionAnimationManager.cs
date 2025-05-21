@@ -61,7 +61,7 @@ namespace ProjectL.GameScene.Management
         private async Task ProcessActionAsync(EndFinishingTouchesAction action, CancellationToken cancellationToken)
         {
             await AnimationManager.WaitForScaledDelay(_initialDelay, cancellationToken);
-            using (new ActionZonesManager.SimulateButtonClickDisposable(ActionZonesManager.Button.EndFinishingTouches)) {
+            using (new ActionZonesManager.DisposableButtonSelector(ActionZonesManager.Button.EndFinishingTouches)) {
                 await AnimationManager.WaitForScaledDelay(1f, cancellationToken);
             }
         }
@@ -72,9 +72,9 @@ namespace ProjectL.GameScene.Management
                 return;
             }
             await AnimationManager.WaitForScaledDelay(_initialDelay, cancellationToken);
-            using (new ActionZonesManager.SimulateButtonClickDisposable(ActionZonesManager.Button.TakePuzzle)) {
+            using (new ActionZonesManager.DisposableButtonSelector(ActionZonesManager.Button.TakePuzzle)) {
                 await AnimationManager.WaitForScaledDelay(0.5f, cancellationToken);
-                await _takePuzzleAnimator.Animate(action, cancellationToken);
+                await _takePuzzleAnimator.AnimateAsync(action, cancellationToken);
             }
         }
 
@@ -84,9 +84,9 @@ namespace ProjectL.GameScene.Management
                 return;
             }
             await AnimationManager.WaitForScaledDelay(_initialDelay, cancellationToken);
-            using (new ActionZonesManager.SimulateButtonClickDisposable(ActionZonesManager.Button.Recycle)) {
+            using (new ActionZonesManager.DisposableButtonSelector(ActionZonesManager.Button.Recycle)) {
                 await AnimationManager.WaitForScaledDelay(1f, cancellationToken);
-                await _recycleAnimator.Animate(action, cancellationToken);
+                await _recycleAnimator.AnimateAsync(action, cancellationToken);
             }
         }
 
@@ -96,8 +96,8 @@ namespace ProjectL.GameScene.Management
                 return;
             }
             await AnimationManager.WaitForScaledDelay(_initialDelay, cancellationToken);
-            using (new ActionZonesManager.SimulateButtonClickDisposable(ActionZonesManager.Button.TakeBasicTetromino)) {
-                await _takeBasicTetrominoAnimator.Animate(action, cancellationToken);
+            using (new ActionZonesManager.DisposableButtonSelector(ActionZonesManager.Button.TakeBasicTetromino)) {
+                await _takeBasicTetrominoAnimator.AnimateAsync(action, cancellationToken);
             }
         }
 
@@ -107,9 +107,9 @@ namespace ProjectL.GameScene.Management
                 return;
             }
             await AnimationManager.WaitForScaledDelay(_initialDelay, cancellationToken);
-            using (new ActionZonesManager.SimulateButtonClickDisposable(ActionZonesManager.Button.ChangeTetromino)) {
+            using (new ActionZonesManager.DisposableButtonSelector(ActionZonesManager.Button.ChangeTetromino)) {
                 await AnimationManager.WaitForScaledDelay(1f, cancellationToken);
-                await _changeTetrominoActionAnimator.Animate(action, cancellationToken);
+                await _changeTetrominoActionAnimator.AnimateAsync(action, cancellationToken);
             }
         }
 
@@ -123,7 +123,7 @@ namespace ProjectL.GameScene.Management
         private async Task<DraggableTetromino> AnimatePlaceMovement(PlaceTetrominoAction action, CancellationToken cancellationToken)
         {
             var tetromino = PieceZoneManager.Instance.GetPlaceTetrominoActionAnimator(action.Shape);
-            await tetromino.Animate(action, cancellationToken);
+            await tetromino.AnimateAsync(action, cancellationToken);
             return (DraggableTetromino)tetromino;
         }
 
@@ -133,7 +133,7 @@ namespace ProjectL.GameScene.Management
 
             List<Task<DraggableTetromino>> placeTasks = new();
 
-            using (new ActionZonesManager.SimulateButtonClickDisposable(ActionZonesManager.Button.MasterAction)) {
+            using (new ActionZonesManager.DisposableButtonSelector(ActionZonesManager.Button.MasterAction)) {
                 await AnimationManager.WaitForScaledDelay(0.5f, cancellationToken);
 
                 foreach (PlaceTetrominoAction placeAction in action.TetrominoPlacements) {
@@ -160,14 +160,14 @@ namespace ProjectL.GameScene.Management
 
             // highlight completed puzzle
             var puzzleSlot = PlayerZoneManager.Instance.GetPuzzleWithId(info.Puzzle.Id)!;
-            using (puzzleSlot.CreateTemporaryPuzzleHighlighter()) {
+            using (puzzleSlot.GetDisposablePuzzleHighlighter()) {
                 await AnimationManager.WaitForScaledDelay(1f, cancellationToken);
 
                 // if there is reward --> animate selection
                 if (info.RewardOptions != null && info.SelectedReward != null) {
                     SelectRewardAction action = new SelectRewardAction(info.RewardOptions, info.SelectedReward.Value);
-                    using (new ActionZonesManager.SimulateButtonClickDisposable(ActionZonesManager.Button.SelectReward)) {
-                        await _selectRewardActionAnimator.Animate(action, cancellationToken);
+                    using (new ActionZonesManager.DisposableButtonSelector(ActionZonesManager.Button.SelectReward)) {
+                        await _selectRewardActionAnimator.AnimateAsync(action, cancellationToken);
                     }
                 }
             }

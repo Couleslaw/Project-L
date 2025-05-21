@@ -482,7 +482,7 @@ namespace ProjectL.GameScene.PieceZone
 
         void IHumanPlayerActionCreator<PlaceTetrominoAction>.OnActionConfirmed() => RemoveFromScene();
 
-        async Task IAIPlayerActionAnimator<PlaceTetrominoAction>.Animate(PlaceTetrominoAction action, CancellationToken cancellationToken)
+        async Task IAIPlayerActionAnimator<PlaceTetrominoAction>.AnimateAsync(PlaceTetrominoAction action, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -555,7 +555,7 @@ namespace ProjectL.GameScene.PieceZone
             _mode = Mode.Animation;
 
             // color cells of puzzle to match the tetromino and destroy the tetromino
-            (puzzle as IAIPlayerActionAnimator<PlaceTetrominoAction>)?.Animate(action, cancellationToken);
+            (puzzle as IAIPlayerActionAnimator<PlaceTetrominoAction>)?.AnimateAsync(action, cancellationToken);
             Destroy(gameObject);
 
             await AnimationManager.WaitForScaledDelay(0.5f, cancellationToken);

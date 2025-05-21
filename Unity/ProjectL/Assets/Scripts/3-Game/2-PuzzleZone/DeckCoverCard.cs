@@ -85,7 +85,7 @@ namespace ProjectL.GameScene.PuzzleZone
             }
         }
 
-        public PuzzleZoneManager.TemporarySpriteReplacer CreateCardHighlighter()
+        public PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardHighlighter()
         {
             if (_button == null) {
                 return null!;
@@ -100,7 +100,7 @@ namespace ProjectL.GameScene.PuzzleZone
             return new(_button, selectedSprite);
         }
 
-        public PuzzleZoneManager.TemporarySpriteReplacer CreateCardDimmer()
+        public PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardDimmer()
         {
             if (_button == null) {
                 return null!;

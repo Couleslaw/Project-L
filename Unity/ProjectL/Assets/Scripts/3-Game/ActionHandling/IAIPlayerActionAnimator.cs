@@ -10,7 +10,7 @@ namespace ProjectL.GameScene.ActionHandling
     {
         #region Methods
 
-        Task Animate(T action, CancellationToken cancellationToken);
+        Task AnimateAsync(T action, CancellationToken cancellationToken);
 
         #endregion
     }

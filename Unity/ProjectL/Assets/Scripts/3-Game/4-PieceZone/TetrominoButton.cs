@@ -136,9 +136,9 @@ namespace ProjectL.GameScene.PieceZone
             _button!.interactable = CanBeUsed;
         }
 
-        public TemporaryButtonSelector CreateTemporaryButtonSelector(SelectionSideEffect sideEffect = SelectionSideEffect.None, SelectionButtonEffect buttonEffect = SelectionButtonEffect.MakeBigger)
+        public DisposableButtonSelector GetDisposableButtonSelector(SelectionSideEffect sideEffect = SelectionSideEffect.None, SelectionButtonEffect buttonEffect = SelectionButtonEffect.MakeBigger)
         {
-            return new TemporaryButtonSelector(this, sideEffect, buttonEffect);
+            return new DisposableButtonSelector(this, sideEffect, buttonEffect);
         }
 
         private void Awake()
@@ -186,7 +186,7 @@ namespace ProjectL.GameScene.PieceZone
 
         #endregion
 
-        public class TemporaryButtonSelector : IDisposable
+        public class DisposableButtonSelector : IDisposable
         {
             #region Constants
 
@@ -208,7 +208,7 @@ namespace ProjectL.GameScene.PieceZone
 
             #region Constructors
 
-            public TemporaryButtonSelector(TetrominoButton spawner, SelectionSideEffect sideEffect, SelectionButtonEffect buttonEffect)
+            public DisposableButtonSelector(TetrominoButton spawner, SelectionSideEffect sideEffect, SelectionButtonEffect buttonEffect)
             {
                 SoundManager.Instance?.PlaySoftTapSoundEffect();
                 _spawnerRectTransform = spawner.GetComponent<RectTransform>();
