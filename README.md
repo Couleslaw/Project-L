@@ -6,9 +6,9 @@
 
 This project is a digital version of the game that can be played by both human and AI players.
 
-## [Play Project L Online](./docs/game/index)
+## [Play Project L Online](https://couleslaw.github.io/Project-L/game/)
 
-The game can be [played online](./docs/game/index) in your browser, however this version of the game does not support AI players.
+The game can be [played online](https://couleslaw.github.io/Project-L/game/) in your browser, however this version of the game does not support AI players.
 
 ## [Download Project L](https://github.com/Couleslaw/Project-L/releases/latest)
 
@@ -18,7 +18,7 @@ There is one built-in AI player, but you can also implement your own AI players.
 
 ## User Guide
 
-The [User Guide](./UserDocs/index) explains the rules and how to play the game.
+The [User Guide](https://couleslaw.github.io/Project-L/UserDocs/) explains the rules and how to play the game.
 
 ## Crate Your Own AI Player
 
@@ -36,8 +36,8 @@ The Unity version of the game is built on top of the **ProjectLCore** library, w
 
 Because of this separation, the documentation is split into two parts:
 
-- The [Library docs](./TechnicalDocs/core/index) cover the inner workings of the [Project-L Core](./ProjectLCoreDocs/index.html) library.
-- The [Unity docs](./TechnicalDocs/unity/index) explain how the Unity-based game client is implemented.
+- The [Library docs](https://couleslaw.github.io/Project-L/TechnicalDocs/core/) cover the inner workings of the [Project-L Core](https://couleslaw.github.io/Project-L/ProjectLCoreDocs/) library.
+- The [Unity docs](https://couleslaw.github.io/Project-L/TechnicalDocs/unity/) explain how the Unity-based game client is implemented.
 
 ## Used Technologies
 
