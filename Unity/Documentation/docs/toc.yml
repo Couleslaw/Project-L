@@ -1,0 +1,8 @@
+- name: Introduction
+  href: ../index.md
+- name: Animating AI Player Actions
+  href: ai-players.md
+- name: Getting Human Player Actions
+  href: human-players.md
+- name: Responding to Actions
+  href: responding-to-actions.md

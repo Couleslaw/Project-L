@@ -12,13 +12,13 @@ namespace ProjectL.GameScene.PieceZone
     {
         #region Fields
 
-        [SerializeField] private PieceCountColumn? _sharedReserveStats;
+        [SerializeField] private TetrominoCountsColumn? _sharedReserveStats;
 
         #endregion
 
         #region Properties
 
-        public PieceCountColumn PieceColumn => _sharedReserveStats!;
+        public TetrominoCountsColumn PieceColumn => _sharedReserveStats!;
 
         #endregion
 

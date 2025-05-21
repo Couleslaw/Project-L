@@ -39,7 +39,7 @@ namespace ProjectL.GameScene.PieceZone
 
         private Dictionary<TetrominoShape, TetrominoButton> _tetrominoButtons = new();
 
-        private PieceCountColumn? _currentPieceColumn;
+        private TetrominoCountsColumn? _currentTetrominoColumn;
         private PieceZoneMode _mode;
 
         private SelectRewardActionCreator? _selectRewardActionCreator;
@@ -82,11 +82,11 @@ namespace ProjectL.GameScene.PieceZone
             }
         }
 
-        public void SetCurrentPieceColumn(PieceCountColumn column)
+        public void SetCurrentTetrominoColumn(TetrominoCountsColumn column)
         {
-            _currentPieceColumn?.RemoveListener(this);
+            _currentTetrominoColumn?.RemoveListener(this);
             column.AddListener(this);
-            _currentPieceColumn = column;
+            _currentTetrominoColumn = column;
             foreach (var spawner in _tetrominoButtons.Values) {
                 int count = column.GetDisplayCount(spawner.Shape);
                 spawner.IsGrayedOut = count == 0;
@@ -227,7 +227,7 @@ namespace ProjectL.GameScene.PieceZone
         {
             SetMode(PieceZoneMode.SelectReward);
 
-            _currentPieceColumn!.SetColor(Color.white);
+            _currentTetrominoColumn!.SetColor(Color.white);
 
             var eventArgs = HumanPlayerActionCreationManager.Instance.CurrentRewardEventArgs!;
             var puzzleSlot = PlayerZoneManager.Instance.GetPuzzleWithId(eventArgs.Puzzle.Id)!;

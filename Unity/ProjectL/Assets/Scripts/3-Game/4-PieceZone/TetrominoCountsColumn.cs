@@ -11,7 +11,7 @@ namespace ProjectL.GameScene.PieceZone
     using System.Collections.Generic;
     using UnityEngine;
 
-    public class PieceCountColumn : MonoBehaviour, ITetrominoCollectionListener, ITetrominoCollectionNotifier
+    public class TetrominoCountsColumn : MonoBehaviour, ITetrominoCollectionListener, ITetrominoCollectionNotifier
     {
         #region Fields
 
@@ -157,7 +157,7 @@ namespace ProjectL.GameScene.PieceZone
         {
             #region Fields
 
-            private readonly PieceCountColumn _pieceCountColumn;
+            private readonly TetrominoCountsColumn _pieceCountColumn;
 
             private readonly TetrominoShape _shape;
 
@@ -167,7 +167,7 @@ namespace ProjectL.GameScene.PieceZone
 
             #region Constructors
 
-            public TemporaryPieceCountChanger(PieceCountColumn pieceCountColumn, TetrominoShape shape, int newCount)
+            public TemporaryPieceCountChanger(TetrominoCountsColumn pieceCountColumn, TetrominoShape shape, int newCount)
             {
                 _pieceCountColumn = pieceCountColumn;
                 _shape = shape;

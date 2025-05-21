@@ -1,0 +1,6 @@
+### YamlMime:ManagedReference
+
+apiRules:
+  - exclude:
+      uidRegex: ^EasyUI$
+      type: Namespace

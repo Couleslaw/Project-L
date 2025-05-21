@@ -1,0 +1,1974 @@
+{
+  "source_base_path": "D:/mff/rocnikovy-projekt/Unity/Documentation",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Resource",
+      "output": {
+        "resource": {
+          "relative_path": "index.json"
+        }
+      }
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/EasyUI.LogPosition.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EasyUI.LogPosition.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EasyUI.LogPosition",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/EasyUI.Logger.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EasyUI.Logger.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EasyUI.Logger",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/EasyUI.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EasyUI.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EasyUI",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Animation.AnimationManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Animation.AnimationManager.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Animation.AnimationManager",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Animation.ColorManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Animation.ColorManager.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Animation.ColorManager",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Animation.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Animation.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Animation",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Data.AIPlayerTypesLoader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Data.AIPlayerTypesLoader.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Data.AIPlayerTypesLoader",
+      "Summary": "<p sourcefile=\"api/ProjectL.Data.AIPlayerTypesLoader.yml\" sourcestartlinenumber=\"1\">Provides functionality to load player types from an INI file.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Data.AnimationSpeed.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Data.AnimationSpeed.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Data.AnimationSpeed",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Data.GameSettings.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Data.GameSettings.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Data.GameSettings",
+      "Summary": "<p sourcefile=\"api/ProjectL.Data.GameSettings.yml\" sourcestartlinenumber=\"1\">Provides parameters and settings for starting a game.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Data.GameSummary.Stats.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Data.GameSummary.Stats.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Data.GameSummary.Stats",
+      "Summary": "<p sourcefile=\"api/ProjectL.Data.GameSummary.Stats.yml\" sourcestartlinenumber=\"1\">Represents information needed to calculate the final score for a player.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Data.GameSummary.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Data.GameSummary.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Data.GameSummary",
+      "Summary": "<p sourcefile=\"api/ProjectL.Data.GameSummary.yml\" sourcestartlinenumber=\"1\">Provides functionality to track information about players needed to calculate the final score.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Data.PlayerTypeInfo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Data.PlayerTypeInfo.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Data.PlayerTypeInfo",
+      "Summary": "<p sourcefile=\"api/ProjectL.Data.PlayerTypeInfo.yml\" sourcestartlinenumber=\"1\">Represents information about a loaded player type.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Data.PuzzleSpriteType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Data.PuzzleSpriteType.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Data.PuzzleSpriteType",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Data.ResourcesLoader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Data.ResourcesLoader.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Data.ResourcesLoader",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Data.RuntimeGameInfo.Info.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Data.RuntimeGameInfo.Info.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Data.RuntimeGameInfo.Info",
+      "Summary": "<p sourcefile=\"api/ProjectL.Data.RuntimeGameInfo.Info.yml\" sourcestartlinenumber=\"1\">Represents information about the current game state.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Data.RuntimeGameInfo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Data.RuntimeGameInfo.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Data.RuntimeGameInfo",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Data.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Data.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Data",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.FinalResultsScene.FinalAnimationManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.FinalResultsScene.FinalAnimationManager.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.FinalResultsScene.FinalAnimationManager",
+      "Summary": "<p sourcefile=\"api/ProjectL.FinalResultsScene.FinalAnimationManager.yml\" sourcestartlinenumber=\"1\">Manages the animation of the final results screen.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.FinalResultsScene.FinalResultsTableRow.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.FinalResultsScene.FinalResultsTableRow.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.FinalResultsScene.FinalResultsTableRow",
+      "Summary": "<p sourcefile=\"api/ProjectL.FinalResultsScene.FinalResultsTableRow.yml\" sourcestartlinenumber=\"1\">Manages the <code>FinalResultsTableRow</code> prefab. Represents a row in the final results table, displaying the player's name and rank.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.FinalResultsScene.PlayerStatsColumn.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.FinalResultsScene.PlayerStatsColumn.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.FinalResultsScene.PlayerStatsColumn",
+      "Summary": "<p sourcefile=\"api/ProjectL.FinalResultsScene.PlayerStatsColumn.yml\" sourcestartlinenumber=\"1\">Manages the <code>PlayerStatsColumn</code> prefab. Represents a column in the final results screen that contains information about how the player performed in the game and can animate it.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.FinalResultsScene.ScoreDetailsColumn.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.FinalResultsScene.ScoreDetailsColumn.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.FinalResultsScene.ScoreDetailsColumn",
+      "Summary": "<p sourcefile=\"api/ProjectL.FinalResultsScene.ScoreDetailsColumn.yml\" sourcestartlinenumber=\"1\">Manages the <code>ScoreDetailsColumn</code> prefab. Represents a column in the final results screen that contains their number of completed puzzles and number of leftover tetrominos.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.FinalResultsScene.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.FinalResultsScene.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.FinalResultsScene",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.ActionConstructor-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.ActionConstructor-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.ActionConstructor<T>",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.ActionMode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.ActionMode.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.ActionMode",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.ChangeTetrominoActionModification.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.ChangeTetrominoActionModification.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.ChangeTetrominoActionModification",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.ChangeTetrominoConstructor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.ChangeTetrominoConstructor.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.ChangeTetrominoConstructor",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.HumanPlayerActionCreationManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.HumanPlayerActionCreationManager.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.HumanPlayerActionCreationManager",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.IAIPlayerActionAnimator<T>",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.IActionConstructor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.IActionConstructor.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.IActionConstructor",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.IActionCreationController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.IActionCreationController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.IActionCreationController",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.IActionModification-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.IActionModification-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.IActionModification<T>",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.IHumanPlayerActionCreator-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.IHumanPlayerActionCreator-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.IHumanPlayerActionCreator<T>",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.PlaceTetrominoActionModification.Options.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.PlaceTetrominoActionModification.Options.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.PlaceTetrominoActionModification.Options",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.PlaceTetrominoActionModification.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.PlaceTetrominoActionModification.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.PlaceTetrominoActionModification",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.PlaceTetrominoConstructor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.PlaceTetrominoConstructor.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.PlaceTetrominoConstructor",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.PlayerMode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.PlayerMode.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.PlayerMode",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.RecycleActionModification.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.RecycleActionModification.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.RecycleActionModification",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.RecycleConstructor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.RecycleConstructor.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.RecycleConstructor",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.SelectRewardAction.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.SelectRewardAction.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.SelectRewardAction",
+      "Summary": "<p sourcefile=\"api/ProjectL.GameScene.ActionHandling.SelectRewardAction.yml\" sourcestartlinenumber=\"1\">Represents the selection of a reward tetromino from a list of available options.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.SelectRewardActionModification.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.SelectRewardActionModification.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.SelectRewardActionModification",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.SelectRewardConstructor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.SelectRewardConstructor.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.SelectRewardConstructor",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.TakeBasicConstructor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.TakeBasicConstructor.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.TakeBasicConstructor",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.TakeBasicTetrominoActionModification.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.TakeBasicTetrominoActionModification.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.TakeBasicTetrominoActionModification",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.TakePuzzleActionModification.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.TakePuzzleActionModification.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.TakePuzzleActionModification",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.TakePuzzleConstructor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.TakePuzzleConstructor.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling.TakePuzzleConstructor",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionHandling.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionHandling.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionHandling",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionZones.ActionButton.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionZones.ActionButton.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionZones.ActionButton",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionZones.ActionZoneBase.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionZones.ActionZoneBase.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionZones.ActionZoneBase",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionZones.ActionZonesManager.Button.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionZones.ActionZonesManager.Button.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionZones.ActionZonesManager.Button",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionZones.ActionZonesManager.SimulateButtonClickDisposable.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionZones.ActionZonesManager.SimulateButtonClickDisposable.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionZones.ActionZonesManager.SimulateButtonClickDisposable",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionZones.ActionZonesManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionZones.ActionZonesManager.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionZones.ActionZonesManager",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionZones.PieceActionZone.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionZones.PieceActionZone.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionZones.PieceActionZone",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionZones.PuzzleActionZone.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionZones.PuzzleActionZone.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionZones.PuzzleActionZone",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.ActionZones.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.ActionZones.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.ActionZones",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.GraphicsManager-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.GraphicsManager-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.GraphicsManager<TSelf>",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.Management.AIPlayerActionAnimationManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.Management.AIPlayerActionAnimationManager.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.Management.AIPlayerActionAnimationManager",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.Management.GameGraphicsSystem.IGraphicsManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.Management.GameGraphicsSystem.IGraphicsManager.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.Management.GameGraphicsSystem.IGraphicsManager",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.Management.GameGraphicsSystem.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.Management.GameGraphicsSystem.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.Management.GameGraphicsSystem",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.Management.GameSessionManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.Management.GameSessionManager.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.Management.GameSessionManager",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.Management.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.Management.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.Management",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.MessageBoxes.ErrorAlertBox.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.MessageBoxes.ErrorAlertBox.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.MessageBoxes.ErrorAlertBox",
+      "Summary": "<p sourcefile=\"api/ProjectL.GameScene.MessageBoxes.ErrorAlertBox.yml\" sourcestartlinenumber=\"1\">Manages the ErrorMessageBox prefab.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.MessageBoxes.GameEndedBox.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.MessageBoxes.GameEndedBox.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.MessageBoxes.GameEndedBox",
+      "Summary": "<p sourcefile=\"api/ProjectL.GameScene.MessageBoxes.GameEndedBox.yml\" sourcestartlinenumber=\"1\">Manages the ErrorMessageBox prefab.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.MessageBoxes.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.MessageBoxes.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.MessageBoxes",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.DraggableTetromino.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.DraggableTetromino.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone.DraggableTetromino",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.ITetrominoSpawnerListener.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.ITetrominoSpawnerListener.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone.ITetrominoSpawnerListener",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.PieceCountColumn.TemporaryPieceCountChanger.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.PieceCountColumn.TemporaryPieceCountChanger.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone.PieceCountColumn.TemporaryPieceCountChanger",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.PieceCountColumn.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.PieceCountColumn.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone.PieceCountColumn",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.PieceCounter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.PieceCounter.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone.PieceCounter",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.PieceZoneManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.PieceZoneManager.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone.PieceZoneManager",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.PieceZoneMode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.PieceZoneMode.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone.PieceZoneMode",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.PlayerStatsManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.PlayerStatsManager.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone.PlayerStatsManager",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.SelectionButtonEffect.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.SelectionButtonEffect.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone.SelectionButtonEffect",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.SelectionSideEffect.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.SelectionSideEffect.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone.SelectionSideEffect",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.SharedReserveManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.SharedReserveManager.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone.SharedReserveManager",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.TetrominoButton.TemporaryButtonSelector.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.TetrominoButton.TemporaryButtonSelector.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone.TetrominoButton.TemporaryButtonSelector",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.TetrominoButton.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.TetrominoButton.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone.TetrominoButton",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.TetrominoCountsColumn.TemporaryPieceCountChanger.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.TetrominoCountsColumn.TemporaryPieceCountChanger.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone.TetrominoCountsColumn.TemporaryPieceCountChanger",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.TetrominoCountsColumn.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.TetrominoCountsColumn.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone.TetrominoCountsColumn",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.TetrominoSizeManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.TetrominoSizeManager.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone.TetrominoSizeManager",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.TetrominoSizer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.TetrominoSizer.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone.TetrominoSizer",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PlayerZone.InteractivePuzzle.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PlayerZone.InteractivePuzzle.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PlayerZone.InteractivePuzzle",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PlayerZone.PlayerPuzzlesRow.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PlayerZone.PlayerPuzzlesRow.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PlayerZone.PlayerPuzzlesRow",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PlayerZone.PlayerZoneManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PlayerZone.PlayerZoneManager.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PlayerZone.PlayerZoneManager",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PlayerZone.PuzzleCell.CellState.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PlayerZone.PuzzleCell.CellState.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PlayerZone.PuzzleCell.CellState",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PlayerZone.PuzzleCell.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PlayerZone.PuzzleCell.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PlayerZone.PuzzleCell",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PlayerZone.PuzzleSlot.TemporaryPuzzleHighlighter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PlayerZone.PuzzleSlot.TemporaryPuzzleHighlighter.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PlayerZone.PuzzleSlot.TemporaryPuzzleHighlighter",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PlayerZone.PuzzleSlot.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PlayerZone.PuzzleSlot.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PlayerZone.PuzzleSlot",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PlayerZone.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PlayerZone.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PlayerZone",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PuzzleZone.DeckCoverCard.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PuzzleZone.DeckCoverCard.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PuzzleZone.DeckCoverCard",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzleCard.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzleCard.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PuzzleZone.PuzzleCard",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.TemporarySpriteReplacer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.TemporarySpriteReplacer.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.TemporarySpriteReplacer",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzleZoneManager.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PuzzleZone.PuzzleZoneManager",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzleZoneMode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzleZoneMode.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PuzzleZone.PuzzleZoneMode",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.TemporaryColumnDimmer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.TemporaryColumnDimmer.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PuzzleZone.PuzzlesColumn.TemporaryColumnDimmer",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.TemporaryPuzzleHighlighter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.TemporaryPuzzleHighlighter.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PuzzleZone.PuzzlesColumn.TemporaryPuzzleHighlighter",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzlesColumn.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PuzzleZone.PuzzlesColumn",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PuzzleZone.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PuzzleZone.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PuzzleZone",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.InputActions.GameControls.GameplayActions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.InputActions.GameControls.GameplayActions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.InputActions.GameControls.GameplayActions",
+      "Summary": "<p sourcefile=\"api/ProjectL.InputActions.GameControls.GameplayActions.yml\" sourcestartlinenumber=\"1\">Provides access to input actions defined in input action map &quot;Gameplay&quot;.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.InputActions.GameControls.IGameplayActions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.InputActions.GameControls.IGameplayActions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.InputActions.GameControls.IGameplayActions",
+      "Summary": "<p sourcefile=\"api/ProjectL.InputActions.GameControls.IGameplayActions.yml\" sourcestartlinenumber=\"1\">Interface to implement callback methods for all input action callbacks associated with input actions defined by &quot;Gameplay&quot; which allows adding and removing callbacks.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.InputActions.GameControls.IUIActions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.InputActions.GameControls.IUIActions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.InputActions.GameControls.IUIActions",
+      "Summary": "<p sourcefile=\"api/ProjectL.InputActions.GameControls.IUIActions.yml\" sourcestartlinenumber=\"1\">Interface to implement callback methods for all input action callbacks associated with input actions defined by &quot;UI&quot; which allows adding and removing callbacks.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.InputActions.GameControls.UIActions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.InputActions.GameControls.UIActions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.InputActions.GameControls.UIActions",
+      "Summary": "<p sourcefile=\"api/ProjectL.InputActions.GameControls.UIActions.yml\" sourcestartlinenumber=\"1\">Provides access to input actions defined in input action map &quot;UI&quot;.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.InputActions.GameControls.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.InputActions.GameControls.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.InputActions.GameControls",
+      "Summary": "<p sourcefile=\"api/ProjectL.InputActions.GameControls.yml\" sourcestartlinenumber=\"1\">Provides programmatic access to <xref href=\"UnityEngine.InputSystem.InputActionAsset\" data-throw-if-not-resolved=\"false\"></xref>, <xref href=\"UnityEngine.InputSystem.InputActionMap\" data-throw-if-not-resolved=\"false\"></xref>, <xref href=\"UnityEngine.InputSystem.InputAction\" data-throw-if-not-resolved=\"false\"></xref> and <xref href=\"UnityEngine.InputSystem.InputControlScheme\" data-throw-if-not-resolved=\"false\"></xref> instances defined in asset &quot;Assets/InputActions/GameControls.inputactions&quot;.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.InputActions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.InputActions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.InputActions",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.MainMenuScene.MainMenuManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.MainMenuScene.MainMenuManager.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.MainMenuScene.MainMenuManager",
+      "Summary": "<p sourcefile=\"api/ProjectL.MainMenuScene.MainMenuManager.yml\" sourcestartlinenumber=\"1\">Manages the <code>Main Menu</code> scene.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.MainMenuScene.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.MainMenuScene.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.MainMenuScene",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Management.FullscreenToggler.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Management.FullscreenToggler.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Management.FullscreenToggler",
+      "Summary": "<p sourcefile=\"api/ProjectL.Management.FullscreenToggler.yml\" sourcestartlinenumber=\"1\">A class that toggles full-screen mode in Unity when <code>F11</code> is pressed.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Management.GameManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Management.GameManager.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Management.GameManager",
+      "Summary": "<p sourcefile=\"api/ProjectL.Management.GameManager.yml\" sourcestartlinenumber=\"1\">Core singleton managing game state (pause/resume), player input via <xref href=\"ProjectL.InputActions.GameControls\" data-throw-if-not-resolved=\"false\"></xref>,\nthe in-game logger, and scene-specific configurations.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Management.SceneLoader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Management.SceneLoader.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Management.SceneLoader",
+      "Summary": "<p sourcefile=\"api/ProjectL.Management.SceneLoader.yml\" sourcestartlinenumber=\"1\">Manages the <code>SceneLoader</code> prefab. Provides functionality for transitioning between different scenes.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Management.Systems.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Management.Systems.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Management.Systems",
+      "Summary": "<p sourcefile=\"api/ProjectL.Management.Systems.yml\" sourcestartlinenumber=\"1\">The only persistent singleton in the game. This class is used to prevent the <code>Systems</code> prefab from being destroyed when loading a new scene.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Management.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Management.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Management",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Pause.PauseMenu.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Pause.PauseMenu.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Pause.PauseMenu",
+      "Summary": "<p sourcefile=\"api/ProjectL.Pause.PauseMenu.yml\" sourcestartlinenumber=\"1\">Manages the <code>PauseMenu</code> prefab.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Pause.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Pause.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Pause",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.PersistentSingleton-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.PersistentSingleton-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.PersistentSingleton<T>",
+      "Summary": "<p sourcefile=\"api/ProjectL.PersistentSingleton-1.yml\" sourcestartlinenumber=\"1\">A class for creating persistent singleton instances of MonoBehaviour-derived classes.\nEnsures that the instance persists across scene loads.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.PlayerSelectionScene.InputFieldTabNavigator.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.PlayerSelectionScene.InputFieldTabNavigator.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.PlayerSelectionScene.InputFieldTabNavigator",
+      "Summary": "<p sourcefile=\"api/ProjectL.PlayerSelectionScene.InputFieldTabNavigator.yml\" sourcestartlinenumber=\"1\">Implements the TAB-navigation logic for <xref href=\"TMPro.TMP_InputField\" data-throw-if-not-resolved=\"false\"></xref>s.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.PlayerSelectionScene.PlayerSelectionManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.PlayerSelectionScene.PlayerSelectionManager.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.PlayerSelectionScene.PlayerSelectionManager",
+      "Summary": "<p sourcefile=\"api/ProjectL.PlayerSelectionScene.PlayerSelectionManager.yml\" sourcestartlinenumber=\"1\">Manages the <code>Player Selection</code> scene.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.PlayerSelectionScene.PlayerSettingsRow.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.PlayerSelectionScene.PlayerSettingsRow.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.PlayerSelectionScene.PlayerSettingsRow",
+      "Summary": "<p sourcefile=\"api/ProjectL.PlayerSelectionScene.PlayerSettingsRow.yml\" sourcestartlinenumber=\"1\">Manages the <code>PlayerSelectionRow</code> prefab. Represents one row in the <code>Player Selection</code> scene.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.PlayerSelectionScene.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.PlayerSelectionScene.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.PlayerSelectionScene",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Singleton-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Singleton-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Singleton<T>",
+      "Summary": "<p sourcefile=\"api/ProjectL.Singleton-1.yml\" sourcestartlinenumber=\"1\">A class for creating singleton instances of MonoBehaviour-derived classes.\nEnsures that only one instance exists and destroys duplicates.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Sound.SoundManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Sound.SoundManager.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Sound.SoundManager",
+      "Summary": "<p sourcefile=\"api/ProjectL.Sound.SoundManager.yml\" sourcestartlinenumber=\"1\">Provides methods for playing sound effects in the game.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Sound.SoundVolumeButton.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Sound.SoundVolumeButton.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Sound.SoundVolumeButton",
+      "Summary": "<p sourcefile=\"api/ProjectL.Sound.SoundVolumeButton.yml\" sourcestartlinenumber=\"1\">Manages the <code>SoundControls</code> prefab. Cycles through volume levels upon sound button click and updates its icon accordingly.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Sound.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Sound.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Sound",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.StaticInstance-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.StaticInstance-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.StaticInstance<T>",
+      "Summary": "<p sourcefile=\"api/ProjectL.StaticInstance-1.yml\" sourcestartlinenumber=\"1\">A base class for creating static instances of MonoBehaviour-derived classes.\nEnsures that only one instance of the class exists at a time.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Utils.AdaptColliderToRectTransform.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Utils.AdaptColliderToRectTransform.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Utils.AdaptColliderToRectTransform",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Utils.RadioButtonsGroup.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Utils.RadioButtonsGroup.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Utils.RadioButtonsGroup",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Utils.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Utils.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Utils",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectLCore.GamePieces.ColorImage.Color.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectLCore.GamePieces.ColorImage.Color.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectLCore.GamePieces.ColorImage.Color",
+      "Summary": "<p sourcefile=\"api/ProjectLCore.GamePieces.ColorImage.Color.yml\" sourcestartlinenumber=\"1\">Represents a color.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectLCore.GamePieces.ColorImage.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectLCore.GamePieces.ColorImage.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectLCore.GamePieces.ColorImage",
+      "Summary": "<p sourcefile=\"api/ProjectLCore.GamePieces.ColorImage.yml\" sourcestartlinenumber=\"1\">Represents a 5x5 image where each cells has a certain <xref href=\"ProjectLCore.GamePieces.ColorImage.Color\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectLCore.GamePieces.ColorPuzzle.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectLCore.GamePieces.ColorPuzzle.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectLCore.GamePieces.ColorPuzzle",
+      "Summary": "<p sourcefile=\"api/ProjectLCore.GamePieces.ColorPuzzle.yml\" sourcestartlinenumber=\"1\">Represents a puzzle in the game.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectLCore.GamePieces.IColorPuzzleListener.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectLCore.GamePieces.IColorPuzzleListener.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectLCore.GamePieces.IColorPuzzleListener",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectLCore.GamePieces.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectLCore.GamePieces.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectLCore.GamePieces",
+      "Summary": null
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html"
+        },
+        ".json": {
+          "relative_path": "api/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/ai-players.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/ai-players.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/human-players.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/human-players.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/responding-to-actions.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/responding-to-actions.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "docs/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "docs/toc.html"
+        },
+        ".json": {
+          "relative_path": "docs/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html"
+        },
+        ".json": {
+          "relative_path": "toc.json"
+        }
+      },
+      "version": ""
+    }
+  ],
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

@@ -22,9 +22,9 @@ namespace ProjectL.GameScene.PieceZone
         [Header("Tetromino Collections")]
         [SerializeField] private GameObject? _tetrominoCollectionsContainer;
 
-        [SerializeField] private PieceCountColumn? _pieceCountColumnPrefab;
+        [SerializeField] private TetrominoCountsColumn? _pieceCountColumnPrefab;
 
-        private Dictionary<Player, PieceCountColumn> _pieceColumns = new();
+        private Dictionary<Player, TetrominoCountsColumn> _tetrominoColumns = new();
 
         private Dictionary<Player, TextMeshProUGUI> _playerNameLabels = new();
 
@@ -34,7 +34,7 @@ namespace ProjectL.GameScene.PieceZone
 
         #region Properties
 
-        public PieceCountColumn? CurrentPieceColumn => _currentPlayer != null ? _pieceColumns[_currentPlayer] : null;
+        public TetrominoCountsColumn? CurrentPieceColumn => _currentPlayer != null ? _tetrominoColumns[_currentPlayer] : null;
 
         #endregion
 
@@ -56,7 +56,7 @@ namespace ProjectL.GameScene.PieceZone
                 var column = Instantiate(_pieceCountColumnPrefab, _tetrominoCollectionsContainer.transform);
                 column.gameObject.SetActive(true);
                 column.Init(0, game.PlayerStates[player], shouldColorGains: true);  // players start with no pieces
-                _pieceColumns.Add(player, column);
+                _tetrominoColumns.Add(player, column);
 
                 // create player name - the TMPro text object is a child of the player name template
                 var playerName = Instantiate(_playerNameTemplate, _playerNamesContainer.transform);
@@ -87,7 +87,7 @@ namespace ProjectL.GameScene.PieceZone
             }
 
             // set color of piece column
-            if (_pieceColumns.TryGetValue(player, out PieceCountColumn? column)) {
+            if (_tetrominoColumns.TryGetValue(player, out TetrominoCountsColumn? column)) {
                 column.SetColor(color);
             }
             else {
@@ -98,7 +98,7 @@ namespace ProjectL.GameScene.PieceZone
         void ICurrentPlayerListener.OnCurrentPlayerChanged(Player currentPlayer)
         {
             _currentPlayer = currentPlayer;
-            foreach (var player in _pieceColumns.Keys) {
+            foreach (var player in _tetrominoColumns.Keys) {
                 if (player == currentPlayer) {
                     SetPlayerColumnColor(player, Color.white);
                 }
@@ -106,17 +106,17 @@ namespace ProjectL.GameScene.PieceZone
                     SetPlayerColumnColor(player, ColorManager.gray);
                 }
             }
-            PieceZoneManager.Instance.SetCurrentPieceColumn(_pieceColumns[currentPlayer]);
+            PieceZoneManager.Instance.SetCurrentTetrominoColumn(_tetrominoColumns[currentPlayer]);
         }
 
         void ITetrominoSpawnerListener.OnTetrominoSpawned(TetrominoShape tetromino)
         {
-            _pieceColumns[_currentPlayer!].DecrementDisplayCount(tetromino);
+            _tetrominoColumns[_currentPlayer!].DecrementDisplayCount(tetromino);
         }
 
         void ITetrominoSpawnerListener.OnTetrominoReturned(TetrominoShape tetromino)
         {
-            _pieceColumns[_currentPlayer!].IncrementDisplayCount(tetromino);
+            _tetrominoColumns[_currentPlayer!].IncrementDisplayCount(tetromino);
         }
 
         #endregion

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Class ColorPuzzle | Project L Unity </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class ColorPuzzle | Project L Unity ">
+      
+      <meta name="description" content="Represents a puzzle in the game.">
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="Project L Unity">
+            Project L Unity
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="ProjectLCore.GamePieces.ColorPuzzle">
+
+
+
+  <h1 id="ProjectLCore_GamePieces_ColorPuzzle" data-uid="ProjectLCore.GamePieces.ColorPuzzle" class="text-break">
+Class ColorPuzzle  
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="ProjectLCore.html">ProjectLCore</a>.<a class="xref" href="ProjectLCore.GamePieces.html">GamePieces</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>Assembly-CSharp.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"><p>Represents a puzzle in the game.</p>
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class ColorPuzzle : Puzzle</code></pre>
+  </div>
+
+
+
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><span class="xref">Puzzle</span></div>
+      <div><span class="xref">ColorPuzzle</span></div>
+    </dd>
+  </dl>
+
+
+
+  <dl class="typelist inheritedMembers">
+    <dt>Inherited Members</dt>
+    <dd>
+    <div>
+      <span class="xref">Puzzle._usedTetrominos</span>
+    </div>
+    <div>
+      <span class="xref">Puzzle.CanPlaceTetromino(BinaryImage)</span>
+    </div>
+    <div>
+      <span class="xref">Puzzle.GetUsedTetrominos()</span>
+    </div>
+    <div>
+      <span class="xref">Puzzle.PuzzleNumber</span>
+    </div>
+    <div>
+      <span class="xref">Puzzle.Id</span>
+    </div>
+    <div>
+      <span class="xref">Puzzle.IsBlack</span>
+    </div>
+    <div>
+      <span class="xref">Puzzle.RewardScore</span>
+    </div>
+    <div>
+      <span class="xref">Puzzle.RewardTetromino</span>
+    </div>
+    <div>
+      <span class="xref">Puzzle.Image</span>
+    </div>
+    <div>
+      <span class="xref">Puzzle.NumEmptyCells</span>
+    </div>
+    <div>
+      <span class="xref">Puzzle.IsFinished</span>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+  </dd></dl>
+
+
+
+
+
+
+  <h2 class="section" id="constructors">Constructors
+</h2>
+
+
+  <a id="ProjectLCore_GamePieces_ColorPuzzle__ctor_" data-uid="ProjectLCore.GamePieces.ColorPuzzle.#ctor*"></a>
+
+  <h3 id="ProjectLCore_GamePieces_ColorPuzzle__ctor_ProjectLCore_GamePieces_BinaryImage_System_Int32_ProjectLCore_GamePieces_TetrominoShape_System_Boolean_System_UInt32_" data-uid="ProjectLCore.GamePieces.ColorPuzzle.#ctor(ProjectLCore.GamePieces.BinaryImage,System.Int32,ProjectLCore.GamePieces.TetrominoShape,System.Boolean,System.UInt32)">
+  ColorPuzzle(BinaryImage, int, TetrominoShape, bool, uint)
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="ProjectLCore.GamePieces.ColorPuzzle.html">ColorPuzzle</a> class.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ColorPuzzle(BinaryImage image, int rewardScore, TetrominoShape rewardTetromino, bool isBlack, uint puzzleNumber)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>image</code> <span class="xref">BinaryImage</span></dt>
+    <dd><p>The binary image representing the puzzle.</p>
+</dd>
+    <dt><code>rewardScore</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd><p>The score the player will receive for completing the puzzle.</p>
+</dd>
+    <dt><code>rewardTetromino</code> <span class="xref">TetrominoShape</span></dt>
+    <dd><p>The tetromino the player will receive for completing the puzzle.</p>
+</dd>
+    <dt><code>isBlack</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p>Indicates whether the puzzle is black or white</p>
+</dd>
+    <dt><code>puzzleNumber</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
+    <dd><p>The order number of this puzzle. The file containing the graphics for this puzzle should have the name <code>color-number.png</code> where color is <code>black</code> or <code>white</code> and number is <code class="paramref">puzzleNumber</code>.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="ProjectLCore_GamePieces_ColorPuzzle_ColorImage_" data-uid="ProjectLCore.GamePieces.ColorPuzzle.ColorImage*"></a>
+
+  <h3 id="ProjectLCore_GamePieces_ColorPuzzle_ColorImage" data-uid="ProjectLCore.GamePieces.ColorPuzzle.ColorImage">
+  ColorImage
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>A <a class="xref" href="ProjectLCore.GamePieces.ColorPuzzle.html#ProjectLCore_GamePieces_ColorPuzzle_ColorImage">ColorImage</a> representing the puzzle.
+Specifies the color of each cell in the puzzle.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ColorImage ColorImage { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ProjectLCore.GamePieces.ColorImage.html">ColorImage</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="ProjectLCore_GamePieces_ColorPuzzle_AddListener_" data-uid="ProjectLCore.GamePieces.ColorPuzzle.AddListener*"></a>
+
+  <h3 id="ProjectLCore_GamePieces_ColorPuzzle_AddListener_ProjectLCore_GamePieces_IColorPuzzleListener_" data-uid="ProjectLCore.GamePieces.ColorPuzzle.AddListener(ProjectLCore.GamePieces.IColorPuzzleListener)">
+  AddListener(IColorPuzzleListener)
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void AddListener(IColorPuzzleListener listener)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>listener</code> <a class="xref" href="ProjectLCore.GamePieces.IColorPuzzleListener.html">IColorPuzzleListener</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ProjectLCore_GamePieces_ColorPuzzle_AddTetromino_" data-uid="ProjectLCore.GamePieces.ColorPuzzle.AddTetromino*"></a>
+
+  <h3 id="ProjectLCore_GamePieces_ColorPuzzle_AddTetromino_ProjectLCore_GamePieces_TetrominoShape_ProjectLCore_GamePieces_BinaryImage_" data-uid="ProjectLCore.GamePieces.ColorPuzzle.AddTetromino(ProjectLCore.GamePieces.TetrominoShape,ProjectLCore.GamePieces.BinaryImage)">
+  AddTetromino(TetrominoShape, BinaryImage)
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Places the given tetromino into the puzzle.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override void AddTetromino(TetrominoShape tetromino, BinaryImage position)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>tetromino</code> <span class="xref">TetrominoShape</span></dt>
+    <dd><p>The shape of the tetromino.</p>
+</dd>
+    <dt><code>position</code> <span class="xref">BinaryImage</span></dt>
+    <dd><p>The position of the tetromino.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ProjectLCore_GamePieces_ColorPuzzle_Clone_" data-uid="ProjectLCore.GamePieces.ColorPuzzle.Clone*"></a>
+
+  <h3 id="ProjectLCore_GamePieces_ColorPuzzle_Clone" data-uid="ProjectLCore.GamePieces.ColorPuzzle.Clone">
+  Clone()
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Clones this instance.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Puzzle Clone()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><span class="xref">Puzzle</span></dt>
+    <dd><p>A deep copy of this instance.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ProjectLCore_GamePieces_ColorPuzzle_RemoveListener_" data-uid="ProjectLCore.GamePieces.ColorPuzzle.RemoveListener*"></a>
+
+  <h3 id="ProjectLCore_GamePieces_ColorPuzzle_RemoveListener_ProjectLCore_GamePieces_IColorPuzzleListener_" data-uid="ProjectLCore.GamePieces.ColorPuzzle.RemoveListener(ProjectLCore.GamePieces.IColorPuzzleListener)">
+  RemoveListener(IColorPuzzleListener)
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void RemoveListener(IColorPuzzleListener listener)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>listener</code> <a class="xref" href="ProjectLCore.GamePieces.IColorPuzzleListener.html">IColorPuzzleListener</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ProjectLCore_GamePieces_ColorPuzzle_RemoveTetromino_" data-uid="ProjectLCore.GamePieces.ColorPuzzle.RemoveTetromino*"></a>
+
+  <h3 id="ProjectLCore_GamePieces_ColorPuzzle_RemoveTetromino_ProjectLCore_GamePieces_TetrominoShape_ProjectLCore_GamePieces_BinaryImage_" data-uid="ProjectLCore.GamePieces.ColorPuzzle.RemoveTetromino(ProjectLCore.GamePieces.TetrominoShape,ProjectLCore.GamePieces.BinaryImage)">
+  RemoveTetromino(TetrominoShape, BinaryImage)
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override void RemoveTetromino(TetrominoShape tetromino, BinaryImage position)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>tetromino</code> <span class="xref">TetrominoShape</span></dt>
+    <dd></dd>
+    <dt><code>position</code> <span class="xref">BinaryImage</span></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ProjectLCore_GamePieces_ColorPuzzle_TryGetSprite_" data-uid="ProjectLCore.GamePieces.ColorPuzzle.TryGetSprite*"></a>
+
+  <h3 id="ProjectLCore_GamePieces_ColorPuzzle_TryGetSprite_UnityEngine_Sprite__" data-uid="ProjectLCore.GamePieces.ColorPuzzle.TryGetSprite(UnityEngine.Sprite@)">
+  TryGetSprite(out Sprite?)
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryGetSprite(out Sprite? sprite)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>sprite</code> <span class="xref">Sprite</span></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+        <div class="contribution d-print-none">
+        </div>
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
