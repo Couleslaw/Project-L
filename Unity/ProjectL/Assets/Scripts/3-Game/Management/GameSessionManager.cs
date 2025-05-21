@@ -487,6 +487,8 @@ namespace ProjectL.GameScene.Management
 
             private static ErrorAlertBox? _errorAlertBoxPrefab;
 
+            private static ErrorAlertBox? _spawnedBox;
+
             #endregion
 
             #region Properties
@@ -514,15 +516,15 @@ namespace ProjectL.GameScene.Management
 
                 if (_errorAlertBoxPrefab != null) {
                     GameManager.CanGameBePaused = false;
-                    _errorAlertBoxPrefab = Instantiate(_errorAlertBoxPrefab);
+                    _spawnedBox = Instantiate(_errorAlertBoxPrefab);
                 }
             }
 
             public static void DestroyErrorBox()
             {
-                if (_errorAlertBoxPrefab != null) {
-                    Destroy(_errorAlertBoxPrefab.gameObject);
-                    _errorAlertBoxPrefab = null;
+                if (_spawnedBox != null) {
+                    Destroy(_spawnedBox.gameObject);
+                    _spawnedBox = null;
                 }
             }
 
