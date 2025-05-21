@@ -65,7 +65,7 @@ namespace ProjectL.GameScene.Management
                 Debug.Log("Game session cancelled.");
             }
             catch (Exception e) {
-                GameErrorHandler.FatalErrorOccurred($"An error occurred during the game: {e.Message}");
+                Debug.LogError("Game session ended with error" + e.Message);
             }
         }
 

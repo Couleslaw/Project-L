@@ -87,8 +87,8 @@ Now, add the _Project-L Core_ library reference using one of the following metho
 
 ##### Downloading the DLL (recommended)
 
-1.  Download `ProjectLCore.dll` and `ProjectLCore.xml` from the [releases](https://github.com/Couleslaw/Project-L/releases/latest) page.
-2.  Create a folder in your project (e.g., named `lib`) and copy the downloaded files there.
+1.  Download `ProjectLCore.zip` and from the [releases](https://github.com/Couleslaw/Project-L/releases/latest) page and extract the `ProjectLCore.dll` and `ProjectLCore.xml` files.
+2.  Create a folder in your project (e.g., named `lib`) and copy the extracted files there.
 3.  Right-click on the project in the Solution Explorer and select **Add** > **Project Reference** > **Browse** and find `ProjectLCore.dll`.
 
 ##### Cloning the repository
@@ -115,7 +115,7 @@ As mentioned in the [overview](#overview), your AI player needs to inherit from 
 Remember the C# 8.0 language feature limitations mentioned in the [Technical Requirements](#technical-requirements). Avoid newer syntax. If you haven't read the [documentation](../TechnicalDocs/core/index) for the _Project-L Core_ library, now is the time to do it.
 "%}
 
-The [AI Player Example](https://github.com/Couleslaw/Project-L/tree/master/ProjectL-CLI/SimpleAIPlayer) project showcases the implementation of a simple AI player. You can find the documentation for it [here](../SimpleAIPlayerDocs/index.html).
+The [Simple AI Player](https://github.com/Couleslaw/Project-L/tree/master/ProjectL-CLI/SimpleAIPlayer) project showcases the implementation of a simple AI player. You can find the documentation for it [here](../SimpleAIPlayerDocs/index.html).
 
 ### Test Your AI Player
 
