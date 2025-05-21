@@ -1,4 +1,4 @@
-﻿namespace AIPlayerExample
+﻿namespace SimpleAIPlayer
 {
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
@@ -63,6 +63,16 @@
         /// The ID of the puzzle represented by this node.
         /// </summary>
         public uint PuzzleId { get; }
+
+        /// <summary>
+        /// The number of tetrominos left in the shared reserve for each <see cref="TetrominoShape"/>.
+        /// </summary>
+        public int[] NumTetrominosLeft => _numTetrominosLeft.ToArray();
+
+        /// <summary>
+        /// The number of tetrominos owned by the player for each <see cref="TetrominoShape"/>.
+        /// </summary>
+        public int[] NumTetrominosOwned => _numTetrominosOwned.ToArray();
 
         #endregion
 
@@ -199,7 +209,7 @@
                 // adjust the game state
                 TetrominoAction firstAction = upgradePath[0];
                 if (firstAction is TakeBasicTetrominoAction) {
-                    newNumTetrominosLeft[(int)TetrominoShape.O1]--;
+                    newNumTetrominosLeft[i]--;
                 }
                 else if (firstAction is ChangeTetrominoAction changeAction) {
                     int firstShapeTraded = (int)changeAction.OldTetromino;
@@ -209,7 +219,7 @@
                 }
 
                 foreach (var placement in GetAllValidPlacements(_puzzle, (TetrominoShape)i)) {
-                    var newPuzzleNode = new PuzzleNode(_puzzle | placement.Position, PuzzleId, newNumTetrominosLeft, _numTetrominosOwned, _finishingTouches);
+                    var newPuzzleNode = new PuzzleNode(_puzzle | placement.Position, PuzzleId, newNumTetrominosLeft, newNumTetrominosOwned, _finishingTouches);
                     yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, new List<GameAction>(upgradePath) { placement });
                 }
             }

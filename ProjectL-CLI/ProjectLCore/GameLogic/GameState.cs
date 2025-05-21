@@ -565,7 +565,7 @@ namespace ProjectLCore.GameLogic
                 NumBlackPuzzlesLeft = gameState.NumBlackPuzzlesLeft;
                 AvailableWhitePuzzles = gameState.GetAvailableWhitePuzzles().Select(p => p.Clone()).ToArray();
                 AvailableBlackPuzzles = gameState.GetAvailableBlackPuzzles().Select(p => p.Clone()).ToArray();
-                NumTetrominosLeft = Array.AsReadOnly(gameState._numTetrominosLeft);
+                NumTetrominosLeft = gameState._numTetrominosLeft.ToArray();
             }
 
             #endregion
@@ -585,7 +585,7 @@ namespace ProjectLCore.GameLogic
             public Puzzle[] AvailableBlackPuzzles { get; }
 
             /// <summary> The number of tetrominos of each shape left in the shared reserve. </summary>
-            public IReadOnlyList<int> NumTetrominosLeft { get; }
+            public int[] NumTetrominosLeft { get; set; }
 
             #endregion
 
@@ -602,9 +602,9 @@ namespace ProjectLCore.GameLogic
                 var sb = new StringBuilder();
                 // append tetromino info
                 sb.Append("Tetrominos:");
-                for (int i = 0; i < NumTetrominosLeft.Count; i++) {
+                for (int i = 0; i < NumTetrominosLeft.Length; i++) {
                     sb.Append($"  {(TetrominoShape)i}: {NumTetrominosLeft[i]}");
-                    if (i < NumTetrominosLeft.Count - 1) {
+                    if (i < NumTetrominosLeft.Length - 1) {
                         sb.Append(',');
                     }
                 }

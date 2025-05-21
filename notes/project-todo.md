@@ -15,11 +15,12 @@
 - [x] generate AI player code documentation (Sandcastle)
 - [x] write AI player guide
 - [ ] add AI player guide unity details
-- [ ] update AI player simulator to match Unity
+- [x] update AI player simulator to match Unity
 
 ### Unity game
 
-- [ ] create Unity game
-- [ ] generate code documentation (Sandcastle)
+- [x] create Unity game
+- [ ] update ProjectLCore technical documentation
+- [ ] generate code documentation
 - [ ] write technical documentation
-- [ ] write user guide guide
+- [ ] write user guide

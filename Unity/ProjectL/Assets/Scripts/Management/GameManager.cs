@@ -81,6 +81,13 @@ namespace ProjectL.Management
             }
         }
 
+        private void CloseLogger()
+        {
+            if (_logger != null && _logger.IsOpen) {
+                _logger.ToggleLogUI();
+            }
+        }
+
         protected override void Awake()
         {
             // singleton pattern
@@ -137,6 +144,8 @@ namespace ProjectL.Management
 
             // enable pausing iff scene is GAME or FINAL RESULTS
             CanGameBePaused = scene.name == SceneLoader.GameScene || scene.name == SceneLoader.FinalResultsScene;
+
+            CloseLogger();
 
             // hide and clear logger in main menu
             if (scene.name == SceneLoader.MainMenuScene) {

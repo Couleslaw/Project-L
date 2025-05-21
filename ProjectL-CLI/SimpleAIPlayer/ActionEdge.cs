@@ -1,4 +1,4 @@
-﻿namespace AIPlayerExample
+﻿namespace SimpleAIPlayer
 {
     using ProjectLCore.GameActions;
     using System.Collections.Generic;

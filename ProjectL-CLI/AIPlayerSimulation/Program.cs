@@ -87,9 +87,9 @@
             // initialize players
             foreach (AIPlayerBase aiPlayer in players) {
                 string? initPath = playersWithTypes[aiPlayer].InitPath;
-                string fileStr = initPath != null ? $", (ini file: {initPath})" : string.Empty;
+                string fileStr = initPath != null ? $" from \"{initPath}\"" : string.Empty;
 
-                Console.WriteLine($"Initializing {aiPlayer.GetType().Name} {aiPlayer.Name}{initPath}...");
+                Console.WriteLine($"Initializing {aiPlayer.GetType().Name} {aiPlayer.Name}{fileStr}...");
                 Task initTask = aiPlayer.InitAsync(playersWithTypes.Count, gameState.GetAllPuzzlesInGame(), initPath);
 
                 // wait for initialization to finish

@@ -1,5 +1,6 @@
-﻿namespace AIPlayerExample
+﻿namespace SimpleAIPlayer
 {
+    using ProjectLCore;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameActions.Verification;
     using ProjectLCore.GameLogic;
@@ -9,6 +10,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net.Http.Headers;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -16,18 +18,41 @@
     /// </summary>
     public class SimpleAIPlayer : AIPlayerBase
     {
+
+        private enum Stage
+        {
+            Ealy, Mid, Late
+        }
+
+
         #region Fields
 
-        /// <summary>The puzzle we are currently solving.</summary>
-        private Puzzle? _currentPuzzle;
+        private readonly Random _rng = new();
 
-        /// <summary>The strategy to solve <see cref="_currentPuzzle"/>.</summary>
-        private Queue<GameAction> _currentStrategy = new();
+        private List<PuzzleSolutionInfo> _puzzleStrategies = new();
 
-        /// <summary>The strategy for the <see cref="GamePhase.FinishingTouches"/> game phase.</summary>
         private Queue<GameAction>? _finishingTouchesStrategy = null;
 
+        private int[] _numTetrominosOwned = new int[TetrominoManager.NumShapes];
+
+        private const int MinTotalTetrominoLevelForBlackPuzzle = 16;
+
         #endregion
+
+
+        private bool IsSolvingBlackPuzzle => _puzzleStrategies.Any(p => p.Puzzle.IsBlack);
+
+        private Stage _currentStage = Stage.Ealy;
+
+        private int CalculateTotalTetrominoLevel(int[] numTetrominosOwned)
+        {
+            int level = 0;
+            for (int i = 0; i < TetrominoManager.NumShapes; i++) {
+                level += numTetrominosOwned[i] * TetrominoManager.GetLevelOf((TetrominoShape)i);
+            }
+            return level;
+        }
+
 
         #region Methods
 
@@ -39,7 +64,6 @@
         /// <param name="filePath">The path to a file where the player might be storing some information.</param>
         protected override void Init(int numPlayers, List<Puzzle> allPuzzles, string? filePath)
         {
-            // do nothing
         }
 
         /// <summary>
@@ -69,113 +93,65 @@
         /// <exception cref="System.InvalidOperationException">Invalid game phase</exception>
         protected override GameAction GetAction(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, List<PlayerState.PlayerInfo> enemyInfos, TurnInfo turnInfo, ActionVerifier verifier)
         {
-            // get an unfinished puzzle if there is one
-            _currentPuzzle = myInfo.UnfinishedPuzzles.Length == 0 ? null : myInfo.UnfinishedPuzzles[0];
-
-            switch (turnInfo.GamePhase) {
-                case GamePhase.Normal: {
-                    // if no strategy --> create one
-                    if (_currentStrategy.Count == 0) {
-                        _currentStrategy = GetStrategy(gameInfo, myInfo);
-                    }
-
-                    // if next action is valid --> submit it
-                    var nextAction = _currentStrategy.Dequeue();
-                    if (verifier.Verify(nextAction) is VerificationSuccess) {
-                        return nextAction;
-                    }
-
-                    // if not --> create a new strategy
-                    _currentStrategy = GetStrategy(gameInfo, myInfo);
-                    return _currentStrategy.Dequeue();
-                }
-
-                case GamePhase.EndOfTheGame: {
-                    // if we have a puzzle --> continue solving it
-                    if (_currentPuzzle is not null) {
-                        goto case GamePhase.Normal;
-                    }
-
-                    // if we don't have a puzzle --> don't take a new one (negative points)
-                    // try to get more tetrominos (in case tie the player with more tetrominos leftover wins)
-                    GameAction? action = GetValidTetrominoAction(gameInfo, myInfo);
-                    if (action != null)
-                        return action;
-
-                    // try to recycle, any action is more interesting than DoNothingAction()
-                    action = GetValidRecycleAction(gameInfo);
-                    if (action != null)
-                        return action;
-
-                    // last resort
-                    return new DoNothingAction();
-                }
-
-                case GamePhase.FinishingTouches: {
-                    // if no puzzle to complete --> end the game
-                    if (_currentPuzzle is null) {
-                        return new EndFinishingTouchesAction();
-                    }
-
-                    // if I don't have a strategy --> create one
-                    if (_finishingTouchesStrategy is null) {
-                        var solution = SolvePuzzleWithIDAStar(_currentPuzzle, gameInfo.NumTetrominosLeft, myInfo.NumTetrominosOwned, finishingTouches: true).Item1;
-                        if (solution is null) {
-                            return new EndFinishingTouchesAction();
-                        }
-                        _finishingTouchesStrategy = new Queue<GameAction>(solution);
-                    }
-
-                    // proceed with the strategy
-                    return _finishingTouchesStrategy.Dequeue();
-                }
-
-                case GamePhase.Finished:
-                    break;
-                default:
-                    break;
+            // if we finished some puzzles last time --> remove them from the list and use the returned tetrominos
+            if (TryRemovingFinishedPuzzles()) {
+                UpdateTetrominosOwned(myInfo);
+                RecalculateSolutionsForPuzzles(gameInfo, myInfo);
             }
-            throw new InvalidOperationException("Invalid game phase");
+
+            UpdateStage(gameInfo, myInfo, turnInfo);
+
+            // try to get an action
+            GameAction action = GetAction();
+
+            if (verifier.Verify(action) is VerificationFailure) {
+                UpdateTetrominosOwned(myInfo);
+                RecalculateSolutionsForPuzzles(gameInfo, myInfo);
+                action = GetAction();
+            }
+
+            return action;
+
+            GameAction GetAction()
+            {
+                return turnInfo.GamePhase switch {
+                    GamePhase.Normal => GetActionDuringNormalPhase(gameInfo, myInfo, turnInfo),
+                    GamePhase.EndOfTheGame => GetActionDuringEndOfTheGame(gameInfo, myInfo, turnInfo),
+                    GamePhase.FinishingTouches => GetActionDuringFinishingTouchesPhase(gameInfo, myInfo, turnInfo),
+                    _ => new DoNothingAction()
+                };
+            }
         }
 
-        /// <summary>
-        /// Gets the valid action involving getting a tetromino.
-        /// </summary>
-        /// <param name="gameInfo">Information about the game state.</param>
-        /// <param name="myInfo">Information about THIS player.</param>
-        /// <returns>A <see cref="TakeBasicTetrominoAction"/> if possible, else <see cref="ChangeTetrominoAction"/>. <see langword="null"/> if no such action is possible.</returns>
-        private static TetrominoAction? GetValidTetrominoAction(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo)
+        private void UpdateStage(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, TurnInfo turnInfo)
         {
-            if (gameInfo.NumTetrominosLeft[(int)TetrominoShape.O1] > 0) {
-                return new TakeBasicTetrominoAction();
+            if (turnInfo.GamePhase == GamePhase.EndOfTheGame || gameInfo.NumBlackPuzzlesLeft <= 3) {
+                _currentStage = Stage.Late;
+                return;
             }
-            for (int i = 0; i < TetrominoManager.NumShapes; i++) {
-                if (myInfo.NumTetrominosOwned[i] > 0) {
-                    var options = RewardManager.GetUpgradeOptions(gameInfo.NumTetrominosLeft, (TetrominoShape)i);
-                    if (options.Count > 0) {
-                        return new ChangeTetrominoAction((TetrominoShape)i, options.GetRandomElement());
+
+            int num = GetTotalNumberOfTetrominosOwned();
+
+            if (num < MinTotalTetrominoLevelForBlackPuzzle) {
+                _currentStage = Stage.Ealy;
+            }
+            else if (num < 2 * MinTotalTetrominoLevelForBlackPuzzle) {
+                _currentStage = Stage.Mid;
+            }
+            else {
+                _currentStage = Stage.Late;
+            }
+
+            int GetTotalNumberOfTetrominosOwned()
+            {
+                int n = CalculateTotalTetrominoLevel(myInfo.NumTetrominosOwned);
+                foreach (Puzzle puzzle in myInfo.UnfinishedPuzzles) {
+                    foreach (TetrominoShape tetromino in puzzle.GetUsedTetrominos()) {
+                        n += TetrominoManager.GetLevelOf(tetromino);
                     }
                 }
+                return n;
             }
-            return null;
-        }
-
-        /// <summary>
-        /// Gets a valid recycle action.
-        /// </summary>
-        /// <param name="gameInfo">Information about the game state.</param>
-        /// <returns>A <see cref="RecycleAction"/> or <see langword="null"/> if no such action is possible.</returns>
-        private static RecycleAction? GetValidRecycleAction(GameState.GameInfo gameInfo)
-        {
-            if (gameInfo.AvailableWhitePuzzles.Length > 0) {
-                List<uint> order = gameInfo.AvailableWhitePuzzles.Select(p => p.Id).ToList();
-                return new RecycleAction(order, RecycleAction.Options.White);
-            }
-            if (gameInfo.AvailableBlackPuzzles.Length > 0) {
-                List<uint> order = gameInfo.AvailableBlackPuzzles.Select(p => p.Id).ToList();
-                return new RecycleAction(order, RecycleAction.Options.Black);
-            }
-            return null;
         }
 
         /// <summary>
@@ -184,32 +160,422 @@
         /// <param name="puzzle">The puzzle to solve.</param>
         /// <param name="numTetrominosLeft">Information about the tetrominos left in the shared reserve.</param>
         /// <param name="numTetrominosOwned">Information about the tetrominos owned by THIS player.</param>
-        /// <param name="maxDepth">The maximum depth for IDA*.</param>
         /// <param name="finishingTouches">If set to <see langword="true"/> the algorithm will use only the tetrominos owned by the player.</param>
         /// <returns>
-        ///   <list type="bullet">
-        ///     <item><c>(shortest solution, length)</c> if the solution was found.</item>
-        ///     <item><c>(null, bound)</c> where bound is the estimated length of the shortest solution, if the goal wasn't reached within the given <c>maxDepth</c>.</item>
-        ///     <item><c>(null, -1)</c> if the puzzle can't be solved using the available resources.</item>
-        ///   </list>
+        /// Information about the solution to the puzzle. If the puzzle can't be solved, it returns <see langword="null"/>.
         /// </returns>
-        private static Tuple<List<GameAction>?, int> SolvePuzzleWithIDAStar(Puzzle puzzle, IReadOnlyList<int> numTetrominosLeft, IReadOnlyList<int> numTetrominosOwned, int maxDepth = -1, bool finishingTouches = false)
+        private static PuzzleSolutionInfo? SolvePuzzleWithIDAStar(Puzzle puzzle, IReadOnlyList<int> numTetrominosLeft, IReadOnlyList<int> numTetrominosOwned, bool finishingTouches = false)
         {
             var solution = IDAStar.IterativeDeepeningAStar(
                 new PuzzleNode(puzzle.Image, puzzle.Id, numTetrominosLeft, numTetrominosOwned, finishingTouches),
-                PuzzleNode.FinishedPuzzle,
-                maxDepth
+                PuzzleNode.FinishedPuzzle
             );
 
             if (solution.Item1 is null) {
-                return new(null, solution.Item2);
+                return null;
             }
 
             var path = new List<GameAction>();
             foreach (ActionEdge<PuzzleNode> edge in solution.Item1.Cast<ActionEdge<PuzzleNode>>()) {
                 path.AddRange(edge.Action);
             }
-            return new(path, solution.Item2);
+
+            ActionEdge<PuzzleNode> lastEdge = (ActionEdge<PuzzleNode>)solution.Item1[^1];
+            int[] numTetrominosLeftAfter = lastEdge.To.NumTetrominosLeft;
+            int[] numTetrominosOwnedAfter = lastEdge.To.NumTetrominosOwned;
+
+            return new PuzzleSolutionInfo(puzzle, path, numTetrominosLeftAfter, numTetrominosOwnedAfter);
+        }
+
+
+        /// <summary>
+        /// Determines the action to take during the <see cref="GamePhase.Normal"/> phase of the game.
+        /// <para>
+        /// Strategy:
+        /// <list type="bullet">
+        ///   <item>
+        ///     <description>If the player has no puzzles, take a new puzzle.</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>If the player has more than one puzzle and more than one puzzle has a Place action at the end of its queue, use the Master action.</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>If the player already has a puzzle, he will take a new one if after solving the puzzles he already has, he will still have at least one tetromino left.
+        ///     </description>
+        ///   </item>
+        ///   <item>
+        ///     <description>There is a 3% random chance to use a recycle action.</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>Otherwise, pick the puzzle with the shortest solution and use its next action.</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>Near the end of the game, limit the number of puzzles based on the number of puzzles left in the black deck. Always try to have: number of unfinished puzzles &lt;= number of puzzles left in the black deck.</description>
+        ///   </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        /// <param name="gameInfo">The game information.</param>
+        /// <param name="myInfo">My information.</param>
+        /// <param name="turnInfo">The turn information.</param>
+        /// <returns>The action to take during the <see cref="GamePhase.Normal"/>.</returns>
+        private GameAction GetActionDuringNormalPhase(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, TurnInfo turnInfo)
+        {
+            int numPuzzles = _puzzleStrategies.Count;
+
+            if (numPuzzles == 0) {
+                UpdateTetrominosOwned(myInfo);
+            }
+            else {
+                UpdateTetrominosOwnedBasedOnLastPuzzle();
+            }
+
+            // 0 or 1 puzzles --> take a new one before using master
+            if (numPuzzles <= Math.Min(1, gameInfo.NumBlackPuzzlesLeft) && !turnInfo.LastRound) {
+                if (TryTakingNewPuzzle(gameInfo, myInfo, out var newPuzzleAction)) {
+                    return newPuzzleAction!;
+                }
+            }
+
+            // if can use master --> try it
+            if (!turnInfo.UsedMasterAction) {
+                if (TryToUseMasterAction(out var masterAction)) {
+                    return masterAction!;
+                }
+            }
+
+            // try to take a new puzzle if the player has more than one puzzle and can still take one
+            if (numPuzzles > 1 && numPuzzles <= Math.Min(3, gameInfo.NumBlackPuzzlesLeft) && !turnInfo.LastRound) {
+                if (TryTakingNewPuzzle(gameInfo, myInfo, out var newPuzzleAction)) {
+                    return newPuzzleAction!;
+                }
+            }
+
+            // random chance to recycle
+            if (_currentStage != Stage.Ealy && _rng.Next(0, 100) < 3 && TryCreatingRecycleAction(gameInfo, out var recycleAction)) {
+                return recycleAction!;
+            }
+
+            // pick next action from the puzzle with the shortest solution
+            if (TryToGetNextSolutionAction(out var action)) {
+                return action!;
+            }
+
+            // nothing seems to work --> at least try taking a tetromino
+            if (TryToGetValidTetrominoAction(gameInfo, myInfo, out var tetrominoAction)) {
+                UpdateTetrominosOwned(tetrominoAction!);
+                return tetrominoAction!;
+            }
+
+            return new DoNothingAction();
+        }
+
+        /// <summary>
+        /// Determines the action to take during the <see cref="GamePhase.EndOfTheGame"/> phase.
+        /// <para>
+        /// Strategy:
+        /// <list type="bullet">
+        ///   <item>
+        ///     <description>If the player has no puzzles, attempt to use tetromino actions to gain more tetrominos, as leftover tetrominos may be used for tiebreakers.</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>If the player has unfinished puzzles, attempt to solve them, prioritizing the closest one to being solved first.</description>
+        ///   </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        /// <param name="gameInfo">The game information.</param>
+        /// <param name="myInfo">My information.</param>
+        /// <param name="turnInfo">The turn information.</param>
+        /// <returns>The action to take during the <see cref="GamePhase.EndOfTheGame"/>.</returns>
+        private GameAction GetActionDuringEndOfTheGame(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, TurnInfo turnInfo)
+        {
+            if (TryToGetNextSolutionAction(out var action)) {
+                return action!;
+            }
+
+            if (TryToGetValidTetrominoAction(gameInfo, myInfo, out var tetrominoAction)) {
+                UpdateTetrominosOwned(tetrominoAction!);
+                return tetrominoAction!;
+            }
+
+            return new DoNothingAction();
+        }
+
+        /// <summary>
+        /// Determines the action to take during the <see cref="GamePhase.EndOfTheGame"/> phase.
+        /// </summary>
+        /// <param name="gameInfo">The game information.</param>
+        /// <param name="myInfo">My information.</param>
+        /// <param name="turnInfo">The turn information.</param>
+        /// <returns>The action to take during the <see cref="GamePhase.FinishingTouches"/>.</returns>
+        private GameAction GetActionDuringFinishingTouchesPhase(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, TurnInfo turnInfo)
+        {
+            if (_finishingTouchesStrategy is null) {
+                _finishingTouchesStrategy = new(GetFinishingTouchesStrategy(gameInfo, myInfo, turnInfo));
+                _finishingTouchesStrategy.Enqueue(new EndFinishingTouchesAction());
+            }
+
+            return _finishingTouchesStrategy.Dequeue();
+        }
+
+        /// <summary>
+        /// Creates a strategy for the FinishingTouches phase, where the player can use their remaining tetrominos to complete unfinished puzzles for additional points.
+        /// </summary>
+        /// <param name="gameInfo">The current game information, including available puzzles and shared resources.</param>
+        /// <param name="myInfo">Information about the player's current state, such as owned tetrominos and unfinished puzzles.</param>
+        /// <param name="turnInfo">Information about the current turn, including the game phase and actions left.</param>
+        /// <returns>
+        /// A list of actions representing the optimal sequence of actions to maximize the player's score during the FinishingTouches phase.
+        /// If there are no unfinished puzzles or it is not beneficial to use tetrominos, the list will be empty.
+        /// </returns>
+        /// <remarks>
+        /// <para>
+        /// <b>Strategy:</b>
+        /// <list type="bullet">
+        ///   <item>
+        ///     <description>If there are no unfinished puzzles, the strategy ends immediately.</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>For each unfinished puzzle, the method attempts to solve it using only the tetrominos the player currently owns.</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>The method evaluates whether completing a puzzle is worthwhile by considering the points lost for unfinished puzzles and the cost of using each tetromino.</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>Only puzzles that can be completed with the available tetrominos and that provide a net positive score are included in the strategy.</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>The resulting list of actions is ordered to maximize the player's final score, ending with an <see cref="EndFinishingTouchesAction"/>.</description>
+        ///   </item>
+        /// </list>
+        /// </para>
+        /// </remarks>
+        private List<PlaceTetrominoAction> GetFinishingTouchesStrategy(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, TurnInfo turnInfo)
+        {
+            UpdateTetrominosOwned(myInfo);
+
+            List<PlaceTetrominoAction> strategy = new();
+            List<Puzzle> puzzlesToConsider = myInfo.UnfinishedPuzzles.ToList();
+
+            while (puzzlesToConsider.Count > 0) {
+
+                // solve each puzzle and add it to the strategy if it is worth it
+                List<PuzzleSolutionInfo> solutionInfos = new();
+                object lockObject = new();
+
+                Parallel.ForEach(puzzlesToConsider, puzzle => {
+                    var solution = SolvePuzzleWithIDAStar(puzzle, gameInfo.NumTetrominosLeft, _numTetrominosOwned, finishingTouches: true);
+                    // if puzzle has a solution --> add it to the list
+                    if (solution is not null) {
+                        lock (lockObject) {
+                            solutionInfos.Add(solution);
+                        }
+                    }
+                });
+
+                // if there are no puzzles with a solution --> we are done
+                if (solutionInfos.Count == 0) {
+                    return strategy;
+                }
+
+                // get the puzzle where the net score is the highest
+                PuzzleSolutionInfo bestSolution = solutionInfos.OrderByDescending(p => GetNetScore(p)).FirstOrDefault();
+
+                // if the best solution is not worth it --> we are done
+                if (bestSolution is null || GetNetScore(bestSolution) <= 0) {
+                    return strategy;
+                }
+
+                // add the solution to the strategy
+                strategy.AddRange(bestSolution.Solution.OfType<PlaceTetrominoAction>());
+
+                UpdateTetrominosOwned(bestSolution);
+                puzzlesToConsider.Remove(bestSolution.Puzzle);
+            }
+
+            return strategy;
+
+            static int GetNetScore(PuzzleSolutionInfo puzzleInfo)
+            {
+                return puzzleInfo.Puzzle.RewardScore - puzzleInfo.NumSteps;
+            }
+        }
+
+        /// <summary>
+        /// Removes all finished puzzles from the current puzzle strategies and updates the tetromino count accordingly.
+        /// </summary>
+        /// <returns>
+        /// <see langword="true"/> if any finished puzzles were removed; otherwise, <see langword="false"/>.
+        /// </returns>
+        private bool TryRemovingFinishedPuzzles()
+        {
+            if (_puzzleStrategies.Count == 0) {
+                return false;
+            }
+
+            List<PuzzleSolutionInfo> finishedPuzzles = _puzzleStrategies.Where(p => p.NumSteps == 0).ToList();
+            if (finishedPuzzles.Count == 0) {
+                return false;
+            }
+
+            foreach (PuzzleSolutionInfo puzzle in finishedPuzzles) {
+                _puzzleStrategies.Remove(puzzle);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Recalculates the solutions for all unfinished puzzles owned by the player and updates the puzzle strategies list.
+        /// </summary>
+        /// <param name="gameInfo">The current game information, including available tetrominos and puzzles.</param>
+        /// <param name="myInfo">Information about THIS player.</param>
+        private void RecalculateSolutionsForPuzzles(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo)
+        {
+            List<Puzzle> puzzlesToSolve = myInfo.UnfinishedPuzzles.ToList();
+
+            // sort puzzles by the number of empty cells in the puzzle
+            puzzlesToSolve.Sort((p1, p2) => p1.Image.CountEmptyCells().CompareTo(p2.Image.CountEmptyCells()));
+
+            // solve each puzzle and add it to the list
+            _puzzleStrategies.Clear();
+
+            foreach (Puzzle puzzle in puzzlesToSolve) {
+                var solution = SolvePuzzleWithIDAStar(puzzle, gameInfo.NumTetrominosLeft, _numTetrominosOwned);
+                if (solution is null) {
+                    continue;
+                }
+                _puzzleStrategies.Add(solution);
+                UpdateTetrominosOwnedBasedOnLastPuzzle();
+            }
+        }
+
+        /// <summary>
+        /// Gets the valid action involving getting a tetromino.
+        /// </summary>
+        /// <param name="gameInfo">Information about the game state.</param>
+        /// <param name="myInfo">Information about THIS player.</param>
+        /// <param name="action">A <see cref="TakeBasicTetrominoAction"/> if possible, else <see cref="ChangeTetrominoAction"/>. <see langword="null"/> if no such action is possible.</param>
+        /// <returns><see langword="true"/> if successful; otherwise <see langword="null"/>.</returns>
+        private bool TryToGetValidTetrominoAction(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, out TetrominoAction? action)
+        {
+            action = null;
+
+            if (gameInfo.NumTetrominosLeft[(int)TetrominoShape.O1] > 0) {
+                action = new TakeBasicTetrominoAction();
+                return true;
+            }
+            for (int i = 0; i < TetrominoManager.NumShapes; i++) {
+                if (myInfo.NumTetrominosOwned[i] > 0) {
+                    var options = RewardManager.GetUpgradeOptions(gameInfo.NumTetrominosLeft, (TetrominoShape)i);
+                    if (options.Count > 0) {
+                        action = new ChangeTetrominoAction((TetrominoShape)i, options.GetRandomElement());
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Gets a valid recycle action.
+        /// </summary>
+        /// <param name="gameInfo">Information about the game state.</param>
+        /// <param name="action">A <see cref="RecycleAction"/> or <see langword="null"/> if no such action is possible.</param>
+        /// <returns><see langword="true"/> if successful; otherwise <see langword="null"/>.</returns>
+        private bool TryCreatingRecycleAction(GameState.GameInfo gameInfo, out RecycleAction? action)
+        {
+            action = null;
+
+            List<RecycleAction> actions = new();
+
+            if (gameInfo.AvailableWhitePuzzles.Length > 0) {
+                List<uint> order = gameInfo.AvailableWhitePuzzles.Select(p => p.Id).ToList();
+                order.Shuffle();
+                actions.Add(new RecycleAction(order, RecycleAction.Options.White));
+            }
+            if (gameInfo.AvailableBlackPuzzles.Length > 0) {
+                List<uint> order = gameInfo.AvailableBlackPuzzles.Select(p => p.Id).ToList();
+                order.Shuffle();
+                actions.Add(new RecycleAction(order, RecycleAction.Options.Black));
+            }
+
+            if (actions.Count == 0) {
+                return false;
+            }
+
+            action = actions.GetRandomElement();
+            return true;
+        }
+
+        /// <summary>
+        /// Attempts to retrieve the next action from the puzzle with the shortest remaining solution.
+        /// </summary>
+        /// <param name="action">
+        /// When this method returns, contains the next <see cref="GameAction"/> to perform, 
+        /// or <see langword="null"/> if no valid action is available.
+        /// </param>
+        /// <returns>
+        /// <see langword="true"/> if a next action was successfully retrieved; otherwise, <see langword="false"/>.
+        /// </returns>
+        private bool TryToGetNextSolutionAction(out GameAction? action)
+        {
+            action = null;
+
+            // return action from the puzzle with the shortest solution
+            if (_puzzleStrategies.Count == 0) {
+                return false;
+            }
+
+            PuzzleSolutionInfo best = _puzzleStrategies.Where(p => p.NumSteps > 0).OrderBy(p => p.NumSteps).FirstOrDefault();
+            if (best is null) {
+                return false;
+            }
+            action = best.Solution.Dequeue();
+            return true;
+        }
+
+        /// <summary>
+        /// Tries to use master action. If there are no puzzles or only one puzzle with a place action at the end of the queue, it returns <see langword="null"/>.
+        /// </summary>
+        /// <param name="action">A <see cref="MasterAction"/> if it is advantageous to use it; otherwise <see langword="null"/>.</param>
+        /// <returns><see langword="true"/> if successful; otherwise <see langword="null"/>.</returns>
+        private bool TryToUseMasterAction(out MasterAction? action)
+        {
+            action = null;
+
+            if (_puzzleStrategies.Count == 0) {
+                return false;
+            }
+
+            int numPlaceActions = 0;
+
+            // get all the place actions from the puzzles
+            foreach (PuzzleSolutionInfo info in _puzzleStrategies) {
+                GameAction nextAction = info.Solution.Peek();
+                if (nextAction is PlaceTetrominoAction placeAction) {
+                    numPlaceActions++;
+                }
+            }
+
+            // check if worth using master action
+            if (numPlaceActions < 2) {
+                return false;
+            }
+
+            // create the master action for real
+            List<PlaceTetrominoAction> placeActions = new();
+            foreach (PuzzleSolutionInfo info in _puzzleStrategies) {
+                GameAction nextAction = info.Solution.Peek();
+                if (nextAction is PlaceTetrominoAction placeAction) {
+                    info.Solution.Dequeue();
+                    placeActions.Add(placeAction);
+                }
+            }
+
+            action = new MasterAction(placeActions);
+            return true;
         }
 
         /// <summary>
@@ -217,106 +583,135 @@
         /// It first solves all of the considers puzzles and than picks the most advantageous one using the <see cref="PuzzleComparer"/>.
         /// </summary>
         /// <param name="gameInfo">Information about the game state.</param>
-        /// <param name="myInfo">Information about THIS player.</param>
-        /// <param name="maxDepth">The maximum depth for IDA*.</param>
-        /// <param name="levelSumToConsiderBlackPuzzles">If the sum of the levels of the tetrominos owned by the player is less than this number then only white puzzles are considered.</param>
-        /// <returns>The puzzle to solve and a solution, or <see langword="null"/> if no puzzle can be solved.</returns>
-        private static Tuple<Puzzle, List<GameAction>>? ChoosePuzzle(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, int maxDepth = -1, int levelSumToConsiderBlackPuzzles = 15)
+        /// <param name="action">If successful, contains a <see cref="TakePuzzleAction"/></param>
+        /// <param name="myInfo">My information.</param>
+        /// <returns>
+        /// <see langword="true"/> if the player can take a new puzzle and solve it; otherwise <see langword="null"/>.
+        /// </returns>
+        private bool TryTakingNewPuzzle(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, out TakePuzzleAction? action)
         {
+            action = null;
+
             List<Puzzle> possiblePuzzles = new();
 
-            bool ShouldChooseWhitePuzzle(IReadOnlyList<int> numTetrominosOwned)
-            {
-                int totalTetrominoLevel = 0;
-                for (int i = 0; i < TetrominoManager.NumShapes; i++) {
-                    int level = TetrominoManager.GetLevelOf((TetrominoShape)i);
-                    totalTetrominoLevel += level * numTetrominosOwned[i];
-                }
+            int numPuzzles = _puzzleStrategies.Count;
+            int currentTotalLevel = CalculateTotalTetrominoLevel(_numTetrominosOwned);
+            int actualTotalLevel = CalculateTotalTetrominoLevel(myInfo.NumTetrominosOwned);
 
-                return totalTetrominoLevel < levelSumToConsiderBlackPuzzles;
+            bool recalculateAfter = false;
+            bool anyBlackPuzzlesLeft = gameInfo.NumBlackPuzzlesLeft > 0;
+
+            switch (_currentStage) {
+                case Stage.Ealy:
+                    // solve only white
+                    if (_numTetrominosOwned.Sum() > 0) {
+                        possiblePuzzles.AddRange(gameInfo.AvailableWhitePuzzles);
+                    }
+                    break;
+
+                case Stage.Mid:
+                    // solve 1 black and rest white
+                    if (IsSolvingBlackPuzzle && numPuzzles <= 2) {
+                        possiblePuzzles.AddRange(gameInfo.AvailableWhitePuzzles);
+                    }
+                    else if (currentTotalLevel >= MinTotalTetrominoLevelForBlackPuzzle) {
+                        possiblePuzzles.AddRange(gameInfo.AvailableBlackPuzzles);
+                    }
+                    else if (actualTotalLevel >= MinTotalTetrominoLevelForBlackPuzzle) {
+                        possiblePuzzles.AddRange(gameInfo.AvailableBlackPuzzles);
+                        recalculateAfter = true;
+                    }
+                    break;
+
+                case Stage.Late:
+                    // solve only black
+                    if (currentTotalLevel >= MinTotalTetrominoLevelForBlackPuzzle) {
+                        possiblePuzzles.AddRange(gameInfo.AvailableBlackPuzzles);
+                    }
+                    else if (actualTotalLevel >= MinTotalTetrominoLevelForBlackPuzzle) {
+                        possiblePuzzles.AddRange(gameInfo.AvailableBlackPuzzles);
+                        recalculateAfter = true;
+                    }
+                    break;
             }
 
-            if (ShouldChooseWhitePuzzle(myInfo.NumTetrominosOwned)) {
-                possiblePuzzles.AddRange(gameInfo.AvailableWhitePuzzles);
-            }
-            if (possiblePuzzles.Count == 0) {
-                possiblePuzzles.AddRange(gameInfo.AvailableBlackPuzzles);
-            }
             // if there are no puzzles to choose from --> return null
-            if (possiblePuzzles.Count == 0) {
-                return null;
+            if (possiblePuzzles.Count == 0 && !anyBlackPuzzlesLeft) {
+                possiblePuzzles.AddRange(gameInfo.AvailableWhitePuzzles);
+                if (possiblePuzzles.Count == 0) {
+                    return false;
+                }
             }
+
+            if (recalculateAfter) {
+                UpdateTetrominosOwned(myInfo);
+            }
+
 
             // choose the best puzzle
             List<PuzzleSolutionInfo> solutionInfos = new();
             object lockObject = new();
 
             Parallel.ForEach(possiblePuzzles, puzzle => {
-                var solution = SolvePuzzleWithIDAStar(puzzle, gameInfo.NumTetrominosLeft, myInfo.NumTetrominosOwned, maxDepth);
+                var solution = SolvePuzzleWithIDAStar(puzzle, gameInfo.NumTetrominosLeft, _numTetrominosOwned);
                 // if puzzle has a solution --> add it to the list
-                if (solution.Item1 is not null) {
-                    var solutionInfo = new PuzzleSolutionInfo(puzzle, solution.Item1, solution.Item1.Count);
+                if (solution is not null) {
                     lock (lockObject) {
-                        solutionInfos.Add(solutionInfo);
+                        solutionInfos.Add(solution);
                     }
                 }
             });
 
             // if there are no puzzles with a solution --> return null
             if (solutionInfos.Count == 0) {
-                return null;
+                return false;
             }
 
-            // sort the solution infos using the PuzzleComparer
-            solutionInfos.Sort(new PuzzleComparer());
-            // choose the best puzzle = the one with the highest reward
-            var best = solutionInfos[^1];
-            return new(best.Puzzle, best.Solution);
+            // sort the solution infos using the PuzzleComparer and chose best
+            var best = solutionInfos.OrderByDescending(p => p, new PuzzleComparer()).FirstOrDefault();
+
+            // add it to the list of my puzzles
+            if (recalculateAfter) {
+                _numTetrominosOwned = best.TetrominosOwnedAfter;
+                RecalculateSolutionsForPuzzles(gameInfo, myInfo);
+                _puzzleStrategies.Insert(0, best);
+            }
+            else {
+                _puzzleStrategies.Add(best);
+            }
+
+            // create the action to take the puzzle
+            action = new TakePuzzleAction(TakePuzzleAction.Options.Normal, best.Puzzle.Id);
+            return true;
         }
 
-        /// <summary>Gets the strategy on what to do next given the current game state.</summary>
-        /// <param name="gameInfo">Information about the game state.</param>
-        /// <param name="myInfo">Information about THIS player.</param>
-        /// <param name="maxDepth">The maximum depth for IDA*.</param>
-        /// <returns>
-        ///   <para>
-        /// A queue containing:
-        /// </para>
-        ///   <list type="bullet">
-        ///     <item>The <see cref="DoNothingAction" /> if there are no puzzles the player can solve in the current game context.</item>
-        ///     <item>A strategy to (take) and solve the next puzzle otherwise.</item>
-        ///   </list>
-        /// </returns>
-        private Queue<GameAction> GetStrategy(GameState.GameInfo gameInfo, PlayerState.PlayerInfo myInfo, int maxDepth = -1)
+        private void UpdateTetrominosOwnedBasedOnLastPuzzle()
         {
-            var strategy = new Queue<GameAction>();
-
-            // if we already have a puzzle to solve
-            if (_currentPuzzle is not null) {
-                // else find a solution to current puzzle
-                var solution = SolvePuzzleWithIDAStar(_currentPuzzle, gameInfo.NumTetrominosLeft, myInfo.NumTetrominosOwned, maxDepth).Item1;
-                if (solution is null) {
-                    strategy.Enqueue(new DoNothingAction());
-                    return strategy;
-                }
-
-                return new(solution);
+            if (_puzzleStrategies.Count == 0) {
+                return;
             }
+            _numTetrominosOwned = _puzzleStrategies[^1].TetrominosOwnedAfter;
+        }
 
-            // choose puzzle
-            var res = ChoosePuzzle(gameInfo, myInfo, maxDepth);
-            // if there are no puzzles left --> do nothing
-            if (res is null) {
-                strategy.Enqueue(new DoNothingAction());
-                return strategy;
+        private void UpdateTetrominosOwned(PuzzleSolutionInfo puzzleSolutionInfo)
+        {
+            _numTetrominosOwned = puzzleSolutionInfo.TetrominosOwnedAfter;
+        }
+
+        private void UpdateTetrominosOwned(TetrominoAction action)
+        {
+            if (action is TakeBasicTetrominoAction) {
+                _numTetrominosOwned[(int)TetrominoShape.O1]++;
             }
-            // else: take the puzzle and solve it
-            TakePuzzleAction takePuzzleAction = new(TakePuzzleAction.Options.Normal, res.Item1.Id);
-            strategy.Enqueue(takePuzzleAction);
-            foreach (var action in res.Item2) {
-                strategy.Enqueue(action);
+            else if (action is ChangeTetrominoAction changeAction) {
+                _numTetrominosOwned[(int)changeAction.NewTetromino]++;
+                _numTetrominosOwned[(int)changeAction.OldTetromino]--;
             }
-            return strategy;
+        }
+
+        private void UpdateTetrominosOwned(PlayerState.PlayerInfo myCurrentInfo)
+        {
+            _numTetrominosOwned = myCurrentInfo.NumTetrominosOwned;
         }
 
         #endregion
@@ -324,14 +719,16 @@
         /// <summary>
         /// Represents the information about a puzzle needed to determine how advantageous would be to take and solve it.
         /// </summary>
-        private readonly struct PuzzleSolutionInfo
+        private class PuzzleSolutionInfo
         {
             #region Constructors
-            public PuzzleSolutionInfo(Puzzle puzzle, List<GameAction> solution, int numSteps)
+
+            public PuzzleSolutionInfo(Puzzle puzzle, List<GameAction> solution, int[] tetrominosLeftAfter, int[] tetrominosOwnedAfter)
             {
                 Puzzle = puzzle;
-                Solution = solution;
-                NumSteps = numSteps;
+                Solution = new(solution);
+                TetrominosLeftAfter = tetrominosLeftAfter;
+                TetrominosOwnedAfter = tetrominosOwnedAfter;
             }
 
             #endregion
@@ -340,9 +737,13 @@
 
             public Puzzle Puzzle { get; }
 
-            public List<GameAction> Solution { get; }
+            public Queue<GameAction> Solution { get; }
 
-            public int NumSteps { get; }
+            public int NumSteps => Solution.Count;
+
+            public int[] TetrominosLeftAfter { get; }
+
+            public int[] TetrominosOwnedAfter { get; }
 
             #endregion
         }

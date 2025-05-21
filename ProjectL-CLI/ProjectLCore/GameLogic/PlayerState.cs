@@ -387,7 +387,7 @@ namespace ProjectLCore.GameLogic
             {
                 PlayerId = playerState.PlayerId;
                 Score = playerState.Score;
-                NumTetrominosOwned = Array.AsReadOnly(playerState._numTetrominosOwned);
+                NumTetrominosOwned = playerState._numTetrominosOwned.ToArray();
                 UnfinishedPuzzles = playerState.GetUnfinishedPuzzles().Select(p => p.Clone()).ToArray();
                 FinishedPuzzlesIds = playerState._finishedPuzzleIds.AsReadOnly();
             }
@@ -403,7 +403,7 @@ namespace ProjectLCore.GameLogic
             public int Score { get; }
 
             /// <summary> The number of tetrominos owned by the player for each shape. </summary>
-            public IReadOnlyList<int> NumTetrominosOwned { get; }
+            public int[] NumTetrominosOwned { get; }
 
             /// <summary> The puzzles that the player is currently working on. </summary>
             public Puzzle[] UnfinishedPuzzles { get; }

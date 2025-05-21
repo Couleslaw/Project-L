@@ -108,6 +108,7 @@
 - [x] FIX: drag tetromino when AI player is selected
 - [x] show last finishing tocuhes pice at end of final animation
 - [x] make debug log darker
+- [ ] hide current player panel when animating finished puzzle
 
 ### Finishing touches
 
@@ -118,11 +119,21 @@
 - [x] disable AI players feature on WebGL
 - [x] prefill game creation screen with last used settings
 - [x] make num actions left in pause menu colorful
+- [x] add icon (512x512) and customize player settings
 
 ### Code Cleanup
 
 - [x] cancellation token workflow
   - [x] final scene
   - [x] main game scene
-- [ ] use singleton base class for all singletons
+- [x] use singleton base class for all singletons
 - [x] game session manager - remove update
+- [x] cleanup namespaces and prefab folders
+
+### Testing
+
+- [x] 4 players game screen size resposiveness
+- [ ] fail init AI player
+- [ ] player with init file
+- [ ] player with recycle and master actions
+- [ ] play the game multiple times in 1 session
