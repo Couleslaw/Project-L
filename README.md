@@ -1,34 +1,51 @@
 # Project L
 
-**Project L** is a strategic board game where players collect pieces and use them to complete various puzzles. As a reward, they receive new pieces and points. Each turn, players perform three actions. They can choose from the following:
+**Project L** is a strategic board game for up to 4 players created by [Boardcubator](https://www.boardcubator.com/games/project-l/). The main goal of the game is to solve puzzles by filling them in with colorful tetromino pieces. When you finish a puzzle, you get some points and also a new piece as a reward. By doing this, you increase your collection of pieces and can solve more difficult puzzles. If you don't have enough pieces to solve a puzzle, you can trade the pieces you have for new ones or take a new basic piece from the shared reserve.
 
-- Place a piece on a puzzle
-- Take a new puzzle from the offer
-- Take a level-1 piece from the shared supply
-- Exchange one piece for another
-- Recycle one of the puzzle rows on offer
-- Master action – parallel placement, only allowed once per turn
+![showcase](./docs/UserDocs/images/showcase.gif)
 
-There are two puzzle decks available – white and black. The end-game phase begins when the black deck is emptied. For detailed game rules, please refer to the _Project L Base Game_ section in the rulebook [here](https://couleslaw.github.io/Project-L/UserDocs/rulebook.pdf).
+This project is a digital version of the game that can be played by both human and AI players.
 
-## Unity Version of the Game
+## [Play Project L Online](./docs/game/index)
 
-Currently a work in progress. Functional specification can be found [here](https://couleslaw.github.io/Project-L/FunctionDocs/index).
+The game can be [played online](./docs/game/index) in your browser, however this version of the game does not support AI players.
 
-## Project L Library
+## [Download Project L](https://github.com/Couleslaw/Project-L/releases/latest)
 
-The library [Project L Core](https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/G_ProjectLCore.htm), documented [here](https://couleslaw.github.io/Project-L/TechnicalDocs/core/index), serves two purposes. First, it implements the game logic and allows for easy development of applications that simulate the game in various ways. Second, it provides an API for creating and efficiently training intelligent agents (AI players) that can play the game.
+If you want to try playing against some AI players you can [download the game](https://github.com/Couleslaw/Project-L/releases/latest) and play it offline. It is available for Windows, MacOS and Linux.
 
-### API for Developing Game Applications
+There is one built-in AI player, but you can also implement your own AI players.
 
-How the library works and what it offers is described in detail in the [documentation](https://couleslaw.github.io/Project-L/TechnicalDocs/core/index). The most important class is [GameCore](https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_GameCore.htm), which is responsible for all the game logic. An example of a simple program that simulates the Project L game loop is available [here](https://couleslaw.github.io/Project-L/TechnicalDocs/core/index#showcase-of-the-game-engine).
+## Crate Your Own AI Player
 
-### API for Creating AI Players
+You can create your own AI player by simply implementing the methods of the [AIPlayerBase](https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/T_ProjectLCore_Players_AIPlayerBase.htm) abstract class. Specifically:
 
-Library users can implement their own AI player by simply implementing the abstract methods of the class [AIPlayerBase](https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/T_ProjectLCore_Players_AIPlayerBase.htm). Specifically:
+- [Init](https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/M_ProjectLCore_Players_AIPlayerBase_Init.htm) – initializes the player
+- [GetAction](https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/M_ProjectLCore_Players_AIPlayerBase_GetAction.htm) – chooses the next action to take
+- [GetReward](https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/M_ProjectLCore_Players_AIPlayerBase_GetReward.htm) – selects a reward for completing a puzzle
 
-- [GetAction](https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/M_ProjectLCore_Players_AIPlayerBase_GetAction.htm) – chooses the next action for the AI player
-- [GetReward](https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/M_ProjectLCore_Players_AIPlayerBase_GetReward.htm) – selects a reward for a completed puzzle
-- [Init](https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/M_ProjectLCore_Players_AIPlayerBase_Init.htm) – initializes the AI player
+More detailed information on creating AI players is available in the [AI Player Guide](https://couleslaw.github.io/Project-L/AIPlayerGuide/index).
 
-More detailed information on creating AI players is available [here](https://couleslaw.github.io/Project-L/AIPlayerGuide/index).
+## User Guide
+
+The [user guide](./UserDocs/index) explains the rules and how to play the game.
+
+## How Does It Work?
+
+The Unity version of the game is built on top of the **ProjectLCore** library, which contains all the core game logic. **ProjectLCore** is completely independent from Unity, making it suitable for training AI players or building other interfaces. The Unity implementation simply provides a user interface and connects to this core library.
+
+Because of this separation, the documentation is split into two parts:
+
+- The [Library docs](./TechnicalDocs/core/index) cover the inner workings of the [Project-L Core](./ProjectLCoreDocs/index.html) library.
+- The [Unity docs](./TechnicalDocs/unity/index) explain how the Unity-based game client is implemented.
+
+## Used Technologies
+
+- **[Unity 6000.0.37f1](https://unity.com/)** – the main game engine used to build the digital version of Project L.
+- **[Visual Studio 2022](https://visualstudio.microsoft.com/vs/)** – the primary IDE for writing and debugging code.
+- **[NuGet for Unity](https://github.com/GlitchEnzo/NuGetForUnity)** – manages .NET packages inside Unity.
+- **[Figma](https://www.figma.com/)** – used to design the game’s graphics and user interface.
+- **[Sandcastle Help File Builder](https://github.com/EWSoftware/SHFB)** – generates documentation for the ProjectLCore library.
+- **[DocFX](https://dotnet.github.io/docfx/)** – creates documentation for the Unity-based parts of the project.
+- **[Ini-parser](https://www.nuget.org/packages/ini-parser-netstandard)** – parses the AI player configuration file.
+- **[Unity Logger](https://github.com/herbou/Unity_Logger)** – adds an in-game logging feature for easier AI player debugging.

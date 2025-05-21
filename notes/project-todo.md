@@ -20,7 +20,7 @@
 ### Unity game
 
 - [x] create Unity game
-- [ ] update ProjectLCore technical documentation
-- [ ] generate code documentation
-- [ ] write technical documentation
-- [ ] write user guide
+- [x] update ProjectLCore technical documentation
+- [x] generate code documentation
+- [x] write technical documentation
+- [x] write user guide

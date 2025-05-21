@@ -155,3 +155,7 @@ When your player fails to provide a valid action, or the `GetAction` method thro
 #### Invalid Rewards
 
 When your player fails to choose a valid reward, or the `GetReward` method throws an exception, the game picks the first available reward for it.
+
+### Debugging
+
+The Unity game has a built-in logging system that can be used to debug your AI player. You can open the log window by clicking the little icon in the top right corner of the screen.

@@ -108,7 +108,6 @@
 - [x] FIX: drag tetromino when AI player is selected
 - [x] show last finishing tocuhes pice at end of final animation
 - [x] make debug log darker
-- [ ] hide current player panel when animating finished puzzle
 
 ### Finishing touches
 

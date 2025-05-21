@@ -10,18 +10,19 @@ This project implements only the **Base game**. It doesn't implement the solo va
 
 ## User Guide
 
-The [user guide](./UserDocs/index) explains the game rules and how to play it.
+The [user guide](./UserDocs/index) explains the rules and how to play the game.
 
 ## Functional Specification
 
-The [functional spec](./FunctionDocs/index) details all features and behavior of the game from a user's perspective.
+The [functional specification](./FunctionDocs/index) details all features and behavior of the game from a user's perspective.
 
 ## Technical Documentation
 
-The Unity implementation of the game relies on a library, which is independent of the Unity engine and is suitable for training AI players. As a result, the documentation is divided into two parts.
+The Unity version of the game is built on top of the **ProjectLCore** library, which contains all the core game logic. **ProjectLCore** is completely independent from Unity, making it suitable for training AI players or building other interfaces. The Unity implementation simply provides a user interface and connects to this core library.
 
-- [Library docs](./TechnicalDocs/core/index) - describe the inner workings of the [Project-L Core](./ProjectLCoreDocs/index.html) library.
+Because of this separation, the documentation is split into two parts:
 
-- [Unity docs](./TechnicalDocs/unity/index) - describe the Unity implementation of the game.
+- The [Library docs](./TechnicalDocs/core/index) cover the inner workings of the [Project-L Core](./ProjectLCoreDocs/index.html) library.
+- The [Unity docs](./TechnicalDocs/unity/index) explain how the Unity-based game client is implemented.
 
 The [AI Player Guide](./AIPlayerGuide/index) explains how to create your own AI players for the game.

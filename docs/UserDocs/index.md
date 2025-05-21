@@ -2,11 +2,11 @@
 
 # User Guide
 
-The rules are explained in detail in the official [rulebook](./rulebook.pdf) for the game can be found on the [Boardcubator](https://www.boardcubator.com/games/project-l/) website. This guide explains them only briefly and focuses on how to perform the actions in the application.
+The rules are explained in detail in the official [rulebook](./rulebook.pdf) for the game which can be found on the [Boardcubator](https://www.boardcubator.com/games/project-l/) website. This guide explains them only briefly and focuses on how to perform the actions in the application.
 
 ## Game Overview
 
-In Project L, you solve puzzles by filling them in with colorful tetromino pieces. When you finish a puzzle, you get some points and also a new piece as a reward. By doing this, you increase your collection of pieces and can solve more difficult puzzles. If you don't have enough pieces to solve a puzzle, you can trade the pieces you have for new ones or take an entirely new basic piece from the shared reserve.
+In Project L, you solve puzzles by filling them in with colorful tetromino pieces. When you finish a puzzle, you get some points and also a new piece as a reward. By doing this, you increase your collection of pieces and can solve more difficult puzzles. If you don't have enough pieces to solve a puzzle, you can trade the pieces you have for new ones or take a new basic piece from the shared reserve.
 
 There are two kinds of puzzles - white and black. White puzzles are easier to solve and in general give less points but better pieces. Black puzzles are more difficult, but they give you a lot of points.
 
@@ -28,12 +28,13 @@ The order in which the players will take turns is determined by the order in whi
 
 | Action                         | Controls                                |
 | ------------------------------ | --------------------------------------- |
-| Open/Close pause menu          | `ESC`, `P`                              |
 | Confirm action / Select reward | Click `CONFIRM` button, `Enter`, `Ctrl` |
 | Cancel action / Clear board    | Start a different action, `TAB`         |
 | Place piece to puzzle          | Click on it, `Space`                    |
 | Rotate piece                   | Mouse wheel, up/down arrows             |
 | Flip piece                     | Right click, left/right arrows          |
+| Open/Close pause menu          | `ESC`, `P`                              |
+| Exit/Enter full-screen         | `F11`                                   |
 
 ## Where is what?
 
