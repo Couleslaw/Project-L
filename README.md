@@ -42,6 +42,8 @@ Because of this separation, the documentation is split into two parts:
 ## Used Technologies
 
 - **[Unity 6000.0.37f1](https://unity.com/)** – the main game engine used to build the digital version of Project L.
+- **[C#](https://docs.microsoft.com/en-us/dotnet/csharp/)** – the programming language used to write the game code.
+- **[.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)** – the framework used to build the ProjectLCore library.
 - **[Visual Studio 2022](https://visualstudio.microsoft.com/vs/)** – the primary IDE for writing and debugging code.
 - **[NuGet for Unity](https://github.com/GlitchEnzo/NuGetForUnity)** – manages .NET packages inside Unity.
 - **[Figma](https://www.figma.com/)** – used to design the game’s graphics and user interface.
