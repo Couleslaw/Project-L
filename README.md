@@ -20,7 +20,7 @@ There is one built-in AI player, but you can also implement your own AI players.
 
 The [User Guide](https://couleslaw.github.io/Project-L/UserDocs/) explains the rules and how to play the game.
 
-## Crate Your Own AI Player
+## Create Your Own AI Player
 
 You can create your own AI player by simply implementing the methods of the [AIPlayerBase](https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/T_ProjectLCore_Players_AIPlayerBase.htm) abstract class. Specifically:
 
