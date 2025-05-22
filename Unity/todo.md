@@ -134,3 +134,8 @@
 - [x] 4 players game screen size resposiveness
 - [x] player with init file
 - [x] player with recycle and master actions
+
+### Last polishing
+
+- [ ] AI player - mid game - dont take white puzzles with 0 points
+- [ ] AI place - dont draw shadow

@@ -758,6 +758,11 @@
                 }
             });
 
+            // mid --> if puzzle has 0 points - take only if it has solution len = 1
+            if (_currentStage == Stage.Mid) {
+                solutionInfos = solutionInfos.Where(p => p.Puzzle.RewardScore > 0 || p.NumSteps == 1).ToList();
+            }
+
             if (onlyTakeShortSolution) {
                 solutionInfos = solutionInfos.Where(p => p.NumSteps <= shortSolutionMaxLength || p.Solution.Peek() is PlaceTetrominoAction).ToList();
             }

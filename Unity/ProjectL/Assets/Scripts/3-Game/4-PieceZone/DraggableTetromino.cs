@@ -349,7 +349,7 @@ namespace ProjectL.GameScene.PieceZone
             switch (mode) {
                 case Mode.Animation: {
                     // update layers - selected so that puzzles can detect it
-                    gameObject.layer = SelectedTetrominoLayer;
+                    gameObject.layer = PlacedTetrominoLayer;
                     _spriteRenderer.sortingOrder = _selectedTetrominoSortingOrder;
 
                     // update rigidbody
