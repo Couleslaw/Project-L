@@ -16,13 +16,13 @@ If you want to try playing against some AI players you can download the game and
 
 There is one built-in AI player, but you can also implement your own AI players.
 
-## User Guide
+## How to Play the Game?
 
-The [User Guide](https://couleslaw.github.io/Project-L/UserDocs/) explains the rules and how to play the game.
+The [User Guide](https://couleslaw.github.io/Project-L/UserDocs/) explains the rules and shows how to play the game.
 
 ## Create Your Own AI Player
 
-You can create your own AI player by simply implementing the methods of the [AIPlayerBase](https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/T_ProjectLCore_Players_AIPlayerBase.htm) abstract class. Specifically:
+You can add your own intelligent agent to the game by simply implementing the methods of the [AIPlayerBase](https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/T_ProjectLCore_Players_AIPlayerBase.htm) abstract class. Specifically:
 
 - [Init](https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/M_ProjectLCore_Players_AIPlayerBase_Init.htm) – initializes the player
 - [GetAction](https://couleslaw.github.io/Project-L/ProjectLCoreDocs/html/M_ProjectLCore_Players_AIPlayerBase_GetAction.htm) – chooses the next action to take
@@ -44,11 +44,15 @@ Because of this separation, the documentation is split into two parts:
 - **[Unity 6000.0.37f1](https://unity.com/)** – the main game engine used to build the digital version of Project L.
 - **[C#](https://docs.microsoft.com/en-us/dotnet/csharp/)** – the programming language used to write the game code.
 - **[.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)** – the framework used to build the ProjectLCore library.
-- **[Visual Studio 2022](https://visualstudio.microsoft.com/vs/)** – the primary IDE for writing and debugging code.
-- **[Gemini](https://gemini.google.com/)** – the AI assistant used
+- **[Visual Studio 2022](https://visualstudio.microsoft.com/vs/)** – the IDE used for writing and debugging code.
+- **[Gemini](https://gemini.google.com/)** – the primary AI assistant used.
 - **[NuGet for Unity](https://github.com/GlitchEnzo/NuGetForUnity)** – manages .NET packages inside Unity.
 - **[Figma](https://www.figma.com/)** – used to design the game’s graphics and user interface.
 - **[Sandcastle Help File Builder](https://github.com/EWSoftware/SHFB)** – generates documentation for the ProjectLCore library.
 - **[DocFX](https://dotnet.github.io/docfx/)** – creates documentation for the Unity-based parts of the project.
 - **[Ini-parser](https://www.nuget.org/packages/ini-parser-netstandard)** – parses the AI player configuration file.
 - **[Unity Logger](https://github.com/herbou/Unity_Logger)** – adds an in-game logging feature for easier AI player debugging.
+
+## Credits
+
+This project is a digital implementation of **Project L**, a board game designed and published by **Boardcubator** in 2020. I do not claim ownership or credit for the original game design, art, or graphic design.
