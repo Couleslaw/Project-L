@@ -6,7 +6,7 @@
 
 This project is a digital version of the game that can be played by both human and AI players.
 
-## [Play Project L Online](https://couleslaw.github.io/Project-L/game/)
+## [Play Project L Online](https://couleslaw.github.io/Project-L/play/)
 
 Experience the game in your browser. Please note: AI players are not available in this version.
 
@@ -45,6 +45,7 @@ Because of this separation, the documentation is split into two parts:
 - **[C#](https://docs.microsoft.com/en-us/dotnet/csharp/)** – the programming language used to write the game code.
 - **[.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)** – the framework used to build the ProjectLCore library.
 - **[Visual Studio 2022](https://visualstudio.microsoft.com/vs/)** – the primary IDE for writing and debugging code.
+- **[Gemini](https://gemini.google.com/)** – the AI assistant used
 - **[NuGet for Unity](https://github.com/GlitchEnzo/NuGetForUnity)** – manages .NET packages inside Unity.
 - **[Figma](https://www.figma.com/)** – used to design the game’s graphics and user interface.
 - **[Sandcastle Help File Builder](https://github.com/EWSoftware/SHFB)** – generates documentation for the ProjectLCore library.
