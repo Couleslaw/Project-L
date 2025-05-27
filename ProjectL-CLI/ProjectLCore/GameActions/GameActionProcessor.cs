@@ -291,12 +291,13 @@
             _playerState.RemoveTetromino(action.Shape);
             puzzle.AddTetromino(action.Shape, action.Position);
 
+            // place costs 1 point in FinishingTouches
+            if (_game.CurrentGamePhase == GamePhase.FinishingTouches) {
+                _playerState.Score -= 1;
+            }
+
             // if puzzle not finished --> return
             if (!puzzle.IsFinished) {
-                // place costs 1 point in FinishingTouches
-                if (_game.CurrentGamePhase == GamePhase.FinishingTouches) {
-                    _playerState.Score -= 1;
-                }
                 return;
             }
 
@@ -342,12 +343,13 @@
             _playerState.RemoveTetromino(action.Shape);
             puzzle.AddTetromino(action.Shape, action.Position);
 
+            // place costs 1 point in FinishingTouches
+            if (_game.CurrentGamePhase == GamePhase.FinishingTouches) {
+                _playerState.Score -= 1;
+            }
+
             // if puzzle not finished --> return
             if (!puzzle.IsFinished) {
-                // place costs 1 point in FinishingTouches
-                if (_game.CurrentGamePhase == GamePhase.FinishingTouches) {
-                    _playerState.Score -= 1;
-                }
                 return;
             }
 
