@@ -55,4 +55,4 @@ Because of this separation, the documentation is split into two parts:
 
 ## Credits
 
-This project is a digital implementation of **Project L**, a board game designed and published by **Boardcubator** in 2020. I do not claim ownership or credit for the original game design, art, or graphic design.
+This project is a digital implementation of **Project L**, a board game designed and published by **Boardcubator** in 2020. I do not claim ownership or credit for the original game design, art, or graphic design. The resources I have used (rulebook and puzzle graphics) can be publicly accessed on the [Boardcubator website](https://www.boardcubator.com/games/project-l/).

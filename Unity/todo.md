@@ -137,5 +137,5 @@
 
 ### Last polishing
 
-- [ ] AI player - mid game - dont take white puzzles with 0 points
-- [ ] AI place - dont draw shadow
+- [x] AI player - mid game - dont take white puzzles with 0 points
+- [x] AI place - dont draw shadow
