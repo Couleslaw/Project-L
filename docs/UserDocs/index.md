@@ -31,7 +31,7 @@ The order in which the players will take turns is determined by the order in whi
 | Action                         | Controls                                                     |
 | ------------------------------ | ------------------------------------------------------------ |
 | Confirm action / Select reward | Click `CONFIRM` button, `Enter`, `Ctrl`                      |
-| Cancel action / Clear board    | Start a different action, `TAB`, `c`                         |
+| Cancel action / Clear board    | Start a different action, `TAB`                              |
 | Place piece to puzzle          | Left click on it, `Space`                                    |
 | Rotate last selected piece     | Mouse wheel, up/down arrows                                  |
 | Flip last selected piece       | Right click, left/right arrows                               |
