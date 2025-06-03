@@ -38,10 +38,6 @@ The section name can be anything, its just for your reference. The properties ar
 
 Your AI player should now appear in the list of available player types.
 
-{% include note.html content="
-The find the `aiplayers.ini` file, go to the folder containing the game executable and from there go to `ProjectL_Data/StreamingAssets`. The file should be in there. If it is not, you can create it yourself. The path to your DLL and your init file should be relative to this folder (recommended), or absolute.
-"%}
-
 ## Technical Requirements
 
 {% include important.html content="
@@ -127,13 +123,23 @@ The simulation project also contains the `puzzles.txt` file, which contains a li
 
 ### Export Your AI Player as a DLL
 
-Select the **Release** configuration and build your project. You will find the DLL in the `bin/Release` folder. Then add your player to the `aiplayers.ini` file as explained in the [overview](#overview).
+Select the **Release** configuration and build your project. You will find the DLL in the `bin/Release` folder.
 
 {% include note.html content="
 The game will look through the DLL for a (public) non-abstract class that inherits from the `AIPlayerBase` class. If no such class is found, or if the DLL cannot be loaded due to incorrect targeting (not .NET Standard 2.1) or other errors, the player will not appear in the list of available players. If for some weird reason there are multiple valid AI player classes, the first one found will be used.
 "%}
 
-Before adding your player to the game, it's a good idea to test it using the `AIPlayerSimulation` project. You can easily get started by downloading a pre-compiled version as a .zip file from the [releases page](https://github.com/Couleslaw/Project-L/releases/latest).
+Before adding your player to the game, it's a good idea to test it using the `AIPlayerSimulation` project. You can download a pre-compiled version as a .zip file from the [releases page](https://github.com/Couleslaw/Project-L/releases/latest).
+
+### Add Your AI Player to the Game
+
+The `aiplayers.ini` file is located in the `StreamingAssets` folder of the Unity game. This file contains a list of all available AI players and their configurations. Add a new section for your player, following the format described in the [overview](#overview) section. The `dll_path` and the `init_path` can be either absolute paths or relative to the `StreamingAssets` folder.
+
+To find the `StreamingAssets` folder, navigate to the folder containing the game executable. The `StreamingAssets` should then be located in the following location depending on your platform:
+
+- Windows: `Project-L_Data/StreamingAssets`
+- Linux: `Project-L_Data/StreamingAssets`
+- macOS: `Project-L.app/Contents/Resources/Data/StreamingAssets`
 
 ### Debugging
 

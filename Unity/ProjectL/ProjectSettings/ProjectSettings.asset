@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: Couleslaw
-  productName: Project L
+  productName: Project-L
   defaultCursor: {fileID: 2800000, guid: 068f86fc5986a3b47a44a47afe5ef093, type: 3}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
