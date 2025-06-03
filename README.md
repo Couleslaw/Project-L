@@ -1,6 +1,6 @@
 # Project L
 
-**Project L** is a strategic board game for up to 4 players created by [Boardcubator](https://www.boardcubator.com/games/project-l/). The main goal of the game is to solve puzzles by filling them in with colorful tetromino pieces. When you finish a puzzle, you get some points and also a new piece as a reward. By doing this, you increase your collection of pieces and can solve more difficult puzzles. If you don't have enough pieces to solve a puzzle, you can trade the pieces you have for new ones or take a new basic piece from the shared reserve.
+**Project L** is a strategic board game for up to 4 players created by [Boardcubator](https://www.boardcubator.com/games/project-l/). The main goal of the game is to solve puzzles by filling them in with colorful Tetris-like pieces. When you finish a puzzle, you get some points and also a new piece as a reward. By doing this, you increase your collection of pieces and can solve more difficult puzzles. If you don't have enough pieces to solve a puzzle, you can trade the pieces you have for new ones or take a new basic piece from the shared reserve.
 
 ![showcase](./docs/UserDocs/images/showcase.gif)
 

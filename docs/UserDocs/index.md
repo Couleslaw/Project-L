@@ -6,7 +6,7 @@ The rules are explained in detail in the official [rulebook](./rulebook.pdf) for
 
 ## Game Overview
 
-In **Project L**, you solve puzzles by filling them in with colorful tetromino pieces. When you finish a puzzle, you get some points and also a new piece as a reward. By doing this, you increase your collection of pieces and can solve more difficult puzzles. If you don't have enough pieces to solve a puzzle, you can trade the pieces you have for new ones or take a new basic piece from the shared reserve.
+In **Project L**, you solve puzzles by filling them in with colorful Tetris-like pieces. When you finish a puzzle, you get some points and also a new piece as a reward. By doing this, you increase your collection of pieces and can solve more difficult puzzles. If you don't have enough pieces to solve a puzzle, you can trade the pieces you have for new ones or take a new basic piece from the shared reserve.
 
 Players take turns and in each turn they must perform 3 actions, for example: take a new puzzle and place two pieces into it. The 5 possible actions are explained bellow.
 
