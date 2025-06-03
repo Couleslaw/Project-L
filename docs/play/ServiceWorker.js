@@ -1,9 +1,9 @@
 const cacheName = "Couleslaw-Project L-1.0";
 const contentToCache = [
     "Build/ae90069a8c44dc7323515f830f8d89e7.loader.js",
-    "Build/f20198a4c968120b8efbfdd56f89d11c.framework.js.gz",
-    "Build/4105fe9a4de6563e943d650c45489b0e.data.gz",
-    "Build/1495133f75af79a9beb9f4833e5b2f52.wasm.gz",
+    "Build/f20198a4c968120b8efbfdd56f89d11c.framework.js",
+    "Build/f0941cf029ef29779241e6ab956898b5.data",
+    "Build/1495133f75af79a9beb9f4833e5b2f52.wasm",
     "TemplateData/style.css"
 
 ];
