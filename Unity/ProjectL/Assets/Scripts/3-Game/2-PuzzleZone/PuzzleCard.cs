@@ -4,6 +4,7 @@ namespace ProjectL.GameScene.PuzzleZone
 {
     using ProjectL.Data;
     using ProjectL.Sound;
+    using ProjectL.Utils;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
@@ -205,7 +206,7 @@ namespace ProjectL.GameScene.PuzzleZone
             }
 
             _button.transition = Selectable.Transition.SpriteSwap;
-            _button.spriteState = _mode switch {
+            SpriteState newSpriteState = _mode switch {
                 PuzzleZoneMode.TakePuzzle => new SpriteState {
                     highlightedSprite = highlighted,
                     pressedSprite = borderBright,
@@ -225,6 +226,15 @@ namespace ProjectL.GameScene.PuzzleZone
                     disabledSprite = borderBright
                 },
             };
+
+            // if taking new puzzle --> update the radio button group sprites
+            if (_mode == PuzzleZoneMode.TakePuzzle && _button.interactable) {
+                RadioButtonsGroup.UpdateSpritesForButton(_button, newSpriteState);
+            }
+            // else update sprite state directly
+            else {
+                _button.spriteState = newSpriteState;
+            }
         }
 
         #endregion

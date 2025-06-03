@@ -105,7 +105,7 @@ namespace ProjectL.Utils
                 return;
             }
             string groupName = _buttonToGroupMap[button];
-            TryUnselectingButton(button, groupName, uiDeselect: true);
+            TryDeselectingButton(button, groupName, uiDeselect: true);
         }
 
         public static void ForceDeselectButtonInGroup(string groupName)
@@ -142,11 +142,11 @@ namespace ProjectL.Utils
 
             // this button was already selected --> cancel
             if (selectedButton == button) {
-                TryUnselectingButton(button, groupName, uiDeselect: true);
+                TryDeselectingButton(button, groupName, uiDeselect: true);
                 return;
             }
 
-            TryUnselectingButton(selectedButton, groupName);
+            TryDeselectingButton(selectedButton, groupName);
             MarkAsSelected(button, groupName);
         }
 
@@ -167,12 +167,13 @@ namespace ProjectL.Utils
             buttonInfo.OnSelect?.Invoke();
         }
 
-        private static void TryUnselectingButton(Button? button, string groupName, bool uiDeselect = false)
+        private static void TryDeselectingButton(Button? button, string groupName, bool uiDeselect = false)
         {
             if (!_buttonGroups.ContainsKey(groupName)) {
                 Debug.LogError($"Group {groupName} not found.");
                 return;
             }
+
 
             // get selected button
             var selectedButton = _selectedButtons[groupName];
@@ -188,8 +189,8 @@ namespace ProjectL.Utils
             // restore original sprite setting
             _selectedButtons[groupName] = null;
             var buttonInfo = _buttonGroups[groupName][selectedButton];
-            selectedButton.image.sprite = buttonInfo.OriginalSprite;
             selectedButton.spriteState = buttonInfo.UnselectedSpriteState;
+            selectedButton.image.sprite = buttonInfo.OriginalSprite;
 
             // invoke connected methods
             buttonInfo.OnCancel?.Invoke();

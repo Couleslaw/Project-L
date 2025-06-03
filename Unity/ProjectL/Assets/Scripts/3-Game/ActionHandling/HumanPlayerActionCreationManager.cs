@@ -37,7 +37,7 @@ namespace ProjectL.GameScene.ActionHandling
 
         private readonly Dictionary<ActionType, IActionConstructor> _actionConstructors = new();
 
-        private Queue<GameAction>? _finishingTouchesPlacements = null;
+        private Queue<GameAction> _finishingTouchesPlacements = new();
 
         private Queue<PlaceTetrominoAction> _placeActionsQueue = new();
 
@@ -302,13 +302,13 @@ namespace ProjectL.GameScene.ActionHandling
             }
 
             if (_currentActionMode == ActionMode.FinishingTouches) {
-                if (_finishingTouchesPlacements != null) {
+                if (_finishingTouchesPlacements.Count > 0) {
                     player.SetAction(_finishingTouchesPlacements.Dequeue());
                     return;
                 }
             }
 
-            if (_placeActionsQueue.Count > 0) {
+            else if (_placeActionsQueue.Count > 0) {
                 player.SetAction(_placeActionsQueue.Dequeue());
                 return;
             }

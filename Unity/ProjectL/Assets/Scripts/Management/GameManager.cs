@@ -72,11 +72,11 @@ namespace ProjectL.Management
         }
 
         /// <summary>
-        /// Opens the in-game logger if it is not already open.
+        /// Opens or closes the logger UI. If the logger is not open, it will be opened; otherwise, it will be closed.
         /// </summary>
-        public void OpenLogger()
+        public void ToggleLogger()
         {
-            if (_logger != null && !_logger.IsOpen) {
+            if (_logger != null) {
                 _logger.ToggleLogUI();
             }
         }

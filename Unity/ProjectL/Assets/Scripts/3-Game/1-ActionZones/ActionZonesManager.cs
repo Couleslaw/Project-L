@@ -164,28 +164,32 @@ namespace ProjectL.GameScene.ActionZones
             public DisposableButtonSelector(Button button)
             {
                 _button = button;
+
+                if (Instance == null || Instance._pieceActionZone == null || Instance._puzzleActionZone == null) {
+                    return;
+                }
+
                 switch (button) {
                     case Button.TakePuzzle:
-                        Instance._puzzleActionZone?.ManuallyClickTakePuzzleButton();
+                        Instance._puzzleActionZone.ManuallyClickTakePuzzleButton();
                         break;
                     case Button.Recycle:
-                        Instance._puzzleActionZone?.ManuallyClickRecycleButton();
+                        Instance._puzzleActionZone.ManuallyClickRecycleButton();
                         break;
                     case Button.TakeBasicTetromino:
-                        Instance._pieceActionZone?.ManuallyClickTakeBasicTetrominoButton();
+                        Instance._pieceActionZone.ManuallyClickTakeBasicTetrominoButton();
                         break;
                     case Button.ChangeTetromino:
-                        Instance._pieceActionZone?.ManuallyClickChangeTetrominoButton();
+                        Instance._pieceActionZone.ManuallyClickChangeTetrominoButton();
                         break;
                     case Button.MasterAction:
-                        Instance._pieceActionZone?.ManuallyClickMasterActionButton();
+                        Instance._pieceActionZone.ManuallyClickMasterActionButton();
                         break;
                     case Button.SelectReward:
-                        Instance._pieceActionZone?.SetActionMode(ActionMode.RewardSelection);
-                        Instance._puzzleActionZone?.SetActionMode(ActionMode.RewardSelection);
+                        Instance._pieceActionZone.SetActionMode(ActionMode.RewardSelection);
+                        Instance._puzzleActionZone.SetActionMode(ActionMode.RewardSelection);
                         break;
                     case Button.EndFinishingTouches:
-                        Instance._pieceActionZone?.ManuallyClickFinishingTouchesButton();
                         break;
                     default:
                         break;
@@ -198,7 +202,7 @@ namespace ProjectL.GameScene.ActionZones
 
             public void Dispose()
             {
-                if (Instance == null) {
+                if (Instance == null || Instance._pieceActionZone == null || Instance._puzzleActionZone == null) {
                     return;
                 }
 
@@ -211,10 +215,14 @@ namespace ProjectL.GameScene.ActionZones
                         ActionButton.DeselectCurrentButton();
                         break;
                     case Button.SelectReward:
-                        Instance._pieceActionZone?.SetActionMode(ActionMode.ActionCreation);
-                        Instance._puzzleActionZone?.SetActionMode(ActionMode.ActionCreation);
+                        Instance._pieceActionZone.SetActionMode(ActionMode.ActionCreation);
+                        Instance._puzzleActionZone.SetActionMode(ActionMode.ActionCreation);
                         break;
                     case Button.EndFinishingTouches:
+                        Instance._pieceActionZone.CanUseFinishingTouchesButton = true;
+                        Instance._pieceActionZone.ManuallyClickFinishingTouchesButton(onClick: () => {
+                            Instance._pieceActionZone.CanUseFinishingTouchesButton = false;
+                        });
                         break;
                     default:
                         break;

@@ -7,6 +7,7 @@ namespace ProjectL.GameScene.Management
     using ProjectL.GameScene.ActionHandling;
     using ProjectL.GameScene.MessageBoxes;
     using ProjectL.Management;
+    using ProjectL.Sound;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameActions.Verification;
     using ProjectLCore.GameLogic;
@@ -182,17 +183,14 @@ namespace ProjectL.GameScene.Management
             // start game loop
             GameSummary.Clear();
             await GameLoopAsync(game, cancellationToken);
-
-            // wait a bit before showing the game ended box
-            await AnimationManager.WaitForScaledDelay(1f, cancellationToken);
-
+       
             // finalize game
             cancellationToken.ThrowIfCancellationRequested();
             game.FinalizeGame();
             PrepareGameEndStats(game);
 
             // go to final results screen
-            cancellationToken.ThrowIfCancellationRequested();
+            await AnimationManager.WaitForScaledDelay(1.5f, cancellationToken);
             GoToFinalResultsScreen();
         }
 
@@ -345,9 +343,14 @@ namespace ProjectL.GameScene.Management
                     }
                 }
 
-                // if finishing touches --> add tetromino to summary for the final screen
+                // if place in finishing touches --> add tetromino to summary for the final screen
                 if (game.CurrentGamePhase == GamePhase.FinishingTouches && action is PlaceTetrominoAction a) {
                     GameSummary.AddFinishingTouchesTetromino(game.CurrentPlayer, a.Shape);
+                }
+
+                // if last action of player --> play sound to indicate player change
+                if (turnInfo.NumActionsLeft == 1 && turnInfo.GamePhase != GamePhase.FinishingTouches) {
+                    SoundManager.Instance?.PlayButtonClickSound();
                 }
             }
 
@@ -403,6 +406,7 @@ namespace ProjectL.GameScene.Management
                 return;
             }
 
+            SoundManager.Instance?.PlayButtonClickSound();
             Instantiate(_gameEndedBoxPrefab);
             GameManager.CanGameBePaused = false;
         }

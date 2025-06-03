@@ -6,6 +6,7 @@ namespace ProjectL.GameScene.ActionZones
     using ProjectL.GameScene.ActionHandling;
     using ProjectL.Sound;
     using ProjectLCore.GameLogic;
+    using System;
     using System.Collections;
     using TMPro;
     using UnityEngine;
@@ -60,7 +61,7 @@ namespace ProjectL.GameScene.ActionZones
             }
         }
 
-        protected bool CanUseFinishingTouchesButton {
+        public bool CanUseFinishingTouchesButton {
             get {
                 if (_finishingTouchesButton == null) {
                     return false;
@@ -78,16 +79,16 @@ namespace ProjectL.GameScene.ActionZones
 
         #region Methods
 
-        public void ManuallyClickSelectRewardButton()
+        public void ManuallyClickSelectRewardButton(Action? onClick = null)
         {
             if (_selectRewardButton != null)
-                _selectRewardButton!.onClick.Invoke();
+                StartCoroutine(SimulateClickCoroutine(_selectRewardButton, onClick));
         }
 
-        public void ManuallyClickFinishingTouchesButton()
+        public void ManuallyClickFinishingTouchesButton(Action? onClick = null)
         {
             if (_finishingTouchesButton != null)
-                StartCoroutine(SimulateClickCoroutine(_finishingTouchesButton));
+                StartCoroutine(SimulateClickCoroutine(_finishingTouchesButton, onClick));
         }
 
         public void SetActionMode(ActionMode mode)
@@ -151,7 +152,7 @@ namespace ProjectL.GameScene.ActionZones
             }
         }
 
-        protected virtual void Awake()
+        private void Start()
         {
             if (_actionButtonsPanel == null || _finishingTouchesButton == null || _confirmButton == null || _selectRewardButton == null) {
                 Debug.LogError("One or more UI components is not assigned in the inspector", this);
@@ -202,7 +203,7 @@ namespace ProjectL.GameScene.ActionZones
             _actionButtonsPanel.SetActive(false);
         }
 
-        private IEnumerator SimulateClickCoroutine(Button targetButton)
+        private IEnumerator SimulateClickCoroutine(Button targetButton, Action? onClick = null)
         {
             if (!targetButton.interactable) {
                 yield return new WaitForSeconds(0.1f);
@@ -222,6 +223,7 @@ namespace ProjectL.GameScene.ActionZones
 
             // Simulate PointerUp (Release)
             ExecuteEvents.Execute(targetButton.gameObject, pointerData, ExecuteEvents.pointerUpHandler);
+            onClick?.Invoke();
         }
 
         #endregion

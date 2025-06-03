@@ -47,7 +47,6 @@ namespace ProjectL.PlayerSelectionScene
         private Coroutine? _activeErrorCoroutine = null;
 
         private bool _didInitialize = false;
-        private bool _shouldShuffle;
 
         #endregion
 
@@ -73,7 +72,6 @@ namespace ProjectL.PlayerSelectionScene
         /// <param name="toggled"> <see langword="true"/> to shuffle players; otherwise, <see langword="false"/>.</param>
         public void OnShuffleCheckboxValueChanged(bool toggled)
         {
-            _shouldShuffle = toggled;
             if (_didInitialize)
                 SoundManager.Instance?.PlayButtonClickSound();
         }
@@ -119,7 +117,7 @@ namespace ProjectL.PlayerSelectionScene
             GameSettings.NumInitialTetrominos = int.Parse(numPiecesText!.text.Trim());
 
             // get shuffle players checkbox value
-            GameSettings.ShouldShufflePlayers = _shouldShuffle;
+            GameSettings.ShouldShufflePlayers = shuffleCheckbox!.isOn;
 
             // populate GameSettings with selected players
             GameSettings.Players.Clear();

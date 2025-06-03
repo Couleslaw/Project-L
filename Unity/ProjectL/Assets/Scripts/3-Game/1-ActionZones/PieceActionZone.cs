@@ -74,14 +74,6 @@ namespace ProjectL.GameScene.ActionZones
             _masterActionButton!.SelectActionEventHandler -= acm.OnMasterActionRequested;
         }
 
-        protected override void Awake()
-        {
-            base.Awake();
-            if (_takeBasicTetrominoButton == null || _changeTetrominoButton == null || _masterActionButton == null) {
-                Debug.LogError("Action buttons are not assigned in the inspector!", this);
-            }
-        }
-
         private bool CanTakeBasicTetromino(GameState.GameInfo gameInfo)
         {
             return gameInfo.NumTetrominosLeft[(int)TetrominoShape.O1] > 0;

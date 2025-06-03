@@ -2,6 +2,7 @@
 
 namespace ProjectL.GameScene.Management
 {
+    using UnityEngine;
     using ProjectL.Animation;
     using ProjectL.GameScene.ActionHandling;
     using ProjectL.GameScene.ActionZones;
@@ -60,10 +61,10 @@ namespace ProjectL.GameScene.Management
 
         private async Task ProcessActionAsync(EndFinishingTouchesAction action, CancellationToken cancellationToken)
         {
-            await AnimationManager.WaitForScaledDelay(_initialDelay, cancellationToken);
+            await AnimationManager.WaitForScaledDelay(2 * _initialDelay, cancellationToken);
             using (new ActionZonesManager.DisposableButtonSelector(ActionZonesManager.Button.EndFinishingTouches)) {
-                await AnimationManager.WaitForScaledDelay(1f, cancellationToken);
             }
+            await  Awaitable.WaitForSecondsAsync(0.25f, cancellationToken);
         }
 
         private async Task ProcessActionAsync(TakePuzzleAction action, CancellationToken cancellationToken)

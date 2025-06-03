@@ -7,11 +7,13 @@ namespace ProjectL.GameScene.PieceZone
     using ProjectL.GameScene.ActionHandling;
     using ProjectL.GameScene.PlayerZone;
     using ProjectL.Management;
+    using ProjectL.Sound;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameManagers;
     using ProjectLCore.GamePieces;
     using System;
     using System.Collections;
+    using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
     using UnityEngine;
@@ -76,6 +78,8 @@ namespace ProjectL.GameScene.PieceZone
         private static DraggableTetromino? SelectedTetromino { get; set; } = null;
 
         private bool IsSelectedWithMouse => _isMouseOver || _isDragging;
+
+        private bool CanBeControlled => IsSelectedWithMouse || PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow;
 
         public TetrominoShape Shape => _shape;
 
@@ -150,9 +154,18 @@ namespace ProjectL.GameScene.PieceZone
                 return;
             }
 
+            StopDragging();
+
             // set the tetromino to placed mode
-            SetMode(Mode.Placed);
             SetPosition(center);
+            StartCoroutine(PlaceCoroutine());
+
+            IEnumerator PlaceCoroutine()
+            {
+                yield return new WaitForFixedUpdate();
+                SoundManager.Instance?.PlaySliderSound();
+                SetMode(Mode.Placed);
+            }
         }
 
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
@@ -250,7 +263,7 @@ namespace ProjectL.GameScene.PieceZone
 
         private static void OnKeyboardPlaceInputAction(InputAction.CallbackContext ctx)
         {
-            if (SelectedTetromino == null || !PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
+            if (SelectedTetromino == null || !SelectedTetromino.CanBeControlled) {
                 return;
             }
 
@@ -259,7 +272,7 @@ namespace ProjectL.GameScene.PieceZone
 
         private static void OnRotateSmoothInputAction(InputAction.CallbackContext ctx)
         {
-            if (SelectedTetromino == null || !PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
+            if (SelectedTetromino == null || !SelectedTetromino.CanBeControlled) {
                 return;
             }
 
@@ -268,7 +281,7 @@ namespace ProjectL.GameScene.PieceZone
 
         private static void OnRotate90InputAction(InputAction.CallbackContext ctx)
         {
-            if (SelectedTetromino == null || !PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
+            if (SelectedTetromino == null || !SelectedTetromino.CanBeControlled) {
                 return;
             }
 
@@ -278,7 +291,7 @@ namespace ProjectL.GameScene.PieceZone
 
         private static void OnFlipInputAction(InputAction.CallbackContext ctx)
         {
-            if (SelectedTetromino == null || !PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
+            if (SelectedTetromino == null || !SelectedTetromino.CanBeControlled) {
                 return;
             }
 
@@ -419,7 +432,7 @@ namespace ProjectL.GameScene.PieceZone
             _draggingPointerOffset = (Vector2)transform.position - mouseWorldPos;
         }
 
-        private void SetPosition(Vector3 center)
+        private void SetPosition(Vector2 center)
         {
             // calculate pivot offset
             Vector2 offset = Vector2.Scale(_rt!.sizeDelta, (0.5f * Vector2.one - _rt.pivot));
@@ -427,7 +440,8 @@ namespace ProjectL.GameScene.PieceZone
             offset = RotateVector(offset, transform.rotation.eulerAngles.z);
 
             // correct the position with offset
-            _rt!.position = (Vector2)center + offset;
+            //_rt.position = center + offset;
+            _rb!.MovePosition(center + offset);
 
             static Vector2 RotateVector(Vector2 v, float degrees)
             {

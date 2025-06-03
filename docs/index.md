@@ -16,6 +16,10 @@ The [User Guide](./UserDocs/index) explains the rules and how to play the game.
 
 The [Functional Specification](./FunctionDocs/index) details all features and behavior of the game from a user's perspective.
 
+{% include note.html content="
+The unity client is implemented based on this specification, but there have been some minor changes and additions to the original specification to improve the user experience.
+"%}
+
 ## Technical Documentation
 
 The Unity version of the game is built on top of the **ProjectLCore** library, which contains all the core game logic. **ProjectLCore** is completely independent from Unity, making it suitable for training AI players or building other interfaces. The Unity implementation simply provides a user interface and connects to this core library.
@@ -24,5 +28,7 @@ Because of this separation, the documentation is split into two parts:
 
 - The [Library docs](./TechnicalDocs/core/index) cover the inner workings of the [Project-L Core](./ProjectLCoreDocs/index.html) library.
 - The [Unity docs](./TechnicalDocs/unity/index) explain how the Unity-site client is implemented.
+
+## AI Player Guide
 
 The [AI Player Guide](./AIPlayerGuide/index) explains how to create your own AI players for the game.

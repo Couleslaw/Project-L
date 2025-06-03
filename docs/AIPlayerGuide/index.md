@@ -3,10 +3,10 @@
 
 # AI Player Guide
 
-This guide explains how to implement your own AI player for the game.
+This guide explains how to create your own intelligent agent (AI player) to play the game.
 
 {% include warning.html content="
-AI players are not supported in the WebGL build of the game.
+AI players are not supported in the WebGL build of the game because of WebGL threading limitations.
 "%}
 
 {% include important.html content="

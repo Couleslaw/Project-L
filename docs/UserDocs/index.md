@@ -28,16 +28,16 @@ The order in which the players will take turns is determined by the order in whi
 
 ## Controls
 
-| Action                         | Controls                                |
-| ------------------------------ | --------------------------------------- |
-| Confirm action / Select reward | Click `CONFIRM` button, `Enter`, `Ctrl` |
-| Cancel action / Clear board    | Start a different action, `TAB`         |
-| Place piece to puzzle          | Left click on it, `Space`                    |
-| Rotate last selected piece          | Mouse wheel, up/down arrows             |
-| Flip last selected piece        | Right click, left/right arrows          |
-| Return piece to collection | Move it outside of your row, middle mouse button click on it |
-| Open/Close pause menu          | `ESC`, `P`                              |
-| Exit/Enter full-screen         | `F11`                                   |
+| Action                         | Controls                                                     |
+| ------------------------------ | ------------------------------------------------------------ |
+| Confirm action / Select reward | Click `CONFIRM` button, `Enter`, `Ctrl`                      |
+| Cancel action / Clear board    | Start a different action, `TAB`, `c`                         |
+| Place piece to puzzle          | Left click on it, `Space`                                    |
+| Rotate last selected piece     | Mouse wheel, up/down arrows                                  |
+| Flip last selected piece       | Right click, left/right arrows                               |
+| Return piece to collection     | Move it outside of your row, middle mouse button click on it |
+| Open/Close pause menu          | `ESC`, `P`                                                   |
+| Exit/Enter full-screen         | `F11`                                                        |
 
 ## Where is what?
 
@@ -68,7 +68,7 @@ The pause menu is opened by pressing `ESC` or `P` and it contains a lot of usefu
 - normal
 - next round is final
 - final round
-- finishing touches 
+- finishing touches
 
 You also have the option to peek at the current score of each player and to change the animation speed of the game.
 

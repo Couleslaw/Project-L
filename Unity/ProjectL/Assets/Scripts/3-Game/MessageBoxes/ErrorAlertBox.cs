@@ -29,7 +29,7 @@ namespace ProjectL.GameScene.MessageBoxes
         public void OnOpenLogButtonClick()
         {
             SoundManager.Instance?.PlayButtonClickSound();
-            GameManager.Instance?.OpenLogger();
+            GameManager.Instance?.ToggleLogger();
         }
 
         private void Start()

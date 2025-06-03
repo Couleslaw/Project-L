@@ -52,14 +52,6 @@ namespace ProjectL.GameScene.ActionZones
             _takePuzzleButton!.CanActionBeCreated = areThereStillSomePuzzles;
         }
 
-        protected override void Awake()
-        {
-            base.Awake();
-            if (_recycleButton == null || _takePuzzleButton == null) {
-                Debug.LogError("Action buttons are not assigned in the inspector!", this);
-            }
-        }
-
         #endregion
     }
 }

@@ -183,7 +183,7 @@ foreach (var player in players) {
 }
 
 // create game core and initialize it
-var game = new GameCore(gameState, players, shufflePlayers: false);
+var game = new GameCore(gameState, players);
 game.InitializeGame();
 
 // game loop
@@ -191,7 +191,6 @@ while (true) {
     // get next turn and if game ended, break
     var turnInfo = game.GetNextTurnInfo();
     if (game.CurrentGamePhase == GamePhase.Finished) {
-        game.GameEnded();
         break;
     }
 
@@ -213,6 +212,7 @@ while (true) {
 }
 
 // get final results
+game.FinalizeGame();
 var results = game.GetFinalResults();
 ```
 
