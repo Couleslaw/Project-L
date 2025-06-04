@@ -66,10 +66,10 @@ namespace ProjectL.GameScene.PuzzleZone
             }
         }
 
-        public static void AddToRadioButtonGroup(Button button, Action? onSelect, Action? onCancel)
+        public static void AddToRadioButtonGroup(Button button)
         {
             string groupName = nameof(PuzzleZoneManager);
-            RadioButtonsGroup.RegisterButton(button, groupName, onSelect, onCancel);
+            RadioButtonsGroup.RegisterButton(button, groupName);
         }
 
         public static void RemoveFromRadioButtonGroup(Button button)

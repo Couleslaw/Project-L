@@ -13,7 +13,7 @@ namespace ProjectL.GameScene.PuzzleZone
 
         private readonly PuzzleCard[] _puzzleCards = new PuzzleCard[GameState.NumPuzzlesInRow];
 
-        [SerializeField] private PuzzleCard? puzzleCardPrefab;
+        [SerializeField] private GameObject? puzzleCardPrefab;
 
         [SerializeField] private DeckCoverCard? _deckCoverCard;
 
@@ -89,9 +89,11 @@ namespace ProjectL.GameScene.PuzzleZone
             }
 
             for (int i = 0; i < GameState.NumPuzzlesInRow; i++) {
-                _puzzleCards[i] = Instantiate(puzzleCardPrefab, transform);
-                _puzzleCards[i].gameObject.SetActive(true);
-                _puzzleCards[i].gameObject.name = $"PuzzleCard_{i + 1}";
+                GameObject cardObject = Instantiate(puzzleCardPrefab, transform);
+                cardObject.SetActive(true);
+                cardObject.name = $"PuzzleCard_{i + 1}";
+
+                _puzzleCards[i] = cardObject.GetComponentInChildren<PuzzleCard>();
                 _puzzleCards[i].SetPuzzle(null);
             }
         }

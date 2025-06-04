@@ -28,15 +28,9 @@ namespace ProjectL.GameScene.PlayerZone
 
         private Image? _backgroundImage;
 
-        private PuzzleSlot? _takePuzzleActionPlacePosition = null;
+        private PuzzleSlot? _takePuzzleActionSlot = null;
 
-        public bool CanConfirmTakePuzzleAction {
-            set {
-                foreach (var puzzle in _puzzles) {
-                    puzzle.EnableEmptySlotButton(value);
-                }
-            }
-        }
+        private IDisposable? _emptySlotHighlighterDisposable = null;
 
         public bool IsMouseOverRow => IsMouseOver();
 
@@ -92,6 +86,11 @@ namespace ProjectL.GameScene.PlayerZone
             }
         }
 
+        public void SetTakePuzzleActionSlot(PuzzleSlot slot)
+        {
+            _takePuzzleActionSlot = slot;
+        }
+
         public bool TryGetPuzzleWithId(uint puzzleId, out PuzzleSlot? result)
         {
             result = null;
@@ -102,6 +101,37 @@ namespace ProjectL.GameScene.PlayerZone
                 }
             }
             return false;
+        }
+
+        public bool TryGetClosestEmptySlot(Vector2 position, out PuzzleSlot? result)
+        {
+            float minDist = float.MaxValue;
+            result = null;
+
+            foreach (PuzzleSlot slot in _puzzles) {
+                if (slot.PuzzleId == null) {
+                    float dist = Vector2.Distance(slot.transform.position, position);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        result = slot;
+                    }
+                }
+            }
+            return result != null;
+        }
+
+        public void HighlightClosestEmptySlot(Vector2 position)
+        {
+            _emptySlotHighlighterDisposable?.Dispose();
+            if (TryGetClosestEmptySlot(position, out var closestSlot)) {
+                _emptySlotHighlighterDisposable = closestSlot!.GetDisposableEmptySlotHighlighter();
+            }
+        }
+
+        public void ClearEmptySlotHighlight()
+        {
+            _emptySlotHighlighterDisposable?.Dispose();
+            _emptySlotHighlighterDisposable = null;
         }
 
         private void Awake()
@@ -120,11 +150,6 @@ namespace ProjectL.GameScene.PlayerZone
             for (int i = 0; i < PlayerState.MaxPuzzles; i++) {
                 var puzzle = Instantiate(playerRowSlotPrefab, transform);
                 puzzle.gameObject.SetActive(true);
-
-                puzzle.OnEmptySlotClickEventHandler += () => {
-                    _takePuzzleActionPlacePosition = puzzle;
-                    HumanPlayerActionCreationManager.Instance.OnActionConfirmed();
-                };
                 _puzzles[i] = puzzle;
             }
         }
@@ -151,9 +176,9 @@ namespace ProjectL.GameScene.PlayerZone
                 return;
             }
 
-            if (_takePuzzleActionPlacePosition != null) {
-                _takePuzzleActionPlacePosition.PlacePuzzle((ColorPuzzle)puzzle);
-                _takePuzzleActionPlacePosition = null;
+            if (_takePuzzleActionSlot != null) {
+                _takePuzzleActionSlot.PlacePuzzle((ColorPuzzle)puzzle);
+                _takePuzzleActionSlot = null;
                 return;
             }
 
@@ -167,13 +192,21 @@ namespace ProjectL.GameScene.PlayerZone
 
         void IHumanPlayerActionCreator<TakePuzzleAction>.OnActionRequested()
         {
-            // don't block raycasting for empty slot buttons in the row
-            _collider!.enabled = false;
+            Debug.Log($"TakePuzzleAction requested");
+            _takePuzzleActionSlot = null;
         }
 
-        void IHumanPlayerActionCreator<TakePuzzleAction>.OnActionCanceled() => _collider!.enabled = true;
+        void IHumanPlayerActionCreator<TakePuzzleAction>.OnActionCanceled()
+        {
+            Debug.Log($"TakePuzzleAction canceled");
+            ClearEmptySlotHighlight();
+            _takePuzzleActionSlot = null;
+        }
 
-        void IHumanPlayerActionCreator<TakePuzzleAction>.OnActionConfirmed() => _collider!.enabled = true;
+        void IHumanPlayerActionCreator<TakePuzzleAction>.OnActionConfirmed()
+        {
+            ClearEmptySlotHighlight();
+        }
 
     }
 }

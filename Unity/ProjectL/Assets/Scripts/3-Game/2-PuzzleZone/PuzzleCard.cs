@@ -8,25 +8,21 @@ namespace ProjectL.GameScene.PuzzleZone
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
+    using System;
     using UnityEngine;
     using UnityEngine.EventSystems;
     using UnityEngine.UI;
 
-    public class PuzzleCard : MonoBehaviour, IPuzzleZoneCard
+    public class PuzzleCard : PuzzleZoneCardBase
     {
         #region Fields
 
         [SerializeField] private Sprite? _emptyCardImage;
 
-        [SerializeField] private Button? _button;
-
         private Puzzle? _puzzle = null;
-
-        private PuzzleZoneMode _mode = PuzzleZoneMode.Disabled;
 
         private bool _isRecycleSelected = false;
 
-        private bool _isBlack;
 
         #endregion
 
@@ -44,19 +40,13 @@ namespace ProjectL.GameScene.PuzzleZone
             UpdateUI();
         }
 
-        public void SetMode(PuzzleZoneMode mode, TurnInfo turnInfo)
+        public override void SetMode(PuzzleZoneMode mode, TurnInfo turnInfo)
         {
-            _mode = mode;
+            base.SetMode(mode, turnInfo);
             _button!.interactable = false;
 
             if (mode == PuzzleZoneMode.TakePuzzle && CanTakePuzzle()) {
-                void onCancel() => PuzzleZoneManager.Instance.ReportTakePuzzleChange(new(null));
-                void onSelect()
-                {
-                    var action = new TakePuzzleAction(TakePuzzleAction.Options.Normal, _puzzle!.Id);
-                    PuzzleZoneManager.Instance.ReportTakePuzzleChange(new(action));
-                }
-                PuzzleZoneManager.AddToRadioButtonGroup(_button, onSelect, onCancel);
+                PuzzleZoneManager.AddToRadioButtonGroup(_button);
                 _button!.interactable = true;
             }
             else {
@@ -86,12 +76,8 @@ namespace ProjectL.GameScene.PuzzleZone
             }
         }
 
-        public void Init(bool isBlack)
-        {
-            _isBlack = isBlack;
-        }
 
-        public PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardHighlighter()
+        public override PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardHighlighter()
         {
             if (_button == null) {
                 return null!;
@@ -106,7 +92,7 @@ namespace ProjectL.GameScene.PuzzleZone
             return new(_button, selectedSprite);
         }
 
-        public PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardDimmer()
+        public override PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardDimmer()
         {
             if (_button == null) {
                 return null!;
@@ -168,21 +154,30 @@ namespace ProjectL.GameScene.PuzzleZone
             PuzzleZoneManager.Instance.ReportRecycleChange(new(_puzzle, _isRecycleSelected));
         }
 
-        private void UpdateUI()
+        private void SetEmptySlot()
         {
             if (_button == null || _emptyCardImage == null) {
                 return;
             }
 
+            _button.image.type = Image.Type.Sliced;
+            _button.spriteState = new SpriteState {
+                highlightedSprite = _emptyCardImage,
+                pressedSprite = _emptyCardImage,
+                selectedSprite = _emptyCardImage,
+                disabledSprite = _emptyCardImage
+            };
+        }
+
+        private void UpdateUI()
+        {
+            if (_button == null) {
+                return;
+            }
+
             // empty card
             if (_puzzle == null) {
-                _button.image.type = Image.Type.Sliced;
-                _button.spriteState = new SpriteState {
-                    highlightedSprite = _emptyCardImage,
-                    pressedSprite = _emptyCardImage,
-                    selectedSprite = _emptyCardImage,
-                    disabledSprite = _emptyCardImage
-                };
+                SetEmptySlot();
                 return;
             }
 
@@ -234,6 +229,38 @@ namespace ProjectL.GameScene.PuzzleZone
             // else update sprite state directly
             else {
                 _button.spriteState = newSpriteState;
+            }
+        }
+
+        protected override void InitializeDraggablePuzzle(DraggablePuzzle puzzle)
+        {
+            if (_puzzle == null) {
+                Debug.LogError("Cannot initialize draggable puzzle with null puzzle", this);
+                return;
+            }
+
+            var action = new TakePuzzleAction(TakePuzzleAction.Options.Normal, PuzzleId);
+            puzzle.Init(action, _puzzle);
+        }
+
+        protected override IDisposable GetTakePuzzleDisposable() => new TakePuzzleDisposable(this);
+
+        private class TakePuzzleDisposable : IDisposable
+        {
+            private readonly PuzzleCard _puzzleCard;
+            public TakePuzzleDisposable(PuzzleCard puzzleCard)
+            {
+                _puzzleCard = puzzleCard;
+                _puzzleCard._button!.interactable = false;
+                _puzzleCard.SetEmptySlot();
+
+            }
+            public void Dispose()
+            {
+                if (_puzzleCard._button != null) {
+                    _puzzleCard._button.interactable = true;
+                    _puzzleCard.UpdateUI();
+                }
             }
         }
 

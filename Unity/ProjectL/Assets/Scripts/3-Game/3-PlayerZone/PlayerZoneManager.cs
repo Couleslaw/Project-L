@@ -21,16 +21,9 @@ namespace ProjectL.GameScene.PlayerZone
 
         #region Properties
 
-        public bool CanConfirmTakePuzzleAction {
-            set {
-                var currentPlayerRow = _currentPlayer != null ? _playerZoneRows[_currentPlayer] : null;
-                foreach (var row in _playerZoneRows.Values) {
-                    row.CanConfirmTakePuzzleAction = value && row == currentPlayerRow;
-                }
-            }
-        }
-
         public bool IsMouseOverCurrentPlayersRow => _playerZoneRows[_currentPlayer!].IsMouseOverRow;
+
+        public PlayerPuzzlesRow? CurrentPlayerRow => _currentPlayer != null ? _playerZoneRows[_currentPlayer] : null;
 
         #endregion
 

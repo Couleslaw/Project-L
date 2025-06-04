@@ -1,25 +1,31 @@
 #nullable enable
 
-namespace ProjectL.GameScene.PieceZone
+namespace ProjectL.GameScene.Management
 {
     using UnityEngine;
 
-    public class TetrominoSizeManager : StaticInstance<TetrominoSizeManager>
+    public class ScaleManager : StaticInstance<ScaleManager>
     {
         #region Fields
 
         [Header("Tetromino scale settings")]
         [Tooltip("Sample of a puzzle card to get it's scale")]
-        [SerializeField] private Transform? puzzleSample;
+        [SerializeField] private Transform? playerZonePuzzleSample;
 
         [Tooltip("Edge of the puzzle zone, to use as a border for scaling")]
         [SerializeField] private Transform? puzzleZoneEdgeMarker;
+
+        [Header("Puzzle scale settings")]
+        [Tooltip("Scale of puzzles in the puzzle zone.")]
+        [SerializeField] private Transform? puzzleZonePuzzleSample;
 
         #endregion
 
         #region Properties
 
-        public float PuzzleZoneScale => puzzleSample?.localScale.x ?? 1f;
+        public float PlayerZoneScale => playerZonePuzzleSample?.localScale.x ?? 1f;
+
+        public float PuzzleZoneScale => puzzleZonePuzzleSample?.localScale.x ?? 1f;
 
         #endregion
 
@@ -47,7 +53,7 @@ namespace ProjectL.GameScene.PieceZone
             base.Awake();
 
             // check that all components are assigned
-            if (puzzleSample == null || puzzleZoneEdgeMarker == null) {
+            if (playerZonePuzzleSample == null || puzzleZoneEdgeMarker == null || puzzleZonePuzzleSample == null) {
                 Debug.LogError("One or more components are not assigned!", this);
                 return;
             }

@@ -134,6 +134,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bb80ee0d24508c418455890fe6ac814, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _button: {fileID: 4766070340049765572}
+  _draggablePuzzlePrefab: {fileID: 2107021495823122324, guid: 64a2bab81ec1b004da334bef7fb50a90, type: 3}
   _label: {fileID: 993653505855602772}
 --- !u!1 &8875564655440407683
 GameObject:

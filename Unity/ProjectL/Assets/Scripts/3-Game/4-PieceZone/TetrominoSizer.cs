@@ -3,6 +3,7 @@
 namespace ProjectL.GameScene.PieceZone
 {
     using UnityEngine;
+    using ProjectL.GameScene.Management;
 
     [RequireComponent(typeof(DraggableTetromino))]
     [RequireComponent(typeof(RectTransform))]
@@ -23,17 +24,17 @@ namespace ProjectL.GameScene.PieceZone
         public void Init(TetrominoButton spawner)
         {
             _spawnerScale = spawner.transform.localScale.x;
-            _spawnerDistanceToPuzzleZone = TetrominoSizeManager.Instance.GetDistanceToPuzzleZone(spawner.transform);
+            _spawnerDistanceToPuzzleZone = ScaleManager.Instance.GetDistanceToPuzzleZone(spawner.transform);
             _initialized = true;
             UpdateScale();
         }
 
         private void UpdateScale()
         {
-            float distance = TetrominoSizeManager.Instance.GetDistanceToPuzzleZone(transform);
+            float distance = ScaleManager.Instance.GetDistanceToPuzzleZone(transform);
 
             float t = Mathf.Clamp01(Mathf.InverseLerp(_spawnerDistanceToPuzzleZone, 0f, distance));
-            float scale = Mathf.Lerp(_spawnerScale, TetrominoSizeManager.Instance.PuzzleZoneScale, t);
+            float scale = Mathf.Lerp(_spawnerScale, ScaleManager.Instance.PlayerZoneScale, t);
 
             transform.localScale = SignVector(transform.localScale) * scale;
 

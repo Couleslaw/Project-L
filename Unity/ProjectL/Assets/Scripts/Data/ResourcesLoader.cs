@@ -140,6 +140,24 @@ namespace ProjectL.Data
             }
         }
 
+        public static bool TryGetDeckCardSprite(bool isBlack, out Sprite? result)
+        {
+            const string blackCardFileName = "black-deck-card";
+            const string whiteCardFileName = "white-deck-card";
+
+            string filename = isBlack ? blackCardFileName : whiteCardFileName;
+
+            Sprite sprite = Resources.Load<Sprite>($"{_puzzleSpritesDirectory}/{filename}");
+            if (sprite == null) {
+                Debug.LogError($"Failed to load deck card sprite: {_puzzleSpritesDirectory}/{filename}");
+                result = null;
+                return false;
+            }
+
+            result = sprite;
+            return true;
+        }
+
         #endregion
     }
 }

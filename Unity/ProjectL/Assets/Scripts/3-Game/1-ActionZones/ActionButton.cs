@@ -142,8 +142,15 @@ namespace ProjectL.GameScene.ActionZones
                 return;
             }
 
-            Action onSelect = () => SelectActionEventHandler?.Invoke();
-            Action onCancel = () => CancelActionEventHandler?.Invoke();
+            Action onSelect = () => {
+                if (Mode == PlayerMode.Interactive)
+                    SelectActionEventHandler?.Invoke();
+            };
+            Action onCancel = () => {
+                if (Mode == PlayerMode.Interactive)
+                    CancelActionEventHandler?.Invoke();
+            };
+
             RadioButtonsGroup.RegisterButton(_button, nameof(ActionButton), onSelect, onCancel);
         }
 

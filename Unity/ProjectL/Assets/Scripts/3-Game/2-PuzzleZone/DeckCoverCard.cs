@@ -5,24 +5,19 @@ namespace ProjectL.GameScene.PuzzleZone
     using ProjectL.Sound;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
+    using ProjectLCore.GamePieces;
     using System;
     using TMPro;
     using UnityEngine;
     using UnityEngine.UI;
 
-    [RequireComponent(typeof(Button))]
-    [RequireComponent(typeof(Image))]
-    public class DeckCoverCard : MonoBehaviour, IPuzzleZoneCard
+    public class DeckCoverCard : PuzzleZoneCardBase
     {
         #region Fields
 
         [SerializeField] private TextMeshProUGUI? _label;
 
-        private Button? _button;
-
         private int _deckSize;
-
-        private bool _isBlack;
 
         private Sprite? _dimmedSprite;
 
@@ -30,10 +25,6 @@ namespace ProjectL.GameScene.PuzzleZone
 
         #region Methods
 
-        public void Init(bool isBlack)
-        {
-            _isBlack = isBlack;
-        }
 
         public void SetDeckSize(int n)
         {
@@ -51,19 +42,13 @@ namespace ProjectL.GameScene.PuzzleZone
             }
         }
 
-        public void SetMode(PuzzleZoneMode mode, TurnInfo turnInfo)
+        public override void SetMode(PuzzleZoneMode mode, TurnInfo turnInfo)
         {
+            base.SetMode(mode, turnInfo);
             _button!.interactable = false;
 
             if (mode == PuzzleZoneMode.TakePuzzle && CanTakePuzzle()) {
-                void onSelect()
-                {
-                    TakePuzzleAction.Options option = _isBlack ? TakePuzzleAction.Options.TopBlack : TakePuzzleAction.Options.TopWhite;
-                    var action = new TakePuzzleAction(option);
-                    PuzzleZoneManager.Instance!.ReportTakePuzzleChange(new(action));
-                }
-                void onCancel() => PuzzleZoneManager.Instance!.ReportTakePuzzleChange(new(null));
-                PuzzleZoneManager.AddToRadioButtonGroup(_button, onSelect, onCancel);
+                PuzzleZoneManager.AddToRadioButtonGroup(_button);
                 _button!.interactable = true;
             }
             else {
@@ -85,7 +70,7 @@ namespace ProjectL.GameScene.PuzzleZone
             }
         }
 
-        public PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardHighlighter()
+        public override PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardHighlighter()
         {
             if (_button == null) {
                 return null!;
@@ -100,7 +85,7 @@ namespace ProjectL.GameScene.PuzzleZone
             return new(_button, selectedSprite);
         }
 
-        public PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardDimmer()
+        public override PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardDimmer()
         {
             if (_button == null) {
                 return null!;
@@ -110,7 +95,6 @@ namespace ProjectL.GameScene.PuzzleZone
 
         private void Start()
         {
-            _button = GetComponent<Button>();
             if (_button == null || _label == null) {
                 Debug.LogError("One or more UI components is not assigned!", this);
                 return;
@@ -123,6 +107,37 @@ namespace ProjectL.GameScene.PuzzleZone
         {
             if (_button != null) {
                 PuzzleZoneManager.RemoveFromRadioButtonGroup(_button);
+            }
+        }
+
+        protected override void InitializeDraggablePuzzle(DraggablePuzzle puzzle)
+        {
+            if (_deckSize == 0) {
+                Debug.LogWarning("Cannot initialize DraggablePuzzle because the deck size is zero.");
+                return;
+            }
+
+            var action = new TakePuzzleAction(_isBlack ? TakePuzzleAction.Options.TopBlack : TakePuzzleAction.Options.TopWhite);
+            puzzle.Init(action, null!);
+        }
+
+        protected override IDisposable GetTakePuzzleDisposable() => new TakePuzzleDisposable(this);
+
+        private class TakePuzzleDisposable : IDisposable
+        {
+            private readonly DeckCoverCard _deckCoverCard;
+            public TakePuzzleDisposable(DeckCoverCard deckCoverCard)
+            {
+                _deckCoverCard = deckCoverCard;
+                _deckCoverCard.SetDeckSize(_deckCoverCard._deckSize - 1);
+                _deckCoverCard._button!.interactable = false;
+            }
+            public void Dispose()
+            {
+                _deckCoverCard.SetDeckSize(_deckCoverCard._deckSize + 1);
+                if (_deckCoverCard._button != null) {
+                    _deckCoverCard._button.interactable = true;
+                }
             }
         }
 

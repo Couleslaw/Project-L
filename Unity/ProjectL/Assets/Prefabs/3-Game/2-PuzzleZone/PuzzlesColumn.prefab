@@ -76,7 +76,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d81c4b3d3e4f574ea5a4246ddc1095c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  puzzleCardPrefab: {fileID: 5154412832634383902}
+  puzzleCardPrefab: {fileID: 351552940622680004}
   _deckCoverCard: {fileID: 0}
 --- !u!1001 &1030230256520525706
 PrefabInstance:
@@ -175,19 +175,13 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b30c6371718f2d348bd3fceb373d962b, type: 3}
+--- !u!1 &351552940622680004 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 769248557626357838, guid: b30c6371718f2d348bd3fceb373d962b, type: 3}
+  m_PrefabInstance: {fileID: 1030230256520525706}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &1331268882135746536 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2032672691222769762, guid: b30c6371718f2d348bd3fceb373d962b, type: 3}
   m_PrefabInstance: {fileID: 1030230256520525706}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5154412832634383902 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5315439279606913428, guid: b30c6371718f2d348bd3fceb373d962b, type: 3}
-  m_PrefabInstance: {fileID: 1030230256520525706}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8da77dfb2ed96664a9828623b8a515c0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

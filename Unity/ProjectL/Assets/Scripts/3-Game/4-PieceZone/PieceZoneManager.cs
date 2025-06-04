@@ -357,7 +357,7 @@ namespace ProjectL.GameScene.PieceZone
             }
 
             public DisposableButtonHighlighter(TetrominoShape button, bool playSound = true)
-                : this(new List<TetrominoShape> { button })
+                : this(new List<TetrominoShape> { button }, playSound)
             {
             }
 

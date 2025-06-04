@@ -169,6 +169,8 @@ namespace ProjectL.GameScene.ActionHandling
 
         public void OnActionCanceled()
         {
+            Debug.Log("CANCEL ACTION CALLED", this);
+
             // finishing touches --> only remove tetrominos from scene
             if (_currentActionMode == ActionMode.FinishingTouches) {
                 CurrentEventSet?.RaiseCanceled();
@@ -194,7 +196,6 @@ namespace ProjectL.GameScene.ActionHandling
             // normal action --> disable action buttons and reset action
 
             ActionZonesManager.Instance.CanConfirmAction = false;
-            PlayerZoneManager.Instance.CanConfirmTakePuzzleAction = false;
 
             CurrentEventSet?.RaiseCanceled();
             CurrentActionConstructor?.Reset();
@@ -421,10 +422,6 @@ namespace ProjectL.GameScene.ActionHandling
 
             bool canConfirm = action != null && _actionVerifier.Verify(action) is VerificationSuccess;
             ActionZonesManager.Instance.CanConfirmAction = canConfirm;
-
-            if (_currentActionType == ActionType.TakePuzzle) {
-                PlayerZoneManager.Instance.CanConfirmTakePuzzleAction = canConfirm;
-            }
         }
 
         private HumanPlayer? PrepareForSubmission()
@@ -456,7 +453,6 @@ namespace ProjectL.GameScene.ActionHandling
             }
             if (mode == PlayerMode.NonInteractive) {
                 ActionZonesManager.Instance.DisconnectFromActionButtons(this);
-                PlayerZoneManager.Instance.CanConfirmTakePuzzleAction = false;
             }
         }
 

@@ -160,9 +160,6 @@ namespace ProjectL.GameScene.PieceZone
 
             // if we are in spawning mode, spawn a new tetromino at the clicked position
             if (CanSpawn) {
-                Vector3 spawnPosition = _mainCamera!.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y, _mainCamera.nearClipPlane));
-                spawnPosition.z = 0; // Ensure Z is appropriate for 2D
-
                 _currentTetromino = SpawnTetromino();
                 return;
             }
