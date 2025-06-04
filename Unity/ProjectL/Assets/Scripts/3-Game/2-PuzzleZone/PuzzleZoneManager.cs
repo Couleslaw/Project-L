@@ -89,8 +89,8 @@ namespace ProjectL.GameScene.PuzzleZone
             HumanPlayerActionCreationManager.Instance.AddListener<TakePuzzleAction>(this);
             HumanPlayerActionCreationManager.Instance.AddListener<RecycleAction>(this);
 
-            _whiteColumn.Init(isBlack: false);
-            _blackColumn.Init(isBlack: true);
+            _whiteColumn.Init(isBlack: false, game.GameState.NumWhitePuzzlesLeft);
+            _blackColumn.Init(isBlack: true, game.GameState.NumBlackPuzzlesLeft);
 
             HumanPlayerActionCreationManager.RegisterController(this);
 

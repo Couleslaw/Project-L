@@ -68,6 +68,18 @@ namespace ProjectL.GameScene.PlayerZone
             tetromino.OnStartDraggingEventHandler += puzzle.RemoveTemporaryTetromino;
         }
 
+        public static bool TryGetCenterOfShadow(BinaryImage shadow, out Vector2 center)
+        {
+            // find the puzzle with the shadow
+            if (!TryGetPuzzleWithCollisionShape(shadow, out InteractivePuzzle? puzzle)) {
+                center = Vector2.zero;
+                return false;
+            }
+            // get the center of the shadow
+            center = puzzle!.GetCollisionCenter();
+            return true;
+        }
+
         public static bool TryGetPuzzleWithId(uint puzzleId, out InteractivePuzzle? result)
         {
             foreach (var puzzle in _availablePuzzles) {
@@ -78,6 +90,17 @@ namespace ProjectL.GameScene.PlayerZone
             }
             result = null;
             return false;
+        }
+
+        public static void UpdateShadows(DraggableTetromino changedTetromino)
+        {
+            // update shadows for all puzzles
+            foreach (var puzzle in _availablePuzzles) {
+                if (puzzle._logicalPuzzle != null) {
+                    puzzle.TryDrawingTetrominoShadow(changedTetromino);
+                }
+                
+            }
         }
 
         public void MakeInteractive(bool enabled)

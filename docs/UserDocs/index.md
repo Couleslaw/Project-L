@@ -31,7 +31,7 @@ The order in which the players will take turns is determined by the order in whi
 | Action                         | Controls                                                     |
 | ------------------------------ | ------------------------------------------------------------ |
 | Confirm action / Select reward | Click `CONFIRM` button, `Enter`, `Ctrl`                      |
-| Cancel action / Clear board    | Start a different action, `TAB`                              |
+| Cancel action / Clear board    | Start a different action, `TAB`, `Backspace`, `C`            |
 | Place piece to puzzle          | Left click on it, `Space`                                    |
 | Rotate last selected piece     | Mouse wheel, up/down arrows                                  |
 | Flip last selected piece       | Right click, left/right arrows                               |
@@ -72,7 +72,7 @@ The pause menu is opened by pressing `ESC` or `P` and it contains a lot of usefu
 
 You also have the option to peek at the current score of each player and to change the animation speed of the game.
 
-Additionaly, you have the option to return back to the main menu by pressing the **Home** button (top-left) and change the sound volume by pressing the **Sound** button (top-right).
+Additionally, you have the option to return back to the main menu by pressing the **Home** button (top-left) and change the sound volume by pressing the **Sound** button (top-right).
 
 ## Taking New Puzzles
 
@@ -83,9 +83,19 @@ First click the **Take Puzzle** button or click somewhere on the puzzle zone. Th
 ## Placing Pieces
 
 To place a piece into a puzzle, start dragging it from the piece zone. If you release the piece outside of your player row, it will return back, otherwise, it will stay where you left it. You can rotate the last selected piece with your mouse wheel and flip it with a right click.
-To lock the piece into a puzzle, click on it. You can lock in as many pieces as you want to help you plan, but to be able to confirm the action, the number of locked in pieces can't exceed the number of actions you have left.
+To lock the piece into a puzzle, click on it.
+
+{% include tip.html content="
+If you release a piece very close to a position where it can be placed, it will lock itself into the puzzle automatically.
+"%}
 
 To remove a locked in piece from a puzzle, simple start dragging it again. You can also clear the entire board by pressing `TAB`.
+
+Once you have placed a piece, you can confirm the action. Additionally, you can place multiple pieces into the _same puzzle_ and confirm them all at once. This will consume one action for each piece.
+
+{% include tip.html content="
+To plan ahead, you can lock in as many pieces as you want without confirming the action.
+"%}
 
 ![Placing Pieces](./images/PlaceAndSelect.gif)
 

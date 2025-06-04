@@ -257,6 +257,17 @@ namespace ProjectL.InputActions
                 },
                 {
                     ""name"": """",
+                    ""id"": ""392c0284-0a05-41a0-bb53-5c54fa6997c5"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CancelAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""9d6ff9b9-8254-4936-b7f4-5af3a27086ce"",
                     ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": ""Tap"",

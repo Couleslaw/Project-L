@@ -378,14 +378,31 @@ namespace ProjectL.GameScene.ActionHandling
                     Debug.LogError("Current action constructor is not PlaceTetrominoConstructor", this);
                     return;
                 }
+                // get all placements
                 Queue<PlaceTetrominoAction> placements = placeConstructor.GetPlacementsQueue();
+
+                // check that there is a reasonable amount of placements
                 bool valid = placements.Count > 0 && placements.Count <= _currentTurnInfo.NumActionsLeft;
+
+                // ensure that all placements are valid
                 foreach (var a in placements) {
                     if (_actionVerifier.Verify(a) is not VerificationSuccess) {
                         valid = false;
                         break;
                     }
                 }
+
+                // ensure that all placements are to the same puzzle
+                if (valid && placements.Count > 0) {
+                    uint puzzleId = placements.Peek().PuzzleId;
+                    foreach (var a in placements) {
+                        if (a.PuzzleId != puzzleId) {
+                            valid = false;
+                            break;
+                        }
+                    }
+                }
+
                 ActionZonesManager.Instance.CanConfirmAction = valid;
                 return;
             }

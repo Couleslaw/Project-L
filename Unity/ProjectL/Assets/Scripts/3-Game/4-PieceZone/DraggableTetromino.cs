@@ -118,9 +118,27 @@ namespace ProjectL.GameScene.PieceZone
                 return;
             }
 
+            // not dragging anymore
             _isDragging = false;
+
+            // abandon the tetromino if it is not over player row
             if (!_isOverPlayerRow) {
                 SetMode(Mode.Abandoned);
+                return;
+            }
+
+            // if the player left the tetromino super close to a splot where it can be placed --> place it
+            if (InteractivePuzzle.TryGetCenterOfShadow(GetConfiguration(), out Vector2 center)) {
+
+                // first check that rotation is a multiple of 90 degrees
+                int angle = (((int)transform.rotation.eulerAngles.z % 360) + 360) % 90;
+                if (angle != 0) {
+                    return;
+                }
+
+                if (Vector2.Distance(center, _rb!.position - GetPivotOffset()) < 0.075) {
+                    InteractivePuzzle.TryPlacingToPuzzle(this);
+                }
             }
         }
 
@@ -154,14 +172,14 @@ namespace ProjectL.GameScene.PieceZone
                 return;
             }
 
-            StopDragging();
-
             // set the tetromino to placed mode
             SetPosition(center);
             StartCoroutine(PlaceCoroutine());
 
             IEnumerator PlaceCoroutine()
             {
+                // after a new position is set, we need to wait for the next FixedUpdate to ensure the Rigidbody2D is updated
+                // and the collider has collided with any overlapping pieces
                 yield return new WaitForFixedUpdate();
                 SoundManager.Instance?.PlaySliderSound();
                 SetMode(Mode.Placed);
@@ -170,29 +188,36 @@ namespace ProjectL.GameScene.PieceZone
 
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
-            _isMouseOver = true;
-
-            // if right mouse button --> the tetromino should flip
-            // this is handled with GameManager controls
-            if (eventData.button == PointerEventData.InputButton.Right) {
+            if (_mode == Mode.Animation) {
                 return;
             }
 
-            // if middle button --> remove from scene
+            _isMouseOver = true;
+
+            // left button starts dragging
+            if (eventData.button == PointerEventData.InputButton.Left) {
+                StartDragging();
+                return;
+            }
+
+            // middle button --> remove from scene
             if (eventData.button == PointerEventData.InputButton.Middle) {
                 // first let listeners know that the tetromino was clicked
                 OnStartDraggingEventHandler?.Invoke(this);
                 RemoveFromScene();
                 return;
             }
-
-            // else start dragging 
-            StartDragging();
         }
 
         void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
         {
-            StopDragging();
+            if (_mode == Mode.Animation) {
+                return;
+            }
+
+            if (eventData.button == PointerEventData.InputButton.Left) {
+                StopDragging();
+            }
         }
 
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
@@ -277,6 +302,7 @@ namespace ProjectL.GameScene.PieceZone
             }
 
             SelectedTetromino.transform.Rotate(0f, 0f, ctx.ReadValue<float>() * _rotationSpeed);
+            InteractivePuzzle.UpdateShadows(SelectedTetromino);
         }
 
         private static void OnRotate90InputAction(InputAction.CallbackContext ctx)
@@ -287,6 +313,7 @@ namespace ProjectL.GameScene.PieceZone
 
             SelectedTetromino.SnapToNearestRightAngle();
             SelectedTetromino.transform.Rotate(0f, 0f, 90 * Mathf.Sign(ctx.ReadValue<float>()));
+            InteractivePuzzle.UpdateShadows(SelectedTetromino);
         }
 
         private static void OnFlipInputAction(InputAction.CallbackContext ctx)
@@ -306,6 +333,9 @@ namespace ProjectL.GameScene.PieceZone
             Quaternion rotation = tr.rotation;
             rotation.z *= -1;
             SelectedTetromino.transform.rotation = rotation;
+
+            // update shadows
+            InteractivePuzzle.UpdateShadows(SelectedTetromino);
         }
 
         private void Awake()
@@ -432,16 +462,11 @@ namespace ProjectL.GameScene.PieceZone
             _draggingPointerOffset = (Vector2)transform.position - mouseWorldPos;
         }
 
-        private void SetPosition(Vector2 center)
+        private Vector2 GetPivotOffset()
         {
-            // calculate pivot offset
             Vector2 offset = Vector2.Scale(_rt!.sizeDelta, (0.5f * Vector2.one - _rt.pivot));
             offset = Vector2.Scale(offset, (Vector2)transform.localScale);
-            offset = RotateVector(offset, transform.rotation.eulerAngles.z);
-
-            // correct the position with offset
-            //_rt.position = center + offset;
-            _rb!.MovePosition(center + offset);
+            return RotateVector(offset, transform.rotation.eulerAngles.z);
 
             static Vector2 RotateVector(Vector2 v, float degrees)
             {
@@ -452,6 +477,8 @@ namespace ProjectL.GameScene.PieceZone
                 );
             }
         }
+
+        private void SetPosition(Vector2 center) => _rb!.MovePosition(center + GetPivotOffset());
 
         private void SnapToNearestRightAngle()
         {
@@ -554,7 +581,7 @@ namespace ProjectL.GameScene.PieceZone
                 transform.rotation = Quaternion.Euler(0f, 0f, angle);
 
                 // if tetromino is close enough to the goal position --> snap to it
-                if (distance < 0.1f) {
+                if (distance < 0.01f) {
                     SetPosition(goalPosition);
                     break;
                 }

@@ -49,9 +49,10 @@ namespace ProjectL.GameScene.PuzzleZone
             return false;
         }
 
-        public void Init(bool isBlack)
+        public void Init(bool isBlack, int deckSize)
         {
             _deckCoverCard?.Init(isBlack);
+            _deckCoverCard?.SetDeckSize(deckSize);
             foreach (PuzzleCard puzzleCard in _puzzleCards) {
                 puzzleCard.Init(isBlack);
             }
