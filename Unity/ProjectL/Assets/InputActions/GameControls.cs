@@ -323,9 +323,9 @@ namespace ProjectL.InputActions
                 },
                 {
                     ""name"": """",
-                    ""id"": ""428676fd-0c6a-4de9-b68f-76930a813d56"",
-                    ""path"": ""<Touchscreen>/touch*/Press"",
-                    ""interactions"": ""Tap"",
+                    ""id"": ""9502a182-fdfe-4c6b-8ceb-97a0b588365a"",
+                    ""path"": ""<Touchscreen>/Press"",
+                    ""interactions"": ""MultiTap(tapDelay=0.5)"",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Flip"",
