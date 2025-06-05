@@ -8,7 +8,9 @@ This project is a digital version of the game that can be played by both human a
 
 ## [Play Project L Online](https://couleslaw.github.io/Project-L/play/)
 
-Experience the game in your browser. Please note: AI players are not available in this version.
+Experience the game in your browser ━ both on your computer or tablet.
+
+Please note that AI players are not available in this version.
 
 ## [Download Project L](https://github.com/Couleslaw/Project-L/releases/latest)
 

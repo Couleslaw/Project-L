@@ -33,11 +33,19 @@ The order in which the players will take turns is determined by the order in whi
 | Confirm action / Select reward | Click `CONFIRM` button, `Enter`, `Ctrl`                      |
 | Cancel action / Clear board    | Start a different action, `TAB`, `Backspace`, `C`            |
 | Place piece to puzzle          | Left click on it, `Space`                                    |
-| Rotate last selected piece     | Mouse wheel, up/down arrows                                  |
-| Flip last selected piece       | Right click, left/right arrows                               |
+| Rotate last selected piece     | Mouse wheel (while mouse over your row), up/down arrows      |
+| Flip last selected piece       | Right click (while mouse over your row), left/right arrows   |
 | Return piece to collection     | Move it outside of your row, middle mouse button click on it |
-| Open/Close pause menu          | `ESC`, `P`                                                   |
+| Open/Close pause menu          | Click pause menu button (top-left), `ESC`, `P`               |
 | Exit/Enter full-screen         | `F11`                                                        |
+
+### Touch Controls
+
+| Action                     | Controls                            |
+| -------------------------- | ----------------------------------- |
+| Place piece to puzzle      | Tap on it with one finger           |
+| Rotate last selected piece | Move with two fingers (in your row) |
+| Flip last selected piece   | Double tap (in your row)            |
 
 ## Where is what?
 
@@ -57,13 +65,21 @@ Each player has their own row in the middle of the board. The row is annotated w
 
 Each player has a column showing how many pieces of each type they have. On the very right is a column showing the number of pieces left in the shared reserve. The column of the current player is highlighted, alongside the pieces they own.
 
-The current player in the picture above is Kuba. He has 2 yellow pieces, 1 green piece and 1 orange piece. You can also see that there are only 9 yellow pieces left in the shared reserve.
+### Example
+
+In the picture above:
+
+- Both the white and black decks contain 5 puzzles.
+- The current player is **Kuba** and he is currently working on two puzzles.
+- Kuba has 1 green piece, 1 orange piece, 1 blue piece, 2 cyan pieces and 1 purple piece.
+- Karel has 4 green pieces, 1 orange piece, 1 blue piece and 1 pink piece.
+- There are 7 green pieces left in the shared reserve.
 
 ### Pause Menu
 
 ![Pause Menu](./images/PauseMenu.png)
 
-The pause menu is opened by pressing `ESC` or `P` and it contains a lot of useful information. It shows who is the current player, how many actions he has left in this turn, and what is the current game phase:
+The pause menu is opened by clicking the button in the top-left corner or by pressing `ESC` or `P`. It contains a lot of useful information. It shows who is the current player, how many actions he has left in this turn, and what is the current game phase:
 
 - Normal
 - Next round is final
@@ -100,6 +116,10 @@ To plan ahead, you can lock in as many pieces as you want without confirming the
 "%}
 
 ![Placing Pieces](./images/Place.gif)
+
+{% include note.html content="
+When rotating or flipping a piece, your mouse must be over your row. If you are using a touch device, you can rotate the piece by moving two fingers in your row, or flip it by double tapping in your row.
+"%}
 
 When you complete a puzzle, you will get back the pieces you used to solve it, plus a new piece as a reward. To take the new piece, click on it and then click on the **Select Reward** button (or press `Enter` or `Ctrl`).
 
