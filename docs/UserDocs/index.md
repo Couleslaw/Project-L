@@ -65,10 +65,10 @@ The current player in the picture above is Kuba. He has 2 yellow pieces, 1 green
 
 The pause menu is opened by pressing `ESC` or `P` and it contains a lot of useful information. It shows who is the current player, how many actions he has left in this turn, and what is the current game phase:
 
-- normal
-- next round is final
-- final round
-- finishing touches
+- Normal
+- Next round is final
+- Final round
+- Finishing touches
 
 You also have the option to peek at the current score of each player and to change the animation speed of the game.
 
@@ -77,6 +77,8 @@ Additionally, you have the option to return back to the main menu by pressing th
 ## Taking New Puzzles
 
 First click the **Take Puzzle** button or click somewhere on the puzzle zone. Then click on the puzzle you want to take and either confirm the action, which will place it on your board, or click on a specific slot in your board to place it there. You can either take a specific puzzle, or the puzzle from the top of one of the decks, which will be a surprise for you.
+
+When you complete a puzzle, you will be rewarded some points and a new piece. The points are specified in the top-left corner of the puzzle and the piece in the top-right corner.
 
 ![Taking Puzzles](./images/TakePuzzle.gif)
 
@@ -97,7 +99,9 @@ Once you have placed a piece, you can confirm the action. Additionally, you can 
 To plan ahead, you can lock in as many pieces as you want without confirming the action.
 "%}
 
-![Placing Pieces](./images/PlaceAndSelect.gif)
+![Placing Pieces](./images/Place.gif)
+
+When you complete a puzzle, you will get back the pieces you used to solve it, plus a new piece as a reward. To take the new piece, click on it and then click on the **Select Reward** button (or press `Enter` or `Ctrl`).
 
 ## Master Action
 

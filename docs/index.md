@@ -2,7 +2,7 @@
 
 # Project-L Documentation
 
-This is the documentation for the [Project L](https://github.com/Couleslaw/Project-L) digital board game, which is a computer version of the board game created by [Boardcubator](https://www.boardcubator.com/games/project-l/).
+This is the documentation for the [Project L digital board game](https://github.com/Couleslaw/Project-L), which is a computer version of the board game created by [Boardcubator](https://www.boardcubator.com/games/project-l/).
 
 {% include note.html content="
 This project implements only the **Base game**. It doesn't implement the solo variant or any of the expansions.
