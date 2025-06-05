@@ -5,7 +5,6 @@ namespace ProjectL.GameScene.PuzzleZone
     using ProjectL.Sound;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
-    using ProjectLCore.GamePieces;
     using System;
     using TMPro;
     using UnityEngine;
@@ -16,18 +15,18 @@ namespace ProjectL.GameScene.PuzzleZone
         #region Fields
 
         [SerializeField] private TextMeshProUGUI? _label;
+
         [SerializeField] private Sprite? _dimmedSprite;
 
         private int _deckSize;
+
         private Sprite? _nonEmptyDeckSprite;
+
         private SpriteState _nonEmptyDeckSpriteState;
-
-
 
         #endregion
 
         #region Methods
-
 
         public void SetDeckSize(int n)
         {
@@ -59,20 +58,6 @@ namespace ProjectL.GameScene.PuzzleZone
             _button.interactable = mode == PuzzleZoneMode.TakePuzzle && CanTakePuzzle;
         }
 
-        protected override bool GetCanTakePuzzle(TurnInfo turnInfo)
-        {
-            if (_deckSize == 0)
-                return false;
-
-            if (!_isBlack)
-                return true;
-
-            if (turnInfo.GamePhase == GamePhase.EndOfTheGame && turnInfo.TookBlackPuzzle)
-                return false;
-
-            return true;
-        }
-
         public override PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardHighlighter()
         {
             if (_button == null) {
@@ -95,6 +80,33 @@ namespace ProjectL.GameScene.PuzzleZone
             }
             return new(_button, _dimmedSprite!);
         }
+
+        protected override bool GetCanTakePuzzle(TurnInfo turnInfo)
+        {
+            if (_deckSize == 0)
+                return false;
+
+            if (!_isBlack)
+                return true;
+
+            if (turnInfo.GamePhase == GamePhase.EndOfTheGame && turnInfo.TookBlackPuzzle)
+                return false;
+
+            return true;
+        }
+
+        protected override void InitializeDraggablePuzzle(DraggablePuzzle puzzle)
+        {
+            if (_deckSize == 0) {
+                Debug.LogWarning("Cannot initialize DraggablePuzzle because the deck size is zero.");
+                return;
+            }
+
+            var action = new TakePuzzleAction(_isBlack ? TakePuzzleAction.Options.TopBlack : TakePuzzleAction.Options.TopWhite);
+            puzzle.Init(action, null!);
+        }
+
+        protected override IDisposable GetTakePuzzleDisposable() => new TakePuzzleDisposable(this);
 
         private void Start()
         {
@@ -144,22 +156,17 @@ namespace ProjectL.GameScene.PuzzleZone
             }
         }
 
-        protected override void InitializeDraggablePuzzle(DraggablePuzzle puzzle)
-        {
-            if (_deckSize == 0) {
-                Debug.LogWarning("Cannot initialize DraggablePuzzle because the deck size is zero.");
-                return;
-            }
-
-            var action = new TakePuzzleAction(_isBlack ? TakePuzzleAction.Options.TopBlack : TakePuzzleAction.Options.TopWhite);
-            puzzle.Init(action, null!);
-        }
-
-        protected override IDisposable GetTakePuzzleDisposable() => new TakePuzzleDisposable(this);
+        #endregion
 
         private class TakePuzzleDisposable : IDisposable
         {
+            #region Fields
+
             private readonly DeckCoverCard _deckCoverCard;
+
+            #endregion
+
+            #region Constructors
 
             public TakePuzzleDisposable(DeckCoverCard deckCoverCard)
             {
@@ -167,13 +174,18 @@ namespace ProjectL.GameScene.PuzzleZone
                 _deckCoverCard.SetDeckSize(_deckCoverCard._deckSize - 1);
                 _deckCoverCard.SetEmptyDeckSprites();
             }
+
+            #endregion
+
+            #region Methods
+
             public void Dispose()
             {
                 _deckCoverCard.SetDeckSize(_deckCoverCard._deckSize + 1);
                 _deckCoverCard.SetNonEmptyDeckSprites();
             }
-        }
 
-        #endregion
+            #endregion
+        }
     }
 }

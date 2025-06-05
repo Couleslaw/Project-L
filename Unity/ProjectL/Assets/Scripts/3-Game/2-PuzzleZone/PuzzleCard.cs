@@ -22,7 +22,6 @@ namespace ProjectL.GameScene.PuzzleZone
 
         private bool _isRecycleSelected = false;
 
-
         #endregion
 
         #region Properties
@@ -57,21 +56,6 @@ namespace ProjectL.GameScene.PuzzleZone
 
             bool CanRecycle() => _puzzle != null;
         }
-
-        protected override bool GetCanTakePuzzle(TurnInfo turnInfo)
-        {
-            if (_puzzle == null)
-                return false;
-
-            if (!_isBlack)
-                return true;
-
-            if (turnInfo.GamePhase == GamePhase.EndOfTheGame && turnInfo.TookBlackPuzzle)
-                return false;
-
-            return true;
-        }
-
 
         public override PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardHighlighter()
         {
@@ -110,6 +94,33 @@ namespace ProjectL.GameScene.PuzzleZone
             UpdateUI();
             PuzzleZoneManager.Instance.ReportRecycleChange(new(_puzzle, isSelected: false));
         }
+
+        protected override bool GetCanTakePuzzle(TurnInfo turnInfo)
+        {
+            if (_puzzle == null)
+                return false;
+
+            if (!_isBlack)
+                return true;
+
+            if (turnInfo.GamePhase == GamePhase.EndOfTheGame && turnInfo.TookBlackPuzzle)
+                return false;
+
+            return true;
+        }
+
+        protected override void InitializeDraggablePuzzle(DraggablePuzzle puzzle)
+        {
+            if (_puzzle == null) {
+                Debug.LogError("Cannot initialize draggable puzzle with null puzzle", this);
+                return;
+            }
+
+            var action = new TakePuzzleAction(TakePuzzleAction.Options.Normal, PuzzleId);
+            puzzle.Init(action, _puzzle);
+        }
+
+        protected override IDisposable GetTakePuzzleDisposable() => new TakePuzzleDisposable(this);
 
         private void Start()
         {
@@ -221,36 +232,36 @@ namespace ProjectL.GameScene.PuzzleZone
             _button.spriteState = newSpriteState;
         }
 
-        protected override void InitializeDraggablePuzzle(DraggablePuzzle puzzle)
-        {
-            if (_puzzle == null) {
-                Debug.LogError("Cannot initialize draggable puzzle with null puzzle", this);
-                return;
-            }
-
-            var action = new TakePuzzleAction(TakePuzzleAction.Options.Normal, PuzzleId);
-            puzzle.Init(action, _puzzle);
-        }
-
-        protected override IDisposable GetTakePuzzleDisposable() => new TakePuzzleDisposable(this);
+        #endregion
 
         private class TakePuzzleDisposable : IDisposable
         {
+            #region Fields
+
             private readonly PuzzleCard _puzzleCard;
+
+            #endregion
+
+            #region Constructors
+
             public TakePuzzleDisposable(PuzzleCard puzzleCard)
             {
                 _puzzleCard = puzzleCard;
                 _puzzleCard.SetEmptySlot();
-
             }
+
+            #endregion
+
+            #region Methods
+
             public void Dispose()
             {
                 if (_puzzleCard._button != null) {
                     _puzzleCard.UpdateUI();
                 }
             }
-        }
 
-        #endregion
+            #endregion
+        }
     }
 }

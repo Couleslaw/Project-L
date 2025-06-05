@@ -17,18 +17,26 @@ namespace ProjectL.GameScene.PuzzleZone
         #region Fields
 
         protected Button? _button;
+
         protected Image? _image;
+
         protected bool _isBlack;
+
+        protected PuzzleZoneMode _mode;
 
         [SerializeField] private DraggablePuzzle? _draggablePuzzlePrefab;
 
         private IDisposable? _takePuzzleDisposable;
+
         private DraggablePuzzle? _currentDraggingPuzzle;
-        protected PuzzleZoneMode _mode;
 
         #endregion
 
+        #region Properties
+
         public bool CanTakePuzzle { get; protected set; }
+
+        #endregion
 
         #region Methods
 
@@ -45,8 +53,6 @@ namespace ProjectL.GameScene.PuzzleZone
             _mode = mode;
             CanTakePuzzle = GetCanTakePuzzle(turnInfo);
         }
-
-        protected abstract bool GetCanTakePuzzle(TurnInfo turnInfo);
 
         public abstract PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardHighlighter();
 
@@ -96,6 +102,8 @@ namespace ProjectL.GameScene.PuzzleZone
                 _currentDraggingPuzzle = null;
             }
         }
+
+        protected abstract bool GetCanTakePuzzle(TurnInfo turnInfo);
 
         protected abstract void InitializeDraggablePuzzle(DraggablePuzzle puzzle);
 

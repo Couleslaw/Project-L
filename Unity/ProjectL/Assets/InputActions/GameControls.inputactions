@@ -191,6 +191,17 @@
                 },
                 {
                     "name": "",
+                    "id": "04b178a6-b910-4169-8a81-f626b6c9e6f6",
+                    "path": "<Touchscreen>/primaryTouch/tap",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ClickPlace",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "3f85c798-da5c-43a3-adef-fd3fa43e1091",
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
@@ -216,6 +227,17 @@
                     "id": "fc291727-7714-4e3c-a429-08f44635ccd0",
                     "path": "<Keyboard>/rightArrow",
                     "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Flip",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "428676fd-0c6a-4de9-b68f-76930a813d56",
+                    "path": "<Touchscreen>/touch*/Press",
+                    "interactions": "Tap",
                     "processors": "",
                     "groups": "",
                     "action": "Flip",

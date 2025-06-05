@@ -13,7 +13,6 @@ namespace ProjectL.GameScene.PieceZone
     using ProjectLCore.GamePieces;
     using System;
     using System.Collections;
-    using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
     using UnityEngine;
@@ -30,6 +29,7 @@ namespace ProjectL.GameScene.PieceZone
         IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
     {
 
+        private const float _touchScreenRotationSensitivity = 3;
         private const float _rotationSpeed = 30;
         private const float _animationMovementSpeed = 5f;
 
@@ -96,6 +96,10 @@ namespace ProjectL.GameScene.PieceZone
             // create a new tetromino sizer
             TetrominoSizer sizer = gameObject.AddComponent<TetrominoSizer>();
             sizer.Init(spawner);
+
+            // create a new touch screen rotation handler
+            TouchRotationHandler touchRotationHandler = gameObject.AddComponent<TouchRotationHandler>();
+            touchRotationHandler.Init(OnTouchScreenRotateInputAction);
 
             // handle animation separately
             if (isAnimation) {
@@ -295,14 +299,32 @@ namespace ProjectL.GameScene.PieceZone
             InteractivePuzzle.TryPlacingToPuzzle(SelectedTetromino);
         }
 
+        private void RotateDegrees(float angle)
+        {
+            transform.Rotate(0f, 0f, angle);
+            if (this == SelectedTetromino) {
+                InteractivePuzzle.UpdateShadows(this);
+            }
+        }
+
         private static void OnRotateSmoothInputAction(InputAction.CallbackContext ctx)
         {
             if (SelectedTetromino == null || !SelectedTetromino.CanBeControlled) {
                 return;
             }
 
-            SelectedTetromino.transform.Rotate(0f, 0f, ctx.ReadValue<float>() * _rotationSpeed);
-            InteractivePuzzle.UpdateShadows(SelectedTetromino);
+            Debug.Log($"Rotate Smooth: {ctx.ReadValue<float>()}");
+            SelectedTetromino.RotateDegrees(ctx.ReadValue<float>() * _rotationSpeed);
+        }
+
+        private static void OnTouchScreenRotateInputAction(float movement)
+        {
+            if (SelectedTetromino == null || !SelectedTetromino.CanBeControlled) {
+                return;
+
+            }
+            // rotate the tetromino by the screen angle
+            SelectedTetromino.RotateDegrees(movement * _rotationSpeed * _touchScreenRotationSensitivity);
         }
 
         private static void OnRotate90InputAction(InputAction.CallbackContext ctx)
