@@ -20,7 +20,6 @@ namespace ProjectL.GameScene.PuzzleZone
     public enum PuzzleZoneMode
     {
         Disabled,
-        ReadyToTakePuzzle,
         TakePuzzle,
         Recycle
     }
@@ -35,8 +34,6 @@ namespace ProjectL.GameScene.PuzzleZone
         [Header("Puzzle columns")]
         [SerializeField] private PuzzlesColumn? _whiteColumn;
         [SerializeField] private PuzzlesColumn? _blackColumn;
-
-        [SerializeField] private Button? _requestTakePuzzleButton;
 
         private TurnInfo _currentTurnInfo;
 
@@ -79,7 +76,7 @@ namespace ProjectL.GameScene.PuzzleZone
 
         public override void Init(GameCore game)
         {
-            if (_whiteColumn == null || _blackColumn == null || _requestTakePuzzleButton == null) {
+            if (_whiteColumn == null || _blackColumn == null) {
                 Debug.LogError("One or more UI components is not assigned!", this);
                 return;
             }
@@ -93,13 +90,11 @@ namespace ProjectL.GameScene.PuzzleZone
             _blackColumn.Init(isBlack: true, game.GameState.NumBlackPuzzlesLeft);
 
             HumanPlayerActionCreationManager.RegisterController(this);
-
-            _requestTakePuzzleButton.onClick.AddListener(ActionZonesManager.Instance.ManuallyClickTakePuzzleButton);
-            EnableRequestTakePuzzleButton(false);
         }
 
         void IActionCreationController.SetPlayerMode(PlayerMode mode)
         {
+            Debug.Log($"Set player mode: {mode}");
             if (mode == PlayerMode.NonInteractive) {
                 SetMode(PuzzleZoneMode.Disabled);
             }
@@ -108,7 +103,7 @@ namespace ProjectL.GameScene.PuzzleZone
         void IActionCreationController.SetActionMode(ActionMode mode)
         {
             if (mode == ActionMode.ActionCreation) {
-                SetMode(PuzzleZoneMode.ReadyToTakePuzzle);
+                SetMode(PuzzleZoneMode.TakePuzzle);
             }
             else {
                 SetMode(PuzzleZoneMode.Disabled);
@@ -120,10 +115,7 @@ namespace ProjectL.GameScene.PuzzleZone
             _whiteColumn!.SetMode(mode, _currentTurnInfo);
             _blackColumn!.SetMode(mode, _currentTurnInfo);
 
-            EnableRequestTakePuzzleButton(mode == PuzzleZoneMode.ReadyToTakePuzzle);
         }
-
-        private void EnableRequestTakePuzzleButton(bool enable) => _requestTakePuzzleButton!.image.raycastTarget = enable;
 
         void IGameStatePuzzleListener.OnWhitePuzzleRowChanged(int index, Puzzle? puzzle)
         {
@@ -160,15 +152,15 @@ namespace ProjectL.GameScene.PuzzleZone
             _currentTurnInfo = currentTurnInfo;
         }
 
-        void IHumanPlayerActionCreator<TakePuzzleAction>.OnActionRequested() => SetMode(PuzzleZoneMode.TakePuzzle);
+        void IHumanPlayerActionCreator<TakePuzzleAction>.OnActionRequested() { }
 
-        void IHumanPlayerActionCreator<TakePuzzleAction>.OnActionCanceled() => SetMode(PuzzleZoneMode.ReadyToTakePuzzle);
+        void IHumanPlayerActionCreator<TakePuzzleAction>.OnActionCanceled() => SetMode(PuzzleZoneMode.TakePuzzle);
 
         void IHumanPlayerActionCreator<TakePuzzleAction>.OnActionConfirmed() => SetMode(PuzzleZoneMode.Disabled);
 
         void IHumanPlayerActionCreator<RecycleAction>.OnActionRequested() => SetMode(PuzzleZoneMode.Recycle);
 
-        void IHumanPlayerActionCreator<RecycleAction>.OnActionCanceled() => SetMode(PuzzleZoneMode.ReadyToTakePuzzle);
+        void IHumanPlayerActionCreator<RecycleAction>.OnActionCanceled() => SetMode(PuzzleZoneMode.TakePuzzle);
 
         void IHumanPlayerActionCreator<RecycleAction>.OnActionConfirmed() => SetMode(PuzzleZoneMode.Disabled);
 
@@ -187,7 +179,7 @@ namespace ProjectL.GameScene.PuzzleZone
                 using (_blackColumn.GetDisposableColumnDimmer()) {
 
                     // wait a bit
-                    await AnimationManager.WaitForScaledDelay(delay, cancellationToken);
+                    await AnimationManager.WaitForScaledDelay(2*delay, cancellationToken);
 
                     // select the taken puzzle card
                     switch (action.Option) {

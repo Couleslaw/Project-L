@@ -54,7 +54,6 @@ MonoBehaviour:
   inputLineSound: {fileID: 1147600417797558271}
   sliderSound: {fileID: 7882202250374689405}
   errorSound: {fileID: 7936477653451370194}
-  successSound: {fileID: 0}
   tapSoundEffect: {fileID: 5922312815489153262}
   softTapSoundEffect: {fileID: 474219561393881478}
 --- !u!82 &7166665175988050779
@@ -458,7 +457,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: d9b516fcd4da71145bb03a1d6c4f4168, type: 3}
   m_Resource: {fileID: 8300000, guid: d9b516fcd4da71145bb03a1d6c4f4168, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.015
+  m_Volume: 0.01
   m_Pitch: 3
   Loop: 0
   Mute: 0

@@ -74,7 +74,6 @@ namespace ProjectL.GameScene.Management
             }
             await AnimationManager.WaitForScaledDelay(_initialDelay, cancellationToken);
             using (new ActionZonesManager.DisposableButtonSelector(ActionZonesManager.Button.TakePuzzle)) {
-                await AnimationManager.WaitForScaledDelay(0.5f, cancellationToken);
                 await _takePuzzleAnimator.AnimateAsync(action, cancellationToken);
             }
         }

@@ -28,6 +28,8 @@ namespace ProjectL.GameScene.PuzzleZone
 
         #endregion
 
+        public bool CanTakePuzzle { get; protected set; }
+
         #region Methods
 
         public void Init(bool isBlack)
@@ -41,7 +43,10 @@ namespace ProjectL.GameScene.PuzzleZone
         public virtual void SetMode(PuzzleZoneMode mode, TurnInfo turnInfo)
         {
             _mode = mode;
+            CanTakePuzzle = GetCanTakePuzzle(turnInfo);
         }
+
+        protected abstract bool GetCanTakePuzzle(TurnInfo turnInfo);
 
         public abstract PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardHighlighter();
 
@@ -49,8 +54,16 @@ namespace ProjectL.GameScene.PuzzleZone
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (_button == null || !_button.interactable || _mode != PuzzleZoneMode.TakePuzzle) {
+            if (eventData.button != PointerEventData.InputButton.Left) {
                 return;
+            }
+
+            if (_mode != PuzzleZoneMode.TakePuzzle || !CanTakePuzzle) {
+                return;
+            }
+
+            if (_takePuzzleDisposable != null) {
+                return; // Already dragging this puzzle
             }
 
             HumanPlayerActionCreationManager.Instance.OnActionCanceled();
@@ -69,6 +82,7 @@ namespace ProjectL.GameScene.PuzzleZone
             };
 
             _currentDraggingPuzzle = draggablePuzzle;
+            HumanPlayerActionCreationManager.Instance.OnTakePuzzleActionRequested();
         }
 
         public void OnPointerUp(PointerEventData eventData)

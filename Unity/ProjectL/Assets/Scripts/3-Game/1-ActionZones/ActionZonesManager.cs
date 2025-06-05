@@ -4,6 +4,7 @@ namespace ProjectL.GameScene.ActionZones
 {
     using ProjectL.GameScene.ActionHandling;
     using ProjectL.Management;
+    using ProjectL.Sound;
     using ProjectLCore.GameLogic;
     using System;
     using UnityEngine;
@@ -111,8 +112,6 @@ namespace ProjectL.GameScene.ActionZones
             _puzzleActionZone.RemoveSelectRewardListener(acm);
         }
 
-        public void ManuallyClickTakePuzzleButton() => _puzzleActionZone?.ManuallyClickTakePuzzleButton();
-
         private void OnCancelActionRequested(InputAction.CallbackContext ctx)
         {
             if (HumanPlayerActionCreationManager.Instance != null) {
@@ -171,7 +170,7 @@ namespace ProjectL.GameScene.ActionZones
 
                 switch (button) {
                     case Button.TakePuzzle:
-                        Instance._puzzleActionZone.ManuallyClickTakePuzzleButton();
+                        SoundManager.Instance.PlayButtonClickSound();
                         break;
                     case Button.Recycle:
                         Instance._puzzleActionZone.ManuallyClickRecycleButton();

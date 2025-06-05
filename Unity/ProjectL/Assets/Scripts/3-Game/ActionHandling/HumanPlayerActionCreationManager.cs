@@ -100,8 +100,8 @@ namespace ProjectL.GameScene.ActionHandling
         {
             _actionControllers.Add(controller);
             if (Instance != null) {
-                controller.SetPlayerMode(Instance._currentPlayerMode);
                 controller.SetActionMode(Instance._currentActionMode);
+                controller.SetPlayerMode(Instance._currentPlayerMode);
             }
         }
 
@@ -128,7 +128,12 @@ namespace ProjectL.GameScene.ActionHandling
 
         public void OnClearBoardRequested() => OnActionCanceled();
 
-        public void OnTakePuzzleActionRequested() => SetNewActionType(ActionType.TakePuzzle);
+        public void OnTakePuzzleActionRequested()
+        {
+            // force deselect action button
+            ActionButton.DeselectCurrentButton();
+            SetNewActionType(ActionType.TakePuzzle);
+        }
 
         public void OnRecycleActionRequested() => SetNewActionType(ActionType.Recycle);
 
@@ -169,8 +174,6 @@ namespace ProjectL.GameScene.ActionHandling
 
         public void OnActionCanceled()
         {
-            Debug.Log("CANCEL ACTION CALLED", this);
-
             // finishing touches --> only remove tetrominos from scene
             if (_currentActionMode == ActionMode.FinishingTouches) {
                 CurrentEventSet?.RaiseCanceled();

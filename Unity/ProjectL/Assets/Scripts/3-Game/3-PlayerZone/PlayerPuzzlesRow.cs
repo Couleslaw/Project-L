@@ -192,13 +192,11 @@ namespace ProjectL.GameScene.PlayerZone
 
         void IHumanPlayerActionCreator<TakePuzzleAction>.OnActionRequested()
         {
-            Debug.Log($"TakePuzzleAction requested");
             _takePuzzleActionSlot = null;
         }
 
         void IHumanPlayerActionCreator<TakePuzzleAction>.OnActionCanceled()
         {
-            Debug.Log($"TakePuzzleAction canceled");
             ClearEmptySlotHighlight();
             _takePuzzleActionSlot = null;
         }

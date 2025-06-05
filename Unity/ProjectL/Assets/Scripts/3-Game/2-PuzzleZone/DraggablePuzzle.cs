@@ -107,21 +107,6 @@ namespace ProjectL.GameScene.PuzzleZone
          
             RemovedFromSceneEventHandler?.Invoke();
             Destroy(gameObject);
-
-            //// if not placed --> destroy immediately
-            //if (_mode != Mode.Placed) {
-            //    Destroy(gameObject);
-            //}
-            //// if placed --> destroy after a small delay to prevent animation clipping 
-            //else {
-            //    StartCoroutine(DestroyAfterMilliseconds(50f));
-            //}
-
-            //IEnumerator DestroyAfterMilliseconds(float milliseconds)
-            //{
-            //    yield return new WaitForSeconds(milliseconds / 1000f);
-            //    Destroy(gameObject);
-            //}
         }
 
         private void Awake()

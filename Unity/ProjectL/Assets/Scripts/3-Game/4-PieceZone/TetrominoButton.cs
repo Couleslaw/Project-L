@@ -154,6 +154,10 @@ namespace ProjectL.GameScene.PieceZone
 
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
+            if (eventData.button != PointerEventData.InputButton.Left) {
+                return;
+            }
+
             if (_mode == PieceZoneMode.Disabled) {
                 return;
             }
@@ -173,6 +177,9 @@ namespace ProjectL.GameScene.PieceZone
         void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
         {
             // Called by EventSystem when pointer is released ANYWHERE after pressing down on this button
+            if (eventData.button != PointerEventData.InputButton.Left) {
+                return;
+            }
 
             // notify the last spawned tetromino to stop dragging
             if (_currentTetromino != null) {

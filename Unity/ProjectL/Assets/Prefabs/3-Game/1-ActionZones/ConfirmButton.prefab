@@ -159,7 +159,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
   m_MinWidth: -1
-  m_MinHeight: 30
+  m_MinHeight: 50
   m_PreferredWidth: 110
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
@@ -215,7 +215,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6229539599049694780, guid: 9a0a8e1fb5246ab4cae6b7eb9d5f786e, type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 4287993237
+      value: 4285188710
       objectReference: {fileID: 0}
     - target: {fileID: 8496421497306160306, guid: 9a0a8e1fb5246ab4cae6b7eb9d5f786e, type: 3}
       propertyPath: m_Pivot.x

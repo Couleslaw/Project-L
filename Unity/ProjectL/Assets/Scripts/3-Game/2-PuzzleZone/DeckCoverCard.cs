@@ -16,10 +16,13 @@ namespace ProjectL.GameScene.PuzzleZone
         #region Fields
 
         [SerializeField] private TextMeshProUGUI? _label;
+        [SerializeField] private Sprite? _dimmedSprite;
 
         private int _deckSize;
+        private Sprite? _nonEmptyDeckSprite;
+        private SpriteState _nonEmptyDeckSpriteState;
 
-        private Sprite? _dimmedSprite;
+
 
         #endregion
 
@@ -37,37 +40,37 @@ namespace ProjectL.GameScene.PuzzleZone
             }
             _label.text = n.ToString();
             if (n == 0) {
-                _button!.image.sprite = _dimmedSprite!;
-                _button.transition = Selectable.Transition.None;
+                SetEmptyDeckSprites();
+            }
+            else {
+                SetNonEmptyDeckSprites();
             }
         }
 
         public override void SetMode(PuzzleZoneMode mode, TurnInfo turnInfo)
         {
+            if (_button == null) {
+                Debug.LogError("Button component is not assigned!", this);
+                return;
+            }
+
             base.SetMode(mode, turnInfo);
-            _button!.interactable = false;
 
-            if (mode == PuzzleZoneMode.TakePuzzle && CanTakePuzzle()) {
-                PuzzleZoneManager.AddToRadioButtonGroup(_button);
-                _button!.interactable = true;
-            }
-            else {
-                PuzzleZoneManager.RemoveFromRadioButtonGroup(_button);
-            }
+            _button.interactable = mode == PuzzleZoneMode.TakePuzzle && CanTakePuzzle;
+        }
 
-            bool CanTakePuzzle()
-            {
-                if (_deckSize == 0)
-                    return false;
+        protected override bool GetCanTakePuzzle(TurnInfo turnInfo)
+        {
+            if (_deckSize == 0)
+                return false;
 
-                if (!_isBlack)
-                    return true;
-
-                if (turnInfo.GamePhase == GamePhase.EndOfTheGame && turnInfo.TookBlackPuzzle)
-                    return false;
-
+            if (!_isBlack)
                 return true;
-            }
+
+            if (turnInfo.GamePhase == GamePhase.EndOfTheGame && turnInfo.TookBlackPuzzle)
+                return false;
+
+            return true;
         }
 
         public override PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardHighlighter()
@@ -90,17 +93,48 @@ namespace ProjectL.GameScene.PuzzleZone
             if (_button == null) {
                 return null!;
             }
-            return new(_button, _dimmedSprite);
+            return new(_button, _dimmedSprite!);
         }
 
         private void Start()
         {
-            if (_button == null || _label == null) {
+            if (_button == null || _label == null || _dimmedSprite == null) {
                 Debug.LogError("One or more UI components is not assigned!", this);
                 return;
             }
-            _button.onClick.AddListener(SoundManager.Instance!.PlaySoftTapSoundEffect);
-            _dimmedSprite = _button.image.sprite;
+
+            if (_button.transition != Selectable.Transition.SpriteSwap) {
+                Debug.LogError("Button transition must be set to SpriteSwap!", this);
+                return;
+            }
+
+            _nonEmptyDeckSprite = _button.image.sprite;
+            _nonEmptyDeckSpriteState = _button.spriteState;
+        }
+
+        private void SetEmptyDeckSprites()
+        {
+            if (_button == null || _dimmedSprite == null) {
+                Debug.LogError("Button or dimmed sprite is not assigned!", this);
+                return;
+            }
+            _button.image.sprite = _dimmedSprite;
+            _button.spriteState = new SpriteState {
+                highlightedSprite = _dimmedSprite,
+                pressedSprite = _dimmedSprite,
+                selectedSprite = _dimmedSprite,
+                disabledSprite = _dimmedSprite
+            };
+        }
+
+        private void SetNonEmptyDeckSprites()
+        {
+            if (_button == null || _nonEmptyDeckSprite == null) {
+                Debug.LogError("Button or non-empty deck sprite is not assigned!", this);
+                return;
+            }
+            _button.image.sprite = _nonEmptyDeckSprite;
+            _button.spriteState = _nonEmptyDeckSpriteState;
         }
 
         private void OnDestroy()
@@ -126,18 +160,17 @@ namespace ProjectL.GameScene.PuzzleZone
         private class TakePuzzleDisposable : IDisposable
         {
             private readonly DeckCoverCard _deckCoverCard;
+
             public TakePuzzleDisposable(DeckCoverCard deckCoverCard)
             {
                 _deckCoverCard = deckCoverCard;
                 _deckCoverCard.SetDeckSize(_deckCoverCard._deckSize - 1);
-                _deckCoverCard._button!.interactable = false;
+                _deckCoverCard.SetEmptyDeckSprites();
             }
             public void Dispose()
             {
                 _deckCoverCard.SetDeckSize(_deckCoverCard._deckSize + 1);
-                if (_deckCoverCard._button != null) {
-                    _deckCoverCard._button.interactable = true;
-                }
+                _deckCoverCard.SetNonEmptyDeckSprites();
             }
         }
 

@@ -4,7 +4,6 @@ namespace ProjectL.GameScene.PuzzleZone
 {
     using ProjectL.Data;
     using ProjectL.Sound;
-    using ProjectL.Utils;
     using ProjectLCore.GameActions;
     using ProjectLCore.GameLogic;
     using ProjectLCore.GamePieces;
@@ -43,14 +42,11 @@ namespace ProjectL.GameScene.PuzzleZone
         public override void SetMode(PuzzleZoneMode mode, TurnInfo turnInfo)
         {
             base.SetMode(mode, turnInfo);
+
             _button!.interactable = false;
 
-            if (mode == PuzzleZoneMode.TakePuzzle && CanTakePuzzle()) {
-                PuzzleZoneManager.AddToRadioButtonGroup(_button);
-                _button!.interactable = true;
-            }
-            else {
-                PuzzleZoneManager.RemoveFromRadioButtonGroup(_button);
+            if (mode == PuzzleZoneMode.TakePuzzle && CanTakePuzzle) {
+                _button.interactable = true;
             }
 
             if (mode == PuzzleZoneMode.Recycle && CanRecycle()) {
@@ -60,20 +56,20 @@ namespace ProjectL.GameScene.PuzzleZone
             UpdateUI();
 
             bool CanRecycle() => _puzzle != null;
+        }
 
-            bool CanTakePuzzle()
-            {
-                if (_puzzle == null)
-                    return false;
+        protected override bool GetCanTakePuzzle(TurnInfo turnInfo)
+        {
+            if (_puzzle == null)
+                return false;
 
-                if (!_isBlack)
-                    return true;
-
-                if (turnInfo.GamePhase == GamePhase.EndOfTheGame && turnInfo.TookBlackPuzzle)
-                    return false;
-
+            if (!_isBlack)
                 return true;
-            }
+
+            if (turnInfo.GamePhase == GamePhase.EndOfTheGame && turnInfo.TookBlackPuzzle)
+                return false;
+
+            return true;
         }
 
 
@@ -159,8 +155,8 @@ namespace ProjectL.GameScene.PuzzleZone
             if (_button == null || _emptyCardImage == null) {
                 return;
             }
-
             _button.image.type = Image.Type.Sliced;
+            _button.image.sprite = _emptyCardImage;
             _button.spriteState = new SpriteState {
                 highlightedSprite = _emptyCardImage,
                 pressedSprite = _emptyCardImage,
@@ -193,11 +189,11 @@ namespace ProjectL.GameScene.PuzzleZone
 
             // set the sprite and transition
             _button.image.type = Image.Type.Simple;
-            if (_mode == PuzzleZoneMode.Recycle && _isRecycleSelected) {
-                _button.image.sprite = borderBright;
+            if (_mode == PuzzleZoneMode.Recycle && !_isRecycleSelected) {
+                _button.image.sprite = borderDim;
             }
             else {
-                _button.image.sprite = borderDim;
+                _button.image.sprite = borderBright;
             }
 
             _button.transition = Selectable.Transition.SpriteSwap;
@@ -206,7 +202,7 @@ namespace ProjectL.GameScene.PuzzleZone
                     highlightedSprite = highlighted,
                     pressedSprite = borderBright,
                     selectedSprite = borderBright,
-                    disabledSprite = borderBright
+                    disabledSprite = borderDim
                 },
                 PuzzleZoneMode.Recycle => new SpriteState {
                     highlightedSprite = _isRecycleSelected ? borderBright : highlighted,
@@ -222,14 +218,7 @@ namespace ProjectL.GameScene.PuzzleZone
                 },
             };
 
-            // if taking new puzzle --> update the radio button group sprites
-            if (_mode == PuzzleZoneMode.TakePuzzle && _button.interactable) {
-                RadioButtonsGroup.UpdateSpritesForButton(_button, newSpriteState);
-            }
-            // else update sprite state directly
-            else {
-                _button.spriteState = newSpriteState;
-            }
+            _button.spriteState = newSpriteState;
         }
 
         protected override void InitializeDraggablePuzzle(DraggablePuzzle puzzle)
@@ -251,14 +240,12 @@ namespace ProjectL.GameScene.PuzzleZone
             public TakePuzzleDisposable(PuzzleCard puzzleCard)
             {
                 _puzzleCard = puzzleCard;
-                _puzzleCard._button!.interactable = false;
                 _puzzleCard.SetEmptySlot();
 
             }
             public void Dispose()
             {
                 if (_puzzleCard._button != null) {
-                    _puzzleCard._button.interactable = true;
                     _puzzleCard.UpdateUI();
                 }
             }
