@@ -13,7 +13,7 @@ namespace ProjectL.GameScene.PuzzleZone
     using ProjectL.Sound;
     using ProjectL.GameScene.ActionHandling;
 
-    public class DraggablePuzzle : MonoBehaviour, 
+    public class DraggablePuzzle : MonoBehaviour,
         IPointerDownHandler, IPointerUpHandler,
         IHumanPlayerActionCreator<TakePuzzleAction>
     {
@@ -86,16 +86,15 @@ namespace ProjectL.GameScene.PuzzleZone
                     _rt!.position = slot!.transform.position;
 
                     PuzzleZoneManager.Instance.ReportTakePuzzleChange(new(_action));
+                    return;
                 }
             }
 
-            else {
-                PlayerZoneManager.Instance.CurrentPlayerRow!.ClearEmptySlotHighlight();
-                RemovedFromSceneEventHandler?.Invoke();
-                SoundManager.Instance.PlaySoftTapSoundEffect();
-                RemoveFromScene();
-                PuzzleZoneManager.Instance.ReportTakePuzzleChange(new(null));
-            }
+            PlayerZoneManager.Instance.CurrentPlayerRow!.ClearEmptySlotHighlight();
+            RemovedFromSceneEventHandler?.Invoke();
+            SoundManager.Instance.PlaySoftTapSoundEffect();
+            RemoveFromScene();
+            PuzzleZoneManager.Instance.ReportTakePuzzleChange(new(null));
         }
 
         private void RemoveFromScene()
@@ -104,7 +103,7 @@ namespace ProjectL.GameScene.PuzzleZone
                 return;
 
             HumanPlayerActionCreationManager.Instance?.RemoveListener(this);
-         
+
             RemovedFromSceneEventHandler?.Invoke();
             Destroy(gameObject);
         }

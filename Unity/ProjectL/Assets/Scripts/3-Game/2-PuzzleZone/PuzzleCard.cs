@@ -118,8 +118,6 @@ namespace ProjectL.GameScene.PuzzleZone
                 return;
             }
 
-            _button.onClick.AddListener(SoundManager.Instance!.PlaySoftTapSoundEffect);
-
             _button.onClick.AddListener(OnRecycleButtonClick);
             UpdateUI();
         }
@@ -140,6 +138,8 @@ namespace ProjectL.GameScene.PuzzleZone
                 Debug.LogError("Trying to recycle an empty puzzle", this);
                 return;
             }
+
+            SoundManager.Instance!.PlaySoftTapSoundEffect();
 
             _isRecycleSelected = !_isRecycleSelected;
             if (!_isRecycleSelected) {
@@ -180,9 +180,9 @@ namespace ProjectL.GameScene.PuzzleZone
             // we have a puzzle --> load the sprite
             ResourcesLoader.TryGetPuzzleSprite(_puzzle, PuzzleSpriteType.BorderDim, out Sprite? borderDim);
             ResourcesLoader.TryGetPuzzleSprite(_puzzle, PuzzleSpriteType.BorderBright, out Sprite? borderBright);
-            ResourcesLoader.TryGetPuzzleSprite(_puzzle, PuzzleSpriteType.Highlighted, out Sprite? highlighted);
+            ResourcesLoader.TryGetPuzzleSprite(_puzzle, PuzzleSpriteType.HighlightedDim, out Sprite? highlightedDim);
 
-            if (borderDim == null || borderBright == null || highlighted == null) {
+            if (borderDim == null || borderBright == null || highlightedDim == null) {
                 Debug.LogError($"Failed to load puzzle sprite for puzzle: {_puzzle}", this);
                 return;
             }
@@ -199,13 +199,13 @@ namespace ProjectL.GameScene.PuzzleZone
             _button.transition = Selectable.Transition.SpriteSwap;
             SpriteState newSpriteState = _mode switch {
                 PuzzleZoneMode.TakePuzzle => new SpriteState {
-                    highlightedSprite = highlighted,
+                    highlightedSprite = borderBright,
                     pressedSprite = borderBright,
                     selectedSprite = borderBright,
                     disabledSprite = borderDim
                 },
                 PuzzleZoneMode.Recycle => new SpriteState {
-                    highlightedSprite = _isRecycleSelected ? borderBright : highlighted,
+                    highlightedSprite = _isRecycleSelected ? borderBright : highlightedDim,
                     pressedSprite = borderBright,
                     selectedSprite = borderBright,
                     disabledSprite = borderDim
