@@ -12,9 +12,9 @@ Players take turns and in each turn they must perform 3 actions, for example: ta
 
 There are two kinds of puzzles - white and black. White puzzles are easier to solve and in general give less points but better pieces. Black puzzles are more difficult, but they give you a lot of points.
 
-There are always 4 white and 4 black puzzles available to take and you can be solving up to 4 puzzles at the same time. When you take a puzzle, the column is automatically refilled with a new puzzle.
+There are always 4 white and 4 black puzzles available to take and you can be solving up to 4 puzzles at the same time. When you take a puzzle, the column is automatically refilled with a new puzzle from the corresponding deck.
 
-When the black deck is emptied (its number reaches 0), the end of the game is triggered. The players finish the current round and then play one final round.
+When the black deck is emptied, the end of the game is triggered. The players finish the current round and then play one final round.
 
 If you have an unfinished puzzle at the end of the game, its points will count as negative. You don't want that. Luckily, you can try to fix this. After the game ends, each player can perform finishing touches on their unfinished puzzles. During this phase, you can place as many pieces as you want, but you cannot take any new pieces. If you finish a puzzle, you don't get any reward and the used pieces are not returned to you, however, you prevent the negative points from being counted. This, of course, has a catch - placing a piece during finishing touches is not free, but costs you 1 point for every piece.
 
@@ -47,7 +47,7 @@ The game board is divided into several zones. The **Puzzle Zone** (on the left) 
 
 ### Puzzle Zone
 
-On the left is the white puzzles column and on the right is the black puzzles column. At the bottom of the column is a deck card showing the number of puzzles left in the deck. End of the game is triggered when the black deck (on the right) reaches 0.
+On the left is the white puzzles column and on the right is the black puzzles column. At the bottom of the column is a deck card showing the number of puzzles left in the deck. The end of the game is triggered when the black deck is emptied i.e. its number reaches zero.
 
 ### Player Zone
 
