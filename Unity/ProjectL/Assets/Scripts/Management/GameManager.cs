@@ -72,18 +72,28 @@ namespace ProjectL.Management
         }
 
         /// <summary>
+        /// Pauses the game if it can be paused and is not already paused. Displays the pause menu and disables gameplay controls.
+        /// </summary>
+        public void PauseGame()
+        {
+            if (!CanGameBePaused || IsGamePaused || _pauseMenu == null) {
+                return;
+            }
+
+            IsGamePaused = true;
+            Time.timeScale = 0f;
+            _pauseMenu.Show();
+
+            _gameControls!.Gameplay.Disable();
+            _gameControls!.UI.Enable();
+        }
+
+        /// <summary>
         /// Opens or closes the logger UI. If the logger is not open, it will be opened; otherwise, it will be closed.
         /// </summary>
         public void ToggleLogger()
         {
             if (_logger != null) {
-                _logger.ToggleLogUI();
-            }
-        }
-
-        private void CloseLogger()
-        {
-            if (_logger != null && _logger.IsOpen) {
                 _logger.ToggleLogUI();
             }
         }
@@ -124,18 +134,11 @@ namespace ProjectL.Management
             SceneManager.sceneLoaded += (scene, _) => OnSceneLoaded(scene);
         }
 
-        private void PauseGame()
+        private void CloseLogger()
         {
-            if (!CanGameBePaused || IsGamePaused || _pauseMenu == null) {
-                return;
+            if (_logger != null && _logger.IsOpen) {
+                _logger.ToggleLogUI();
             }
-
-            IsGamePaused = true;
-            Time.timeScale = 0f;
-            _pauseMenu.Show();
-
-            _gameControls!.Gameplay.Disable();
-            _gameControls!.UI.Enable();
         }
 
         private void OnSceneLoaded(Scene scene)

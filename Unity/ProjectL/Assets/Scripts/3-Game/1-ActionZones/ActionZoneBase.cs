@@ -152,7 +152,7 @@ namespace ProjectL.GameScene.ActionZones
             }
         }
 
-        private void Start()
+        protected virtual void Start()
         {
             if (_actionButtonsPanel == null || _finishingTouchesButton == null || _confirmButton == null || _selectRewardButton == null) {
                 Debug.LogError("One or more UI components is not assigned in the inspector", this);
