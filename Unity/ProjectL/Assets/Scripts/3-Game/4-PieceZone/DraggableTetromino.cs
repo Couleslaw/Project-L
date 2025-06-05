@@ -178,6 +178,7 @@ namespace ProjectL.GameScene.PieceZone
 
             // set the tetromino to placed mode
             SetPosition(center);
+            SelectedTetromino = null; // important --> remove selected tetromino NOW to prevent further modifications
             StartCoroutine(PlaceCoroutine());
 
             IEnumerator PlaceCoroutine()
@@ -522,21 +523,8 @@ namespace ProjectL.GameScene.PieceZone
             }
 
             RemovedFromSceneEventHandler?.Invoke();
-
-            // if not placed --> destroy immediately
-            if (_mode != Mode.Placed) {
-                Destroy(gameObject);
-            }
-            // if placed --> destroy after a small delay to prevent animation clipping 
-            else {
-                StartCoroutine(DestroyAfterMilliseconds(50f));
-            }
-
-            IEnumerator DestroyAfterMilliseconds(float milliseconds)
-            {
-                yield return new WaitForSeconds(milliseconds / 1000f);
-                Destroy(gameObject);
-            }
+            gameObject.SetActive(false);
+            Destroy(gameObject);
         }
 
         void IHumanPlayerActionCreator<PlaceTetrominoAction>.OnActionRequested() { }
