@@ -250,8 +250,8 @@ namespace ProjectL.GameScene.ActionHandling
             }
 
             CurrentRewardEventArgs = null;
-            var player = PrepareForSubmission();
             SetActionMode(ActionMode.ActionCreation);
+            var player = PrepareForSubmission();
 
             player?.SetReward(action.SelectedReward);
         }

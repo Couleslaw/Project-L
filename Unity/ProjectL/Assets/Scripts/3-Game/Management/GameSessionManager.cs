@@ -406,7 +406,7 @@ namespace ProjectL.GameScene.Management
                 return;
             }
 
-            SoundManager.Instance?.PlayButtonClickSound();
+            SoundManager.Instance?.PlayTapSoundEffect();
             Instantiate(_gameEndedBoxPrefab);
             GameManager.CanGameBePaused = false;
         }
