@@ -14,9 +14,9 @@ Please note that AI players are not available in this version.
 
 ## [Download Project L](https://github.com/Couleslaw/Project-L/releases/latest)
 
-If you want to try playing against some AI players you need to download the game. It is available for Windows, MacOS and Linux.
+Playing against AI players requires downloading the game, which is available for Windows, MacOS, and Linux.
 
-There is one built-in AI player, but you can also implement your own AI players.
+One AI player comes pre-installed, and you can add custom AI players as well.
 
 ## How to Play the Game?
 
