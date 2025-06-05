@@ -47,6 +47,8 @@ namespace ProjectL.Pause
         [Header("Scene switching")]
         [SerializeField] private GameObject? scorePanel;
         [SerializeField] private GameObject? turnInfoPanel;
+        [SerializeField] private ExitGameBox? exitGamePanel;
+        [SerializeField] private GameObject? pauseMenuPanel;
 
         private bool _didInitialize = false;
 
@@ -62,16 +64,29 @@ namespace ProjectL.Pause
         /// <summary>
         /// Shows the pause menu.
         /// </summary>
-        public void Show() => gameObject.SetActive(true);
+        public void Show()
+        {
+            if (exitGamePanel == null || pauseMenuPanel == null) {
+                return;
+            }
+
+            exitGamePanel.gameObject.SetActive(false);
+            pauseMenuPanel.SetActive(true);
+            gameObject.SetActive(true);
+        }
 
         /// <summary>
         /// Handles the click event for the "Home" button. Transitions to the main menu scene.
         /// </summary>
         public void OnHomeButtonClick()
         {
+            if (exitGamePanel == null || pauseMenuPanel == null) {
+                return;
+            }
+
             SoundManager.Instance?.PlayButtonClickSound();
-            GameManager.Instance?.ResumeGame();
-            SceneLoader.Instance?.LoadMainMenuAsync();
+            pauseMenuPanel.SetActive(!pauseMenuPanel.activeSelf);
+            exitGamePanel.gameObject.SetActive(!exitGamePanel.gameObject.activeSelf);
         }
 
         /// <summary>
@@ -138,7 +153,8 @@ namespace ProjectL.Pause
             // check if all required components are assigned
             if (currentPlayerLabel == null || actionsLeftValueLabel == null || actionsLeftTitleLabel == null || gamePhaseLabel == null ||
                 scoreToggle == null || scoreNamesLabel == null || scoreValuesLabel == null ||
-                animationSpeedSliderValueLabel == null || animationSpeedSlider == null) {
+                animationSpeedSliderValueLabel == null || animationSpeedSlider == null ||
+                exitGamePanel == null || pauseMenuPanel == null) {
                 Debug.LogError("PauseMenuManager: One or more required UI elements are not assigned.");
                 return;
             }
@@ -150,6 +166,13 @@ namespace ProjectL.Pause
             animationSpeedSlider.minValue = _animationSliderMinValue;
             animationSpeedSlider.maxValue = _animationSliderMaxValue;
             animationSpeedSlider.value = Mathf.Round(PlayerPrefs.GetFloat(AnimationSpeed.AnimationSpeedPlayerPrefKey) * 10f);
+
+            // setup exit game box
+            exitGamePanel.Init(
+                OnCancelButtonClick: () => {
+                    exitGamePanel.gameObject.SetActive(false);
+                    pauseMenuPanel.SetActive(true);
+                });
 
             _didInitialize = true;
         }
