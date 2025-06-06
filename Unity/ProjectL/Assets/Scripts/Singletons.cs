@@ -24,7 +24,6 @@ namespace ProjectL
         {
             T? t = this as T;
             if (t == null) {
-                Debug.LogError($"The object {name} is not of type {typeof(T)}.");
                 return;
             }
             Instance = t;
