@@ -1,23 +1,59 @@
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Unity Web Player | Project L</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
-    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="shortcut icon" href="TemplateData/favicon.ico" />
+    <link rel="stylesheet" href="TemplateData/style.css" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <style>
+      body {
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Safari */
+        -khtml-user-select: none; /* Konqueror HTML */
+        -moz-user-select: none; /* Old Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+        user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+        -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+      }
+      canvas {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        outline: none; /* Remove outline on focus */
+        -webkit-tap-highlight-color: transparent;
+      }
+      #unityContainer {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        outline: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+    </style>
   </head>
   <body>
     <div id="unity-container">
-      <canvas id="unity-canvas" width=1280 height=800 tabindex="-1"></canvas>
+      <canvas
+        id="unity-canvas"
+        width="1280"
+        height="800"
+        tabindex="-1"
+      ></canvas>
       <div id="unity-loading-bar">
         <div id="unity-logo"></div>
         <div id="unity-progress-bar-empty">
           <div id="unity-progress-bar-full"></div>
         </div>
       </div>
-      <div id="unity-warning"> </div>
+      <div id="unity-warning"></div>
     </div>
     <script>
       window.addEventListener("load", function () {
@@ -40,15 +76,18 @@
       // user.
       function unityShowBanner(msg, type) {
         function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+          warningBanner.style.display = warningBanner.children.length
+            ? "block"
+            : "none";
         }
-        var div = document.createElement('div');
+        var div = document.createElement("div");
         div.innerHTML = msg;
         warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        if (type == "error") div.style = "background: red; padding: 10px;";
         else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
+          if (type == "warning")
+            div.style = "background: yellow; padding: 10px;";
+          setTimeout(function () {
             warningBanner.removeChild(div);
             updateBannerVisibility();
           }, 5000);
@@ -57,12 +96,13 @@
       }
 
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/a6294eedeea04312524f70af646d9cb2.loader.js";
+      var loaderUrl = buildUrl + "/a5d7cfd037d05f8dca37e9e60944b4b7.loader.js";
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/7919e58afe04fdcf148881020bdcf625.data",
-        frameworkUrl: buildUrl + "/f20198a4c968120b8efbfdd56f89d11c.framework.js",
-        codeUrl: buildUrl + "/3d2da692d87974918c4058699b0878ac.wasm",
+        dataUrl: buildUrl + "/50979faea9956853bfeeeb5c1ef6b6e2.data",
+        frameworkUrl:
+          buildUrl + "/f20198a4c968120b8efbfdd56f89d11c.framework.js",
+        codeUrl: buildUrl + "/60b31a590c8daf13c2cd6b2bb3740fa1.wasm",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "Couleslaw",
         productName: "Project L",
@@ -79,10 +119,11 @@
 
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         // Mobile device style: fill the whole browser client area with the game canvas:
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
+        var meta = document.createElement("meta");
+        meta.name = "viewport";
+        meta.content =
+          "width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes";
+        document.getElementsByTagName("head")[0].appendChild(meta);
       }
 
       loadingBar.style.display = "block";
@@ -92,11 +133,13 @@
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
           progressBarFull.style.width = 100 * progress + "%";
-        }).then((unityInstance) => {
-          loadingBar.style.display = "none";
-        }).catch((message) => {
-          alert(message);
-        });
+        })
+          .then((unityInstance) => {
+            loadingBar.style.display = "none";
+          })
+          .catch((message) => {
+            alert(message);
+          });
       };
       document.body.appendChild(script);
     </script>
