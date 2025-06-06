@@ -88,7 +88,11 @@ The pause menu is opened by clicking the button in the top-left corner or by pre
 
 You also have the option to peek at the current score of each player and to change the animation speed of the game.
 
-Additionally, you have the option to return back to the main menu by pressing the **Home** button (top-left) and change the sound volume by pressing the **Sound** button (top-right).
+Additionally, you have the option to return back to the main menu by pressing the **Home** button (bottom-right) and toggle full-screen mode on and off by pressing the **Full Screen** button (bottom-left). The full-screen mode can also be toggled with `F11`.
+
+{% include note.html content="
+If you are playing in your browser, you mind need to click on the game window after clicking the **Full Screen** button for the change to take effect.
+"%}
 
 ## Taking New Puzzles
 
