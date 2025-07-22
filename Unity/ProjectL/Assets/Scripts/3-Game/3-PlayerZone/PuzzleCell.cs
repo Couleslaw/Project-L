@@ -2,9 +2,11 @@
 
 namespace ProjectL.GameScene.PlayerZone
 {
+    using ProjectL.Animation;
     using ProjectL.GameScene.PieceZone;
     using ProjectLCore.GamePieces;
     using System;
+    using Unity.VisualScripting.Antlr3.Runtime;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -53,6 +55,11 @@ namespace ProjectL.GameScene.PlayerZone
             set {
                 if (_collider == null) {
                     return;
+                }
+
+                if (_state == CellState.Color) {
+                    GrayOut(!value);
+
                 }
 
                 if (_state == CellState.Filled || _state == CellState.Color) {
@@ -108,6 +115,24 @@ namespace ProjectL.GameScene.PlayerZone
         {
             _color = color;
             SetState(CellState.Color);
+        }
+
+        private void GrayOut(bool grayOut)
+        {
+            if (_image == null || _state != CellState.Color || _color == null) {
+                return;
+            }
+
+            Color color;
+            if (grayOut) {
+                color = _color.Value * ColorManager.lightGray.r;
+                color.a = 1f;
+            }
+            else {
+                color = _color.Value;
+            }
+
+            _image.color = color;
         }
 
         private Color GetCollidingTetrominoShadeColor()

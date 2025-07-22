@@ -76,7 +76,7 @@ namespace ProjectL.GameScene.PuzzleZone
         {
             _isDragging = false;
 
-            if (PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
+            if (PlayerZoneManager.Instance.IsMouseOverPlayerZone) {
                 var currentRow = PlayerZoneManager.Instance.CurrentPlayerRow!;
                 if (currentRow.TryGetClosestEmptySlot(_rt!.position, out var slot)) {
                     currentRow.SetTakePuzzleActionSlot(slot!);
@@ -127,7 +127,7 @@ namespace ProjectL.GameScene.PuzzleZone
                 Vector2 mouseWorldPos = _camera.ScreenToWorldPoint(mouseScreenPos);
                 _rt!.position = mouseWorldPos + _draggingPointerOffset;
 
-                if (PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow) {
+                if (PlayerZoneManager.Instance.IsMouseOverPlayerZone) {
                     PlayerZoneManager.Instance.CurrentPlayerRow!.HighlightClosestEmptySlot(mouseWorldPos);
                 }
                 else {

@@ -76,10 +76,12 @@ namespace EasyUI
         private void LogCallback(string message, string stackTrace, LogType type)
         {
             // random TMP error which sometimes happens
-            if (message.StartsWith("Importer(NativeFormatImporter) generated inconsistent result for asset")) {
+            if (message.StartsWith("Importer(NativeFormatImporter) generated inconsistent result for asset") ||
+                message.StartsWith("RenderGraph")) {
                 return;
             }
-            //logTypeIndex => normal:0 , warning:1 , error:2
+
+            // logTypeIndex => normal:0 , warning:1 , error:2
             int logTypeIndex = (type == LogType.Log) ? 0 : (type == LogType.Warning) ? 1 : 2;
             uiLogText!.text += $"<sprite={logTypeIndex}><color={colors[logTypeIndex]}> {message}</color>\n\n";
             ScrollDown();

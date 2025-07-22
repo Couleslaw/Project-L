@@ -94,7 +94,6 @@ namespace ProjectL.GameScene.PuzzleZone
 
         void IActionCreationController.SetPlayerMode(PlayerMode mode)
         {
-            Debug.Log($"Set player mode: {mode}");
             if (mode == PlayerMode.NonInteractive) {
                 SetMode(PuzzleZoneMode.Disabled);
             }
@@ -179,7 +178,7 @@ namespace ProjectL.GameScene.PuzzleZone
                 using (_blackColumn.GetDisposableColumnDimmer()) {
 
                     // wait a bit
-                    await AnimationManager.WaitForScaledDelay(2*delay, cancellationToken);
+                    await AnimationManager.WaitForScaledDelay(2 * delay, cancellationToken);
 
                     // select the taken puzzle card
                     switch (action.Option) {

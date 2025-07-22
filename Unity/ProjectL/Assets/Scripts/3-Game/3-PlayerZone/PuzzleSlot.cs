@@ -2,6 +2,7 @@
 
 namespace ProjectL.GameScene.PlayerZone
 {
+    using ProjectL.Animation;
     using ProjectL.Sound;
     using ProjectLCore.GamePieces;
     using System;
@@ -61,6 +62,7 @@ namespace ProjectL.GameScene.PlayerZone
                 return;
             }
             _puzzleCard.MakeInteractive(current);
+            _emptySlot.color = current ? Color.white : ColorManager.lightGray;
         }
 
         public DisposablePuzzleHighlighter GetDisposablePuzzleHighlighter() => new(this);

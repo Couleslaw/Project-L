@@ -156,10 +156,6 @@ namespace ProjectLCore.GameLogic
         /// <summary> The amount of tetrominos of each shape in the shared reserve at the beginning of the game.  </summary>
         public int NumInitialTetrominos { get; }
 
-        /// <summary>
-        /// Called when the number of tetrominos in the shared reserve changes. The parameters are the type of the tetromino and the number of tetrominos of this type in the reserve after the change.
-        /// </summary>
-
         /// <summary> Contains the number of tetrominos left in the shared reserve for each shape.  </summary>
         private int[] _numTetrominosLeft = new int[TetrominoManager.NumShapes];
 

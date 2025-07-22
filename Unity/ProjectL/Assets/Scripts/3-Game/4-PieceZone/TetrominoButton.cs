@@ -136,7 +136,7 @@ namespace ProjectL.GameScene.PieceZone
             _button!.interactable = CanBeUsed;
         }
 
-        public DisposableButtonSelector GetDisposableButtonSelector(SelectionSideEffect sideEffect = SelectionSideEffect.None, SelectionButtonEffect buttonEffect = SelectionButtonEffect.MakeBigger)
+        public IDisposable GetDisposableButtonSelector(SelectionSideEffect sideEffect = SelectionSideEffect.None, SelectionButtonEffect buttonEffect = SelectionButtonEffect.MakeBigger)
         {
             return new DisposableButtonSelector(this, sideEffect, buttonEffect);
         }
@@ -190,7 +190,7 @@ namespace ProjectL.GameScene.PieceZone
 
         #endregion
 
-        public class DisposableButtonSelector : IDisposable
+        private class DisposableButtonSelector : IDisposable
         {
             #region Constants
 
@@ -208,6 +208,8 @@ namespace ProjectL.GameScene.PieceZone
 
             private List<IDisposable> _temporaryEffects = new();
 
+            private bool _isDisposed = false;
+
             #endregion
 
             #region Constructors
@@ -218,22 +220,23 @@ namespace ProjectL.GameScene.PieceZone
                 _spawnerRectTransform = spawner.GetComponent<RectTransform>();
 
                 _buttonEffect = buttonEffect;
-                if (buttonEffect == SelectionButtonEffect.MakeBigger) {
-                    _spawnerRectTransform.localScale *= _temporaryScaleIncrease;
-                }
-                if (buttonEffect == SelectionButtonEffect.MakeSmaller) {
-                    _spawnerRectTransform.localScale /= _temporaryScaleIncrease;
-                }
+                lock (_spawnerRectTransform) {
+                    if (buttonEffect == SelectionButtonEffect.MakeBigger) {
+                        _spawnerRectTransform.localScale *= _temporaryScaleIncrease;
+                    }
+                    if (buttonEffect == SelectionButtonEffect.MakeSmaller) {
+                        _spawnerRectTransform.localScale /= _temporaryScaleIncrease;
+                    }
 
-                _effect = sideEffect;
-                if (_effect == SelectionSideEffect.GiveToPlayer) {
-                    _temporaryEffects.Add(PlayerStatsManager.Instance.CurrentPieceColumn!.CreateTemporaryCountIncreaser(spawner.Shape));
-                    _temporaryEffects.Add(SharedReserveManager.Instance.PieceColumn.CreateTemporaryCountDecreaser(spawner.Shape));
-                }
-                if (_effect == SelectionSideEffect.RemoveFromPlayer) {
-                    _temporaryEffects.Add(PlayerStatsManager.Instance.CurrentPieceColumn!.CreateTemporaryCountDecreaser(spawner.Shape));
-                    _temporaryEffects.Add(SharedReserveManager.Instance.PieceColumn.CreateTemporaryCountIncreaser(spawner.Shape));
-
+                    _effect = sideEffect;
+                    if (_effect == SelectionSideEffect.GiveToPlayer) {
+                        _temporaryEffects.Add(PlayerStatsManager.Instance.CurrentPieceColumn!.CreateTemporaryCountIncreaser(spawner.Shape));
+                        _temporaryEffects.Add(SharedReserveManager.Instance.PieceColumn.CreateTemporaryCountDecreaser(spawner.Shape));
+                    }
+                    if (_effect == SelectionSideEffect.RemoveFromPlayer) {
+                        _temporaryEffects.Add(PlayerStatsManager.Instance.CurrentPieceColumn!.CreateTemporaryCountDecreaser(spawner.Shape));
+                        _temporaryEffects.Add(SharedReserveManager.Instance.PieceColumn.CreateTemporaryCountIncreaser(spawner.Shape));
+                    }
                 }
             }
 
@@ -243,16 +246,25 @@ namespace ProjectL.GameScene.PieceZone
 
             public void Dispose()
             {
-                if (_buttonEffect == SelectionButtonEffect.MakeBigger) {
-                    _spawnerRectTransform.localScale /= _temporaryScaleIncrease;
+                if (_isDisposed) {
+                    return;
                 }
-                if (_buttonEffect == SelectionButtonEffect.MakeSmaller) {
-                    _spawnerRectTransform.localScale *= _temporaryScaleIncrease;
+                _isDisposed = true;
+
+                // lock to prevent race conditions
+                lock (_spawnerRectTransform) {
+                    if (_buttonEffect == SelectionButtonEffect.MakeBigger) {
+                        _spawnerRectTransform.localScale /= _temporaryScaleIncrease;
+                    }
+                    if (_buttonEffect == SelectionButtonEffect.MakeSmaller) {
+                        _spawnerRectTransform.localScale *= _temporaryScaleIncrease;
+                    }
+
+                    foreach (var effect in _temporaryEffects) {
+                        effect.Dispose();
+                    }
                 }
 
-                foreach (var effect in _temporaryEffects) {
-                    effect.Dispose();
-                }
                 _temporaryEffects.Clear();
             }
 

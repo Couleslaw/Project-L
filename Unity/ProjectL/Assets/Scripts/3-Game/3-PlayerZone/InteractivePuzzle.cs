@@ -2,6 +2,7 @@
 
 namespace ProjectL.GameScene.PlayerZone
 {
+    using ProjectL.Animation;
     using ProjectL.GameScene.ActionHandling;
     using ProjectL.GameScene.PieceZone;
     using ProjectLCore.GameActions;
@@ -35,6 +36,7 @@ namespace ProjectL.GameScene.PlayerZone
         private ColorPuzzle? _logicalPuzzle = null;
 
         private ColorPuzzle? _temporaryPuzzleCopy = null;
+        private Image? _image;
 
         #endregion
 
@@ -99,12 +101,18 @@ namespace ProjectL.GameScene.PlayerZone
                 if (puzzle._logicalPuzzle != null) {
                     puzzle.TryDrawingTetrominoShadow(changedTetromino);
                 }
-                
+
             }
         }
 
         public void MakeInteractive(bool enabled)
         {
+            if (_image == null) {
+                return;
+            }
+
+            _image.color = enabled ? Color.white : ColorManager.lightGray;
+
             foreach (var cell in _puzzleCells) {
                 cell.Interactive = enabled && _logicalPuzzle != null;
             }
@@ -112,6 +120,10 @@ namespace ProjectL.GameScene.PlayerZone
 
         public void SetNewPuzzle(ColorPuzzle logicalPuzzle)
         {
+            if (_image == null) {
+                return;
+            }
+
             _logicalPuzzle = logicalPuzzle;
 
             // change sprite
@@ -119,7 +131,7 @@ namespace ProjectL.GameScene.PlayerZone
                 Debug.LogError("Failed to get sprite for the puzzle.", this);
                 return;
             }
-            GetComponent<Image>().sprite = sprite!;
+            _image.sprite = sprite!;
 
             // reset cells
             for (int i = 0; i < _puzzleCells.Length; i++) {
@@ -196,6 +208,7 @@ namespace ProjectL.GameScene.PlayerZone
                 _puzzleCells[i].OnCollisionStateChangedEventHandler += TryDrawingTetrominoShadow;
             }
             MakeInteractive(false);
+            _image = GetComponent<Image>();
 
             // remember this puzzle
             _availablePuzzles.Add(this);

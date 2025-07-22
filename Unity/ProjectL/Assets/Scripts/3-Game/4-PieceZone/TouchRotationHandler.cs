@@ -14,11 +14,12 @@ namespace ProjectL.GameScene.PieceZone
         #region Fields
 
         // To store the previous angle between two touches
-        private Vector2 lastFingerPos;
-
+        private Vector2 lastMidFingerPos;
+        private Vector2 lastFingerVector;
+        private float inititalFingerX;
         private bool trackingTwoTouches = false;
 
-        private Action<float>? _onRotate;
+        private Action<float, float, float>? _onRotate;
 
         private Camera? _camera;
 
@@ -26,7 +27,7 @@ namespace ProjectL.GameScene.PieceZone
 
         #region Methods
 
-        public void Init(Action<float> OnRotate)
+        public void Init(Action<float, float, float> OnRotate)
         {
             _onRotate = OnRotate;
         }
@@ -72,20 +73,32 @@ namespace ProjectL.GameScene.PieceZone
             Vector2 touch1Pos = touch1.position.ReadValue();
 
             // Calculate the vector between the two touches
-            Vector2 currentFingerPos = _camera!.ScreenToWorldPoint((touch0Pos + touch1Pos) / 2f);
+            Vector2 currentMidFingerPos = _camera!.ScreenToWorldPoint((touch0Pos + touch1Pos) / 2f);
+            Debug.Log($"TouchRotationHandler: currentMidFingerPos: {currentMidFingerPos}");
+            Vector2 currentFingerVector = touch1Pos - touch0Pos;
 
             if (!trackingTwoTouches) {
                 // First frame with two touches, initialize the angle
-                lastFingerPos = currentFingerPos;
+                lastMidFingerPos = currentMidFingerPos;
+                lastFingerVector = currentFingerVector;
+                inititalFingerX = currentMidFingerPos.x;
                 trackingTwoTouches = true;
                 return;
             }
 
-            // Calculate the difference in angle
-            Vector2 delta = currentFingerPos - lastFingerPos;
-            _onRotate?.Invoke(Math.Sign(delta.y) * delta.magnitude);
+            Vector2 delta = currentMidFingerPos - lastMidFingerPos;
+            float movement = Math.Sign(delta.y) * delta.magnitude;
+            float angle = Vector2.SignedAngle(lastFingerVector, currentFingerVector);
 
-            lastFingerPos = currentFingerPos;
+            // if angle is significant, assume angle rotation and ignore scroll rotation
+            if (Math.Abs(angle) > 0.5f) {
+                movement = 0f;
+            }
+
+            _onRotate?.Invoke(angle, movement, inititalFingerX);
+
+            lastMidFingerPos = currentMidFingerPos;
+            lastFingerVector = currentFingerVector;
         }
 
         #endregion

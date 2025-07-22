@@ -29,7 +29,7 @@ namespace ProjectL.GameScene.PieceZone
         IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
     {
 
-        private const float _touchScreenRotationSensitivity = 3;
+        private const float _touchScreenRotationSensitivity = 2f;
         private const float _rotationSpeed = 30;
         private const float _animationMovementSpeed = 5f;
 
@@ -79,7 +79,7 @@ namespace ProjectL.GameScene.PieceZone
 
         private bool IsSelectedWithMouse => _isMouseOver || _isDragging;
 
-        private bool CanBeControlled => IsSelectedWithMouse || PlayerZoneManager.Instance.IsMouseOverCurrentPlayersRow;
+        private bool CanBeControlled => IsSelectedWithMouse || PlayerZoneManager.Instance.IsMouseOverPlayerZone;
 
         public TetrominoShape Shape => _shape;
 
@@ -314,18 +314,21 @@ namespace ProjectL.GameScene.PieceZone
                 return;
             }
 
-            Debug.Log($"Rotate Smooth: {ctx.ReadValue<float>()}");
             SelectedTetromino.RotateDegrees(ctx.ReadValue<float>() * _rotationSpeed);
         }
 
-        private static void OnTouchScreenRotateInputAction(float movement)
+        private static void OnTouchScreenRotateInputAction(float angle, float scroll, float fingerX)
         {
             if (SelectedTetromino == null || !SelectedTetromino.CanBeControlled) {
                 return;
-
             }
+
+            if (fingerX < SelectedTetromino.transform.position.x) {
+                scroll *= -1; // if finger is on the left side of the tetromino, scroll should be inverted
+            }
+
             // rotate the tetromino by the screen angle
-            SelectedTetromino.RotateDegrees(movement * _rotationSpeed * _touchScreenRotationSensitivity);
+            SelectedTetromino.RotateDegrees((angle + scroll * _rotationSpeed) * _touchScreenRotationSensitivity);
         }
 
         private static void OnRotate90InputAction(InputAction.CallbackContext ctx)

@@ -32,22 +32,9 @@ namespace ProjectL.GameScene.PlayerZone
 
         private IDisposable? _emptySlotHighlighterDisposable = null;
 
-        public bool IsMouseOverRow => IsMouseOver();
-
         event Action<IActionModification<TakePuzzleAction>>? IHumanPlayerActionCreator<TakePuzzleAction>.ActionModifiedEventHandler {
             add { }
             remove { }
-        }
-
-        private bool IsMouseOver()
-        {
-            if (_collider == null || _mainCamera == null) {
-                return false;
-            }
-
-            Vector2 mousePos = Input.mousePosition;
-            Vector2 worldPos = Camera.main!.ScreenToWorldPoint(mousePos);
-            return _collider.OverlapPoint(worldPos);
         }
 
         public void Init(string playerName, PlayerState playerState)

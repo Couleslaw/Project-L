@@ -196,7 +196,7 @@ namespace ProjectL.GameScene.ActionHandling
 
         public MasterAction? GetMasterAction()
         {
-            if (_placements.Count == 0) {
+            if (_placements.Count < 2) {
                 return null;
             }
             return new MasterAction(new(_placements));

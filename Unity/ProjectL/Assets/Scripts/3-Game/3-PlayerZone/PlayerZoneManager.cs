@@ -16,12 +16,25 @@ namespace ProjectL.GameScene.PlayerZone
         private Dictionary<Player, PlayerPuzzlesRow> _playerZoneRows = new();
 
         private Player? _currentPlayer;
+        private BoxCollider2D? _collider;
+        private Camera? _mainCamera;
 
         #endregion
 
         #region Properties
 
-        public bool IsMouseOverCurrentPlayersRow => _playerZoneRows[_currentPlayer!].IsMouseOverRow;
+        public bool IsMouseOverPlayerZone => IsMouseOver();
+
+        private bool IsMouseOver()
+        {
+            if (_collider == null || _mainCamera == null) {
+                return false;
+            }
+
+            Vector2 mousePos = Input.mousePosition;
+            Vector2 worldPos = Camera.main!.ScreenToWorldPoint(mousePos);
+            return _collider.OverlapPoint(worldPos);
+        }
 
         public PlayerPuzzlesRow? CurrentPlayerRow => _currentPlayer != null ? _playerZoneRows[_currentPlayer] : null;
 
@@ -35,6 +48,9 @@ namespace ProjectL.GameScene.PlayerZone
                 Debug.LogError("PlayerZoneRow prefab is not assigned!", this);
                 return;
             }
+
+            _mainCamera = Camera.main;
+            _collider = GetComponent<BoxCollider2D>();
 
             game.AddListener((ICurrentPlayerListener)this);
 
