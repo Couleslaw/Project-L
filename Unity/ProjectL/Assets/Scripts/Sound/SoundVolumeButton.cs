@@ -52,7 +52,7 @@ namespace ProjectL.Sound
         }
 
         /// <summary>
-        /// Saves the current sound index to <see cref="PlayerPrefs"> .
+        /// Saves the current sound index to <see cref="PlayerPrefs"></see>.
         /// </summary>
         private void SavePreferences()
         {
@@ -60,7 +60,7 @@ namespace ProjectL.Sound
         }
 
         /// <summary>
-        /// Loads the sound index from <see cref="PlayerPrefs"> .
+        /// Loads the sound index from <see cref="PlayerPrefs"></see>.
         /// </summary>
         private void LoadPreference()
         {
@@ -100,12 +100,18 @@ namespace ProjectL.Sound
             if (!PlayerPrefs.HasKey(soundVolumePlayerPrefsName)) {
                 PlayerPrefs.SetInt(soundVolumePlayerPrefsName, soundIcons.Length - 1);
             }
-
+            Debug.Log("awake");
             // initialize the sound volume
             LoadPreference();
             UpdateVolume();
         }
 
         #endregion
+
+        private void OnEnable()
+        {
+            LoadPreference();
+            UpdateVolume();
+        }
     }
 }
