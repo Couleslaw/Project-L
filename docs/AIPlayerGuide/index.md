@@ -131,6 +131,21 @@ The game will look through the DLL for a (public) non-abstract class that inheri
 
 Before adding your player to the game, it's a good idea to test it using the `AIPlayerSimulation` project. You can download a pre-compiled version as a .zip file from the [releases page](https://github.com/Couleslaw/Project-L/releases/latest).
 
+### Handling External Dependencies with Costura.Fody
+
+If you aren't using any external libraries, you can skip this section. However, if your AI player relies on third-party libraries (e.g., for machine learning), you need to ensure they are correctly embedded in your AI player DLL. You can do this using a tool called **Costura.Fody**, which merges all necessary external DLLs into your main AI player DLL, simplifying deployment to a single file.
+
+**Steps to Embed Dependencies:**
+
+1.  **Install Costura.Fody:** In Visual Studio, right-click your project, select "Manage NuGet Packages...", search for `Costura.Fody`, and install it.
+2.  **Add Your Third-Party Libraries:** Install any other required third-party libraries via NuGet. Costura.Fody will automatically detect and embed these during the build.
+3.  **Build Your Project:** Build your AI player project in **Release** configuration.
+4.  **Verify Output:** Locate your project's `bin/Release/netstandard2.1/` folder. You should find only a single DLL for your AI player (e.g., `MyAIPlayer.dll`), containing all embedded dependencies.
+
+{% include note.html content="
+Always ensure that all of your third-party dependencies are compatible with **.NET Standard 2.1**.
+"%}
+
 ### Add Your AI Player to the Game
 
 The `aiplayers.ini` file is located in the `StreamingAssets` folder of the Unity game. This file contains a list of all available AI players and their configurations. Add a new section for your player, following the format described in the [overview](#overview) section. The `dll_path` and the `init_path` can be either absolute paths or relative to the `StreamingAssets` folder.

@@ -28,24 +28,24 @@ The order in which the players will take turns is determined by the order in whi
 
 ## Controls
 
-| Action                         | Controls                                                     |
-| ------------------------------ | ------------------------------------------------------------ |
-| Confirm action / Select reward | Click `CONFIRM` button, `Enter`, `Ctrl`                      |
-| Cancel action / Clear board    | Start a different action, `TAB`, `Backspace`, `C`            |
-| Place piece to puzzle          | Left click on it, `Space`                                    |
-| Rotate last selected piece     | Mouse wheel (while mouse over your row), up/down arrows      |
-| Flip last selected piece       | Right click (while mouse over your row), left/right arrows   |
-| Return piece to collection     | Move it outside of your row, middle mouse button click on it |
-| Open/Close pause menu          | Click pause menu button (top-left), `ESC`, `P`               |
-| Exit/Enter full-screen         | `F11`                                                        |
+| Action                         | Controls                                          |
+| ------------------------------ | ------------------------------------------------- |
+| Confirm action / Select reward | Click `CONFIRM` button, `Enter`, `Ctrl`           |
+| Cancel action / Clear board    | Start a different action, `TAB`, `Backspace`, `C` |
+| Place piece to puzzle          | Left click, `Space`                               |
+| Rotate last selected piece     | Mouse wheel, up/down arrows                       |
+| Flip last selected piece       | Right click, left/right arrows                    |
+| Return piece to collection     | Move it outside of your row                       |
+| Open/Close pause menu          | `ESC`, `P`, Click pause menu button (top-left)    |
+| Exit/Enter full-screen         | `F11`, through the pause menu                     |
 
 ### Touch Controls
 
-| Action                     | Controls                            |
-| -------------------------- | ----------------------------------- |
-| Place piece to puzzle      | Tap on it with one finger           |
-| Rotate last selected piece | Move with two fingers (in your row) |
-| Flip last selected piece   | Double tap (in your row)            |
+| Action                     | Controls                  |
+| -------------------------- | ------------------------- |
+| Place piece to puzzle      | Tap on it with one finger |
+| Rotate last selected piece | Move with two fingers     |
+| Flip last selected piece   | Double tap                |
 
 ## Where is what?
 
@@ -120,10 +120,6 @@ To plan ahead, you can lock in as many pieces as you want without confirming the
 "%}
 
 ![Placing Pieces](./images/Place.gif)
-
-{% include note.html content="
-When rotating or flipping a piece, your mouse must be over your row. If you are using a touch device, you can rotate the piece by moving two fingers in your row, or flip it by double tapping in your row.
-"%}
 
 When you complete a puzzle, you will get back the pieces you used to solve it, plus a new piece as a reward. To take the new piece, click on it and then click on the **Select Reward** button (or press `Enter` or `Ctrl`).
 
