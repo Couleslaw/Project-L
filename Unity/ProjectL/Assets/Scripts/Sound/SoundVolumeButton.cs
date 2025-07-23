@@ -100,7 +100,6 @@ namespace ProjectL.Sound
             if (!PlayerPrefs.HasKey(soundVolumePlayerPrefsName)) {
                 PlayerPrefs.SetInt(soundVolumePlayerPrefsName, soundIcons.Length - 1);
             }
-            Debug.Log("awake");
             // initialize the sound volume
             LoadPreference();
             UpdateVolume();

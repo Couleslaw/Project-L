@@ -1,4 +1,4 @@
-using UnityEditor.Build; 
+using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
@@ -16,8 +16,6 @@ public class ClearPlayerPrefsPreBuild : IPreprocessBuildWithReport
 
         // Clear all PlayerPrefs data.
         PlayerPrefs.DeleteAll();
-
-        // Save changes to disk immediately.
         PlayerPrefs.Save();
 
         Debug.Log("--- PlayerPrefs cleared successfully before build. ---");

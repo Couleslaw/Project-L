@@ -204,14 +204,6 @@ namespace ProjectL.GameScene.PieceZone
                 StartDragging();
                 return;
             }
-
-            // middle button --> remove from scene
-            if (eventData.button == PointerEventData.InputButton.Middle) {
-                // first let listeners know that the tetromino was clicked
-                OnStartDraggingEventHandler?.Invoke(this);
-                RemoveFromScene();
-                return;
-            }
         }
 
         void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
