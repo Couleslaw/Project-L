@@ -189,14 +189,16 @@
         /// <param name="action">The action to verify.</param>
         /// <returns>
         ///   <list type="bullet">
-        ///     <item><see cref="BasicTetrominoNotInSharedReserveFail"/> if there are no <see cref="TetrominoShape.O1"/> tetrominos left in the shared reserve.</item>
+        ///     <item><see cref="InvalidBasicTetrominoFail"/> if the player can't take the specified tetromino.</item>
         ///     <item><see cref="VerificationSuccess"/> otherwise.</item>
         ///   </list>
         /// </returns>
         private VerificationResult VerifyTakeBasicTetrominoAction(TakeBasicTetrominoAction action)
         {
-            if (_gameInfo.NumTetrominosLeft[(int)TetrominoShape.O1] == 0) {
-                return new BasicTetrominoNotInSharedReserveFail();
+            // check if the player can take the specified tetromino
+            var validOptions = RewardManager.GetBasicOptions(_gameInfo.NumTetrominosLeft);
+            if (!validOptions.Contains(action.NewTetromino)) {
+                return new InvalidBasicTetrominoFail(action.NewTetromino);
             }
             return new VerificationSuccess();
         }

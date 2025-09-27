@@ -247,13 +247,13 @@
 
 
         /// <summary>
-        /// Removes a <see cref="TetrominoShape.O1"/> tetromino from the <see cref="GameCore.GameState"/> and adds it to the appropirate <see cref="PlayerState"/>.
+        /// Removes the specified tetromino from the <see cref="GameCore.GameState"/> and adds it to the appropirate <see cref="PlayerState"/>.
         /// </summary>
         /// <param name="action">The action to process.</param>
         protected override void ProcessAction(TakeBasicTetrominoAction action)
         {
-            _gameState.RemoveTetromino(TetrominoShape.O1);
-            _playerState.AddTetromino(TetrominoShape.O1);
+            _gameState.RemoveTetromino(action.NewTetromino);
+            _playerState.AddTetromino(action.NewTetromino);
         }
 
         /// <summary>

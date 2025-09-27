@@ -41,18 +41,36 @@
     }
 
     /// <summary>
-    /// The player tried to take a basic tetromino but there are none left in the shared reserve.
+    /// The player tried to take a tetromino with the <see cref="TakeBasicTetrominoAction"/>, but the shape of the tetromino is not valid for this action.
     /// This failure can be produced by the <see cref="TakeBasicTetrominoAction"/>.
-    /// /// </summary>
+    /// </summary>
     /// <seealso cref="VerificationFailure"/>
-    public class BasicTetrominoNotInSharedReserveFail : VerificationFailure
+    public class InvalidBasicTetrominoFail : VerificationFailure
     {
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvalidBasicTetrominoFail"/> class.
+        /// </summary>
+        /// <param name="shape">The shape of the tetromino the player wants to take from the shared reserve.</param>
+        public InvalidBasicTetrominoFail(TetrominoShape shape)
+        {
+            NewTetromino = shape;
+        }
+
+        #endregion
+
         #region Properties
 
         /// <summary>
-        /// A description of the failure. States that there are no basic tetrominos left in the shared reserve.
+        /// The shape of the tetromino the player wants to take from the shared reserve.
         /// </summary>
-        public override string Message => $"There are no basic tetrominos left in the shared reserve";
+        public TetrominoShape NewTetromino { get; }
+
+        /// <summary>
+        /// A description of the failure. Specifies the shape of the tetromino the player wants to take.
+        /// </summary>
+        public override string Message => $"Cannot take {NewTetromino} with a basic take action.";
 
         #endregion
     }

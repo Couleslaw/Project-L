@@ -537,8 +537,9 @@
         {
             action = null;
 
-            if (gameInfo.NumTetrominosLeft[(int)TetrominoShape.O1] > 0) {
-                action = new TakeBasicTetrominoAction();
+            var takeBasicOptions = RewardManager.GetBasicOptions(gameInfo.NumTetrominosLeft);
+            if (takeBasicOptions.Count > 0) {
+                action = new TakeBasicTetrominoAction(takeBasicOptions.GetRandomElement());
                 return true;
             }
             for (int i = 0; i < TetrominoManager.NumShapes; i++) {

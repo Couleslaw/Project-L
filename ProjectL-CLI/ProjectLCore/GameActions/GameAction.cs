@@ -228,6 +228,28 @@
     /// <seealso cref="GameAction" />
     public class TakeBasicTetrominoAction : TetrominoAction
     {
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TakeBasicTetrominoAction"/> class.
+        /// </summary>
+        /// <param name="newTetromino">The tetromino the player is taking from the shared reserve.</param>
+        public TakeBasicTetrominoAction(TetrominoShape newTetromino)
+        {
+            NewTetromino = newTetromino;
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// The tetromino the player is taking from the shared reserve.
+        /// </summary>
+        public TetrominoShape NewTetromino { get; }
+
+        #endregion
+
         #region Methods
 
         /// <summary>Converts to string. States that this is a <see cref="TakeBasicTetrominoAction"/>.</summary>

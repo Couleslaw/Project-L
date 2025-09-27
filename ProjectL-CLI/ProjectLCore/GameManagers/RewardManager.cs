@@ -59,6 +59,22 @@
         }
 
         /// <summary>
+        /// Gets the shapes the player can get after using a <see cref="TakeBasicTetrominoAction"/>.
+        /// </summary>
+        /// <param name="numTetrominosLeft">Contains information about how many tetrominos are left in the shared reserve. <c>numTetrominosLeft[shape]</c> gives information about <c>(<see cref="TetrominoShape" />)shape</c>.</param>
+        /// <returns>If there is a <see cref="TetrominoShape.O1"/> piece available, player can only take this piece. 
+        /// Otherwise, the player can choose from the next available level.</returns>
+        /// <exception cref="ArgumentException">Invalid numTetrominosLeft length</exception>
+        public static List<TetrominoShape> GetBasicOptions(IReadOnlyList<int> numTetrominosLeft)
+        {
+            if (numTetrominosLeft.Count != TetrominoManager.NumShapes) {
+                throw new ArgumentException("Invalid numTetrominosLeft length");
+            }
+            return GetRewardOptions(numTetrominosLeft, TetrominoShape.O1);
+        }
+
+
+        /// <summary>
         /// Gets the shapes the player can get in exchange for the given <c>shape</c> by using a <see cref="ChangeTetrominoAction"/>.
         /// </summary>
         /// <param name="numTetrominosLeft">Contains information about how many tetrominos are left in the shared reserve. <c>numTetrominosLeft[shape]</c> gives information about <c>(<see cref="TetrominoShape" />)shape</c>.</param>

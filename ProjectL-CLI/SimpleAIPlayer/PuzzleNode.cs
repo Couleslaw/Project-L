@@ -195,7 +195,7 @@
 
                     foreach (var placement in GetAllValidPlacements(_puzzle, (TetrominoShape)i)) {
                         var newPuzzleNode = new PuzzleNode(_puzzle | placement.Position, PuzzleId, newNumTetrominosLeft, _numTetrominosOwned, _finishingTouches);
-                        var actions = new List<GameAction>() { new TakeBasicTetrominoAction(), placement };
+                        var actions = new List<GameAction>() { new TakeBasicTetrominoAction(TetrominoShape.O1), placement };
                         yield return new ActionEdge<PuzzleNode>(this, newPuzzleNode, actions);
                     }
                     continue;
@@ -266,13 +266,22 @@
 
             // if I have no tetrominos
             if (closestShape == null) {
-                // if there are no level1 tetrominos left --> we cant do anything
-                if (_numTetrominosLeft[(int)TetrominoShape.O1] == 0)
+                // use the TakeBasicTetrominoAction to take a new piece
+                var takeBasicOptions = RewardManager.GetBasicOptions(_numTetrominosLeft);
+                if (takeBasicOptions.Count == 0) {
+                    // there are no tetrominos left --> cannot get the shape
                     return null;
+                }
 
-                // otherwise take a level1 tetromino and then upgrade it
-                closestShape = TetrominoShape.O1;
-                strategy.Add(new TakeBasicTetrominoAction());
+                // otherwise take the closest shape and upgrade it
+                closestShape = takeBasicOptions[0];
+                for (int i = 1; i < takeBasicOptions.Count; i++) {
+                    if (Math.Abs(TetrominoManager.GetLevelOf(takeBasicOptions[i]) - level) < Math.Abs(TetrominoManager.GetLevelOf(closestShape.Value) - level)) {
+                        closestShape = takeBasicOptions[i];
+                    }
+                }
+
+                strategy.Add(new TakeBasicTetrominoAction((TetrominoShape)closestShape));
             }
 
             // use IDA* to find the path
