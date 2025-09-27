@@ -246,46 +246,70 @@
         /// <returns>The strategy on how to get the shape or <see langword="null"/> if it isn't possible.</returns>
         private List<TetrominoAction>? GetUpgradePathTo(TetrominoShape shape)
         {
-            // get a shape of the closest level
+            // check if we can simply take the shape
+            var takeBasicOptions = RewardManager.GetBasicOptions(_numTetrominosLeft);
+            if (takeBasicOptions.Contains(shape)) {
+                return new List<TetrominoAction>() { new TakeBasicTetrominoAction(shape) };
+            }
+
+            // get a shape we own of the closest level
             int level = TetrominoManager.GetLevelOf(shape);
-            TetrominoShape? closestShape = null;
+            TetrominoShape? closestOwnedShape = null;
+            int minOwnedLevelDiff = int.MaxValue;
 
             for (int i = 0; i < TetrominoManager.NumShapes; i++) {
                 if (_numTetrominosOwned[i] == 0)
                     continue;
-                if (closestShape is null) {
-                    closestShape = (TetrominoShape)i;
+                if (closestOwnedShape is null) {
+                    closestOwnedShape = (TetrominoShape)i;
+                    minOwnedLevelDiff = Math.Abs(TetrominoManager.GetLevelOf((TetrominoShape)i) - level);
                     continue;
                 }
-                if (Math.Abs(TetrominoManager.GetLevelOf((TetrominoShape)i) - level) < Math.Abs(TetrominoManager.GetLevelOf(closestShape.Value) - level)) {
-                    closestShape = (TetrominoShape)i;
+                int diff = Math.Abs(TetrominoManager.GetLevelOf((TetrominoShape)i) - level);
+                if (diff < minOwnedLevelDiff) {
+                    closestOwnedShape = (TetrominoShape)i;
+                    minOwnedLevelDiff = diff;
+                }
+            }
+
+            TetrominoShape? closestTakeShape = null;
+            int minTakeLevelDiff = int.MaxValue;
+
+            // also get the closest shape we can take - maybe it will be closer than closestOwnedShape
+            if (takeBasicOptions.Count > 0) {
+                closestTakeShape = takeBasicOptions[0];
+                minTakeLevelDiff = Math.Abs(TetrominoManager.GetLevelOf(takeBasicOptions[0]) - level);
+
+                for (int i = 1; i < takeBasicOptions.Count; i++) {
+                    int diff = Math.Abs(TetrominoManager.GetLevelOf(takeBasicOptions[i]) - level);
+                    if (diff < minTakeLevelDiff) {
+                        closestTakeShape = takeBasicOptions[i];
+                        minTakeLevelDiff = diff;
+                    }
                 }
             }
 
             List<TetrominoAction> strategy = new();
+            TetrominoShape startShape;
 
-            // if I have no tetrominos
-            if (closestShape == null) {
-                // use the TakeBasicTetrominoAction to take a new piece
-                var takeBasicOptions = RewardManager.GetBasicOptions(_numTetrominosLeft);
-                if (takeBasicOptions.Count == 0) {
-                    // there are no tetrominos left --> cannot get the shape
-                    return null;
-                }
+            // if closestTakeShape is closer than closestOwnedShape, it is always better to choose it
+            // otherwise choose closestOwnedShape
 
-                // otherwise take the closest shape and upgrade it
-                closestShape = takeBasicOptions[0];
-                for (int i = 1; i < takeBasicOptions.Count; i++) {
-                    if (Math.Abs(TetrominoManager.GetLevelOf(takeBasicOptions[i]) - level) < Math.Abs(TetrominoManager.GetLevelOf(closestShape.Value) - level)) {
-                        closestShape = takeBasicOptions[i];
-                    }
-                }
-
-                strategy.Add(new TakeBasicTetrominoAction((TetrominoShape)closestShape));
+            if (closestTakeShape is not null && (closestOwnedShape is null || minTakeLevelDiff < minOwnedLevelDiff)) {
+                strategy.Add(new TakeBasicTetrominoAction(closestTakeShape.Value));
+                startShape = closestTakeShape.Value;
+            }
+            else if (closestOwnedShape is not null) {
+                startShape = closestOwnedShape.Value;
+            }
+            else {
+                // we have no shapes to choose from - should never happen
+                return null;
             }
 
+
             // use IDA* to find the path
-            var start = new ShapeNode(closestShape.Value, _numTetrominosLeft);
+            var start = new ShapeNode(startShape, _numTetrominosLeft);
             var goal = new ShapeNode(shape, Array.Empty<int>());
             var path = IDAStar.IterativeDeepeningAStar(start, goal).Item1;
 

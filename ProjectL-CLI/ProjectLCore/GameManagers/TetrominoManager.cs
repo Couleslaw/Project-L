@@ -54,8 +54,8 @@
             _binaryImages[(int)TetrominoShape.I2] = new(0b10000_10000);
             _binaryImages[(int)TetrominoShape.L2] = new(0b11000_10000);
             _binaryImages[(int)TetrominoShape.L3] = new(0b11100_10000);
-            _binaryImages[(int)TetrominoShape.Z ] = new(0b00110_00011);
-            _binaryImages[(int)TetrominoShape.T ] = new(0b01110_00100);
+            _binaryImages[(int)TetrominoShape.Z] = new(0b00110_00011);
+            _binaryImages[(int)TetrominoShape.T] = new(0b01110_00100);
 
             // level of tetromino = number of 1s in its binary image
             _levels = new int[NumShapes];
@@ -110,7 +110,14 @@
         /// </summary>
         /// <param name="level">The level.</param>
         /// <returns>A list containing the shapes.</returns>
-        public static List<TetrominoShape> GetShapesWithLevel(int level) => _shapesByLevel[level - MinLevel];
+        /// <exception cref="ArgumentOutOfRangeException"> The level is less than <see cref="MinLevel"/> or greater than <see cref="MaxLevel"/>. </exception>
+        public static List<TetrominoShape> GetShapesWithLevel(int level)
+        {
+            if (level < MinLevel || level > MaxLevel) {
+                throw new ArgumentOutOfRangeException(nameof(level), $"Level must be between {MinLevel} and {MaxLevel} but is {level}.");
+            }
+            return _shapesByLevel[level - MinLevel];
+        }
 
         /// <summary>
         /// Checks is the given <paramref name="image"/> is a valid configuration of the given <paramref name="shape"/>.

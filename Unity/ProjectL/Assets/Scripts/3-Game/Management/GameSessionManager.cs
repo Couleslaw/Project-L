@@ -66,7 +66,7 @@ namespace ProjectL.GameScene.Management
                 Debug.Log("Game session cancelled.");
             }
             catch (Exception e) {
-                Debug.LogError("Game session ended with error" + e.Message);
+                Debug.LogError($"Game session ended with error: {e.Message}\nStack trace:\n{e.StackTrace}");
             }
         }
 
@@ -75,7 +75,7 @@ namespace ProjectL.GameScene.Management
             RuntimeGameInfo.UnregisterGame();
             GameErrorHandler.DestroyErrorBox();
         }
-  
+
         /// <summary>
         /// Tries to load the puzzles and create players.
         /// </summary>
@@ -183,7 +183,7 @@ namespace ProjectL.GameScene.Management
             // start game loop
             GameSummary.Clear();
             await GameLoopAsync(game, cancellationToken);
-       
+
             // finalize game
             cancellationToken.ThrowIfCancellationRequested();
             game.FinalizeGame();

@@ -47,7 +47,7 @@
 
             // result.Count == 0
             // there are no higher level tetrominos left --> choose from lover level ones 
-            for (int level = 0; level < TetrominoManager.GetLevelOf(shape); level++) {
+            for (int level = TetrominoManager.MinLevel; level < TetrominoManager.GetLevelOf(shape); level++) {
                 foreach (var s in TetrominoManager.GetShapesWithLevel(level)) {
                     if (numTetrominosLeft[(int)s] > 0) {
                         result.Add(s);

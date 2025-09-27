@@ -36,7 +36,7 @@ If the action was valid, then the **Confirm** buttons are enabled and if the pla
 - calls the `OnActionConfirmed` method of all subscribed `IHumanPlayerActionCreator<TakePuzzleAction>` instances
 - sets the player mode back to `PlayerMode.NonInteractive`
 - disconnects from the action buttons
-- calls the `HumanPlayer.SetReward` method of the player who requested the action
+- calls the `HumanPlayer.SetAction` method of the player who requested the action
 
 ### Summary
 

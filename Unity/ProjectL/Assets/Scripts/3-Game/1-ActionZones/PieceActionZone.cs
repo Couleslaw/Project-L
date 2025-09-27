@@ -76,7 +76,7 @@ namespace ProjectL.GameScene.ActionZones
 
         private bool CanTakeBasicTetromino(GameState.GameInfo gameInfo)
         {
-            return gameInfo.NumTetrominosLeft[(int)TetrominoShape.O1] > 0;
+            return RewardManager.GetBasicOptions(gameInfo.NumTetrominosLeft).Count > 0;
         }
 
         private bool CanChangeTetromino(GameState.GameInfo gameInfo, PlayerState.PlayerInfo playerInfo)

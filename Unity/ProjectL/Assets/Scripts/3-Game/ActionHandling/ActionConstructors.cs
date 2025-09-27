@@ -119,15 +119,21 @@ namespace ProjectL.GameScene.ActionHandling
     {
         #region Fields
 
-        private TakeBasicTetrominoAction? _action;
+        private TetrominoShape? _shape;
 
         #endregion
 
         #region Methods
 
-        public override void Reset() => _action = null;
+        public override void Reset() => _shape = null;
 
-        protected override TakeBasicTetrominoAction? GetAction() => _action;
+        protected override TakeBasicTetrominoAction? GetAction()
+        {
+            if (_shape == null) {
+                return null;
+            }
+            return new TakeBasicTetrominoAction(_shape.Value);
+        }
 
         protected override void ApplyActionModification(IActionModification<TakeBasicTetrominoAction> change)
         {
@@ -136,7 +142,7 @@ namespace ProjectL.GameScene.ActionHandling
                 return;
             }
 
-            _action = takeBasicChanged.IsSelected ? new TakeBasicTetrominoAction() : null;
+            _shape = takeBasicChanged.NewTetromino;
         }
 
         #endregion

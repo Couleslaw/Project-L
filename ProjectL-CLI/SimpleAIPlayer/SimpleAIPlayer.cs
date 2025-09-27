@@ -805,8 +805,8 @@
 
         private void UpdateTetrominosOwned(TetrominoAction action)
         {
-            if (action is TakeBasicTetrominoAction) {
-                _numTetrominosOwned[(int)TetrominoShape.O1]++;
+            if (action is TakeBasicTetrominoAction basicAction) {
+                _numTetrominosOwned[(int)basicAction.NewTetromino]++;
             }
             else if (action is ChangeTetrominoAction changeAction) {
                 _numTetrominosOwned[(int)changeAction.NewTetromino]++;

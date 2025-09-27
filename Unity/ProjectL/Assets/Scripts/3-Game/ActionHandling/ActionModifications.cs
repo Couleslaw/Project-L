@@ -55,16 +55,16 @@ namespace ProjectL.GameScene.ActionHandling
     {
         #region Constructors
 
-        public TakeBasicTetrominoActionModification(bool isSelected)
+        public TakeBasicTetrominoActionModification(TetrominoShape? newTetromino)
         {
-            IsSelected = isSelected;
+            NewTetromino = newTetromino;
         }
 
         #endregion
 
         #region Properties
 
-        public bool IsSelected { get; }
+        public TetrominoShape? NewTetromino { get; }
 
         #endregion
     }
