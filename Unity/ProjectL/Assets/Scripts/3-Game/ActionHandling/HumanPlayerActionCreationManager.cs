@@ -41,6 +41,8 @@ namespace ProjectL.GameScene.ActionHandling
 
         private Queue<PlaceTetrominoAction> _placeActionsQueue = new();
 
+        private Queue<DoNothingAction> _skipTurnQueue = new();
+
         private HumanPlayer? _currentPlayer;
 
         private ActionVerifier? _actionVerifier;
@@ -127,6 +129,18 @@ namespace ProjectL.GameScene.ActionHandling
         }
 
         public void OnClearBoardRequested() => OnActionCanceled();
+
+        public void OnEndTurnRequested()
+        {
+            var player = PrepareForSubmission();
+            if (player == null) {
+                return;
+            }
+            for (int i = 0; i < _currentTurnInfo.NumActionsLeft; i++) {
+                _skipTurnQueue.Enqueue(new DoNothingAction());
+            }
+            player.SetAction(_skipTurnQueue.Dequeue());
+        }
 
         public void OnTakePuzzleActionRequested()
         {
@@ -303,6 +317,11 @@ namespace ProjectL.GameScene.ActionHandling
         {
             if (sender is not HumanPlayer player) {
                 throw new ApplicationException("Sender is not a HumanPlayer!");
+            }
+
+            if (_skipTurnQueue.Count > 0) {
+                player.SetAction(_skipTurnQueue.Dequeue());
+                return;
             }
 
             if (_currentActionMode == ActionMode.FinishingTouches) {
