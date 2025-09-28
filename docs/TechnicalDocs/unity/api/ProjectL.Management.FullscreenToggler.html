@@ -102,7 +102,7 @@ Class FullscreenToggler
   <div class="markdown conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class FullscreenToggler : StaticInstance&lt;FullscreenToggler&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public class FullscreenToggler : Singleton&lt;FullscreenToggler&gt;</code></pre>
   </div>
 
 
@@ -117,6 +117,7 @@ Class FullscreenToggler
       <div><span class="xref">Behaviour</span></div>
       <div><span class="xref">MonoBehaviour</span></div>
       <div><a class="xref" href="ProjectL.StaticInstance-1.html">StaticInstance</a>&lt;<a class="xref" href="ProjectL.Management.FullscreenToggler.html">FullscreenToggler</a>&gt;</div>
+      <div><a class="xref" href="ProjectL.Singleton-1.html">Singleton</a>&lt;<a class="xref" href="ProjectL.Management.FullscreenToggler.html">FullscreenToggler</a>&gt;</div>
       <div><span class="xref">FullscreenToggler</span></div>
     </dd>
   </dl>
@@ -128,9 +129,6 @@ Class FullscreenToggler
     <dd>
     <div>
       <a class="xref" href="ProjectL.StaticInstance-1.html#ProjectL_StaticInstance_1_Instance">StaticInstance&lt;FullscreenToggler&gt;.Instance</a>
-    </div>
-    <div>
-      <a class="xref" href="ProjectL.StaticInstance-1.html#ProjectL_StaticInstance_1_Awake">StaticInstance&lt;FullscreenToggler&gt;.Awake()</a>
     </div>
     <div>
       <a class="xref" href="ProjectL.StaticInstance-1.html#ProjectL_StaticInstance_1_OnDestroy">StaticInstance&lt;FullscreenToggler&gt;.OnDestroy()</a>
@@ -589,6 +587,126 @@ Class FullscreenToggler
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
   </dd></dl>
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="ProjectL_Management_FullscreenToggler_AddListener_" data-uid="ProjectL.Management.FullscreenToggler.AddListener*"></a>
+
+  <h3 id="ProjectL_Management_FullscreenToggler_AddListener_ProjectL_Management_IFullscreenListener_" data-uid="ProjectL.Management.FullscreenToggler.AddListener(ProjectL.Management.IFullscreenListener)">
+  AddListener(IFullscreenListener)
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void AddListener(IFullscreenListener listener)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>listener</code> <a class="xref" href="ProjectL.Management.IFullscreenListener.html">IFullscreenListener</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ProjectL_Management_FullscreenToggler_Awake_" data-uid="ProjectL.Management.FullscreenToggler.Awake*"></a>
+
+  <h3 id="ProjectL_Management_FullscreenToggler_Awake" data-uid="ProjectL.Management.FullscreenToggler.Awake">
+  Awake()
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Called when the script instance is being loaded.
+Ensures that only one instance exists and destroys any duplicate objects.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void Awake()</code></pre>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ProjectL_Management_FullscreenToggler_RemoveListener_" data-uid="ProjectL.Management.FullscreenToggler.RemoveListener*"></a>
+
+  <h3 id="ProjectL_Management_FullscreenToggler_RemoveListener_ProjectL_Management_IFullscreenListener_" data-uid="ProjectL.Management.FullscreenToggler.RemoveListener(ProjectL.Management.IFullscreenListener)">
+  RemoveListener(IFullscreenListener)
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void RemoveListener(IFullscreenListener listener)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>listener</code> <a class="xref" href="ProjectL.Management.IFullscreenListener.html">IFullscreenListener</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ProjectL_Management_FullscreenToggler_ToggleFullscreen_" data-uid="ProjectL.Management.FullscreenToggler.ToggleFullscreen*"></a>
+
+  <h3 id="ProjectL_Management_FullscreenToggler_ToggleFullscreen" data-uid="ProjectL.Management.FullscreenToggler.ToggleFullscreen">
+  ToggleFullscreen()
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void ToggleFullscreen()</code></pre>
+  </div>
+
+
+
+
+
+
+
 
 
 

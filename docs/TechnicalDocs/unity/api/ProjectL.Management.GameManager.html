@@ -730,19 +730,19 @@ Ensures that only one instance exists and destroys any duplicate objects.</p>
 
 
 
-  <a id="ProjectL_Management_GameManager_OpenLogger_" data-uid="ProjectL.Management.GameManager.OpenLogger*"></a>
+  <a id="ProjectL_Management_GameManager_PauseGame_" data-uid="ProjectL.Management.GameManager.PauseGame*"></a>
 
-  <h3 id="ProjectL_Management_GameManager_OpenLogger" data-uid="ProjectL.Management.GameManager.OpenLogger">
-  OpenLogger()
+  <h3 id="ProjectL_Management_GameManager_PauseGame" data-uid="ProjectL.Management.GameManager.PauseGame">
+  PauseGame()
   
   </h3>
 
-  <div class="markdown level1 summary"><p>Opens the in-game logger if it is not already open.</p>
+  <div class="markdown level1 summary"><p>Pauses the game if it can be paused and is not already paused. Displays the pause menu and disables gameplay controls.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void OpenLogger()</code></pre>
+    <pre><code class="lang-csharp hljs">public void PauseGame()</code></pre>
   </div>
 
 
@@ -770,6 +770,33 @@ Ensures that only one instance exists and destroys any duplicate objects.</p>
 
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void ResumeGame()</code></pre>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ProjectL_Management_GameManager_ToggleLogger_" data-uid="ProjectL.Management.GameManager.ToggleLogger*"></a>
+
+  <h3 id="ProjectL_Management_GameManager_ToggleLogger" data-uid="ProjectL.Management.GameManager.ToggleLogger">
+  ToggleLogger()
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Opens or closes the logger UI. If the logger is not open, it will be opened; otherwise, it will be closed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void ToggleLogger()</code></pre>
   </div>
 
 

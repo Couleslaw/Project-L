@@ -250,6 +250,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.EndTurnBox.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.EndTurnBox.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.EndTurnBox",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/ProjectL.FinalResultsScene.FinalAnimationManager.yml",
       "output": {
         ".html": {
@@ -936,6 +950,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.Management.ScaleManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.Management.ScaleManager.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.Management.ScaleManager",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/ProjectL.GameScene.Management.yml",
       "output": {
         ".html": {
@@ -1258,6 +1286,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PieceZone.TouchRotationHandler.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PieceZone.TouchRotationHandler.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PieceZone.TouchRotationHandler",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/ProjectL.GameScene.PieceZone.yml",
       "output": {
         ".html": {
@@ -1342,6 +1384,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposableEmptySlotHighlighter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposableEmptySlotHighlighter.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposableEmptySlotHighlighter",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/ProjectL.GameScene.PlayerZone.PuzzleSlot.DisposablePuzzleHighlighter.yml",
       "output": {
         ".html": {
@@ -1412,6 +1468,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PuzzleZone.DraggablePuzzle.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PuzzleZone.DraggablePuzzle.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PuzzleZone.DraggablePuzzle",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.yml",
       "output": {
         ".html": {
@@ -1436,6 +1506,20 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "ProjectL.GameScene.PuzzleZone.PuzzleCard",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzleZoneCardBase.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.GameScene.PuzzleZone.PuzzleZoneCardBase.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.GameScene.PuzzleZone.PuzzleZoneCardBase",
       "Summary": null
     },
     {
@@ -1734,6 +1818,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Management.IFullscreenListener.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Management.IFullscreenListener.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Management.IFullscreenListener",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/ProjectL.Management.SceneLoader.yml",
       "output": {
         ".html": {
@@ -1772,6 +1870,34 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "ProjectL.Management",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Pause.ExitGameBox.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Pause.ExitGameBox.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Pause.ExitGameBox",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ProjectL.Pause.FullscreenButton.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ProjectL.Pause.FullscreenButton.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ProjectL.Pause.FullscreenButton",
       "Summary": null
     },
     {

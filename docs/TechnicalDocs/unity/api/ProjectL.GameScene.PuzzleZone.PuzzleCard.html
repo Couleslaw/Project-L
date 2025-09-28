@@ -101,7 +101,7 @@ Class PuzzleCard
   <div class="markdown conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class PuzzleCard : MonoBehaviour, IPuzzleZoneCard</code></pre>
+    <pre><code class="lang-csharp hljs">public class PuzzleCard : PuzzleZoneCardBase, IPointerDownHandler, IPointerUpHandler, IEventSystemHandler</code></pre>
   </div>
 
 
@@ -115,6 +115,7 @@ Class PuzzleCard
       <div><span class="xref">Component</span></div>
       <div><span class="xref">Behaviour</span></div>
       <div><span class="xref">MonoBehaviour</span></div>
+      <div><a class="xref" href="ProjectL.GameScene.PuzzleZone.PuzzleZoneCardBase.html">PuzzleZoneCardBase</a></div>
       <div><span class="xref">PuzzleCard</span></div>
     </dd>
   </dl>
@@ -122,7 +123,9 @@ Class PuzzleCard
   <dl class="typelist implements">
     <dt>Implements</dt>
     <dd>
-      <div><a class="xref" href="ProjectL.GameScene.PuzzleZone.IPuzzleZoneCard.html">IPuzzleZoneCard</a></div>
+      <div><span class="xref">IPointerDownHandler</span></div>
+      <div><span class="xref">IPointerUpHandler</span></div>
+      <div><span class="xref">IEventSystemHandler</span></div>
     </dd>
   </dl>
 
@@ -130,6 +133,33 @@ Class PuzzleCard
   <dl class="typelist inheritedMembers">
     <dt>Inherited Members</dt>
     <dd>
+    <div>
+      <a class="xref" href="ProjectL.GameScene.PuzzleZone.PuzzleZoneCardBase.html#ProjectL_GameScene_PuzzleZone_PuzzleZoneCardBase__button">PuzzleZoneCardBase._button</a>
+    </div>
+    <div>
+      <a class="xref" href="ProjectL.GameScene.PuzzleZone.PuzzleZoneCardBase.html#ProjectL_GameScene_PuzzleZone_PuzzleZoneCardBase__image">PuzzleZoneCardBase._image</a>
+    </div>
+    <div>
+      <a class="xref" href="ProjectL.GameScene.PuzzleZone.PuzzleZoneCardBase.html#ProjectL_GameScene_PuzzleZone_PuzzleZoneCardBase__isBlack">PuzzleZoneCardBase._isBlack</a>
+    </div>
+    <div>
+      <a class="xref" href="ProjectL.GameScene.PuzzleZone.PuzzleZoneCardBase.html#ProjectL_GameScene_PuzzleZone_PuzzleZoneCardBase__mode">PuzzleZoneCardBase._mode</a>
+    </div>
+    <div>
+      <a class="xref" href="ProjectL.GameScene.PuzzleZone.PuzzleZoneCardBase.html#ProjectL_GameScene_PuzzleZone_PuzzleZoneCardBase_CanTakePuzzle">PuzzleZoneCardBase.CanTakePuzzle</a>
+    </div>
+    <div>
+      <a class="xref" href="ProjectL.GameScene.PuzzleZone.PuzzleZoneCardBase.html#ProjectL_GameScene_PuzzleZone_PuzzleZoneCardBase_Init_System_Boolean_">PuzzleZoneCardBase.Init(bool)</a>
+    </div>
+    <div>
+      <a class="xref" href="ProjectL.GameScene.PuzzleZone.PuzzleZoneCardBase.html#ProjectL_GameScene_PuzzleZone_PuzzleZoneCardBase_OnPointerDown_UnityEngine_EventSystems_PointerEventData_">PuzzleZoneCardBase.OnPointerDown(PointerEventData)</a>
+    </div>
+    <div>
+      <a class="xref" href="ProjectL.GameScene.PuzzleZone.PuzzleZoneCardBase.html#ProjectL_GameScene_PuzzleZone_PuzzleZoneCardBase_OnPointerUp_UnityEngine_EventSystems_PointerEventData_">PuzzleZoneCardBase.OnPointerUp(PointerEventData)</a>
+    </div>
+    <div>
+      <a class="xref" href="ProjectL.GameScene.PuzzleZone.PuzzleZoneCardBase.html#ProjectL_GameScene_PuzzleZone_PuzzleZoneCardBase_Awake">PuzzleZoneCardBase.Awake()</a>
+    </div>
     <div>
       <span class="xref">MonoBehaviour.IsInvoking()</span>
     </div>
@@ -629,6 +659,42 @@ Class PuzzleCard
 </h2>
 
 
+  <a id="ProjectL_GameScene_PuzzleZone_PuzzleCard_GetCanTakePuzzle_" data-uid="ProjectL.GameScene.PuzzleZone.PuzzleCard.GetCanTakePuzzle*"></a>
+
+  <h3 id="ProjectL_GameScene_PuzzleZone_PuzzleCard_GetCanTakePuzzle_ProjectLCore_GameLogic_TurnInfo_" data-uid="ProjectL.GameScene.PuzzleZone.PuzzleCard.GetCanTakePuzzle(ProjectLCore.GameLogic.TurnInfo)">
+  GetCanTakePuzzle(TurnInfo)
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override bool GetCanTakePuzzle(TurnInfo turnInfo)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>turnInfo</code> <span class="xref">TurnInfo</span></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
   <a id="ProjectL_GameScene_PuzzleZone_PuzzleCard_GetDisposableCardDimmer_" data-uid="ProjectL.GameScene.PuzzleZone.PuzzleCard.GetDisposableCardDimmer*"></a>
 
   <h3 id="ProjectL_GameScene_PuzzleZone_PuzzleCard_GetDisposableCardDimmer" data-uid="ProjectL.GameScene.PuzzleZone.PuzzleCard.GetDisposableCardDimmer">
@@ -640,7 +706,7 @@ Class PuzzleCard
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardDimmer()</code></pre>
+    <pre><code class="lang-csharp hljs">public override PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardDimmer()</code></pre>
   </div>
 
 
@@ -671,7 +737,7 @@ Class PuzzleCard
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardHighlighter()</code></pre>
+    <pre><code class="lang-csharp hljs">public override PuzzleZoneManager.DisposableSpriteReplacer GetDisposableCardHighlighter()</code></pre>
   </div>
 
 
@@ -691,10 +757,10 @@ Class PuzzleCard
 
 
 
-  <a id="ProjectL_GameScene_PuzzleZone_PuzzleCard_Init_" data-uid="ProjectL.GameScene.PuzzleZone.PuzzleCard.Init*"></a>
+  <a id="ProjectL_GameScene_PuzzleZone_PuzzleCard_GetTakePuzzleDisposable_" data-uid="ProjectL.GameScene.PuzzleZone.PuzzleCard.GetTakePuzzleDisposable*"></a>
 
-  <h3 id="ProjectL_GameScene_PuzzleZone_PuzzleCard_Init_System_Boolean_" data-uid="ProjectL.GameScene.PuzzleZone.PuzzleCard.Init(System.Boolean)">
-  Init(bool)
+  <h3 id="ProjectL_GameScene_PuzzleZone_PuzzleCard_GetTakePuzzleDisposable" data-uid="ProjectL.GameScene.PuzzleZone.PuzzleCard.GetTakePuzzleDisposable">
+  GetTakePuzzleDisposable()
   
   </h3>
 
@@ -702,12 +768,43 @@ Class PuzzleCard
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Init(bool isBlack)</code></pre>
+    <pre><code class="lang-csharp hljs">protected override IDisposable GetTakePuzzleDisposable()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ProjectL_GameScene_PuzzleZone_PuzzleCard_InitializeDraggablePuzzle_" data-uid="ProjectL.GameScene.PuzzleZone.PuzzleCard.InitializeDraggablePuzzle*"></a>
+
+  <h3 id="ProjectL_GameScene_PuzzleZone_PuzzleCard_InitializeDraggablePuzzle_ProjectL_GameScene_PuzzleZone_DraggablePuzzle_" data-uid="ProjectL.GameScene.PuzzleZone.PuzzleCard.InitializeDraggablePuzzle(ProjectL.GameScene.PuzzleZone.DraggablePuzzle)">
+  InitializeDraggablePuzzle(DraggablePuzzle)
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void InitializeDraggablePuzzle(DraggablePuzzle puzzle)</code></pre>
   </div>
 
   <h4 class="section">Parameters</h4>
   <dl class="parameters">
-    <dt><code>isBlack</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dt><code>puzzle</code> <a class="xref" href="ProjectL.GameScene.PuzzleZone.DraggablePuzzle.html">DraggablePuzzle</a></dt>
     <dd></dd>
   </dl>
 
@@ -759,7 +856,7 @@ Class PuzzleCard
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void SetMode(PuzzleZoneMode mode, TurnInfo turnInfo)</code></pre>
+    <pre><code class="lang-csharp hljs">public override void SetMode(PuzzleZoneMode mode, TurnInfo turnInfo)</code></pre>
   </div>
 
   <h4 class="section">Parameters</h4>
