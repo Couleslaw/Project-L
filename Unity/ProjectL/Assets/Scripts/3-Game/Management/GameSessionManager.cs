@@ -303,11 +303,11 @@ namespace ProjectL.GameScene.Management
                     throw;
                 }
                 catch (AggregateException e) {
-                    LogPlayerGetActionThrownException(game.CurrentPlayer.Name, e.InnerException.Message);
+                    LogPlayerGetActionThrownException(game.CurrentPlayer.Name, e.InnerException.Message, e.StackTrace);
                     action = null;
                 }
                 catch (Exception e) {
-                    LogPlayerGetActionThrownException(game.CurrentPlayer.Name, e.Message);
+                    LogPlayerGetActionThrownException(game.CurrentPlayer.Name, e.Message, e.StackTrace);
                     action = null;
                 }
 
@@ -416,9 +416,9 @@ namespace ProjectL.GameScene.Management
             Debug.Log($"Current player: {currentPlayer.Name} ({currentPlayer.GetType().Name}), {turnInfo}");
         }
 
-        private void LogPlayerGetActionThrownException(string playerName, string message)
+        private void LogPlayerGetActionThrownException(string playerName, string message, string stackTrace)
         {
-            Debug.LogWarning($"Player '{playerName}' failed to provide an action with error: {message}.");
+            Debug.LogWarning($"Player '{playerName}' failed to provide an action with error: {message}.\nStack trace:\n{stackTrace}");
         }
 
         private void LogPlayerGetActionReturnedNull(string playerName)
