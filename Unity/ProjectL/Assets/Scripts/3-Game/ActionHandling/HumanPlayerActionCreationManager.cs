@@ -319,23 +319,35 @@ namespace ProjectL.GameScene.ActionHandling
                 throw new ApplicationException("Sender is not a HumanPlayer!");
             }
 
+            // if player said that they want to skip their turn earlier
             if (_skipTurnQueue.Count > 0) {
                 player.SetAction(_skipTurnQueue.Dequeue());
                 return;
             }
 
+            // if it is finishing touches
             if (_currentActionMode == ActionMode.FinishingTouches) {
+
+                // if the player has no unfinished puzzles --> end automatically
+                if (e.PlayerInfo.UnfinishedPuzzles.Length == 0) {
+                    player.SetAction(new EndFinishingTouchesAction());
+                    return;
+                }
+
+                // if we already have a strategy --> continue with it
                 if (_finishingTouchesPlacements.Count > 0) {
                     player.SetAction(_finishingTouchesPlacements.Dequeue());
                     return;
                 }
             }
 
+            // if we have queued placements --> continue with them
             else if (_placeActionsQueue.Count > 0) {
                 player.SetAction(_placeActionsQueue.Dequeue());
                 return;
             }
 
+            // else start new action creation
             _currentPlayer = player;
             _actionVerifier = e.Verifier;
 
