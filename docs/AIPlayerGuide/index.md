@@ -33,7 +33,7 @@ init_path = (optional) path/to/your/init/file/or/folder
 The section name can be anything, its just for your reference. The properties are:
 
 - `dll_path` is the path to the DLL file containing your AI player.
-- `name` is the name of your AI player as will be displayed in game. The
+- `name` is the name of your AI player as will be displayed in game.
 - `init_path` (optional) is the path to the file or folder containing the initialization data for your AI player. This path will be passed to your player as an argument of the `Init` method.
 
 Your AI player should now appear in the list of available player types.
@@ -81,13 +81,13 @@ If you need to check or change the target framework after the project is created
 
 Now, add the _Project-L Core_ library reference using one of the following methods:
 
-##### Downloading the DLL (recommended)
+#### Downloading the DLL (recommended)
 
-1.  Download `ProjectLCore.zip` and from the [releases page](https://github.com/Couleslaw/Project-L/releases/latest) and extract the `ProjectLCore.dll` and `ProjectLCore.xml` files.
+1.  Download `ProjectLCore.zip` from the [releases page](https://github.com/Couleslaw/Project-L/releases/latest) and extract the `ProjectLCore.dll` and `ProjectLCore.xml` files.
 2.  Create a folder in your project (e.g., named `lib`) and copy the extracted files there.
 3.  Right-click on the project in the Solution Explorer and select **Add** > **Project Reference** > **Browse** and find `ProjectLCore.dll`.
 
-##### Cloning the repository
+#### Cloning the repository
 
 (Only recommended if you need the source code or examples directly in the solution).
 
@@ -118,7 +118,7 @@ The [Simple AI Player](https://github.com/Couleslaw/Project-L/tree/master/Projec
 Before using it in the game, you will probably want to train or at least test your AI player. You will need to write a simple program that will simulate the game loop. The [AI Player Simulation](https://github.com/Couleslaw/Project-L/tree/master/ProjectL-CLI/AIPlayerSimulation) project is a simple CLI app which simulates the game between AI players. You can use this as a starting point.
 
 {% include tip.html content="
-The simulation project also contains the `puzzles.txt` file, which contains a list of all puzzles in the game. You can easily add more puzzles (maybe for training) if it would suit your needs. The file format is explained [here](../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_PuzzleParser.htm).
+The simulation project also contains the `puzzles.txt` file, which contains a list of all puzzles in the game. You can easily add more puzzles (maybe for training) if it would suit your needs. The file format is explained [here](../ProjectLCoreDocs/html/T_ProjectLCore_GameLogic_PuzzleParser_1.htm).
 "%}
 
 ### Export Your AI Player as a DLL
@@ -133,11 +133,11 @@ Before adding your player to the game, it's a good idea to test it using the `AI
 
 ### Handling External Dependencies with Costura.Fody
 
-If you aren't using any external libraries, you can skip this section. However, if your AI player relies on third-party libraries (e.g., for machine learning), you need to ensure they are correctly embedded in your AI player DLL. You can do this using a tool called **Costura.Fody**, which merges all necessary external DLLs into your main AI player DLL, simplifying deployment to a single file.
+If you aren't using any external libraries, you can skip this section. However, if your AI player relies on third-party libraries (e.g., for machine learning), you need to ensure they are correctly embedded in your AI player DLL. You can do this using a tool called **Costura.Fody**, which merges all necessary external DLLs into your main AI player DLL.
 
 **Steps to Embed Dependencies:**
 
-1.  **Install Costura.Fody:** In Visual Studio, right-click your project, select "Manage NuGet Packages...", search for `Costura.Fody`, and install it.
+1.  **Install Costura.Fody:** In Visual Studio, right-click your project, select "Manage NuGet Packages", search for `Costura.Fody`, and install it.
 2.  **Add Your Third-Party Libraries:** Install any other required third-party libraries via NuGet. Costura.Fody will automatically detect and embed these during the build.
 3.  **Build Your Project:** Build your AI player project in **Release** configuration.
 4.  **Verify Output:** Locate your project's `bin/Release/netstandard2.1/` folder. You should find only a single DLL for your AI player (e.g., `MyAIPlayer.dll`), containing all embedded dependencies.
