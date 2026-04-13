@@ -327,16 +327,17 @@ namespace ProjectL.GameScene.ActionHandling
 
             // if it is finishing touches
             if (_currentActionMode == ActionMode.FinishingTouches) {
-
-                // if the player has no unfinished puzzles --> end automatically
-                if (e.PlayerInfo.UnfinishedPuzzles.Length == 0) {
-                    player.SetAction(new EndFinishingTouchesAction());
-                    return;
-                }
-
                 // if we already have a strategy --> continue with it
                 if (_finishingTouchesPlacements.Count > 0) {
                     player.SetAction(_finishingTouchesPlacements.Dequeue());
+                    return;
+                }
+
+                // if the player has no unfinished puzzles --> end automatically
+                // !!! Do not swap these two if statements otherwise the last action in the queue
+                // (the EndFinishingTouchesAction) will go to the next player
+                if (e.PlayerInfo.UnfinishedPuzzles.Length == 0) {
+                    player.SetAction(new EndFinishingTouchesAction());
                     return;
                 }
             }

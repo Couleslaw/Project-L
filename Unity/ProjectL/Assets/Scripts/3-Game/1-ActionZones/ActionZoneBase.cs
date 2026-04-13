@@ -79,18 +79,6 @@ namespace ProjectL.GameScene.ActionZones
 
         #region Methods
 
-        public void ManuallyClickSelectRewardButton(Action? onClick = null)
-        {
-            if (_selectRewardButton != null)
-                StartCoroutine(SimulateClickCoroutine(_selectRewardButton, onClick));
-        }
-
-        public void ManuallyClickFinishingTouchesButton(Action? onClick = null)
-        {
-            if (_finishingTouchesButton != null)
-                StartCoroutine(SimulateClickCoroutine(_finishingTouchesButton, onClick));
-        }
-
         public void SetActionMode(ActionMode mode)
         {
             _actionMode = mode;
@@ -203,7 +191,7 @@ namespace ProjectL.GameScene.ActionZones
             _actionButtonsPanel.SetActive(false);
         }
 
-        private IEnumerator SimulateClickCoroutine(Button targetButton, Action? onClick = null)
+        private IEnumerator SimulateClickCoroutine(Button targetButton)
         {
             if (!targetButton.interactable) {
                 yield return new WaitForSeconds(0.1f);
@@ -223,7 +211,6 @@ namespace ProjectL.GameScene.ActionZones
 
             // Simulate PointerUp (Release)
             ExecuteEvents.Execute(targetButton.gameObject, pointerData, ExecuteEvents.pointerUpHandler);
-            onClick?.Invoke();
         }
 
         #endregion

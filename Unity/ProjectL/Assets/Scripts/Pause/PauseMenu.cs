@@ -23,7 +23,11 @@ namespace ProjectL.Pause
 
         private const int _animationSliderMinValue = 10;
 
+#if UNITY_EDITOR
+        private const int _animationSliderMaxValue = 200;
+#else
         private const int _animationSliderMaxValue = 40;
+#endif
 
         #endregion
 

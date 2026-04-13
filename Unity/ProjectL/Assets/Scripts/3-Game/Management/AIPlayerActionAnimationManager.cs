@@ -17,6 +17,7 @@ namespace ProjectL.GameScene.Management
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using ProjectL.Sound;
 
     public class AIPlayerActionAnimationManager : GraphicsManager<AIPlayerActionAnimationManager>,
         IAsyncActionProcessor,
@@ -61,10 +62,9 @@ namespace ProjectL.GameScene.Management
 
         private async Task ProcessActionAsync(EndFinishingTouchesAction action, CancellationToken cancellationToken)
         {
-            await AnimationManager.WaitForScaledDelay(2 * _initialDelay, cancellationToken);
-            using (new ActionZonesManager.DisposableButtonSelector(ActionZonesManager.Button.EndFinishingTouches)) {
-            }
-            await  Awaitable.WaitForSecondsAsync(0.25f, cancellationToken);
+            await AnimationManager.WaitForScaledDelay(1.5f * _initialDelay, cancellationToken);
+            SoundManager.Instance.PlayButtonClickSound();
+            await AnimationManager.WaitForScaledDelay(0.25f * _initialDelay, cancellationToken);
         }
 
         private async Task ProcessActionAsync(TakePuzzleAction action, CancellationToken cancellationToken)

@@ -218,10 +218,6 @@ namespace ProjectL.GameScene.ActionZones
                         Instance._puzzleActionZone.SetActionMode(ActionMode.ActionCreation);
                         break;
                     case Button.EndFinishingTouches:
-                        Instance._pieceActionZone.CanUseFinishingTouchesButton = true;
-                        Instance._pieceActionZone.ManuallyClickFinishingTouchesButton(onClick: () => {
-                            Instance._pieceActionZone.CanUseFinishingTouchesButton = false;
-                        });
                         break;
                     default:
                         break;
